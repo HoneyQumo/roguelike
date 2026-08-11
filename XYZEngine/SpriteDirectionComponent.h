@@ -1,9 +1,8 @@
 #pragma once
 
 #include "Component.h"
-#include "TransformComponent.h"
+#include "MovementComponent.h"
 #include "SpriteRendererComponent.h"
-#include "Vector.h"
 
 namespace XYZEngine
 {
@@ -15,9 +14,7 @@ namespace XYZEngine
 		void Update(float deltaTime) override;
 		void Render() override;
 	private:
-		TransformComponent* transform;
+		MovementComponent* movement = nullptr;
 		SpriteRendererComponent* renderer = nullptr;
-
-		Vector2Df previousPosition = { 0.f, 0.f };
 	};
 }

@@ -18,19 +18,29 @@ namespace XYZEngine
 		void Update(float deltaTime) override;
 		void Render() override;
 
-		void SetFrames(const std::string& textureMapName, int firstFrameIndex, int framesCount);
-		void SetFramerate(float newFramesPerSecond);
+		void SetWalkAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float framesPerSecond);
+		void SetIdleAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float framesPerSecond);
 	private:
+		struct Animation
+		{
+			std::vector<const sf::Texture*> frames;
+			float secondsPerFrame = 0.125f;
+		};
+
 		TransformComponent* transform;
 		SpriteRendererComponent* renderer = nullptr;
 
-		std::vector<const sf::Texture*> frames;
-		float secondsPerFrame = 0.125f;
+		Animation walkAnimation;
+		Animation idleAnimation;
+		Animation* currentAnimation = nullptr;
+
 		float frameTimer = 0.f;
 		int currentFrame = 0;
 
 		Vector2Df previousPosition = { 0.f, 0.f };
+		float stillTimer = 0.f;
 
-		void ShowFrame(int frameIndex);
+		void Fill(Animation& animation, const std::string& textureMapName, int firstFrameIndex, int framesCount, float framesPerSecond);
+		void Play(Animation& animation);
 	};
 }

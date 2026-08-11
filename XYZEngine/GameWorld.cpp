@@ -52,6 +52,18 @@ namespace XYZEngine
 		gameObjects.push_back(newGameObject);
 		return newGameObject;
 	}
+	GameObject* GameWorld::FindGameObject(const std::string& name) const
+	{
+		for (const auto& gameObject : gameObjects)
+		{
+			if (gameObject != nullptr && gameObject->GetName() == name)
+			{
+				return gameObject;
+			}
+		}
+
+		return nullptr;
+	}
 	void GameWorld::DestroyGameObject(GameObject* gameObject)
 	{
 		markedToDestroyGameObjects.push_back(gameObject);

@@ -30,6 +30,12 @@
     <ClInclude Include="MusicComponent.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
+    <ClInclude Include="MovementComponent.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="ChaseComponent.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
     <ClInclude Include="CameraComponent.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
@@ -108,6 +114,12 @@
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="MusicComponent.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="MovementComponent.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="ChaseComponent.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="CameraComponent.cpp">

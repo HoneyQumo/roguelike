@@ -152,6 +152,7 @@
   <ItemGroup>
     <ClInclude Include="AudioComponent.h" />
     <ClInclude Include="CameraComponent.h" />
+    <ClInclude Include="ChaseComponent.h" />
     <ClInclude Include="ColliderComponent.h" />
     <ClInclude Include="Collision.h" />
     <ClInclude Include="Component.h" />
@@ -163,6 +164,7 @@
     <ClInclude Include="InputComponent.h" />
     <ClInclude Include="IObserver.h" />
     <ClInclude Include="Matrix2D.h" />
+    <ClInclude Include="MovementComponent.h" />
     <ClInclude Include="MusicComponent.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="PhysicsSystem.h" />
@@ -181,6 +183,7 @@
   <ItemGroup>
     <ClCompile Include="AudioComponent.cpp" />
     <ClCompile Include="CameraComponent.cpp" />
+    <ClCompile Include="ChaseComponent.cpp" />
     <ClCompile Include="ColliderComponent.cpp" />
     <ClCompile Include="Collision.cpp" />
     <ClCompile Include="Component.cpp" />
@@ -189,6 +192,7 @@
     <ClCompile Include="GameWorld.cpp" />
     <ClCompile Include="InputComponent.cpp" />
     <ClCompile Include="Matrix2D.cpp" />
+    <ClCompile Include="MovementComponent.cpp" />
     <ClCompile Include="MusicComponent.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

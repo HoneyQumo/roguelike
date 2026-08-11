@@ -5,6 +5,7 @@
 #include "Scene.h"
 #include "Player.h"
 #include "Music.h"
+#include "GameSettings.h"
 
 using namespace XYZEngine;
 

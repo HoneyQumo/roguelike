@@ -26,10 +26,10 @@ namespace RoguelikeGame
 	constexpr int PLAYER_IDLE_FIRST_FRAME = 0;
 	constexpr int PLAYER_IDLE_FRAMES = 4;
 
-	constexpr int ENEMY_WALK_FIRST_FRAME = 4;
-	constexpr int ENEMY_WALK_FRAMES = 4;
-	constexpr int ENEMY_IDLE_FIRST_FRAME = 0;
-	constexpr int ENEMY_IDLE_FRAMES = 4;
+	constexpr int ENEMY_WALK_FIRST_FRAME = 0;
+	constexpr int ENEMY_WALK_FRAMES = 5;
+	constexpr int ENEMY_IDLE_FIRST_FRAME = 5;
+	constexpr int ENEMY_IDLE_FRAMES = 3;
 
 	constexpr float PLAYER_SPEED = 250.f;
 

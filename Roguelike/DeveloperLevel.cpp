@@ -22,6 +22,15 @@ namespace RoguelikeGame
 		}
 
 		music = std::make_unique<Music>("main_theme", MUSIC_VOLUME);
+
+		try
+		{
+			crosshair = std::make_unique<Crosshair>();
+		}
+		catch (const std::exception& exception)
+		{
+			LOG_ERROR(std::string("Crosshair is not created: ") + exception.what());
+		}
 	}
 	void DeveloperLevel::Restart()
 	{
@@ -32,6 +41,7 @@ namespace RoguelikeGame
 	{
 		LOG_INFO("Developer level is stopping");
 
+		crosshair.reset();
 		music.reset();
 		levelBuilder.Clear();
 

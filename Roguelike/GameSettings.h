@@ -49,6 +49,8 @@ namespace RoguelikeGame
 	constexpr float PROJECTILE_SIZE = 10.f;
 	constexpr float PROJECTILE_LIFETIME = 2.f;
 
+	constexpr int CROSSHAIR_SIZE = 32;
+
 	constexpr float HEALTH_BAR_WIDTH = 48.f;
 	constexpr float HEALTH_BAR_HEIGHT = 6.f;
 	constexpr float HEALTH_BAR_OFFSET_Y = 36.f;
@@ -63,6 +65,7 @@ namespace RoguelikeGame
 	const sf::Color WALL_COLOR = { 92, 86, 80 };
 	const sf::Color FLOOR_COLOR = { 46, 42, 38 };
 	const sf::Color PROJECTILE_COLOR = { 255, 214, 120 };
+	const sf::Color CROSSHAIR_COLOR = { 255, 255, 255 };
 
 	const EnemyConfig PRISONER_CONFIG = {
 		"Enemy", "enemy",

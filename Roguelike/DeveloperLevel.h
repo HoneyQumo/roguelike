@@ -3,6 +3,7 @@
 #include <memory>
 #include "Scene.h"
 #include "Music.h"
+#include "Crosshair.h"
 #include "LevelBuilder.h"
 
 using namespace XYZEngine;
@@ -18,5 +19,6 @@ namespace RoguelikeGame
 	private:
 		LevelBuilder levelBuilder;
 		std::unique_ptr<Music> music;
+		std::unique_ptr<Crosshair> crosshair;
 	};
 }

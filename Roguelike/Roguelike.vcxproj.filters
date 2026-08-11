@@ -34,6 +34,9 @@
     <ClCompile Include="Weapon.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
+    <ClCompile Include="Crosshair.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
     <ClCompile Include="Wall.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
@@ -48,6 +51,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Crosshair.h" />
     <ClInclude Include="DeveloperLevel.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="EnemyAttackComponent.h" />

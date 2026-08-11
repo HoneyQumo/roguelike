@@ -33,4 +33,8 @@ namespace XYZEngine
 	{
 		window->draw(drawable);
 	}
+	void RenderSystem::Render(const sf::Drawable& drawable, const sf::RenderStates& states)
+	{
+		window->draw(drawable, states);
+	}
 }

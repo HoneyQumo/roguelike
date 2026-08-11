@@ -75,6 +75,9 @@
     <ClInclude Include="ConsoleSink.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
+    <ClInclude Include="CursorFollowComponent.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
     <ClInclude Include="FileSink.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
@@ -195,6 +198,9 @@
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="ConsoleSink.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="CursorFollowComponent.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="FileSink.cpp">

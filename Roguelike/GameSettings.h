@@ -43,7 +43,7 @@ namespace RoguelikeGame
 
 	constexpr int WEAPON_SPRITE_SIZE = 48;
 	constexpr float WEAPON_OFFSET_X = 8.f;
-	constexpr float WEAPON_OFFSET_Y = -6.f;
+	constexpr float WEAPON_OFFSET_Y = -12.f;
 	constexpr float SHOT_OFFSET = 34.f;
 
 	constexpr float PROJECTILE_SIZE = 10.f;

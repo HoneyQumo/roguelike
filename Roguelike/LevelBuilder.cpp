@@ -41,7 +41,10 @@ namespace RoguelikeGame
 						player = std::make_unique<Player>(position);
 						break;
 					case TileType::EnemySpawn:
-						enemies.push_back(std::make_unique<Enemy>(position));
+						enemies.push_back(std::make_unique<Enemy>(PRISONER_CONFIG, position));
+						break;
+					case TileType::RiflemanSpawn:
+						enemies.push_back(std::make_unique<Enemy>(RIFLEMAN_CONFIG, position));
 						break;
 					default:
 						break;

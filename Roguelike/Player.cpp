@@ -1,5 +1,8 @@
 #include "Player.h"
 #include "GameSettings.h"
+#include "Projectile.h"
+#include "PlayerAttackComponent.h"
+#include <WeaponComponent.h>
 #include <LoggerRegistry.h>
 #include <ResourceSystem.h>
 #include <stdexcept>
@@ -60,12 +63,41 @@ namespace RoguelikeGame
 		health->SetMaxHealth(PLAYER_MAX_HEALTH);
 		health->SetArmor(PLAYER_ARMOR);
 
+		auto weaponComponent = gameObject->AddComponent<XYZEngine::WeaponComponent>();
+		weaponComponent->SetCooldown(PLAYER_ATTACK_COOLDOWN);
+		weaponComponent->SetDamage(PLAYER_ATTACK_DAMAGE);
+		weaponComponent->SetProjectileSpeed(PLAYER_PROJECTILE_SPEED);
+		weaponComponent->SetShotOffset(SHOT_OFFSET);
+		weaponComponent->SetShotAction([](const XYZEngine::Vector2Df& shotPosition, const XYZEngine::Vector2Df& shotDirection, float damage, float speed)
+			{
+				Projectile::Spawn(shotPosition, shotDirection, damage, speed, "Player");
+			});
+
+		auto attack = gameObject->AddComponent<PlayerAttackComponent>();
+
+		try
+		{
+			weapon = std::make_unique<Weapon>(gameObject, "player", PLAYER_WEAPON_FRAME);
+			attack->SetWeapon(weapon->GetTransform(), weapon->GetRenderer());
+		}
+		catch (const std::exception& exception)
+		{
+			LOG_ERROR(std::string("Player weapon is not created: ") + exception.what());
+		}
+
+		auto weaponObject = weapon == nullptr ? nullptr : weapon->GetGameObject();
 		health->SubscribeDamage([animation](float damage) { animation->PlayHurt(); });
-		health->SubscribeDeath([animation, movement, collider]()
+		health->SubscribeDeath([animation, movement, collider, weaponObject]()
 			{
 				animation->PlayDeath();
 				movement->SetSpeed(0.f);
 				collider->SetTrigger(true);
+
+				if (weaponObject != nullptr)
+				{
+					XYZEngine::GameWorld::Instance()->DestroyGameObject(weaponObject);
+				}
+
 				LOG_WARN("Player is dead, controls are disabled");
 			});
 

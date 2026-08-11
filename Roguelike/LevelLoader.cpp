@@ -68,6 +68,8 @@ namespace RoguelikeGame
 			return TileType::PlayerSpawn;
 		case 'E':
 			return TileType::EnemySpawn;
+		case 'R':
+			return TileType::RiflemanSpawn;
 		default:
 			return TileType::Empty;
 		}

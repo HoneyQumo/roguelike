@@ -10,7 +10,8 @@ namespace RoguelikeGame
 		Floor,
 		Wall,
 		PlayerSpawn,
-		EnemySpawn
+		EnemySpawn,
+		RiflemanSpawn
 	};
 
 	struct LevelData

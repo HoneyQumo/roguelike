@@ -43,8 +43,8 @@ namespace RoguelikeGame
 	// The weapon sprite is drawn across two atlas cells, so it is loaded as its own region.
 	constexpr int WEAPON_REGION_WIDTH = 48;
 	constexpr int WEAPON_REGION_HEIGHT = 20;
-	constexpr int WEAPON_SPRITE_WIDTH = 96;
-	constexpr int WEAPON_SPRITE_HEIGHT = 40;
+	constexpr int WEAPON_SPRITE_WIDTH = 74;
+	constexpr int WEAPON_SPRITE_HEIGHT = 28;
 	constexpr float WEAPON_OFFSET_X = 8.f;
 	constexpr float WEAPON_OFFSET_Y = -12.f;
 	constexpr float SHOT_OFFSET = 34.f;

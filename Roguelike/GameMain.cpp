@@ -9,6 +9,10 @@
 
 using namespace RoguelikeGame;
 
+/**	Assets resource links
+*	https://momongaa.itch.io/1970s-soldiers
+*/ 
+
 int main()
 {
 	XYZEngine::RenderSystem::Instance()->SetMainWindow(new sf::RenderWindow(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "Roguelike by HoneyQumo"));

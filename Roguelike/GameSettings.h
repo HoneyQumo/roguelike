@@ -39,6 +39,7 @@ namespace RoguelikeGame
 	constexpr float MUSIC_VOLUME = 15.f;
 
 	constexpr const char* TEST_LEVEL_PATH = "Resources/Levels/test_level.config";
+	constexpr const char* LOG_FILE_PATH = "log.txt";
 
 	const sf::Color WALL_COLOR = { 92, 86, 80 };
 	const sf::Color FLOOR_COLOR = { 46, 42, 38 };

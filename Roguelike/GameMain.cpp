@@ -1,42 +1,25 @@
 ﻿#include <SFML/Graphics.hpp>
-#include <SFML/Audio.hpp>
+#include "Player.h"
 #include "Engine.h"
-#include <windows.h>
-#include <iostream>
+#include "ResourceSystem.h"
+#include "RenderSystem.h"
+#include "DeveloperLevel.h"
+#include "Matrix2D.h"
 
-const std::string RESOURCES_PATH = "Resources/";
+using namespace RoguelikeGame;
 
 int main()
 {
-	if (AllocConsole())
-	{
-		FILE* fp;
-		freopen_s(&fp, "CONOUT$", "w", stdout);
-		freopen_s(&fp, "CONOUT$", "w", stderr);
-	}
-	else
-	{
-		std::cerr << "Не удалось выделить консоль" << std::endl;
-	}
+	XYZEngine::RenderSystem::Instance()->SetMainWindow(new sf::RenderWindow(sf::VideoMode(1280, 720), "Roguelike by HoneyQumo"));
 
-	Engine engine;
-	engine.Initialize();
-	engine.Run();
+	XYZEngine::ResourceSystem::Instance()->LoadTexture("ball", "Resources/Textures/ball.png");
 
-	sf::RenderWindow window(sf::VideoMode(800, 600), "Roguelike by HoneyQumo");
+	auto developerLevel = std::make_shared<DeveloperLevel>();
+	developerLevel->Start();
+
+	std::cout << "TEST" << std::endl;
 	
-	while (window.isOpen())
-	{
-		sf::Event event;
-		while (window.pollEvent(event))
-		{
-			if (event.type == sf::Event::Closed)
-				window.close();
-		}
-
-		window.clear();
-		window.display();
-	}
+	XYZEngine::Engine::Instance()->Run();
 
 	return 0;
 }

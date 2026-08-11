@@ -1,22 +1,22 @@
-#include "pch.h"
 #include "GameObject.h"
-// #include "Sprite.h"
+#include "Sprite.h"
 #include <assert.h>
 
-namespace Engine
+
+namespace RoguelikeGame
 {
-	GameObject::GameObject(const std::string& texturePath, const sf::Vector2f& position, float width, float height) :
+	GameObject::GameObject(const std::string& texturePath, const sf::Vector2f& position, float width, float height):
 		startPosition(position)
 	{
 		assert(texture.loadFromFile(texturePath));
 
-		// InitSprite(sprite, width, height, texture);
+		InitSprite(sprite, width, height, texture);
 		sprite.setPosition(position);
 	}
 
 	void GameObject::Draw(sf::RenderWindow& window)
 	{
-		// DrawSprite(sprite, window);
+		DrawSprite(sprite, window);
 	}
 	void GameObject::restart()
 	{

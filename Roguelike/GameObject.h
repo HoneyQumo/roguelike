@@ -1,14 +1,15 @@
 #pragma once
 #include "SFML/Graphics.hpp"
 
-namespace Engine
+
+namespace RoguelikeGame
 {
 	class GameObject
 	{
 	public:
 		GameObject(const std::string& textureId, const sf::Vector2f& position, float width, float height);
 		virtual ~GameObject() = default;
-
+		
 		virtual void Update(float timeDelta) = 0;
 		virtual void Draw(sf::RenderWindow& window);
 
@@ -21,3 +22,5 @@ namespace Engine
 		const sf::Vector2f startPosition;
 	};
 }
+
+

@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Engine
+namespace XYZEngine
 {
 	template<typename T>
 	struct Vector2D
@@ -56,7 +56,7 @@ namespace Engine
 	template<typename T>
 	Vector2D<T> operator*(const Vector2D<T>& left, const Vector2D<T>& right)
 	{
-		return { left.x * right.x, left.y * right.y };
+		return { left.x * right.x, left.y * right.y }; 
 	}
 
 	template<typename T>

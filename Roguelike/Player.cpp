@@ -4,6 +4,8 @@
 #include <MovementComponent.h>
 #include <RigidbodyComponent.h>
 #include <BoxColliderComponent.h>
+#include <SpriteDirectionComponent.h>
+#include <SpriteMovementAnimationComponent.h>
 
 namespace RoguelikeGame
 {
@@ -15,8 +17,8 @@ namespace RoguelikeGame
 		transform->SetWorldPosition(position);
 
 		auto renderer = gameObject->AddComponent<XYZEngine::SpriteRendererComponent>();
-		renderer->SetTexture(*XYZEngine::ResourceSystem::Instance()->GetTextureMapElementShared("player", 0));
-		renderer->SetPixelSize(CHARACTER_SPRITE_WIDTH, CHARACTER_SPRITE_HEIGHT);
+		renderer->SetTexture(*XYZEngine::ResourceSystem::Instance()->GetTextureMapElementShared("player", WALK_FIRST_FRAME));
+		renderer->SetPixelSize(CHARACTER_SPRITE_SIZE, CHARACTER_SPRITE_SIZE);
 
 		auto camera = gameObject->AddComponent<XYZEngine::CameraComponent>();
 		camera->SetWindow(&XYZEngine::RenderSystem::Instance()->GetMainWindow());
@@ -32,6 +34,12 @@ namespace RoguelikeGame
 
 		auto collider = gameObject->AddComponent<XYZEngine::BoxColliderComponent>();
 		collider->SetSize(CHARACTER_COLLIDER_SIZE, CHARACTER_COLLIDER_SIZE);
+
+		auto direction = gameObject->AddComponent<XYZEngine::SpriteDirectionComponent>();
+
+		auto animation = gameObject->AddComponent<XYZEngine::SpriteMovementAnimationComponent>();
+		animation->SetFrames("player", WALK_FIRST_FRAME, WALK_FRAMES_COUNT);
+		animation->SetFramerate(WALK_FRAMERATE);
 	}
 
 	XYZEngine::GameObject* Player::GetGameObject()

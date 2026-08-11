@@ -9,9 +9,14 @@ namespace RoguelikeGame
 
 	constexpr float TILE_SIZE = 64.f;
 
-	constexpr int CHARACTER_SPRITE_WIDTH = 64;
-	constexpr int CHARACTER_SPRITE_HEIGHT = 72;
+	constexpr int CHARACTER_FRAME_SIZE = 32;
+	constexpr int CHARACTER_FRAMES_IN_MAP = 20;
+	constexpr int CHARACTER_SPRITE_SIZE = 64;
 	constexpr float CHARACTER_COLLIDER_SIZE = 48.f;
+
+	constexpr int WALK_FIRST_FRAME = 0;
+	constexpr int WALK_FRAMES_COUNT = 4;
+	constexpr float WALK_FRAMERATE = 8.f;
 
 	constexpr float PLAYER_SPEED = 250.f;
 

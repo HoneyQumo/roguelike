@@ -72,33 +72,37 @@ namespace RoguelikeGame
 		healthBar->SetOffset(0.f, HEALTH_BAR_OFFSET_Y);
 		healthBar->SetColors({ 200, 60, 60 }, { 20, 20, 20, 200 });
 
-		auto shotAudio = gameObject->AddComponent<XYZEngine::AudioComponent>();
-		shotAudio->SetSound(XYZEngine::ResourceSystem::Instance()->GetSound("shot"));
-		shotAudio->SetVolume(SHOT_VOLUME);
-
 		auto hurtAudio = gameObject->AddComponent<XYZEngine::AudioComponent>();
 		hurtAudio->SetSound(XYZEngine::ResourceSystem::Instance()->GetSound("hurt"));
 		hurtAudio->SetVolume(HURT_VOLUME);
 
-		auto weaponComponent = gameObject->AddComponent<XYZEngine::WeaponComponent>();
-		weaponComponent->SetCooldown(config.attackCooldown);
-		weaponComponent->SetDamage(config.attackDamage);
-		weaponComponent->SetProjectileSpeed(config.projectileSpeed);
-		weaponComponent->SetShotOffset(SHOT_OFFSET);
-
-		std::string shooterName = config.objectName;
-		weaponComponent->SetShotAction([shooterName, shotAudio](const XYZEngine::Vector2Df& shotPosition, const XYZEngine::Vector2Df& shotDirection, float damage, float speed)
-			{
-				Projectile::Spawn(shotPosition, shotDirection, damage, speed, shooterName);
-				shotAudio->Play();
-			});
-
-		auto attack = gameObject->AddComponent<EnemyAttackComponent>();
-		attack->SetTargetName("Player");
-		attack->SetAttackRange(config.attackRange);
-
-		if (!config.weaponTextureName.empty())
+		if (config.weaponTextureName.empty())
 		{
+			LOG_INFO(config.objectName + " is unarmed and can't shoot");
+		}
+		else
+		{
+			auto shotAudio = gameObject->AddComponent<XYZEngine::AudioComponent>();
+			shotAudio->SetSound(XYZEngine::ResourceSystem::Instance()->GetSound("shot"));
+			shotAudio->SetVolume(SHOT_VOLUME);
+
+			auto weaponComponent = gameObject->AddComponent<XYZEngine::WeaponComponent>();
+			weaponComponent->SetCooldown(config.attackCooldown);
+			weaponComponent->SetDamage(config.attackDamage);
+			weaponComponent->SetProjectileSpeed(config.projectileSpeed);
+			weaponComponent->SetShotOffset(SHOT_OFFSET);
+
+			std::string shooterName = config.objectName;
+			weaponComponent->SetShotAction([shooterName, shotAudio](const XYZEngine::Vector2Df& shotPosition, const XYZEngine::Vector2Df& shotDirection, float damage, float speed)
+				{
+					Projectile::Spawn(shotPosition, shotDirection, damage, speed, shooterName);
+					shotAudio->Play();
+				});
+
+			auto attack = gameObject->AddComponent<EnemyAttackComponent>();
+			attack->SetTargetName("Player");
+			attack->SetAttackRange(config.attackRange);
+
 			try
 			{
 				weapon = std::make_unique<Weapon>(gameObject, config.weaponTextureName);

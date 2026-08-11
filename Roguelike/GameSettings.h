@@ -78,7 +78,7 @@ namespace RoguelikeGame
 		10, 1,
 		"",
 		150.f, 300.f, 40.f, 50.f, 0.f,
-		120.f, 8.f, 1.f, 450.f
+		0.f, 0.f, 0.f, 0.f
 	};
 
 	const EnemyConfig RIFLEMAN_CONFIG = {

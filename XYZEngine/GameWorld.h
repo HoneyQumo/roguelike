@@ -29,8 +29,6 @@ namespace XYZEngine
 		GameWorld(GameWorld const&) = delete;
 		GameWorld& operator= (GameWorld const&) = delete;
 
-		float fixedCounter = 0.f;
-
 		std::vector<GameObject*> gameObjects = {};
 		std::vector<GameObject*> markedToDestroyGameObjects = {};
 

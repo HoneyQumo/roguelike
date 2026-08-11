@@ -38,9 +38,9 @@ namespace XYZEngine
 					{
 						if (triggersEnteredPair.find(colliders[i]) == triggersEnteredPair.end() && triggersEnteredPair.find(colliders[j]) == triggersEnteredPair.end())
 						{
-							auto trigger = new Trigger(colliders[i], colliders[j]);
-							colliders[i]->OnTriggerEnter(*trigger);
-							colliders[j]->OnTriggerEnter(*trigger);
+							Trigger trigger(colliders[i], colliders[j]);
+							colliders[i]->OnTriggerEnter(trigger);
+							colliders[j]->OnTriggerEnter(trigger);
 
 							triggersEnteredPair.emplace(colliders[i], colliders[j]);
 						}
@@ -54,36 +54,39 @@ namespace XYZEngine
 						Vector2Df aPosition = { colliders[i]->bounds.left,  colliders[i]->bounds.top };
 						auto aTransform = colliders[i]->GetGameObject()->GetComponent<TransformComponent>();
 
+						Vector2Df pushOffset = { 0.f, 0.f };
 						if (intersectionWidth > intersectionHeight)
 						{
 							if (intersectionPosition.y > aPosition.y)
 							{
-								aTransform->MoveBy({ 0, -intersectionHeight });
-								std::cout << "Top collision" << std::endl;
+								pushOffset = { 0.f, -intersectionHeight };
 							}
 							else
 							{
-								aTransform->MoveBy({ 0, intersectionHeight });
-								std::cout << "Down collision" << std::endl;
+								pushOffset = { 0.f, intersectionHeight };
 							}
 						}
 						else
 						{
 							if (intersectionPosition.x > aPosition.x)
 							{
-								aTransform->MoveBy({ -intersectionWidth, 0.f });
-								std::cout << "Right collision" << std::endl;
+								pushOffset = { -intersectionWidth, 0.f };
 							}
 							else
 							{
-								aTransform->MoveBy({ intersectionWidth, 0.f });
-								std::cout << "Left collision" << std::endl;
+								pushOffset = { intersectionWidth, 0.f };
 							}
 						}
 
-						auto collision = new Collision(colliders[i], colliders[j], intersection);
-						colliders[i]->OnCollision(*collision);
-						colliders[j]->OnCollision(*collision);
+						aTransform->MoveBy(pushOffset);
+
+						// Bounds must follow the push, otherwise the next collider in the loop pushes the object out twice.
+						colliders[i]->bounds.left += pushOffset.x;
+						colliders[i]->bounds.top += pushOffset.y;
+
+						Collision collision(colliders[i], colliders[j], intersection);
+						colliders[i]->OnCollision(collision);
+						colliders[j]->OnCollision(collision);
 					}
 				}
 			}
@@ -94,9 +97,9 @@ namespace XYZEngine
 			++nextTriggeredPair;
 			if (!triggeredPair->first->bounds.intersects(triggeredPair->second->bounds))
 			{
-				auto trigger = new Trigger(triggeredPair->first, triggeredPair->second);
-				triggeredPair->first->OnTriggerExit(*trigger);
-				triggeredPair->second->OnTriggerExit(*trigger);
+				Trigger trigger(triggeredPair->first, triggeredPair->second);
+				triggeredPair->first->OnTriggerExit(trigger);
+				triggeredPair->second->OnTriggerExit(trigger);
 
 				triggersEnteredPair.erase(triggeredPair);
 			}

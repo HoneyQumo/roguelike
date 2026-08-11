@@ -162,10 +162,12 @@
   <ItemGroup>
     <ClCompile Include="DeveloperLevel.cpp" />
     <ClCompile Include="GameMain.cpp" />
+    <ClCompile Include="Music.cpp" />
     <ClCompile Include="Player.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DeveloperLevel.h" />
+    <ClInclude Include="Music.h" />
     <ClInclude Include="Player.h" />
   </ItemGroup>
   <ItemGroup>

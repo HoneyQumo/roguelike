@@ -4,6 +4,7 @@
 #include <array>
 #include "Scene.h"
 #include "Player.h"
+#include "Music.h"
 
 using namespace XYZEngine;
 
@@ -17,5 +18,6 @@ namespace RoguelikeGame
 		void Stop() override;
 	private:
 		std::shared_ptr<Player> player;
+		std::unique_ptr<Music> music;
 	};
 }

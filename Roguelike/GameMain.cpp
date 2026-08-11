@@ -14,6 +14,8 @@ int main()
 
 	XYZEngine::ResourceSystem::Instance()->LoadTexture("ball", "Resources/Textures/ball.png");
 
+	XYZEngine::ResourceSystem::Instance()->LoadMusic("main_theme", "Resources/Audio/music.wav");
+
 	auto developerLevel = std::make_shared<DeveloperLevel>();
 	developerLevel->Start();
 

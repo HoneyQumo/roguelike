@@ -16,9 +16,13 @@
     <ClCompile Include="Player.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
+    <ClCompile Include="Music.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DeveloperLevel.h" />
+    <ClInclude Include="Music.h" />
     <ClInclude Include="Player.h" />
   </ItemGroup>
 </Project>

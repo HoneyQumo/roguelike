@@ -18,7 +18,7 @@ namespace RoguelikeGame
 		transform->SetWorldPosition(position);
 
 		auto renderer = gameObject->AddComponent<XYZEngine::SpriteRendererComponent>();
-		renderer->SetTexture(*XYZEngine::ResourceSystem::Instance()->GetTextureMapElementShared("enemy", WALK_FIRST_FRAME));
+		renderer->SetTexture(*XYZEngine::ResourceSystem::Instance()->GetTextureMapElementShared("enemy", ENEMY_IDLE_FIRST_FRAME));
 		renderer->SetPixelSize(CHARACTER_SPRITE_SIZE, CHARACTER_SPRITE_SIZE);
 
 		// Chase sets the direction, movement applies it: keep chase updated first.
@@ -33,13 +33,14 @@ namespace RoguelikeGame
 		body->SetKinematic(false);
 
 		auto collider = gameObject->AddComponent<XYZEngine::BoxColliderComponent>();
-		collider->SetSize(CHARACTER_COLLIDER_SIZE, CHARACTER_COLLIDER_SIZE);
+		collider->SetSize(CHARACTER_COLLIDER_WIDTH, CHARACTER_COLLIDER_HEIGHT);
+		collider->SetOffset(0.f, CHARACTER_COLLIDER_OFFSET_Y);
 
 		auto direction = gameObject->AddComponent<XYZEngine::SpriteDirectionComponent>();
 
 		auto animation = gameObject->AddComponent<XYZEngine::SpriteMovementAnimationComponent>();
-		animation->SetFrames("enemy", WALK_FIRST_FRAME, WALK_FRAMES_COUNT);
-		animation->SetFramerate(WALK_FRAMERATE);
+		animation->SetWalkAnimation("enemy", ENEMY_WALK_FIRST_FRAME, ENEMY_WALK_FRAMES, WALK_FRAMERATE);
+		animation->SetIdleAnimation("enemy", ENEMY_IDLE_FIRST_FRAME, ENEMY_IDLE_FRAMES, IDLE_FRAMERATE);
 	}
 
 	XYZEngine::GameObject* Enemy::GetGameObject()

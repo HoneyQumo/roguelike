@@ -12,11 +12,24 @@ namespace RoguelikeGame
 	constexpr int CHARACTER_FRAME_SIZE = 32;
 	constexpr int CHARACTER_FRAMES_IN_MAP = 20;
 	constexpr int CHARACTER_SPRITE_SIZE = 64;
-	constexpr float CHARACTER_COLLIDER_SIZE = 48.f;
 
-	constexpr int WALK_FIRST_FRAME = 0;
-	constexpr int WALK_FRAMES_COUNT = 4;
+	// The character stands on the bottom edge of its frame, so the collider is shifted down to his feet.
+	constexpr float CHARACTER_COLLIDER_WIDTH = 40.f;
+	constexpr float CHARACTER_COLLIDER_HEIGHT = 48.f;
+	constexpr float CHARACTER_COLLIDER_OFFSET_Y = -8.f;
+
 	constexpr float WALK_FRAMERATE = 8.f;
+	constexpr float IDLE_FRAMERATE = 4.f;
+
+	constexpr int PLAYER_WALK_FIRST_FRAME = 5;
+	constexpr int PLAYER_WALK_FRAMES = 4;
+	constexpr int PLAYER_IDLE_FIRST_FRAME = 0;
+	constexpr int PLAYER_IDLE_FRAMES = 4;
+
+	constexpr int ENEMY_WALK_FIRST_FRAME = 4;
+	constexpr int ENEMY_WALK_FRAMES = 4;
+	constexpr int ENEMY_IDLE_FIRST_FRAME = 0;
+	constexpr int ENEMY_IDLE_FRAMES = 4;
 
 	constexpr float PLAYER_SPEED = 250.f;
 

@@ -17,7 +17,7 @@ namespace RoguelikeGame
 		transform->SetWorldPosition(position);
 
 		auto renderer = gameObject->AddComponent<XYZEngine::SpriteRendererComponent>();
-		renderer->SetTexture(*XYZEngine::ResourceSystem::Instance()->GetTextureMapElementShared("player", WALK_FIRST_FRAME));
+		renderer->SetTexture(*XYZEngine::ResourceSystem::Instance()->GetTextureMapElementShared("player", PLAYER_IDLE_FIRST_FRAME));
 		renderer->SetPixelSize(CHARACTER_SPRITE_SIZE, CHARACTER_SPRITE_SIZE);
 
 		auto camera = gameObject->AddComponent<XYZEngine::CameraComponent>();
@@ -33,13 +33,14 @@ namespace RoguelikeGame
 		body->SetKinematic(false);
 
 		auto collider = gameObject->AddComponent<XYZEngine::BoxColliderComponent>();
-		collider->SetSize(CHARACTER_COLLIDER_SIZE, CHARACTER_COLLIDER_SIZE);
+		collider->SetSize(CHARACTER_COLLIDER_WIDTH, CHARACTER_COLLIDER_HEIGHT);
+		collider->SetOffset(0.f, CHARACTER_COLLIDER_OFFSET_Y);
 
 		auto direction = gameObject->AddComponent<XYZEngine::SpriteDirectionComponent>();
 
 		auto animation = gameObject->AddComponent<XYZEngine::SpriteMovementAnimationComponent>();
-		animation->SetFrames("player", WALK_FIRST_FRAME, WALK_FRAMES_COUNT);
-		animation->SetFramerate(WALK_FRAMERATE);
+		animation->SetWalkAnimation("player", PLAYER_WALK_FIRST_FRAME, PLAYER_WALK_FRAMES, WALK_FRAMERATE);
+		animation->SetIdleAnimation("player", PLAYER_IDLE_FIRST_FRAME, PLAYER_IDLE_FRAMES, IDLE_FRAMERATE);
 	}
 
 	XYZEngine::GameObject* Player::GetGameObject()

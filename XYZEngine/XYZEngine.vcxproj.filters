@@ -57,6 +57,12 @@
     <ClInclude Include="Logger.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
+    <ClInclude Include="HealthComponent.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="HealthBarComponent.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
     <ClInclude Include="LoggerRegistry.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
@@ -165,6 +171,12 @@
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="Logger.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="HealthComponent.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="HealthBarComponent.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="LoggerRegistry.cpp">

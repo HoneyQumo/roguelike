@@ -32,9 +32,17 @@ namespace RoguelikeGame
 	constexpr int ENEMY_IDLE_FRAMES = 3;
 
 	constexpr float PLAYER_SPEED = 250.f;
+	constexpr float PLAYER_MAX_HEALTH = 100.f;
+	constexpr float PLAYER_ARMOR = 5.f;
 
 	constexpr float ENEMY_SPEED = 150.f;
 	constexpr float ENEMY_DETECTION_RADIUS = 300.f;
+	constexpr float ENEMY_MAX_HEALTH = 50.f;
+	constexpr float ENEMY_ARMOR = 0.f;
+
+	constexpr float HEALTH_BAR_WIDTH = 48.f;
+	constexpr float HEALTH_BAR_HEIGHT = 6.f;
+	constexpr float HEALTH_BAR_OFFSET_Y = 36.f;
 
 	constexpr float MUSIC_VOLUME = 15.f;
 

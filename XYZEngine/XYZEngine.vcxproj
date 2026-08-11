@@ -159,6 +159,8 @@
     <ClInclude Include="Component.h" />
     <ClInclude Include="ConsoleSink.h" />
     <ClInclude Include="FileSink.h" />
+    <ClInclude Include="HealthBarComponent.h" />
+    <ClInclude Include="HealthComponent.h" />
     <ClInclude Include="Logger.h" />
     <ClInclude Include="LoggerRegistry.h" />
     <ClInclude Include="Engine.h" />
@@ -198,6 +200,8 @@
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="ConsoleSink.cpp" />
     <ClCompile Include="FileSink.cpp" />
+    <ClCompile Include="HealthBarComponent.cpp" />
+    <ClCompile Include="HealthComponent.cpp" />
     <ClCompile Include="Logger.cpp" />
     <ClCompile Include="LoggerRegistry.cpp" />
     <ClCompile Include="Engine.cpp" />

@@ -9,6 +9,8 @@
 #include <BoxColliderComponent.h>
 #include <SpriteDirectionComponent.h>
 #include <SpriteMovementAnimationComponent.h>
+#include <HealthComponent.h>
+#include <HealthBarComponent.h>
 
 namespace RoguelikeGame
 {
@@ -50,6 +52,15 @@ namespace RoguelikeGame
 		auto animation = gameObject->AddComponent<XYZEngine::SpriteMovementAnimationComponent>();
 		animation->SetWalkAnimation("enemy", ENEMY_WALK_FIRST_FRAME, ENEMY_WALK_FRAMES, WALK_FRAMERATE);
 		animation->SetIdleAnimation("enemy", ENEMY_IDLE_FIRST_FRAME, ENEMY_IDLE_FRAMES, IDLE_FRAMERATE);
+
+		auto health = gameObject->AddComponent<XYZEngine::HealthComponent>();
+		health->SetMaxHealth(ENEMY_MAX_HEALTH);
+		health->SetArmor(ENEMY_ARMOR);
+
+		auto healthBar = gameObject->AddComponent<XYZEngine::HealthBarComponent>();
+		healthBar->SetSize(HEALTH_BAR_WIDTH, HEALTH_BAR_HEIGHT);
+		healthBar->SetOffset(0.f, HEALTH_BAR_OFFSET_Y);
+		healthBar->SetColors({ 200, 60, 60 }, { 20, 20, 20, 200 });
 
 		LOG_INFO("Enemy created at " + std::to_string((int)position.x) + ";" + std::to_string((int)position.y));
 	}

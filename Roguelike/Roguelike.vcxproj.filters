@@ -22,11 +22,19 @@
     <ClCompile Include="Enemy.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
+    <ClCompile Include="Wall.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Floor.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DeveloperLevel.h" />
     <ClInclude Include="Enemy.h" />
+    <ClInclude Include="Floor.h" />
     <ClInclude Include="GameSettings.h" />
+    <ClInclude Include="Wall.h" />
     <ClInclude Include="Music.h" />
     <ClInclude Include="Player.h" />
   </ItemGroup>

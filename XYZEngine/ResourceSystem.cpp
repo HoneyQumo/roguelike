@@ -31,6 +31,28 @@ namespace XYZEngine
 		LOG_ERROR("Can't load texture: " + sourcePath);
 		delete newTexture;
 	}
+	void ResourceSystem::LoadTexturePart(const std::string& name, std::string sourcePath, sf::IntRect area, bool isSmooth)
+	{
+		assert(area.width > 0 && area.height > 0);
+
+		if (textures.find(name) != textures.end())
+		{
+			LOG_WARN("Texture is already loaded: " + name);
+			return;
+		}
+
+		sf::Texture* newTexture = new sf::Texture();
+		if (newTexture->loadFromFile(sourcePath, area))
+		{
+			newTexture->setSmooth(isSmooth);
+			textures.emplace(name, newTexture);
+			LOG_INFO("Texture part loaded: " + name + " from " + sourcePath);
+			return;
+		}
+
+		LOG_ERROR("Can't load texture part: " + sourcePath);
+		delete newTexture;
+	}
 	const sf::Texture* ResourceSystem::GetTextureShared(const std::string& name) const
 	{
 		auto texturePair = textures.find(name);

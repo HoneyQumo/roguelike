@@ -19,7 +19,7 @@ namespace XYZEngine
 		for (int i = 0; i < colliders.size(); i++)
 		{
 			auto body = colliders[i]->GetGameObject()->GetComponent<RigidbodyComponent>();
-			if (body->GetKinematic())
+			if (body == nullptr || body->GetKinematic())
 			{
 				continue;
 			}

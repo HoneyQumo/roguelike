@@ -3,6 +3,7 @@
 #include "Projectile.h"
 #include "PlayerAttackComponent.h"
 #include <WeaponComponent.h>
+#include <AudioComponent.h>
 #include <LoggerRegistry.h>
 #include <ResourceSystem.h>
 #include <stdexcept>
@@ -63,14 +64,23 @@ namespace RoguelikeGame
 		health->SetMaxHealth(PLAYER_MAX_HEALTH);
 		health->SetArmor(PLAYER_ARMOR);
 
+		auto shotAudio = gameObject->AddComponent<XYZEngine::AudioComponent>();
+		shotAudio->SetSound(XYZEngine::ResourceSystem::Instance()->GetSound("shot"));
+		shotAudio->SetVolume(SHOT_VOLUME);
+
+		auto hurtAudio = gameObject->AddComponent<XYZEngine::AudioComponent>();
+		hurtAudio->SetSound(XYZEngine::ResourceSystem::Instance()->GetSound("hurt"));
+		hurtAudio->SetVolume(HURT_VOLUME);
+
 		auto weaponComponent = gameObject->AddComponent<XYZEngine::WeaponComponent>();
 		weaponComponent->SetCooldown(PLAYER_ATTACK_COOLDOWN);
 		weaponComponent->SetDamage(PLAYER_ATTACK_DAMAGE);
 		weaponComponent->SetProjectileSpeed(PLAYER_PROJECTILE_SPEED);
 		weaponComponent->SetShotOffset(SHOT_OFFSET);
-		weaponComponent->SetShotAction([](const XYZEngine::Vector2Df& shotPosition, const XYZEngine::Vector2Df& shotDirection, float damage, float speed)
+		weaponComponent->SetShotAction([shotAudio](const XYZEngine::Vector2Df& shotPosition, const XYZEngine::Vector2Df& shotDirection, float damage, float speed)
 			{
 				Projectile::Spawn(shotPosition, shotDirection, damage, speed, "Player");
+				shotAudio->Play();
 			});
 
 		auto attack = gameObject->AddComponent<PlayerAttackComponent>();
@@ -86,7 +96,11 @@ namespace RoguelikeGame
 		}
 
 		auto weaponObject = weapon == nullptr ? nullptr : weapon->GetGameObject();
-		health->SubscribeDamage([animation](float damage) { animation->PlayHurt(); });
+		health->SubscribeDamage([animation, hurtAudio](float damage)
+			{
+				animation->PlayHurt();
+				hurtAudio->Play();
+			});
 		health->SubscribeDeath([animation, movement, collider, weaponObject]()
 			{
 				animation->PlayDeath();

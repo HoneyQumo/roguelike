@@ -54,6 +54,8 @@ namespace RoguelikeGame
 	constexpr float HEALTH_BAR_OFFSET_Y = 36.f;
 
 	constexpr float MUSIC_VOLUME = 15.f;
+	constexpr float SHOT_VOLUME = 20.f;
+	constexpr float HURT_VOLUME = 35.f;
 
 	constexpr const char* TEST_LEVEL_PATH = "Resources/Levels/test_level.config";
 	constexpr const char* LOG_FILE_PATH = "log.txt";

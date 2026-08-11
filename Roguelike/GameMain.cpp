@@ -38,6 +38,9 @@ int main()
 	XYZEngine::ResourceSystem::Instance()->LoadTextureMap("enemy", "Resources/Textures/prisoner.png", { CHARACTER_FRAME_SIZE, CHARACTER_FRAME_SIZE }, CHARACTER_FRAMES_IN_MAP, false);
 	XYZEngine::ResourceSystem::Instance()->LoadTextureMap("rifleman", "Resources/Textures/vietnam_war3.png", { CHARACTER_FRAME_SIZE, CHARACTER_FRAME_SIZE }, CHARACTER_FRAMES_IN_MAP, false);
 
+	XYZEngine::ResourceSystem::Instance()->LoadSound("shot", "Resources/Audio/shot.wav");
+	XYZEngine::ResourceSystem::Instance()->LoadSound("hurt", "Resources/Audio/hurt.wav");
+
 	XYZEngine::ResourceSystem::Instance()->LoadMusic("main_theme", "Resources/Audio/main_music_1.ogg");
 
 	auto developerLevel = std::make_shared<DeveloperLevel>();

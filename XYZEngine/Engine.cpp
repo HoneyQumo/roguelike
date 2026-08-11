@@ -3,6 +3,7 @@
 #include <iostream>
 #include "GameWorld.h"
 #include "RenderSystem.h"
+#include "LoggerRegistry.h"
 
 namespace XYZEngine
 {
@@ -20,9 +21,11 @@ namespace XYZEngine
 
 	void Engine::Run()
 	{
+		LOG_INFO("Engine loop started");
+
 		sf::Clock gameClock;
 		sf::Event event;
-		
+
 		while (RenderSystem::Instance()->GetMainWindow().isOpen())
 		{
 			sf::Time dt = gameClock.restart();
@@ -50,5 +53,7 @@ namespace XYZEngine
 
 			RenderSystem::Instance()->GetMainWindow().display();
 		}
+
+		LOG_INFO("Engine loop finished");
 	}
 }

@@ -1,19 +1,20 @@
 #include "LevelLoader.h"
+#include <LoggerRegistry.h>
 #include <fstream>
-#include <iostream>
+#include <stdexcept>
 
 namespace RoguelikeGame
 {
-	bool LevelLoader::Load(const std::string& filePath, LevelData& levelData)
+	LevelData LevelLoader::Load(const std::string& filePath)
 	{
+		LevelData levelData;
+
 		std::ifstream file(filePath);
 		if (!file.is_open())
 		{
-			std::cout << "Can't open level file: " << filePath << std::endl;
-			return false;
+			LOG_ERROR("Can't open level file: " + filePath);
+			throw std::runtime_error("Level file is not available: " + filePath);
 		}
-
-		levelData = LevelData();
 
 		std::string line;
 		while (std::getline(file, line))
@@ -47,11 +48,12 @@ namespace RoguelikeGame
 		levelData.height = (int)levelData.tiles.size();
 		if (levelData.height == 0)
 		{
-			std::cout << "Level file is empty: " << filePath << std::endl;
-			return false;
+			LOG_ERROR("Level file is empty: " + filePath);
+			throw std::runtime_error("Level file has no tiles: " + filePath);
 		}
 
-		return true;
+		LOG_INFO("Level loaded: " + filePath + ", size " + std::to_string(levelData.width) + "x" + std::to_string(levelData.height));
+		return levelData;
 	}
 
 	TileType LevelLoader::SymbolToTileType(char symbol)

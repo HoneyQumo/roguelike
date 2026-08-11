@@ -1,7 +1,8 @@
 #include "pch.h"
 #include "SpriteMovementAnimationComponent.h"
 #include "ResourceSystem.h"
-#include <iostream>
+#include "LoggerRegistry.h"
+#include <cassert>
 
 namespace XYZEngine
 {
@@ -80,16 +81,19 @@ namespace XYZEngine
 	{
 		animation.frames.clear();
 
+		assert(framesCount > 0);
+		assert(framesPerSecond > 0.f);
+
 		int totalFrames = ResourceSystem::Instance()->GetTextureMapElementsCount(textureMapName);
 		if (firstFrameIndex < 0 || framesCount <= 0 || firstFrameIndex + framesCount > totalFrames)
 		{
-			std::cout << "Wrong animation frames range for texture map: " << textureMapName << std::endl;
+			LOG_ERROR("Wrong animation frames range for texture map: " + textureMapName);
 			return;
 		}
 
 		if (framesPerSecond <= 0.f)
 		{
-			std::cout << "Framerate must be positive." << std::endl;
+			LOG_WARN("Framerate must be positive for texture map: " + textureMapName);
 			return;
 		}
 

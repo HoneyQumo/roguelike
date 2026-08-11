@@ -1,5 +1,7 @@
 #include "LevelBuilder.h"
 #include "GameSettings.h"
+#include <LoggerRegistry.h>
+#include <cassert>
 
 namespace RoguelikeGame
 {
@@ -28,22 +30,38 @@ namespace RoguelikeGame
 			{
 				auto position = TileToWorldPosition(column, row, levelData.height);
 
-				switch (levelData.tiles[row][column])
+				try
 				{
-				case TileType::Wall:
-					walls.push_back(std::make_unique<Wall>(position));
-					break;
-				case TileType::PlayerSpawn:
-					player = std::make_unique<Player>(position);
-					break;
-				case TileType::EnemySpawn:
-					enemies.push_back(std::make_unique<Enemy>(position));
-					break;
-				default:
-					break;
+					switch (levelData.tiles[row][column])
+					{
+					case TileType::Wall:
+						walls.push_back(std::make_unique<Wall>(position));
+						break;
+					case TileType::PlayerSpawn:
+						player = std::make_unique<Player>(position);
+						break;
+					case TileType::EnemySpawn:
+						enemies.push_back(std::make_unique<Enemy>(position));
+						break;
+					default:
+						break;
+					}
+				}
+				catch (const std::exception& exception)
+				{
+					LOG_ERROR("Can't spawn tile at " + std::to_string(column) + ";" + std::to_string(row) + ": " + exception.what());
 				}
 			}
 		}
+
+		if (player == nullptr)
+		{
+			LOG_WARN("Level has no player spawn point");
+		}
+
+		LOG_INFO("Level built: floors " + std::to_string(floors.size())
+			+ ", walls " + std::to_string(walls.size())
+			+ ", enemies " + std::to_string(enemies.size()));
 	}
 
 	void LevelBuilder::Clear()
@@ -62,6 +80,7 @@ namespace RoguelikeGame
 	// The level file is read top to bottom, while the world axis Y points up.
 	XYZEngine::Vector2Df LevelBuilder::TileToWorldPosition(int column, int row, int levelHeight)
 	{
+		assert(column >= 0 && row >= 0 && row < levelHeight);
 		return { column * TILE_SIZE, (levelHeight - 1 - row) * TILE_SIZE };
 	}
 }

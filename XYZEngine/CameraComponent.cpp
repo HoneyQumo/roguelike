@@ -16,6 +16,11 @@ namespace XYZEngine
 
 	void CameraComponent::Update(float deltaTime)
 	{
+		if (window == nullptr)
+		{
+			return;
+		}
+
 		auto position = transform->GetWorldPosition();
 		auto rotation = transform->GetWorldRotation();
 
@@ -28,7 +33,7 @@ namespace XYZEngine
 	{
 		if (window == nullptr)
 		{
-			std::cout << "NULL window render." << std::endl;
+			LOG_ERROR("Camera has no window on " + gameObject->GetName());
 		}
 	}
 
@@ -44,7 +49,7 @@ namespace XYZEngine
 	{
 		if (newZoom <= 0)
 		{
-			std::cout << "Not allowed zoom lesser or equal than zero." << std::endl;
+			LOG_WARN("Zoom must be greater than zero.");
 			return;
 		}
 		view->zoom(newZoom);

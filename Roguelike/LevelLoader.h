@@ -8,7 +8,7 @@ namespace RoguelikeGame
 	class LevelLoader
 	{
 	public:
-		static bool Load(const std::string& filePath, LevelData& levelData);
+		static LevelData Load(const std::string& filePath);
 	private:
 		static TileType SymbolToTileType(char symbol);
 	};

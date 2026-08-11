@@ -1,6 +1,7 @@
 #include "DeveloperLevel.h"
 #include "GameSettings.h"
 #include "LevelLoader.h"
+#include <LoggerRegistry.h>
 
 using namespace XYZEngine;
 
@@ -8,10 +9,16 @@ namespace RoguelikeGame
 {
 	void DeveloperLevel::Start()
 	{
-		LevelData levelData;
-		if (LevelLoader::Load(TEST_LEVEL_PATH, levelData))
+		LOG_INFO("Developer level is starting");
+
+		try
 		{
-			levelBuilder.Build(levelData);
+			levelBuilder.Build(LevelLoader::Load(TEST_LEVEL_PATH));
+		}
+		catch (const std::exception& exception)
+		{
+			LOG_ERROR(std::string("Level is not loaded: ") + exception.what());
+			LOG_WARN("Game continues with an empty level");
 		}
 
 		music = std::make_unique<Music>("main_theme", MUSIC_VOLUME);
@@ -23,6 +30,8 @@ namespace RoguelikeGame
 	}
 	void DeveloperLevel::Stop()
 	{
+		LOG_INFO("Developer level is stopping");
+
 		music.reset();
 		levelBuilder.Clear();
 

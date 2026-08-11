@@ -28,12 +28,21 @@
     <ClCompile Include="Floor.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
+    <ClCompile Include="LevelLoader.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="LevelBuilder.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DeveloperLevel.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="Floor.h" />
     <ClInclude Include="GameSettings.h" />
+    <ClInclude Include="LevelBuilder.h" />
+    <ClInclude Include="LevelData.h" />
+    <ClInclude Include="LevelLoader.h" />
     <ClInclude Include="Wall.h" />
     <ClInclude Include="Music.h" />
     <ClInclude Include="Player.h" />

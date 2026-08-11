@@ -163,6 +163,8 @@
     <ClCompile Include="DeveloperLevel.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="Floor.cpp" />
+    <ClCompile Include="LevelBuilder.cpp" />
+    <ClCompile Include="LevelLoader.cpp" />
     <ClCompile Include="Wall.cpp" />
     <ClCompile Include="GameMain.cpp" />
     <ClCompile Include="Music.cpp" />
@@ -173,6 +175,9 @@
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="Floor.h" />
     <ClInclude Include="GameSettings.h" />
+    <ClInclude Include="LevelBuilder.h" />
+    <ClInclude Include="LevelData.h" />
+    <ClInclude Include="LevelLoader.h" />
     <ClInclude Include="Wall.h" />
     <ClInclude Include="Music.h" />
     <ClInclude Include="Player.h" />

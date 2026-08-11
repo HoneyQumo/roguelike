@@ -1,4 +1,6 @@
 #include "DeveloperLevel.h"
+#include "GameSettings.h"
+#include "LevelLoader.h"
 
 using namespace XYZEngine;
 
@@ -6,7 +8,12 @@ namespace RoguelikeGame
 {
 	void DeveloperLevel::Start()
 	{
-		player = std::make_shared<Player>(XYZEngine::Vector2Df{ 0.f, 0.f });
+		LevelData levelData;
+		if (LevelLoader::Load(TEST_LEVEL_PATH, levelData))
+		{
+			levelBuilder.Build(levelData);
+		}
+
 		music = std::make_unique<Music>("main_theme", MUSIC_VOLUME);
 	}
 	void DeveloperLevel::Restart()
@@ -14,8 +21,11 @@ namespace RoguelikeGame
 		Stop();
 		Start();
 	}
-	void DeveloperLevel::Stop() 
+	void DeveloperLevel::Stop()
 	{
+		music.reset();
+		levelBuilder.Clear();
+
 		GameWorld::Instance()->Clear();
 	}
 }

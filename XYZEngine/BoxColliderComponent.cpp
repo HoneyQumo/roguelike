@@ -21,7 +21,10 @@ namespace XYZEngine
 		float width = size.x * worldScale.x;
 		float height = size.y * worldScale.y;
 
-		bounds = sf::FloatRect(position.x - 0.5f * width, position.y - 0.5f * height, width, height);
+		float centerX = position.x + offset.x * worldScale.x;
+		float centerY = position.y + offset.y * worldScale.y;
+
+		bounds = sf::FloatRect(centerX - 0.5f * width, centerY - 0.5f * height, width, height);
 	}
 	void BoxColliderComponent::Render()
 	{
@@ -35,5 +38,14 @@ namespace XYZEngine
 	Vector2Df BoxColliderComponent::GetSize() const
 	{
 		return size;
+	}
+
+	void BoxColliderComponent::SetOffset(float offsetX, float offsetY)
+	{
+		offset = { offsetX, offsetY };
+	}
+	Vector2Df BoxColliderComponent::GetOffset() const
+	{
+		return offset;
 	}
 }

@@ -42,6 +42,9 @@ int main()
 	XYZEngine::ResourceSystem::Instance()->LoadTextureMap("enemy", "Resources/Textures/prisoner.png", { CHARACTER_FRAME_SIZE, CHARACTER_FRAME_SIZE }, CHARACTER_FRAMES_IN_MAP, false);
 	XYZEngine::ResourceSystem::Instance()->LoadTextureMap("rifleman", "Resources/Textures/vietnam_war3.png", { CHARACTER_FRAME_SIZE, CHARACTER_FRAME_SIZE }, CHARACTER_FRAMES_IN_MAP, false);
 
+	XYZEngine::ResourceSystem::Instance()->LoadTexturePart("player_weapon", "Resources/Textures/vietnam_war1.png", { 64, 104, WEAPON_REGION_WIDTH, WEAPON_REGION_HEIGHT }, false);
+	XYZEngine::ResourceSystem::Instance()->LoadTexturePart("rifleman_weapon", "Resources/Textures/vietnam_war3.png", { 64, 70, WEAPON_REGION_WIDTH, WEAPON_REGION_HEIGHT }, false);
+
 	XYZEngine::ResourceSystem::Instance()->LoadSound("shot", "Resources/Audio/shot.wav");
 	XYZEngine::ResourceSystem::Instance()->LoadSound("hurt", "Resources/Audio/hurt.wav");
 

@@ -17,7 +17,7 @@ namespace RoguelikeGame
 		int hurtFrames = 0;
 		int deathFirstFrame = 0;
 		int deathFrames = 0;
-		int weaponFrame = -1;
+		std::string weaponTextureName;
 
 		float speed = 0.f;
 		float detectionRadius = 0.f;

@@ -7,17 +7,17 @@
 
 namespace RoguelikeGame
 {
-	Weapon::Weapon(XYZEngine::GameObject* owner, const std::string& textureMapName, int frameIndex)
+	Weapon::Weapon(XYZEngine::GameObject* owner, const std::string& textureName)
 	{
 		if (owner == nullptr)
 		{
 			throw std::runtime_error("weapon needs an owner");
 		}
 
-		auto texture = XYZEngine::ResourceSystem::Instance()->GetTextureMapElementShared(textureMapName, frameIndex);
+		auto texture = XYZEngine::ResourceSystem::Instance()->GetTextureShared(textureName);
 		if (texture == nullptr)
 		{
-			throw std::runtime_error("weapon texture is not loaded: " + textureMapName);
+			throw std::runtime_error("weapon texture is not loaded: " + textureName);
 		}
 
 		gameObject = XYZEngine::GameWorld::Instance()->CreateGameObject("Weapon");
@@ -28,7 +28,7 @@ namespace RoguelikeGame
 
 		renderer = gameObject->AddComponent<XYZEngine::SpriteRendererComponent>();
 		renderer->SetTexture(*texture);
-		renderer->SetPixelSize(WEAPON_SPRITE_SIZE, WEAPON_SPRITE_SIZE);
+		renderer->SetPixelSize(WEAPON_SPRITE_WIDTH, WEAPON_SPRITE_HEIGHT);
 
 		LOG_INFO("Weapon created for " + owner->GetName());
 	}

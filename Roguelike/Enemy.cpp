@@ -97,11 +97,11 @@ namespace RoguelikeGame
 		attack->SetTargetName("Player");
 		attack->SetAttackRange(config.attackRange);
 
-		if (config.weaponFrame >= 0)
+		if (!config.weaponTextureName.empty())
 		{
 			try
 			{
-				weapon = std::make_unique<Weapon>(gameObject, config.textureMapName, config.weaponFrame);
+				weapon = std::make_unique<Weapon>(gameObject, config.weaponTextureName);
 				attack->SetWeapon(weapon->GetTransform(), weapon->GetRenderer());
 			}
 			catch (const std::exception& exception)

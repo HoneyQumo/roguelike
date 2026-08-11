@@ -87,7 +87,7 @@ namespace RoguelikeGame
 
 		try
 		{
-			weapon = std::make_unique<Weapon>(gameObject, "player", PLAYER_WEAPON_FRAME);
+			weapon = std::make_unique<Weapon>(gameObject, "player_weapon");
 			attack->SetWeapon(weapon->GetTransform(), weapon->GetRenderer());
 		}
 		catch (const std::exception& exception)

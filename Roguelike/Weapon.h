@@ -10,7 +10,7 @@ namespace RoguelikeGame
 	class Weapon
 	{
 	public:
-		Weapon(XYZEngine::GameObject* owner, const std::string& textureMapName, int frameIndex);
+		Weapon(XYZEngine::GameObject* owner, const std::string& textureName);
 
 		XYZEngine::GameObject* GetGameObject();
 		XYZEngine::TransformComponent* GetTransform();

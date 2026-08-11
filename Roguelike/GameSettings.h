@@ -32,7 +32,6 @@ namespace RoguelikeGame
 	constexpr int PLAYER_HURT_FRAMES = 3;
 	constexpr int PLAYER_DEATH_FIRST_FRAME = 15;
 	constexpr int PLAYER_DEATH_FRAMES = 2;
-	constexpr int PLAYER_WEAPON_FRAME = 17;
 
 	constexpr float PLAYER_SPEED = 250.f;
 	constexpr float PLAYER_MAX_HEALTH = 100.f;
@@ -41,7 +40,11 @@ namespace RoguelikeGame
 	constexpr float PLAYER_ATTACK_COOLDOWN = 0.3f;
 	constexpr float PLAYER_PROJECTILE_SPEED = 800.f;
 
-	constexpr int WEAPON_SPRITE_SIZE = 48;
+	// The weapon sprite is drawn across two atlas cells, so it is loaded as its own region.
+	constexpr int WEAPON_REGION_WIDTH = 48;
+	constexpr int WEAPON_REGION_HEIGHT = 20;
+	constexpr int WEAPON_SPRITE_WIDTH = 96;
+	constexpr int WEAPON_SPRITE_HEIGHT = 40;
 	constexpr float WEAPON_OFFSET_X = 8.f;
 	constexpr float WEAPON_OFFSET_Y = -12.f;
 	constexpr float SHOT_OFFSET = 34.f;
@@ -73,7 +76,7 @@ namespace RoguelikeGame
 		5, 3,
 		0, 0,
 		10, 1,
-		-1,
+		"",
 		150.f, 300.f, 40.f, 50.f, 0.f,
 		120.f, 8.f, 1.f, 450.f
 	};
@@ -84,7 +87,7 @@ namespace RoguelikeGame
 		0, 4,
 		10, 2,
 		15, 2,
-		12,
+		"rifleman_weapon",
 		110.f, 420.f, 220.f, 70.f, 5.f,
 		360.f, 12.f, 1.4f, 700.f
 	};

@@ -53,9 +53,21 @@ namespace RoguelikeGame
 		animation->SetWalkAnimation("player", PLAYER_WALK_FIRST_FRAME, PLAYER_WALK_FRAMES, WALK_FRAMERATE);
 		animation->SetIdleAnimation("player", PLAYER_IDLE_FIRST_FRAME, PLAYER_IDLE_FRAMES, IDLE_FRAMERATE);
 
+		animation->SetHurtAnimation("player", PLAYER_HURT_FIRST_FRAME, PLAYER_HURT_FRAMES, HURT_FRAMERATE);
+		animation->SetDeathAnimation("player", PLAYER_DEATH_FIRST_FRAME, PLAYER_DEATH_FRAMES, DEATH_FRAMERATE);
+
 		auto health = gameObject->AddComponent<XYZEngine::HealthComponent>();
 		health->SetMaxHealth(PLAYER_MAX_HEALTH);
 		health->SetArmor(PLAYER_ARMOR);
+
+		health->SubscribeDamage([animation](float damage) { animation->PlayHurt(); });
+		health->SubscribeDeath([animation, movement, collider]()
+			{
+				animation->PlayDeath();
+				movement->SetSpeed(0.f);
+				collider->SetTrigger(true);
+				LOG_WARN("Player is dead, controls are disabled");
+			});
 
 		auto healthBar = gameObject->AddComponent<XYZEngine::HealthBarComponent>();
 		healthBar->SetSize(HEALTH_BAR_WIDTH, HEALTH_BAR_HEIGHT);

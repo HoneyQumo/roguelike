@@ -20,16 +20,24 @@ namespace RoguelikeGame
 
 	constexpr float WALK_FRAMERATE = 8.f;
 	constexpr float IDLE_FRAMERATE = 4.f;
+	constexpr float HURT_FRAMERATE = 12.f;
+	constexpr float DEATH_FRAMERATE = 4.f;
 
 	constexpr int PLAYER_WALK_FIRST_FRAME = 5;
 	constexpr int PLAYER_WALK_FRAMES = 4;
 	constexpr int PLAYER_IDLE_FIRST_FRAME = 0;
 	constexpr int PLAYER_IDLE_FRAMES = 4;
+	constexpr int PLAYER_HURT_FIRST_FRAME = 10;
+	constexpr int PLAYER_HURT_FRAMES = 3;
+	constexpr int PLAYER_DEATH_FIRST_FRAME = 15;
+	constexpr int PLAYER_DEATH_FRAMES = 2;
 
 	constexpr int ENEMY_WALK_FIRST_FRAME = 0;
 	constexpr int ENEMY_WALK_FRAMES = 5;
 	constexpr int ENEMY_IDLE_FIRST_FRAME = 5;
 	constexpr int ENEMY_IDLE_FRAMES = 3;
+	constexpr int ENEMY_DEATH_FIRST_FRAME = 10;
+	constexpr int ENEMY_DEATH_FRAMES = 1;
 
 	constexpr float PLAYER_SPEED = 250.f;
 	constexpr float PLAYER_MAX_HEALTH = 100.f;

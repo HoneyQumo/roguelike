@@ -29,7 +29,7 @@ namespace XYZEngine
 			horizontalAxis -= 1.0f;
 		}
 
-		isAttackPressed = sf::Mouse::isButtonPressed(sf::Mouse::Right);
+		isAttackPressed = sf::Mouse::isButtonPressed(sf::Mouse::Left);
 
 		auto& window = RenderSystem::Instance()->GetMainWindow();
 		auto worldPosition = window.mapPixelToCoords(sf::Mouse::getPosition(window));

@@ -63,6 +63,12 @@
     <ClInclude Include="HealthBarComponent.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
+    <ClInclude Include="ProjectileComponent.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="WeaponComponent.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
     <ClInclude Include="LoggerRegistry.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
@@ -177,6 +183,12 @@
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="HealthBarComponent.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="ProjectileComponent.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="WeaponComponent.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="LoggerRegistry.cpp">

@@ -20,12 +20,12 @@ namespace XYZEngine
 			y = newY;
 		}
 
-		float GetLength()
+		float GetLength() const
 		{
 			return sqrtf(x * x + y * y);
 		}
 
-		float DotProduct(const Vector2D<T>& vector)
+		float DotProduct(const Vector2D<T>& vector) const
 		{
 			return x * vector.x + y * vector.y;
 		}

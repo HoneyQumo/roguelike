@@ -1,7 +1,8 @@
 #pragma once
 
 #include "Component.h"
-#include <SFML/Window.hpp> 
+#include "Vector.h"
+#include <SFML/Window.hpp>
 
 namespace XYZEngine
 {
@@ -15,8 +16,13 @@ namespace XYZEngine
 
 		float GetHorizontalAxis() const;
 		float GetVerticalAxis() const;
+
+		bool IsAttackPressed() const;
+		Vector2Df GetMouseWorldPosition() const;
 	private:
 		float horizontalAxis = 0.f;
 		float verticalAxis = 0.f;
+		bool isAttackPressed = false;
+		Vector2Df mouseWorldPosition = { 0.f, 0.f };
 	};
 }

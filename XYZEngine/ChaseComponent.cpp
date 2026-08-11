@@ -36,13 +36,18 @@ namespace XYZEngine
 		}
 
 		Vector2Df toTarget = target->GetComponent<TransformComponent>()->GetWorldPosition() - transform->GetWorldPosition();
-		if (toTarget.GetLength() > detectionRadius)
+		float distance = toTarget.GetLength();
+		if (distance > detectionRadius)
 		{
 			return;
 		}
 
 		isChasing = true;
-		movement->SetDirection(toTarget);
+
+		if (distance > stopDistance)
+		{
+			movement->SetDirection(toTarget);
+		}
 	}
 	void ChaseComponent::Render()
 	{
@@ -65,6 +70,15 @@ namespace XYZEngine
 	float ChaseComponent::GetDetectionRadius() const
 	{
 		return detectionRadius;
+	}
+
+	void ChaseComponent::SetStopDistance(float newStopDistance)
+	{
+		stopDistance = newStopDistance;
+	}
+	float ChaseComponent::GetStopDistance() const
+	{
+		return stopDistance;
 	}
 
 	bool ChaseComponent::IsChasing() const

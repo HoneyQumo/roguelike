@@ -7,17 +7,18 @@
 
 namespace RoguelikeGame
 {
-	class Weapon
-	{
-	public:
-		Weapon(XYZEngine::GameObject* owner, const std::string& textureName);
+    class Weapon
+    {
+    public:
+        Weapon(XYZEngine::GameObject* owner, const std::string& textureName);
 
-		XYZEngine::GameObject* GetGameObject();
-		XYZEngine::TransformComponent* GetTransform();
-		XYZEngine::SpriteRendererComponent* GetRenderer();
-	private:
-		XYZEngine::GameObject* gameObject;
-		XYZEngine::TransformComponent* transform;
-		XYZEngine::SpriteRendererComponent* renderer;
-	};
+        XYZEngine::GameObject* GetGameObject();
+        XYZEngine::TransformComponent* GetTransform();
+        XYZEngine::SpriteRendererComponent* GetRenderer();
+
+    private:
+        XYZEngine::GameObject* gameObject;
+        XYZEngine::TransformComponent* transform;
+        XYZEngine::SpriteRendererComponent* renderer;
+    };
 }

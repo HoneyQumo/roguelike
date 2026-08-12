@@ -12,13 +12,14 @@
 
 namespace RoguelikeGame
 {
-	class Player
-	{
-	public:
-		Player(const XYZEngine::Vector2Df& position);
-		XYZEngine::GameObject* GetGameObject();
-	private:
-		XYZEngine::GameObject* gameObject;
-		std::unique_ptr<Weapon> weapon;
-	};
+    class Player
+    {
+    public:
+        Player(const XYZEngine::Vector2Df& position);
+        XYZEngine::GameObject* GetGameObject();
+
+    private:
+        XYZEngine::GameObject* gameObject;
+        std::unique_ptr<Weapon> weapon;
+    };
 }

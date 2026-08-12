@@ -6,12 +6,13 @@
 
 namespace RoguelikeGame
 {
-	class Wall
-	{
-	public:
-		Wall(const XYZEngine::Vector2Df& position);
-		XYZEngine::GameObject* GetGameObject();
-	private:
-		XYZEngine::GameObject* gameObject;
-	};
+    class Wall
+    {
+    public:
+        Wall(const XYZEngine::Vector2Df& position);
+        XYZEngine::GameObject* GetGameObject();
+
+    private:
+        XYZEngine::GameObject* gameObject;
+    };
 }

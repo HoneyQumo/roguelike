@@ -6,12 +6,13 @@
 
 namespace RoguelikeGame
 {
-	class Floor
-	{
-	public:
-		Floor(const XYZEngine::Vector2Df& position);
-		XYZEngine::GameObject* GetGameObject();
-	private:
-		XYZEngine::GameObject* gameObject;
-	};
+    class Floor
+    {
+    public:
+        Floor(const XYZEngine::Vector2Df& position);
+        XYZEngine::GameObject* GetGameObject();
+
+    private:
+        XYZEngine::GameObject* gameObject;
+    };
 }

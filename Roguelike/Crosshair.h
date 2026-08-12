@@ -4,12 +4,13 @@
 
 namespace RoguelikeGame
 {
-	class Crosshair
-	{
-	public:
-		Crosshair();
-		XYZEngine::GameObject* GetGameObject();
-	private:
-		XYZEngine::GameObject* gameObject;
-	};
+    class Crosshair
+    {
+    public:
+        Crosshair();
+        XYZEngine::GameObject* GetGameObject();
+
+    private:
+        XYZEngine::GameObject* gameObject;
+    };
 }

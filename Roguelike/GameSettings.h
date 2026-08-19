@@ -1,55 +1,45 @@
 #pragma once
-#include <string>
 
+#include <SFML/Graphics/Color.hpp>
 
 namespace RoguelikeGame
 {
-	class GameWorld {
-	private:
+	constexpr int SCREEN_WIDTH = 1280;
+	constexpr int SCREEN_HEIGHT = 720;
 
-		GameWorld() = default;
-	public:
-		static GameWorld& Instance() {
-			static GameWorld gameWorld;
-			return gameWorld;
-		}
+	constexpr float TILE_SIZE = 64.f;
 
+	constexpr int CHARACTER_FRAME_SIZE = 32;
+	constexpr int CHARACTER_FRAMES_IN_MAP = 20;
+	constexpr int CHARACTER_SPRITE_SIZE = 64;
 
-		// Resources path
-		const std::string RESOURCES_PATH = "Resources/";
-		const std::string TEXTURES_PATH = RESOURCES_PATH + "Textures/";
-		const std::string FONTS_PATH = RESOURCES_PATH + "Fonts/";
-		const std::string SOUNDS_PATH = RESOURCES_PATH + "Sounds/";
-		const std::string LEVELS_CONFIG_PATH = RESOURCES_PATH + "levels.config";
+	// The character stands on the bottom edge of its frame, so the collider is shifted down to his feet.
+	constexpr float CHARACTER_COLLIDER_WIDTH = 40.f;
+	constexpr float CHARACTER_COLLIDER_HEIGHT = 48.f;
+	constexpr float CHARACTER_COLLIDER_OFFSET_Y = -8.f;
 
-		// Game settings constants
-		const float ACCELERATION = 10.f;
-		const int MAX_APPLES = 80;
-		const unsigned int SCREEN_WIDTH = 800;
-		const unsigned int SCREEN_HEIGHT = 600;
-		const float TIME_PER_FRAME = 1.f / 60.f; // 60 fps
+	constexpr float WALK_FRAMERATE = 8.f;
+	constexpr float IDLE_FRAMERATE = 4.f;
 
-		const unsigned int BALL_SIZE = 20;
-		const unsigned int BALL_SPEED = 400;
+	constexpr int PLAYER_WALK_FIRST_FRAME = 5;
+	constexpr int PLAYER_WALK_FRAMES = 4;
+	constexpr int PLAYER_IDLE_FIRST_FRAME = 0;
+	constexpr int PLAYER_IDLE_FRAMES = 4;
 
-		const unsigned int PLATFORM_WIDTH = 60;
-		const unsigned int PLATFORM_HEIGHT = 20;
-		const float PLATFORM_SPEED = 300.f;
+	constexpr int ENEMY_WALK_FIRST_FRAME = 0;
+	constexpr int ENEMY_WALK_FRAMES = 5;
+	constexpr int ENEMY_IDLE_FIRST_FRAME = 5;
+	constexpr int ENEMY_IDLE_FRAMES = 3;
 
-		const unsigned int BLOCKS_COUNT_ROWS = 4;
-		const unsigned int BLOCKS_COUNT_IN_ROW = 15;
-		const unsigned int BLOCK_SHIFT = 5;
-		const unsigned int BLOCK_WIDTH = (SCREEN_WIDTH - (BLOCKS_COUNT_IN_ROW + 1) * BLOCK_SHIFT) / BLOCKS_COUNT_IN_ROW;
-		const unsigned int BLOCK_HEIGHT = 20;
+	constexpr float PLAYER_SPEED = 250.f;
 
-		const int MAX_RECORDS_TABLE_SIZE = 5;
-		const char* PLAYER_NAME = "Player";
+	constexpr float ENEMY_SPEED = 150.f;
+	constexpr float ENEMY_DETECTION_RADIUS = 300.f;
 
-		const std::string GAME_NAME = "ArkanoidGame";
-		const float BREAK_DELAY = 1.f;
-		const float BONUS_DURATION = 30.f;
-		const int BONUS_PROPABILITY_PERCENT = 5;
-	};
+	constexpr float MUSIC_VOLUME = 15.f;
+
+	constexpr const char* TEST_LEVEL_PATH = "Resources/Levels/test_level.config";
+
+	const sf::Color WALL_COLOR = { 92, 86, 80 };
+	const sf::Color FLOOR_COLOR = { 46, 42, 38 };
 }
-
-#define SETTINGS GameWorld::Instance()

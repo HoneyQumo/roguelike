@@ -16,14 +16,10 @@ namespace XYZEngine
 			gameObjects[i]->Update(deltaTime);
 		}
 	}
+	// Collisions are resolved once per frame: with a rarer step objects get drawn while still pushed into a wall.
 	void GameWorld::FixedUpdate(float deltaTime)
 	{
-		fixedCounter += deltaTime;
-		if (fixedCounter > PhysicsSystem::Instance()->GetFixedDeltaTime())
-		{
-			fixedCounter -= PhysicsSystem::Instance()->GetFixedDeltaTime();
-			PhysicsSystem::Instance()->Update();
-		}
+		PhysicsSystem::Instance()->Update();
 	}
 	void GameWorld::Render()
 	{
@@ -52,6 +48,18 @@ namespace XYZEngine
 		gameObjects.push_back(newGameObject);
 		return newGameObject;
 	}
+	GameObject* GameWorld::FindGameObject(const std::string& name) const
+	{
+		for (const auto& gameObject : gameObjects)
+		{
+			if (gameObject != nullptr && gameObject->GetName() == name)
+			{
+				return gameObject;
+			}
+		}
+
+		return nullptr;
+	}
 	void GameWorld::DestroyGameObject(GameObject* gameObject)
 	{
 		markedToDestroyGameObjects.push_back(gameObject);
@@ -70,8 +78,6 @@ namespace XYZEngine
 				DestroyGameObjectImmediate(gameObjects[i]);
 			}
 		}
-
-		fixedCounter = 0.f;
 	}
 
 	void GameWorld::Print() const

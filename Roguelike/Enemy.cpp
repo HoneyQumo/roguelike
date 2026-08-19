@@ -1,6 +1,7 @@
-#include "Player.h"
+#include "Enemy.h"
 #include "GameSettings.h"
 #include <ResourceSystem.h>
+#include <ChaseComponent.h>
 #include <MovementComponent.h>
 #include <RigidbodyComponent.h>
 #include <BoxColliderComponent.h>
@@ -9,25 +10,24 @@
 
 namespace RoguelikeGame
 {
-	Player::Player(const XYZEngine::Vector2Df& position)
+	Enemy::Enemy(const XYZEngine::Vector2Df& position)
 	{
-		gameObject = XYZEngine::GameWorld::Instance()->CreateGameObject("Player");
+		gameObject = XYZEngine::GameWorld::Instance()->CreateGameObject("Enemy");
 
 		auto transform = gameObject->GetComponent<XYZEngine::TransformComponent>();
 		transform->SetWorldPosition(position);
 
 		auto renderer = gameObject->AddComponent<XYZEngine::SpriteRendererComponent>();
-		renderer->SetTexture(*XYZEngine::ResourceSystem::Instance()->GetTextureMapElementShared("player", PLAYER_IDLE_FIRST_FRAME));
+		renderer->SetTexture(*XYZEngine::ResourceSystem::Instance()->GetTextureMapElementShared("enemy", ENEMY_IDLE_FIRST_FRAME));
 		renderer->SetPixelSize(CHARACTER_SPRITE_SIZE, CHARACTER_SPRITE_SIZE);
 
-		auto camera = gameObject->AddComponent<XYZEngine::CameraComponent>();
-		camera->SetWindow(&XYZEngine::RenderSystem::Instance()->GetMainWindow());
-		camera->SetBaseResolution(SCREEN_WIDTH, SCREEN_HEIGHT);
-
-		auto input = gameObject->AddComponent<XYZEngine::InputComponent>();
+		// Chase sets the direction, movement applies it: keep chase updated first.
+		auto chase = gameObject->AddComponent<XYZEngine::ChaseComponent>();
+		chase->SetTargetName("Player");
+		chase->SetDetectionRadius(ENEMY_DETECTION_RADIUS);
 
 		auto movement = gameObject->AddComponent<XYZEngine::MovementComponent>();
-		movement->SetSpeed(PLAYER_SPEED);
+		movement->SetSpeed(ENEMY_SPEED);
 
 		auto body = gameObject->AddComponent<XYZEngine::RigidbodyComponent>();
 		body->SetKinematic(false);
@@ -39,11 +39,11 @@ namespace RoguelikeGame
 		auto direction = gameObject->AddComponent<XYZEngine::SpriteDirectionComponent>();
 
 		auto animation = gameObject->AddComponent<XYZEngine::SpriteMovementAnimationComponent>();
-		animation->SetWalkAnimation("player", PLAYER_WALK_FIRST_FRAME, PLAYER_WALK_FRAMES, WALK_FRAMERATE);
-		animation->SetIdleAnimation("player", PLAYER_IDLE_FIRST_FRAME, PLAYER_IDLE_FRAMES, IDLE_FRAMERATE);
+		animation->SetWalkAnimation("enemy", ENEMY_WALK_FIRST_FRAME, ENEMY_WALK_FRAMES, WALK_FRAMERATE);
+		animation->SetIdleAnimation("enemy", ENEMY_IDLE_FIRST_FRAME, ENEMY_IDLE_FRAMES, IDLE_FRAMERATE);
 	}
 
-	XYZEngine::GameObject* Player::GetGameObject()
+	XYZEngine::GameObject* Enemy::GetGameObject()
 	{
 		return gameObject;
 	}

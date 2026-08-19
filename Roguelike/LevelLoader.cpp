@@ -1,63 +1,73 @@
 #include "LevelLoader.h"
-#include "GameSettings.h"
-
 #include <fstream>
-#include <assert.h>
-#include <filesystem>
+#include <iostream>
 
-namespace RoguelikeGame {
-	Level& LevelLoader::GetLevel(int i) {
-		return levels.at(i);
+namespace RoguelikeGame
+{
+	bool LevelLoader::Load(const std::string& filePath, LevelData& levelData)
+	{
+		std::ifstream file(filePath);
+		if (!file.is_open())
+		{
+			std::cout << "Can't open level file: " << filePath << std::endl;
+			return false;
+		}
+
+		levelData = LevelData();
+
+		std::string line;
+		while (std::getline(file, line))
+		{
+			if (!line.empty() && line.back() == '\r')
+			{
+				line.pop_back();
+			}
+
+			if (line.empty() || line.front() == ';')
+			{
+				continue;
+			}
+
+			std::vector<TileType> row;
+			row.reserve(line.size());
+			for (char symbol : line)
+			{
+				row.push_back(SymbolToTileType(symbol));
+			}
+
+			if ((int)row.size() > levelData.width)
+			{
+				levelData.width = (int)row.size();
+			}
+			levelData.tiles.push_back(row);
+		}
+
+		file.close();
+
+		levelData.height = (int)levelData.tiles.size();
+		if (levelData.height == 0)
+		{
+			std::cout << "Level file is empty: " << filePath << std::endl;
+			return false;
+		}
+
+		return true;
 	}
 
-	BlockType LevelLoader::CharToBlockType(char symbol) {
-		BlockType blockType;
+	TileType LevelLoader::SymbolToTileType(char symbol)
+	{
 		switch (symbol)
 		{
-		case '1':
-			blockType = BlockType::Simple;
-			break;
-		case '2':
-			blockType = BlockType::ThreeHit;
-			break;
-		case '0':
-			blockType = BlockType::Unbreackable;
-			break;
+		case '#':
+			return TileType::Wall;
+		case '.':
+			return TileType::Floor;
+		case '@':
+			return TileType::PlayerSpawn;
+		case 'E':
+			return TileType::EnemySpawn;
 		default:
-			assert(false);
-			break;
+			return TileType::Empty;
 		}
-		return blockType;
-	}
-
-	void LevelLoader::LoadLevelsFromFile() {
-		std::string filepath = SETTINGS.LEVELS_CONFIG_PATH;
-		std::string line;
-		std::ifstream file(filepath);
-		int y = 0;
-		while (getline(file, line)) {
-			if (line.rfind("level ", 0) == 0) {
-				auto level = std::stoi(line.substr(6, line.size() - 6));
-				levels.emplace_back(Level());
-				y = 0;
-			}
-			else
-			{
-				int x = 0;
-				for (char c : line) {
-					if (c != ' ') {
-						levels.back().m_blocks.emplace_back(std::make_pair(sf::Vector2i{ x, y }, CharToBlockType(c)));
-					}
-					++x;
-				}
-			}
-			++y;
-		}
-		file.close();
-	}
-
-	int LevelLoader::GetLevelCount()
-	{
-		return levels.size();
 	}
 }

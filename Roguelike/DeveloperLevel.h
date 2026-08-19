@@ -1,9 +1,9 @@
 #pragma once
 
-#include <iostream>
-#include <array>
+#include <memory>
 #include "Scene.h"
-#include "Player.h"
+#include "Music.h"
+#include "LevelBuilder.h"
 
 using namespace XYZEngine;
 
@@ -16,6 +16,7 @@ namespace RoguelikeGame
 		void Restart() override;
 		void Stop() override;
 	private:
-		std::shared_ptr<Player> player;
+		LevelBuilder levelBuilder;
+		std::unique_ptr<Music> music;
 	};
 }

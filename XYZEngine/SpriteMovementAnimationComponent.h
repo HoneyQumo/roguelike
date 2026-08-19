@@ -20,6 +20,11 @@ namespace XYZEngine
 
 		void SetWalkAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float framesPerSecond);
 		void SetIdleAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float framesPerSecond);
+		void SetHurtAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float framesPerSecond);
+		void SetDeathAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float framesPerSecond);
+
+		void PlayHurt();
+		void PlayDeath();
 	private:
 		struct Animation
 		{
@@ -32,7 +37,13 @@ namespace XYZEngine
 
 		Animation walkAnimation;
 		Animation idleAnimation;
+		Animation hurtAnimation;
+		Animation deathAnimation;
 		Animation* currentAnimation = nullptr;
+
+		bool isLooped = true;
+		bool isFinished = false;
+		bool isDead = false;
 
 		float frameTimer = 0.f;
 		int currentFrame = 0;
@@ -41,6 +52,7 @@ namespace XYZEngine
 		float stillTimer = 0.f;
 
 		void Fill(Animation& animation, const std::string& textureMapName, int firstFrameIndex, int framesCount, float framesPerSecond);
-		void Play(Animation& animation);
+		void Play(Animation& animation, bool looped);
+		void AdvanceFrames(float deltaTime);
 	};
 }

@@ -4,20 +4,20 @@
 
 namespace RoguelikeGame
 {
-	Floor::Floor(const XYZEngine::Vector2Df& position)
-	{
-		gameObject = XYZEngine::GameWorld::Instance()->CreateGameObject("Floor");
+    Floor::Floor(const XYZEngine::Vector2Df& position)
+    {
+        gameObject = XYZEngine::GameWorld::Instance()->CreateGameObject("Floor");
 
-		auto transform = gameObject->GetComponent<XYZEngine::TransformComponent>();
-		transform->SetWorldPosition(position);
+        auto transform = gameObject->GetComponent<XYZEngine::TransformComponent>();
+        transform->SetWorldPosition(position);
 
-		auto renderer = gameObject->AddComponent<XYZEngine::RectangleRendererComponent>();
-		renderer->SetSize(TILE_SIZE, TILE_SIZE);
-		renderer->SetColor(FLOOR_COLOR);
-	}
+        auto renderer = gameObject->AddComponent<XYZEngine::RectangleRendererComponent>();
+        renderer->SetSize(TILE_SIZE, TILE_SIZE);
+        renderer->SetColor(FLOOR_COLOR);
+    }
 
-	XYZEngine::GameObject* Floor::GetGameObject()
-	{
-		return gameObject;
-	}
+    XYZEngine::GameObject* Floor::GetGameObject()
+    {
+        return gameObject;
+    }
 }

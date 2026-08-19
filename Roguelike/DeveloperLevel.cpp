@@ -1,31 +1,52 @@
 #include "DeveloperLevel.h"
 #include "GameSettings.h"
 #include "LevelLoader.h"
+#include <LoggerRegistry.h>
 
 using namespace XYZEngine;
 
 namespace RoguelikeGame
 {
-	void DeveloperLevel::Start()
-	{
-		LevelData levelData;
-		if (LevelLoader::Load(TEST_LEVEL_PATH, levelData))
-		{
-			levelBuilder.Build(levelData);
-		}
+    void DeveloperLevel::Start()
+    {
+        LOG_INFO("Developer level is starting");
 
-		music = std::make_unique<Music>("main_theme", MUSIC_VOLUME);
-	}
-	void DeveloperLevel::Restart()
-	{
-		Stop();
-		Start();
-	}
-	void DeveloperLevel::Stop()
-	{
-		music.reset();
-		levelBuilder.Clear();
+        try
+        {
+            levelBuilder.Build(LevelLoader::Load(TEST_LEVEL_PATH));
+        }
+        catch (const std::exception& exception)
+        {
+            LOG_ERROR(std::string("Level is not loaded: ") + exception.what());
+            LOG_WARN("Game continues with an empty level");
+        }
 
-		GameWorld::Instance()->Clear();
-	}
+        music = std::make_unique<Music>("main_theme", MUSIC_VOLUME);
+
+        try
+        {
+            crosshair = std::make_unique<Crosshair>();
+        }
+        catch (const std::exception& exception)
+        {
+            LOG_ERROR(std::string("Crosshair is not created: ") + exception.what());
+        }
+    }
+
+    void DeveloperLevel::Restart()
+    {
+        Stop();
+        Start();
+    }
+
+    void DeveloperLevel::Stop()
+    {
+        LOG_INFO("Developer level is stopping");
+
+        crosshair.reset();
+        music.reset();
+        levelBuilder.Clear();
+
+        GameWorld::Instance()->Clear();
+    }
 }

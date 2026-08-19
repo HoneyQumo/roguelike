@@ -22,6 +22,21 @@
     <ClCompile Include="Enemy.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
+    <ClCompile Include="EnemyAttackComponent.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerAttackComponent.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Projectile.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Weapon.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Crosshair.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
     <ClCompile Include="Wall.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
@@ -36,9 +51,15 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Crosshair.h" />
     <ClInclude Include="DeveloperLevel.h" />
     <ClInclude Include="Enemy.h" />
+    <ClInclude Include="EnemyAttackComponent.h" />
+    <ClInclude Include="EnemyConfig.h" />
     <ClInclude Include="Floor.h" />
+    <ClInclude Include="PlayerAttackComponent.h" />
+    <ClInclude Include="Projectile.h" />
+    <ClInclude Include="Weapon.h" />
     <ClInclude Include="GameSettings.h" />
     <ClInclude Include="LevelBuilder.h" />
     <ClInclude Include="LevelData.h" />

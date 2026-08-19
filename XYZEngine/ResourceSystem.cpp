@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "ResourceSystem.h"
-#include <iostream>
+#include "LoggerRegistry.h"
+#include <cassert>
 
 namespace XYZEngine
 {
@@ -14,6 +15,7 @@ namespace XYZEngine
 	{
 		if (textures.find(name) != textures.end())
 		{
+			LOG_WARN("Texture is already loaded: " + name);
 			return;
 		}
 
@@ -22,15 +24,55 @@ namespace XYZEngine
 		{
 			newTexture->setSmooth(isSmooth);
 			textures.emplace(name, newTexture);
+			LOG_INFO("Texture loaded: " + name + " from " + sourcePath);
+			return;
 		}
+
+		LOG_ERROR("Can't load texture: " + sourcePath);
+		delete newTexture;
+	}
+	void ResourceSystem::LoadTexturePart(const std::string& name, std::string sourcePath, sf::IntRect area, bool isSmooth)
+	{
+		assert(area.width > 0 && area.height > 0);
+
+		if (textures.find(name) != textures.end())
+		{
+			LOG_WARN("Texture is already loaded: " + name);
+			return;
+		}
+
+		sf::Texture* newTexture = new sf::Texture();
+		if (newTexture->loadFromFile(sourcePath, area))
+		{
+			newTexture->setSmooth(isSmooth);
+			textures.emplace(name, newTexture);
+			LOG_INFO("Texture part loaded: " + name + " from " + sourcePath);
+			return;
+		}
+
+		LOG_ERROR("Can't load texture part: " + sourcePath);
+		delete newTexture;
 	}
 	const sf::Texture* ResourceSystem::GetTextureShared(const std::string& name) const
 	{
-		return textures.find(name)->second;
+		auto texturePair = textures.find(name);
+		if (texturePair == textures.end())
+		{
+			LOG_ERROR("Texture not found: " + name);
+			return nullptr;
+		}
+
+		return texturePair->second;
 	}
 	sf::Texture* ResourceSystem::GetTextureCopy(const std::string& name) const
 	{
-		return new sf::Texture(*textures.find(name)->second);
+		const sf::Texture* texture = GetTextureShared(name);
+		if (texture == nullptr)
+		{
+			return nullptr;
+		}
+
+		return new sf::Texture(*texture);
 	}
 	void ResourceSystem::DeleteSharedTexture(const std::string& name)
 	{
@@ -43,8 +85,12 @@ namespace XYZEngine
 
 	void ResourceSystem::LoadTextureMap(const std::string& name, std::string sourcePath, sf::Vector2u elementPixelSize, int totalElements, bool isSmooth)
 	{
+		assert(elementPixelSize.x > 0 && elementPixelSize.y > 0);
+		assert(totalElements > 0);
+
 		if (textureMaps.find(name) != textureMaps.end())
 		{
+			LOG_WARN("Texture map is already loaded: " + name);
 			return;
 		}
 
@@ -81,25 +127,50 @@ namespace XYZEngine
 			}
 
 			textureMaps.emplace(name, *textureMapElements);
+			LOG_INFO("Texture map loaded: " + name + ", elements: " + std::to_string(textureMapElements->size()));
+			return;
 		}
+
+		LOG_ERROR("Can't load texture map: " + sourcePath);
 	}
 	const sf::Texture* ResourceSystem::GetTextureMapElementShared(const std::string& name, int elementIndex) const
 	{
 		auto textureMap = textureMaps.find(name);
-		auto textures = textureMap->second;
-		return textures[elementIndex];
+		if (textureMap == textureMaps.end())
+		{
+			LOG_ERROR("Texture map not found: " + name);
+			return nullptr;
+		}
+
+		const auto& elements = textureMap->second;
+		if (elementIndex < 0 || elementIndex >= (int)elements.size())
+		{
+			LOG_ERROR("Texture map element out of range: " + name + ", index " + std::to_string(elementIndex));
+			return nullptr;
+		}
+
+		return elements[elementIndex];
 	}
 	sf::Texture* ResourceSystem::GetTextureMapElementCopy(const std::string& name, int elementIndex) const
 	{
-		auto textureMap = textureMaps.find(name);
-		auto textures = textureMap->second;
-		return new sf::Texture(*textures[elementIndex]);
+		const sf::Texture* element = GetTextureMapElementShared(name, elementIndex);
+		if (element == nullptr)
+		{
+			return nullptr;
+		}
+
+		return new sf::Texture(*element);
 	}
 	int ResourceSystem::GetTextureMapElementsCount(const std::string& name) const
 	{
 		auto textureMap = textureMaps.find(name);
-		auto textures = textureMap->second;
-		return textures.size();
+		if (textureMap == textureMaps.end())
+		{
+			LOG_WARN("Texture map not found: " + name);
+			return 0;
+		}
+
+		return (int)textureMap->second.size();
 	}
 	void ResourceSystem::DeleteSharedTextureMap(const std::string& name)
 	{
@@ -125,10 +196,11 @@ namespace XYZEngine
 		if (newSound->loadFromFile(sourcePath))
 		{
 			sounds.emplace(name, newSound);
+			LOG_INFO("Sound loaded: " + name + " from " + sourcePath);
 			return;
 		}
 
-		std::cout << "Can't load sound: " << sourcePath << std::endl;
+		LOG_ERROR("Can't load sound: " + sourcePath);
 		delete newSound;
 	}
 	const sf::SoundBuffer* ResourceSystem::GetSound(const std::string& name) const
@@ -136,7 +208,7 @@ namespace XYZEngine
 		auto soundPair = sounds.find(name);
 		if (soundPair == sounds.end())
 		{
-			std::cout << "Sound not found: " << name << std::endl;
+			LOG_ERROR("Sound not found: " + name);
 			return nullptr;
 		}
 		return soundPair->second;
@@ -165,10 +237,11 @@ namespace XYZEngine
 		if (newMusic->openFromFile(sourcePath))
 		{
 			musicTracks.emplace(name, newMusic);
+			LOG_INFO("Music opened: " + name + " from " + sourcePath);
 			return;
 		}
 
-		std::cout << "Can't open music: " << sourcePath << std::endl;
+		LOG_ERROR("Can't open music: " + sourcePath);
 		delete newMusic;
 	}
 	sf::Music* ResourceSystem::GetMusic(const std::string& name) const
@@ -176,7 +249,7 @@ namespace XYZEngine
 		auto musicPair = musicTracks.find(name);
 		if (musicPair == musicTracks.end())
 		{
-			std::cout << "Music not found: " << name << std::endl;
+			LOG_ERROR("Music not found: " + name);
 			return nullptr;
 		}
 		return musicPair->second;

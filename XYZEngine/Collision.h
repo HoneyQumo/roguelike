@@ -11,6 +11,9 @@ namespace XYZEngine
 		Collision(ColliderComponent* newFirst, ColliderComponent* newSecond, sf::FloatRect newCollisionRect) :
 			first(newFirst), second(newSecond), collisionRect(newCollisionRect) {
 		};
+
+		ColliderComponent* GetFirst() const { return first; }
+		ColliderComponent* GetSecond() const { return second; }
 	private:
 		ColliderComponent* first;
 		ColliderComponent* second;

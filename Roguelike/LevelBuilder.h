@@ -10,19 +10,20 @@
 
 namespace RoguelikeGame
 {
-	class LevelBuilder
-	{
-	public:
-		void Build(const LevelData& levelData);
-		void Clear();
+    class LevelBuilder
+    {
+    public:
+        void Build(const LevelData& levelData);
+        void Clear();
 
-		Player* GetPlayer() const;
-	private:
-		std::vector<std::unique_ptr<Floor>> floors;
-		std::vector<std::unique_ptr<Wall>> walls;
-		std::vector<std::unique_ptr<Enemy>> enemies;
-		std::unique_ptr<Player> player;
+        Player* GetPlayer() const;
 
-		static XYZEngine::Vector2Df TileToWorldPosition(int column, int row, int levelHeight);
-	};
+    private:
+        std::vector<std::unique_ptr<Floor>> floors;
+        std::vector<std::unique_ptr<Wall>> walls;
+        std::vector<std::unique_ptr<Enemy>> enemies;
+        std::unique_ptr<Player> player;
+
+        static XYZEngine::Vector2Df TileToWorldPosition(int column, int row, int levelHeight);
+    };
 }

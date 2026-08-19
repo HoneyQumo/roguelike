@@ -21,6 +21,9 @@ namespace XYZEngine
 		void SetDetectionRadius(float newDetectionRadius);
 		float GetDetectionRadius() const;
 
+		void SetStopDistance(float newStopDistance);
+		float GetStopDistance() const;
+
 		bool IsChasing() const;
 	private:
 		TransformComponent* transform;
@@ -28,6 +31,7 @@ namespace XYZEngine
 
 		std::string targetName;
 		float detectionRadius = 0.f;
+		float stopDistance = 0.f;
 		bool isChasing = false;
 	};
 }

@@ -7,12 +7,13 @@
 
 namespace RoguelikeGame
 {
-	class Music
-	{
-	public:
-		Music(const std::string& musicName, float volume);
-		XYZEngine::GameObject* GetGameObject();
-	private:
-		XYZEngine::GameObject* gameObject;
-	};
+    class Music
+    {
+    public:
+        Music(const std::string& musicName, float volume);
+        XYZEngine::GameObject* GetGameObject();
+
+    private:
+        XYZEngine::GameObject* gameObject;
+    };
 }

@@ -33,7 +33,15 @@ namespace XYZEngine
 
 			auto transformScale = Convert<sf::Vector2f, Vector2Df>(transform->GetWorldScale());
 			sprite->setScale({ scale.x * transformScale.x, scale.y * transformScale.y });
-			RenderSystem::Instance()->Render(*sprite);
+
+			if (isAdditiveBlending)
+			{
+				RenderSystem::Instance()->Render(*sprite, sf::RenderStates(sf::BlendAdd));
+			}
+			else
+			{
+				RenderSystem::Instance()->Render(*sprite);
+			}
 		}
 	}
 
@@ -51,6 +59,15 @@ namespace XYZEngine
 	{
 		auto originalSize = sprite->getTexture()->getSize();
 		scale = { (float)newWidth / (float)originalSize.x, -(float)newHeight / (float)originalSize.y };
+	}
+
+	void SpriteRendererComponent::SetColor(const sf::Color& newColor)
+	{
+		sprite->setColor(newColor);
+	}
+	void SpriteRendererComponent::SetAdditiveBlending(bool isAdditive)
+	{
+		isAdditiveBlending = isAdditive;
 	}
 
 	void SpriteRendererComponent::FlipX(bool flip)

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "TransformComponent.h"
+#include "LoggerRegistry.h"
 #include <iostream>
 
 namespace XYZEngine
@@ -26,7 +27,7 @@ namespace XYZEngine
 		{
 			if constexpr (!std::is_base_of<Component, T>::value)
 			{
-				std::cout << "T must be derived from Component." << std::endl;
+				LOG_ERROR("T must be derived from Component.");
 				return nullptr;
 			}
 
@@ -34,7 +35,7 @@ namespace XYZEngine
 			{
 				if (GetComponent<TransformComponent>() != nullptr)
 				{
-					std::cout << "Can't add Transform, because it will break the engine loop." << std::endl;
+					LOG_WARN("Can't add second Transform to " + name);
 					return nullptr;
 				}
 			}
@@ -49,7 +50,6 @@ namespace XYZEngine
 		{
 			components.erase(std::remove_if(components.begin(), components.end(), [component](Component* obj) { return obj == component; }), components.end());
 			delete component;
-			std::cout << "Deleted component";
 		}
 
 		template <typename T>

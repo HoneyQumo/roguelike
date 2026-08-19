@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "PhysicsSystem.h"
+#include <cassert>
 
 namespace XYZEngine
 {
@@ -108,13 +109,24 @@ namespace XYZEngine
 
 	void PhysicsSystem::Subscribe(ColliderComponent* collider)
 	{
-		std::cout << "Subscribe " << collider << std::endl;
+		assert(collider != nullptr);
 		colliders.push_back(collider);
 	}
 	void PhysicsSystem::Unsubscribe(ColliderComponent* collider)
 	{
-		std::cout << "Unsubscribe " << collider << std::endl;
-
 		colliders.erase(std::remove_if(colliders.begin(), colliders.end(), [collider](ColliderComponent* obj) { return obj == collider; }), colliders.end());
+
+		// A destroyed collider must not stay in trigger pairs, they are checked after the object is gone.
+		for (auto pair = triggersEnteredPair.cbegin(); pair != triggersEnteredPair.cend(); )
+		{
+			if (pair->first == collider || pair->second == collider)
+			{
+				pair = triggersEnteredPair.erase(pair);
+			}
+			else
+			{
+				++pair;
+			}
+		}
 	}
 }

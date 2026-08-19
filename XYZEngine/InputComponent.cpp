@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "InputComponent.h"
+#include "RenderSystem.h"
 
 namespace XYZEngine
 {
@@ -27,6 +28,12 @@ namespace XYZEngine
 		{
 			horizontalAxis -= 1.0f;
 		}
+
+		isAttackPressed = sf::Mouse::isButtonPressed(sf::Mouse::Left);
+
+		auto& window = RenderSystem::Instance()->GetMainWindow();
+		auto worldPosition = window.mapPixelToCoords(sf::Mouse::getPosition(window));
+		mouseWorldPosition = Convert<Vector2Df, sf::Vector2f>(worldPosition);
 	}
 	void InputComponent::Render()
 	{
@@ -40,5 +47,14 @@ namespace XYZEngine
 	float InputComponent::GetVerticalAxis() const
 	{
 		return verticalAxis;
+	}
+
+	bool InputComponent::IsAttackPressed() const
+	{
+		return isAttackPressed;
+	}
+	Vector2Df InputComponent::GetMouseWorldPosition() const
+	{
+		return mouseWorldPosition;
 	}
 }

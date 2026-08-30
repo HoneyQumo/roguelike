@@ -18,6 +18,7 @@ namespace RoguelikeGame
         }
 
         gameObject = XYZEngine::GameWorld::Instance()->CreateGameObject("Crosshair");
+        gameObject->SetRenderLayer(UI_RENDER_LAYER);
 
         auto renderer = gameObject->AddComponent<XYZEngine::SpriteRendererComponent>();
         renderer->SetTexture(*texture);

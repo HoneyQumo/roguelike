@@ -46,6 +46,9 @@
     <ClCompile Include="Fx.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
+    <ClCompile Include="GameResources.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
     <ClCompile Include="HitFlashComponent.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
@@ -66,6 +69,7 @@
     <ClInclude Include="BloodPool.h" />
     <ClInclude Include="Crosshair.h" />
     <ClInclude Include="Fx.h" />
+    <ClInclude Include="GameResources.h" />
     <ClInclude Include="HitFlashComponent.h" />
     <ClInclude Include="SpriteAtlas.h" />
     <ClInclude Include="WeaponCatalog.h" />

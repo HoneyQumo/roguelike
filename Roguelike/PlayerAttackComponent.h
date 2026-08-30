@@ -4,7 +4,6 @@
 #include <InputComponent.h>
 #include <WeaponComponent.h>
 #include <HealthComponent.h>
-#include <AimRotationComponent.h>
 
 namespace RoguelikeGame
 {
@@ -21,6 +20,5 @@ namespace RoguelikeGame
         XYZEngine::InputComponent* input = nullptr;
         XYZEngine::WeaponComponent* weapon = nullptr;
         XYZEngine::HealthComponent* health = nullptr;
-        XYZEngine::AimRotationComponent* aim = nullptr;
     };
 }

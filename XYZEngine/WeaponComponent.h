@@ -22,7 +22,7 @@ namespace XYZEngine
         void SetShotAction(std::function<void(const Vector2Df&, const Vector2Df&, float, float)> newShotAction);
 
         bool IsReady() const;
-        bool TryShoot(const Vector2Df& direction);
+        bool TryShootAt(const Vector2Df& targetPosition);
 
     private:
         TransformComponent* transform;

@@ -18,6 +18,7 @@ namespace RoguelikeGame
                            const std::string& shooterName, BulletKind bullet)
     {
         auto gameObject = XYZEngine::GameWorld::Instance()->CreateGameObject("Projectile");
+        gameObject->SetRenderLayer(EFFECT_RENDER_LAYER);
 
         auto transform = gameObject->GetComponent<XYZEngine::TransformComponent>();
         transform->SetWorldPosition(position);

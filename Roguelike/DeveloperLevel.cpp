@@ -13,7 +13,7 @@ namespace RoguelikeGame
 
         try
         {
-            levelBuilder.Build(LevelLoader::Load(TEST_LEVEL_PATH));
+            levelBuilder.Build(LevelLoader::Load(TEST_LEVEL_FILE));
         }
         catch (const std::exception& exception)
         {
@@ -21,7 +21,7 @@ namespace RoguelikeGame
             LOG_WARN("Game continues with an empty level");
         }
 
-        music = std::make_unique<Music>("main_theme", MUSIC_VOLUME);
+        music = std::make_unique<Music>(MAIN_THEME_MUSIC, MUSIC_VOLUME);
 
         try
         {

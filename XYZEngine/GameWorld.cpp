@@ -1,4 +1,4 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "GameWorld.h"
 
 namespace XYZEngine
@@ -23,9 +23,18 @@ namespace XYZEngine
 	}
 	void GameWorld::Render()
 	{
-		for (int i = 0; i < gameObjects.size(); i++)
+		if (isRenderOrderDirty)
 		{
-			gameObjects[i]->Render();
+			renderOrder = gameObjects;
+			std::stable_sort(renderOrder.begin(), renderOrder.end(),
+				[](const GameObject* first, const GameObject* second) { return first->GetRenderLayer() < second->GetRenderLayer(); });
+
+			isRenderOrderDirty = false;
+		}
+
+		for (int i = 0; i < renderOrder.size(); i++)
+		{
+			renderOrder[i]->Render();
 		}
 	}
 	void GameWorld::LateUpdate()
@@ -40,12 +49,14 @@ namespace XYZEngine
 	{
 		GameObject* newGameObject = new GameObject();
 		gameObjects.push_back(newGameObject);
+		isRenderOrderDirty = true;
 		return newGameObject;
 	}
 	GameObject* GameWorld::CreateGameObject(std::string name)
 	{
 		GameObject* newGameObject = new GameObject(name);
 		gameObjects.push_back(newGameObject);
+		isRenderOrderDirty = true;
 		return newGameObject;
 	}
 	GameObject* GameWorld::FindGameObject(const std::string& name) const
@@ -63,6 +74,10 @@ namespace XYZEngine
 	void GameWorld::DestroyGameObject(GameObject* gameObject)
 	{
 		markedToDestroyGameObjects.push_back(gameObject);
+	}
+	void GameWorld::InvalidateRenderOrder()
+	{
+		isRenderOrderDirty = true;
 	}
 	void GameWorld::Clear()
 	{
@@ -112,5 +127,7 @@ namespace XYZEngine
 
 			delete gameObjectToDelete;
 		}
+
+		isRenderOrderDirty = true;
 	}
 }

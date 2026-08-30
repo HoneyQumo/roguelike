@@ -3,6 +3,7 @@
 #include "Projectile.h"
 #include "PlayerAttackComponent.h"
 #include "HitFlashComponent.h"
+#include "BloodPool.h"
 #include <GameWorld.h>
 #include <RenderSystem.h>
 #include <CameraComponent.h>
@@ -25,16 +26,6 @@ namespace RoguelikeGame
 {
     Player::Player(const XYZEngine::Vector2Df& position)
     {
-        // Лужа должна рисоваться под телом, поэтому она создается первой.
-        try
-        {
-            bloodPool = std::make_unique<BloodPool>();
-        }
-        catch (const std::exception& exception)
-        {
-            LOG_ERROR(std::string("Player blood pool is not created: ") + exception.what());
-        }
-
         gameObject = XYZEngine::GameWorld::Instance()->CreateGameObject("Player");
 
         auto transform = gameObject->GetComponent<XYZEngine::TransformComponent>();
@@ -51,11 +42,6 @@ namespace RoguelikeGame
         auto renderer = gameObject->AddComponent<XYZEngine::SpriteRendererComponent>();
         renderer->SetTexture(*texture);
         renderer->SetPixelSize(CHARACTER_SPRITE_SIZE, CHARACTER_SPRITE_SIZE);
-
-        if (bloodPool != nullptr)
-        {
-            bloodPool->AttachTo(gameObject);
-        }
 
         auto camera = gameObject->AddComponent<XYZEngine::CameraComponent>();
         camera->SetWindow(&XYZEngine::RenderSystem::Instance()->GetMainWindow());
@@ -88,11 +74,11 @@ namespace RoguelikeGame
         health->SetArmor(PLAYER_ARMOR);
 
         auto shotAudio = gameObject->AddComponent<XYZEngine::AudioComponent>();
-        shotAudio->SetSound(XYZEngine::ResourceSystem::Instance()->GetSound("shot"));
+        shotAudio->SetSound(XYZEngine::ResourceSystem::Instance()->GetSound(SHOT_SOUND));
         shotAudio->SetVolume(SHOT_VOLUME);
 
         auto hurtAudio = gameObject->AddComponent<XYZEngine::AudioComponent>();
-        hurtAudio->SetSound(XYZEngine::ResourceSystem::Instance()->GetSound("hurt"));
+        hurtAudio->SetSound(XYZEngine::ResourceSystem::Instance()->GetSound(HURT_SOUND));
         hurtAudio->SetVolume(HURT_VOLUME);
 
         auto hitFlash = gameObject->AddComponent<HitFlashComponent>();
@@ -138,18 +124,16 @@ namespace RoguelikeGame
             hitFlash->Flash();
         });
 
-        auto poolAnimation = bloodPool == nullptr ? nullptr : bloodPool->GetAnimation();
-        health->SubscribeDeath([animation, movement, collider, aim, poolAnimation]()
+        auto characterObject = gameObject;
+        health->SubscribeDeath([characterObject, transform, animation, movement, collider, aim]()
         {
             animation->PlayDeath();
             movement->SetSpeed(0.f);
             collider->SetTrigger(true);
             aim->SetEnabled(false);
 
-            if (poolAnimation != nullptr)
-            {
-                poolAnimation->Play();
-            }
+            characterObject->SetRenderLayer(CORPSE_RENDER_LAYER);
+            BloodPool::Spawn(transform->GetWorldPosition(), transform->GetWorldRotation());
 
             LOG_WARN("Player is dead, controls are disabled");
         });
@@ -158,6 +142,8 @@ namespace RoguelikeGame
         healthBar->SetSize(HEALTH_BAR_WIDTH, HEALTH_BAR_HEIGHT);
         healthBar->SetOffset(0.f, HEALTH_BAR_OFFSET_Y);
         healthBar->SetColors({90, 200, 90}, {20, 20, 20, 200});
+
+        gameObject->SetRenderLayer(PLAYER_RENDER_LAYER);
 
         LOG_INFO("Player created at " + std::to_string(static_cast<int>(position.x)) + ";" + std::to_string(static_cast<int>(position.y)));
     }

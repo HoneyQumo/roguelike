@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "TransformComponent.h"
 #include "LoggerRegistry.h"
@@ -18,6 +18,9 @@ namespace XYZEngine
 
 		std::string GetName() const;
 		void Print(int depth = 0) const;
+
+		void SetRenderLayer(int newRenderLayer);
+		int GetRenderLayer() const;
 
 		void Update(float deltaTime);
 		void Render();
@@ -125,6 +128,7 @@ namespace XYZEngine
 
 	private:
 		std::string name;
+		int renderLayer = 0;
 
 		std::vector<GameObject*> children = {};
 		std::vector<Component*> components = {};

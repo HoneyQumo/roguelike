@@ -40,6 +40,7 @@ namespace RoguelikeGame
         }
 
         auto gameObject = XYZEngine::GameWorld::Instance()->CreateGameObject("Fx");
+        gameObject->SetRenderLayer(EFFECT_RENDER_LAYER);
 
         auto transform = gameObject->GetComponent<XYZEngine::TransformComponent>();
         transform->SetWorldPosition(position);

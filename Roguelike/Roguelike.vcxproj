@@ -163,6 +163,7 @@
         <ClCompile Include="BloodPool.cpp"/>
         <ClCompile Include="Crosshair.cpp"/>
         <ClCompile Include="Fx.cpp"/>
+        <ClCompile Include="GameResources.cpp"/>
         <ClCompile Include="HitFlashComponent.cpp"/>
         <ClCompile Include="WeaponLayerComponent.cpp"/>
         <ClCompile Include="DeveloperLevel.cpp"/>
@@ -183,6 +184,7 @@
         <ClInclude Include="BloodPool.h"/>
         <ClInclude Include="Crosshair.h"/>
         <ClInclude Include="Fx.h"/>
+        <ClInclude Include="GameResources.h"/>
         <ClInclude Include="HitFlashComponent.h"/>
         <ClInclude Include="SpriteAtlas.h"/>
         <ClInclude Include="WeaponCatalog.h"/>

@@ -3,6 +3,7 @@
 #include "Projectile.h"
 #include "EnemyAttackComponent.h"
 #include "HitFlashComponent.h"
+#include "BloodPool.h"
 #include <GameWorld.h>
 #include <SpriteRendererComponent.h>
 #include <LoggerRegistry.h>
@@ -23,16 +24,6 @@ namespace RoguelikeGame
 {
     Enemy::Enemy(const EnemyConfig& config, const XYZEngine::Vector2Df& position)
     {
-        // Лужа должна рисоваться под телом, поэтому она создается первой.
-        try
-        {
-            bloodPool = std::make_unique<BloodPool>();
-        }
-        catch (const std::exception& exception)
-        {
-            LOG_ERROR(std::string("Enemy blood pool is not created: ") + exception.what());
-        }
-
         gameObject = XYZEngine::GameWorld::Instance()->CreateGameObject(config.objectName);
 
         auto transform = gameObject->GetComponent<XYZEngine::TransformComponent>();
@@ -49,11 +40,6 @@ namespace RoguelikeGame
         auto renderer = gameObject->AddComponent<XYZEngine::SpriteRendererComponent>();
         renderer->SetTexture(*texture);
         renderer->SetPixelSize(CHARACTER_SPRITE_SIZE, CHARACTER_SPRITE_SIZE);
-
-        if (bloodPool != nullptr)
-        {
-            bloodPool->AttachTo(gameObject);
-        }
 
         // Chase задает направление, а movement реализует его. Сначала обновляй Chase.
         auto chase = gameObject->AddComponent<XYZEngine::ChaseComponent>();
@@ -91,7 +77,7 @@ namespace RoguelikeGame
         healthBar->SetColors({200, 60, 60}, {20, 20, 20, 200});
 
         auto hurtAudio = gameObject->AddComponent<XYZEngine::AudioComponent>();
-        hurtAudio->SetSound(XYZEngine::ResourceSystem::Instance()->GetSound("hurt"));
+        hurtAudio->SetSound(XYZEngine::ResourceSystem::Instance()->GetSound(HURT_SOUND));
         hurtAudio->SetVolume(HURT_VOLUME);
 
         auto hitFlash = gameObject->AddComponent<HitFlashComponent>();
@@ -114,7 +100,7 @@ namespace RoguelikeGame
         else
         {
             auto shotAudio = gameObject->AddComponent<XYZEngine::AudioComponent>();
-            shotAudio->SetSound(XYZEngine::ResourceSystem::Instance()->GetSound("shot"));
+            shotAudio->SetSound(XYZEngine::ResourceSystem::Instance()->GetSound(SHOT_SOUND));
             shotAudio->SetVolume(SHOT_VOLUME);
 
             const WeaponDefinition& weaponDefinition = GetWeapon(config.weapon);
@@ -154,8 +140,8 @@ namespace RoguelikeGame
             hitFlash->Flash();
         });
 
-        auto poolAnimation = bloodPool == nullptr ? nullptr : bloodPool->GetAnimation();
-        health->SubscribeDeath([animation, movement, chase, collider, aim, poolAnimation]()
+        auto characterObject = gameObject;
+        health->SubscribeDeath([characterObject, transform, animation, movement, chase, collider, aim]()
         {
             animation->PlayDeath();
             movement->SetSpeed(0.f);
@@ -163,11 +149,11 @@ namespace RoguelikeGame
             collider->SetTrigger(true);
             aim->SetEnabled(false);
 
-            if (poolAnimation != nullptr)
-            {
-                poolAnimation->Play();
-            }
+            characterObject->SetRenderLayer(CORPSE_RENDER_LAYER);
+            BloodPool::Spawn(transform->GetWorldPosition(), transform->GetWorldRotation());
         });
+
+        gameObject->SetRenderLayer(ENEMY_RENDER_LAYER);
 
         LOG_INFO(config.objectName + " created at " + std::to_string(static_cast<int>(position.x)) + ";" + std::to_string(static_cast<int>(position.y)));
     }

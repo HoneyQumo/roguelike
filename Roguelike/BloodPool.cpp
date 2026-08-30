@@ -3,46 +3,37 @@
 #include <GameWorld.h>
 #include <ResourceSystem.h>
 #include <SpriteRendererComponent.h>
+#include <SpriteAnimationComponent.h>
 #include <LoggerRegistry.h>
-#include <stdexcept>
 
 namespace RoguelikeGame
 {
-    BloodPool::BloodPool()
+    void BloodPool::Spawn(const XYZEngine::Vector2Df& position, float angle)
     {
         auto texture = XYZEngine::ResourceSystem::Instance()->GetTextureMapElementShared(BLOOD_POOL_TEXTURE, 0);
         if (texture == nullptr)
         {
-            throw std::runtime_error("blood pool texture is not loaded");
+            LOG_ERROR("Blood pool texture is not loaded");
+            return;
         }
 
-        gameObject = XYZEngine::GameWorld::Instance()->CreateGameObject("BloodPool");
+        auto gameObject = XYZEngine::GameWorld::Instance()->CreateGameObject("BloodPool");
+        gameObject->SetRenderLayer(BLOOD_RENDER_LAYER);
+
+        auto transform = gameObject->GetComponent<XYZEngine::TransformComponent>();
+        transform->SetWorldPosition(position);
+        transform->SetWorldRotation(angle);
 
         auto renderer = gameObject->AddComponent<XYZEngine::SpriteRendererComponent>();
         renderer->SetTexture(*texture);
         renderer->SetPixelSize(FX_BLOOD_POOL.width, FX_BLOOD_POOL.height);
         renderer->SetVisible(false);
 
-        animation = gameObject->AddComponent<XYZEngine::SpriteAnimationComponent>();
+        auto animation = gameObject->AddComponent<XYZEngine::SpriteAnimationComponent>();
         animation->SetFrames(BLOOD_POOL_TEXTURE, 0, FX_BLOOD_POOL.frames, FramesPerSecond(FX_BLOOD_POOL.millisecondsPerFrame));
         animation->SetStartDelay(BLOOD_POOL_DELAY);
+
         animation->SetEndBehaviour(XYZEngine::SpriteAnimationEnd::HoldLastFrame);
-    }
-
-    void BloodPool::AttachTo(XYZEngine::GameObject* owner)
-    {
-        if (owner == nullptr)
-        {
-            return;
-        }
-
-        auto transform = gameObject->GetComponent<XYZEngine::TransformComponent>();
-        transform->SetParent(owner->GetComponent<XYZEngine::TransformComponent>());
-        transform->SetLocalPosition(0.f, 0.f);
-    }
-
-    XYZEngine::SpriteAnimationComponent* BloodPool::GetAnimation()
-    {
-        return animation;
+        animation->Play();
     }
 }

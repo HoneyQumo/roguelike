@@ -49,13 +49,13 @@ namespace RoguelikeGame
             return;
         }
 
-        XYZEngine::Vector2Df toTarget = target->GetComponent<XYZEngine::TransformComponent>()->GetWorldPosition() - transform->GetWorldPosition();
-        if (toTarget.GetLength() > attackRange)
+        XYZEngine::Vector2Df targetPosition = target->GetComponent<XYZEngine::TransformComponent>()->GetWorldPosition();
+        if ((targetPosition - transform->GetWorldPosition()).GetLength() > attackRange)
         {
             return;
         }
 
-        weapon->TryShoot(toTarget);
+        weapon->TryShootAt(targetPosition);
     }
 
     void EnemyAttackComponent::Render()

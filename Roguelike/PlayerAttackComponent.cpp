@@ -1,4 +1,4 @@
-#include "PlayerAttackComponent.h"
+﻿#include "PlayerAttackComponent.h"
 #include <GameObject.h>
 #include <LoggerRegistry.h>
 
@@ -20,14 +20,9 @@ namespace RoguelikeGame
         {
             health = gameObject->GetComponent<XYZEngine::HealthComponent>();
         }
-        if (aim == nullptr)
+        if (input == nullptr || weapon == nullptr)
         {
-            aim = gameObject->GetComponent<XYZEngine::AimRotationComponent>();
-        }
-
-        if (input == nullptr || weapon == nullptr || aim == nullptr)
-        {
-            LOG_ERROR("Player attack needs input, weapon and aim components");
+            LOG_ERROR("Player attack needs input and weapon components");
             gameObject->RemoveComponent(this);
             return;
         }
@@ -39,7 +34,7 @@ namespace RoguelikeGame
 
         if (input->IsAttackPressed())
         {
-            weapon->TryShoot(aim->GetAimDirection());
+            weapon->TryShootAt(input->GetMouseWorldPosition());
         }
     }
 

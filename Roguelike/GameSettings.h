@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include <string>
 #include <SFML/Graphics/Color.hpp>
 #include "EnemyConfig.h"
 #include "SpriteAtlas.h"
@@ -29,10 +30,18 @@ namespace RoguelikeGame
 
     constexpr float SHOT_FORWARD_OFFSET = 0.5f * CHARACTER_COLLIDER_SIZE + 4.f;
 
-    inline Vector2Df ShotOffset(const WeaponDefinition& weapon)
+    inline XYZEngine::Vector2Df ShotOffset(const WeaponDefinition& weapon)
     {
         return {SHOT_FORWARD_OFFSET, ToWorldOffset(weapon.muzzleX, weapon.muzzleY).y};
     }
+
+    constexpr int GROUND_RENDER_LAYER = 0;
+    constexpr int BLOOD_RENDER_LAYER = 1;
+    constexpr int CORPSE_RENDER_LAYER = 2;
+    constexpr int ENEMY_RENDER_LAYER = 3;
+    constexpr int PLAYER_RENDER_LAYER = 4;
+    constexpr int EFFECT_RENDER_LAYER = 5;
+    constexpr int UI_RENDER_LAYER = 6;
 
     constexpr int CROSSHAIR_SIZE = 32;
 
@@ -59,8 +68,24 @@ namespace RoguelikeGame
     constexpr auto IMPACT_TEXTURE = "fx_impact";
     constexpr auto BULLET_TEXTURE = "fx_bullet";
     constexpr auto HIT_FLASH_SHADER = "hit_flash";
+    constexpr auto SHOT_SOUND = "shot";
+    constexpr auto HURT_SOUND = "hurt";
+    constexpr auto MAIN_THEME_MUSIC = "main_theme";
 
-    constexpr auto TEST_LEVEL_PATH = "Resources/Levels/test_level.config";
+    const std::string TEXTURES_PATH = "Resources/Textures/";
+    const std::string AUDIO_PATH = "Resources/Audio/";
+    const std::string SHADERS_PATH = "Resources/Shaders/";
+    const std::string LEVELS_PATH = "Resources/Levels/";
+
+    const std::string CROSSHAIR_FILE = TEXTURES_PATH + "crosshair.png";
+    const std::string WEAPONS_ATLAS_FILE = TEXTURES_PATH + "weapons.png";
+    const std::string FX_ATLAS_FILE = TEXTURES_PATH + "fx.png";
+    const std::string HIT_FLASH_SHADER_FILE = SHADERS_PATH + "hit_flash.frag";
+    const std::string SHOT_SOUND_FILE = AUDIO_PATH + "shot.wav";
+    const std::string HURT_SOUND_FILE = AUDIO_PATH + "hurt.wav";
+    const std::string MAIN_THEME_FILE = AUDIO_PATH + "main_music_1.ogg";
+    const std::string TEST_LEVEL_FILE = LEVELS_PATH + "test_level.config";
+
     constexpr auto LOG_FILE_PATH = "log.txt";
 
     const sf::Color WALL_COLOR = {92, 86, 80};

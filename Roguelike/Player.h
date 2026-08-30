@@ -3,7 +3,6 @@
 #include <memory>
 #include "GameObject.h"
 #include "Vector.h"
-#include "BloodPool.h"
 #include "Weapon.h"
 
 namespace RoguelikeGame
@@ -16,7 +15,6 @@ namespace RoguelikeGame
 
     private:
         XYZEngine::GameObject* gameObject;
-        std::unique_ptr<BloodPool> bloodPool;
         std::unique_ptr<Weapon> weapon;
     };
 }

@@ -38,9 +38,9 @@ namespace XYZEngine
 		assert(newProjectileSpeed > 0.f);
 		projectileSpeed = newProjectileSpeed;
 	}
-	void WeaponComponent::SetShotOffset(float newShotOffset)
+	void WeaponComponent::SetMuzzleOffset(const Vector2Df& newMuzzleOffset)
 	{
-		shotOffset = newShotOffset;
+		muzzleOffset = newMuzzleOffset;
 	}
 	void WeaponComponent::SetShotAction(std::function<void(const Vector2Df&, const Vector2Df&, float, float)> newShotAction)
 	{
@@ -73,7 +73,10 @@ namespace XYZEngine
 		}
 
 		Vector2Df normalizedDirection = (1.f / length) * direction;
-		Vector2Df shotPosition = transform->GetWorldPosition() + shotOffset * normalizedDirection;
+		Vector2Df sideDirection = { -normalizedDirection.y, normalizedDirection.x };
+		Vector2Df shotPosition = transform->GetWorldPosition()
+			+ muzzleOffset.x * normalizedDirection
+			+ muzzleOffset.y * sideDirection;
 
 		shotAction(shotPosition, normalizedDirection, damage, projectileSpeed);
 		cooldownTimer = cooldown;

@@ -78,6 +78,10 @@ namespace XYZEngine
 	{
 		shooterName = newShooterName;
 	}
+	void ProjectileComponent::SetHitAction(std::function<void(const Vector2Df&, const Vector2Df&, bool)> newHitAction)
+	{
+		hitAction = newHitAction;
+	}
 
 	void ProjectileComponent::OnTrigger(const Trigger& trigger)
 	{
@@ -104,9 +108,17 @@ namespace XYZEngine
 		}
 
 		auto health = target->GetComponent<HealthComponent>();
-		if (health != nullptr && health->IsAlive())
+		bool isCharacterHit = health != nullptr && health->IsAlive();
+		if (isCharacterHit)
 		{
 			health->TakeDamage(damage);
+		}
+
+		if (hitAction != nullptr)
+		{
+			float length = direction.GetLength();
+			Vector2Df normalizedDirection = length > 0.f ? (1.f / length) * direction : Vector2Df(1.f, 0.f);
+			hitAction(transform->GetWorldPosition(), normalizedDirection, isCharacterHit);
 		}
 
 		Destroy();

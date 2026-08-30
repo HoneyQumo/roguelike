@@ -2,12 +2,9 @@
 #include <GameObject.h>
 #include <GameWorld.h>
 #include <LoggerRegistry.h>
-#include <cmath>
 
 namespace RoguelikeGame
 {
-    const float DEGREES_IN_RADIAN = 57.29578f;
-
     EnemyAttackComponent::EnemyAttackComponent(XYZEngine::GameObject* gameObject) : Component(gameObject)
     {
         transform = gameObject->GetComponent<XYZEngine::TransformComponent>();
@@ -58,7 +55,6 @@ namespace RoguelikeGame
             return;
         }
 
-        AimWeapon(toTarget);
         weapon->TryShoot(toTarget);
     }
 
@@ -76,25 +72,4 @@ namespace RoguelikeGame
         attackRange = newAttackRange;
     }
 
-    void EnemyAttackComponent::SetWeapon(XYZEngine::TransformComponent* newWeaponTransform, XYZEngine::SpriteRendererComponent* newWeaponRenderer)
-    {
-        weaponTransform = newWeaponTransform;
-        weaponRenderer = newWeaponRenderer;
-    }
-
-    void EnemyAttackComponent::AimWeapon(const XYZEngine::Vector2Df& direction)
-    {
-        if (weaponTransform == nullptr || direction.GetLength() <= 0.f)
-        {
-            return;
-        }
-
-        float angle = std::atan2(direction.y, direction.x) * DEGREES_IN_RADIAN;
-        weaponTransform->SetWorldRotation(angle);
-
-        if (weaponRenderer != nullptr)
-        {
-            weaponRenderer->FlipY(direction.x < 0.f);
-        }
-    }
 }

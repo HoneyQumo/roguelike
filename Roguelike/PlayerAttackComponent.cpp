@@ -1,16 +1,10 @@
 #include "PlayerAttackComponent.h"
 #include <GameObject.h>
 #include <LoggerRegistry.h>
-#include <cmath>
 
 namespace RoguelikeGame
 {
-    const float RADIANS_TO_DEGREES = 57.29578f;
-
-    PlayerAttackComponent::PlayerAttackComponent(XYZEngine::GameObject* gameObject) : Component(gameObject)
-    {
-        transform = gameObject->GetComponent<XYZEngine::TransformComponent>();
-    }
+    PlayerAttackComponent::PlayerAttackComponent(XYZEngine::GameObject* gameObject) : Component(gameObject) {}
 
     void PlayerAttackComponent::Update(float deltaTime)
     {
@@ -26,10 +20,14 @@ namespace RoguelikeGame
         {
             health = gameObject->GetComponent<XYZEngine::HealthComponent>();
         }
-
-        if (input == nullptr || weapon == nullptr)
+        if (aim == nullptr)
         {
-            LOG_ERROR("Player attack needs input and weapon components");
+            aim = gameObject->GetComponent<XYZEngine::AimRotationComponent>();
+        }
+
+        if (input == nullptr || weapon == nullptr || aim == nullptr)
+        {
+            LOG_ERROR("Player attack needs input, weapon and aim components");
             gameObject->RemoveComponent(this);
             return;
         }
@@ -39,38 +37,13 @@ namespace RoguelikeGame
             return;
         }
 
-        XYZEngine::Vector2Df aimDirection = input->GetMouseWorldPosition() - transform->GetWorldPosition();
-        AimWeapon(aimDirection);
-
         if (input->IsAttackPressed())
         {
-            weapon->TryShoot(aimDirection);
+            weapon->TryShoot(aim->GetAimDirection());
         }
     }
 
     void PlayerAttackComponent::Render()
     {
-    }
-
-    void PlayerAttackComponent::SetWeapon(XYZEngine::TransformComponent* newWeaponTransform, XYZEngine::SpriteRendererComponent* newWeaponRenderer)
-    {
-        weaponTransform = newWeaponTransform;
-        weaponRenderer = newWeaponRenderer;
-    }
-
-    void PlayerAttackComponent::AimWeapon(const XYZEngine::Vector2Df& direction)
-    {
-        if (weaponTransform == nullptr || direction.GetLength() <= 0.f)
-        {
-            return;
-        }
-
-        float angle = std::atan2(direction.y, direction.x) * RADIANS_TO_DEGREES;
-        weaponTransform->SetWorldRotation(angle);
-
-        if (weaponRenderer != nullptr)
-        {
-            weaponRenderer->FlipY(direction.x < 0.f);
-        }
     }
 }

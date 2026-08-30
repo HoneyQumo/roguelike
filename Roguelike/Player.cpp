@@ -1,30 +1,47 @@
-#include "Player.h"
+﻿#include "Player.h"
 #include "GameSettings.h"
 #include "Projectile.h"
 #include "PlayerAttackComponent.h"
+#include "HitFlashComponent.h"
+#include <GameWorld.h>
+#include <RenderSystem.h>
+#include <CameraComponent.h>
+#include <InputComponent.h>
+#include <SpriteRendererComponent.h>
 #include <WeaponComponent.h>
 #include <AudioComponent.h>
 #include <LoggerRegistry.h>
 #include <ResourceSystem.h>
-#include <stdexcept>
 #include <MovementComponent.h>
 #include <RigidbodyComponent.h>
 #include <BoxColliderComponent.h>
-#include <SpriteDirectionComponent.h>
+#include <AimRotationComponent.h>
 #include <SpriteMovementAnimationComponent.h>
 #include <HealthComponent.h>
 #include <HealthBarComponent.h>
+#include <stdexcept>
 
 namespace RoguelikeGame
 {
     Player::Player(const XYZEngine::Vector2Df& position)
     {
+        // Лужа должна рисоваться под телом, поэтому она создается первой.
+        try
+        {
+            bloodPool = std::make_unique<BloodPool>();
+        }
+        catch (const std::exception& exception)
+        {
+            LOG_ERROR(std::string("Player blood pool is not created: ") + exception.what());
+        }
+
         gameObject = XYZEngine::GameWorld::Instance()->CreateGameObject("Player");
 
         auto transform = gameObject->GetComponent<XYZEngine::TransformComponent>();
         transform->SetWorldPosition(position);
 
-        auto texture = XYZEngine::ResourceSystem::Instance()->GetTextureMapElementShared("player", PLAYER_IDLE_FIRST_FRAME);
+        auto texture = XYZEngine::ResourceSystem::Instance()->GetTextureMapElementShared(PLAYER_TEXTURE,
+                                                                                         AtlasFrameIndex(IDLE_ANIMATION.row, 0));
         if (texture == nullptr)
         {
             XYZEngine::GameWorld::Instance()->DestroyGameObject(gameObject);
@@ -35,9 +52,15 @@ namespace RoguelikeGame
         renderer->SetTexture(*texture);
         renderer->SetPixelSize(CHARACTER_SPRITE_SIZE, CHARACTER_SPRITE_SIZE);
 
+        if (bloodPool != nullptr)
+        {
+            bloodPool->AttachTo(gameObject);
+        }
+
         auto camera = gameObject->AddComponent<XYZEngine::CameraComponent>();
         camera->SetWindow(&XYZEngine::RenderSystem::Instance()->GetMainWindow());
         camera->SetBaseResolution(SCREEN_WIDTH, SCREEN_HEIGHT);
+        camera->SetRotationEnabled(false);
 
         auto input = gameObject->AddComponent<XYZEngine::InputComponent>();
 
@@ -48,17 +71,17 @@ namespace RoguelikeGame
         body->SetKinematic(false);
 
         auto collider = gameObject->AddComponent<XYZEngine::BoxColliderComponent>();
-        collider->SetSize(CHARACTER_COLLIDER_WIDTH, CHARACTER_COLLIDER_HEIGHT);
-        collider->SetOffset(0.f, CHARACTER_COLLIDER_OFFSET_Y);
+        collider->SetSize(CHARACTER_COLLIDER_SIZE, CHARACTER_COLLIDER_SIZE);
 
-        auto direction = gameObject->AddComponent<XYZEngine::SpriteDirectionComponent>();
+        auto aim = gameObject->AddComponent<XYZEngine::AimRotationComponent>();
+        aim->AimAtCursor();
 
         auto animation = gameObject->AddComponent<XYZEngine::SpriteMovementAnimationComponent>();
-        animation->SetWalkAnimation("player", PLAYER_WALK_FIRST_FRAME, PLAYER_WALK_FRAMES, WALK_FRAMERATE);
-        animation->SetIdleAnimation("player", PLAYER_IDLE_FIRST_FRAME, PLAYER_IDLE_FRAMES, IDLE_FRAMERATE);
-
-        animation->SetHurtAnimation("player", PLAYER_HURT_FIRST_FRAME, PLAYER_HURT_FRAMES, HURT_FRAMERATE);
-        animation->SetDeathAnimation("player", PLAYER_DEATH_FIRST_FRAME, PLAYER_DEATH_FRAMES, DEATH_FRAMERATE);
+        animation->SetIdleAnimation(PLAYER_TEXTURE, AtlasFrameIndex(IDLE_ANIMATION.row, 0), IDLE_ANIMATION.frames, IDLE_ANIMATION.framesPerSecond);
+        animation->SetWalkAnimation(PLAYER_TEXTURE, AtlasFrameIndex(WALK_ANIMATION.row, 0), WALK_ANIMATION.frames, WALK_ANIMATION.framesPerSecond);
+        animation->SetShootAnimation(PLAYER_TEXTURE, AtlasFrameIndex(SHOOT_ANIMATION.row, 0), SHOOT_ANIMATION.frames, SHOOT_ANIMATION.framesPerSecond);
+        animation->SetHurtAnimation(PLAYER_TEXTURE, AtlasFrameIndex(HURT_ANIMATION.row, 0), HURT_ANIMATION.frames, HURT_ANIMATION.framesPerSecond);
+        animation->SetDeathAnimation(PLAYER_TEXTURE, AtlasFrameIndex(DEATH_ANIMATION.row, 0), DEATH_ANIMATION.frames, DEATH_ANIMATION.framesPerSecond);
 
         auto health = gameObject->AddComponent<XYZEngine::HealthComponent>();
         health->SetMaxHealth(PLAYER_MAX_HEALTH);
@@ -72,44 +95,60 @@ namespace RoguelikeGame
         hurtAudio->SetSound(XYZEngine::ResourceSystem::Instance()->GetSound("hurt"));
         hurtAudio->SetVolume(HURT_VOLUME);
 
-        auto weaponComponent = gameObject->AddComponent<XYZEngine::WeaponComponent>();
-        weaponComponent->SetCooldown(PLAYER_ATTACK_COOLDOWN);
-        weaponComponent->SetDamage(PLAYER_ATTACK_DAMAGE);
-        weaponComponent->SetProjectileSpeed(PLAYER_PROJECTILE_SPEED);
-        weaponComponent->SetShotOffset(SHOT_OFFSET);
-        weaponComponent->SetShotAction([shotAudio](const XYZEngine::Vector2Df& shotPosition, const XYZEngine::Vector2Df& shotDirection, float damage, float speed)
-        {
-            Projectile::Spawn(shotPosition, shotDirection, damage, speed, "Player");
-            shotAudio->Play();
-        });
-
-        auto attack = gameObject->AddComponent<PlayerAttackComponent>();
+        auto hitFlash = gameObject->AddComponent<HitFlashComponent>();
+        hitFlash->AddRenderer(renderer);
 
         try
         {
-            weapon = std::make_unique<Weapon>(gameObject, "player_weapon");
-            attack->SetWeapon(weapon->GetTransform(), weapon->GetRenderer());
+            weapon = std::make_unique<Weapon>(gameObject, PLAYER_WEAPON, animation);
+            hitFlash->AddRenderer(weapon->GetRenderer());
         }
         catch (const std::exception& exception)
         {
             LOG_ERROR(std::string("Player weapon is not created: ") + exception.what());
         }
 
-        auto weaponObject = weapon == nullptr ? nullptr : weapon->GetGameObject();
-        health->SubscribeDamage([animation, hurtAudio](float damage)
+        const WeaponDefinition& weaponDefinition = GetWeapon(PLAYER_WEAPON);
+        auto muzzleFlash = weapon == nullptr ? nullptr : weapon->GetMuzzleFlash();
+
+        auto weaponComponent = gameObject->AddComponent<XYZEngine::WeaponComponent>();
+        weaponComponent->SetCooldown(PLAYER_ATTACK_COOLDOWN);
+        weaponComponent->SetDamage(PLAYER_ATTACK_DAMAGE);
+        weaponComponent->SetProjectileSpeed(PLAYER_PROJECTILE_SPEED);
+        weaponComponent->SetMuzzleOffset(ShotOffset(weaponDefinition));
+        weaponComponent->SetShotAction(
+            [shotAudio, animation, muzzleFlash](const XYZEngine::Vector2Df& shotPosition, const XYZEngine::Vector2Df& shotDirection, float damage, float speed)
+            {
+                Projectile::Spawn(shotPosition, shotDirection, damage, speed, "Player", GetWeapon(PLAYER_WEAPON).bullet);
+                shotAudio->Play();
+                animation->PlayShoot();
+
+                if (muzzleFlash != nullptr)
+                {
+                    muzzleFlash->Play();
+                }
+            });
+
+        gameObject->AddComponent<PlayerAttackComponent>();
+
+        health->SubscribeDamage([animation, hurtAudio, hitFlash](float damage)
         {
             animation->PlayHurt();
             hurtAudio->Play();
+            hitFlash->Flash();
         });
-        health->SubscribeDeath([animation, movement, collider, weaponObject]()
+
+        auto poolAnimation = bloodPool == nullptr ? nullptr : bloodPool->GetAnimation();
+        health->SubscribeDeath([animation, movement, collider, aim, poolAnimation]()
         {
             animation->PlayDeath();
             movement->SetSpeed(0.f);
             collider->SetTrigger(true);
+            aim->SetEnabled(false);
 
-            if (weaponObject != nullptr)
+            if (poolAnimation != nullptr)
             {
-                XYZEngine::GameWorld::Instance()->DestroyGameObject(weaponObject);
+                poolAnimation->Play();
             }
 
             LOG_WARN("Player is dead, controls are disabled");
@@ -120,7 +159,7 @@ namespace RoguelikeGame
         healthBar->SetOffset(0.f, HEALTH_BAR_OFFSET_Y);
         healthBar->SetColors({90, 200, 90}, {20, 20, 20, 200});
 
-        LOG_INFO("Player created at " + std::to_string((int)position.x) + ";" + std::to_string((int)position.y));
+        LOG_INFO("Player created at " + std::to_string(static_cast<int>(position.x)) + ";" + std::to_string(static_cast<int>(position.y)));
     }
 
     XYZEngine::GameObject* Player::GetGameObject()

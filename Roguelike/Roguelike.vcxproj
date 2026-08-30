@@ -160,7 +160,11 @@
         </Link>
     </ItemDefinitionGroup>
     <ItemGroup>
+        <ClCompile Include="BloodPool.cpp"/>
         <ClCompile Include="Crosshair.cpp"/>
+        <ClCompile Include="Fx.cpp"/>
+        <ClCompile Include="HitFlashComponent.cpp"/>
+        <ClCompile Include="WeaponLayerComponent.cpp"/>
         <ClCompile Include="DeveloperLevel.cpp"/>
         <ClCompile Include="Enemy.cpp"/>
         <ClCompile Include="EnemyAttackComponent.cpp"/>
@@ -176,7 +180,13 @@
         <ClCompile Include="Player.cpp"/>
     </ItemGroup>
     <ItemGroup>
+        <ClInclude Include="BloodPool.h"/>
         <ClInclude Include="Crosshair.h"/>
+        <ClInclude Include="Fx.h"/>
+        <ClInclude Include="HitFlashComponent.h"/>
+        <ClInclude Include="SpriteAtlas.h"/>
+        <ClInclude Include="WeaponCatalog.h"/>
+        <ClInclude Include="WeaponLayerComponent.h"/>
         <ClInclude Include="DeveloperLevel.h"/>
         <ClInclude Include="Enemy.h"/>
         <ClInclude Include="EnemyAttackComponent.h"/>

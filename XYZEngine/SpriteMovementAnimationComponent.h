@@ -10,49 +10,67 @@
 
 namespace XYZEngine
 {
-	class SpriteMovementAnimationComponent : public Component
-	{
-	public:
-		SpriteMovementAnimationComponent(GameObject* gameObject);
+    enum class MovementAnimation
+    {
+        None,
+        Idle,
+        Walk,
+        Shoot,
+        Hurt,
+        Death
+    };
 
-		void Update(float deltaTime) override;
-		void Render() override;
+    class SpriteMovementAnimationComponent : public Component
+    {
+    public:
+        SpriteMovementAnimationComponent(GameObject* gameObject);
 
-		void SetWalkAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float framesPerSecond);
-		void SetIdleAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float framesPerSecond);
-		void SetHurtAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float framesPerSecond);
-		void SetDeathAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float framesPerSecond);
+        void Update(float deltaTime) override;
+        void Render() override;
 
-		void PlayHurt();
-		void PlayDeath();
-	private:
-		struct Animation
-		{
-			std::vector<const sf::Texture*> frames;
-			float secondsPerFrame = 0.125f;
-		};
+        void SetWalkAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float framesPerSecond);
+        void SetIdleAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float framesPerSecond);
+        void SetShootAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float framesPerSecond);
+        void SetHurtAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float framesPerSecond);
+        void SetDeathAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float framesPerSecond);
 
-		TransformComponent* transform;
-		SpriteRendererComponent* renderer = nullptr;
+        void PlayShoot();
+        void PlayHurt();
+        void PlayDeath();
 
-		Animation walkAnimation;
-		Animation idleAnimation;
-		Animation hurtAnimation;
-		Animation deathAnimation;
-		Animation* currentAnimation = nullptr;
+        MovementAnimation GetCurrentAnimation() const;
+        int GetCurrentFrame() const;
 
-		bool isLooped = true;
-		bool isFinished = false;
-		bool isDead = false;
+    private:
+        struct Animation
+        {
+            std::vector<const sf::Texture*> frames;
+            float secondsPerFrame = 0.125f;
+        };
 
-		float frameTimer = 0.f;
-		int currentFrame = 0;
+        TransformComponent* transform;
+        SpriteRendererComponent* renderer = nullptr;
 
-		Vector2Df previousPosition = { 0.f, 0.f };
-		float stillTimer = 0.f;
+        Animation walkAnimation;
+        Animation idleAnimation;
+        Animation shootAnimation;
+        Animation hurtAnimation;
+        Animation deathAnimation;
+        Animation* currentAnimation = nullptr;
+        MovementAnimation currentAnimationKind = MovementAnimation::None;
 
-		void Fill(Animation& animation, const std::string& textureMapName, int firstFrameIndex, int framesCount, float framesPerSecond);
-		void Play(Animation& animation, bool looped);
-		void AdvanceFrames(float deltaTime);
-	};
+        bool isLooped = true;
+        bool isFinished = false;
+        bool isDead = false;
+
+        float frameTimer = 0.f;
+        int currentFrame = 0;
+
+        Vector2Df previousPosition = {0.f, 0.f};
+        float stillTimer = 0.f;
+
+        void Fill(Animation& animation, const std::string& textureMapName, int firstFrameIndex, int framesCount, float framesPerSecond);
+        void Play(Animation& animation, MovementAnimation kind, bool looped);
+        void AdvanceFrames(float deltaTime);
+    };
 }

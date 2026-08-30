@@ -11,7 +11,7 @@ namespace RoguelikeGame
 {
     Crosshair::Crosshair()
     {
-        auto texture = XYZEngine::ResourceSystem::Instance()->GetTextureShared("crosshair");
+        auto texture = XYZEngine::ResourceSystem::Instance()->GetTextureShared(CROSSHAIR_TEXTURE);
         if (texture == nullptr)
         {
             throw std::runtime_error("crosshair texture is not loaded");

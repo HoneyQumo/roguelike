@@ -67,9 +67,17 @@ namespace RoguelikeGame
         case '@':
             return TileType::PlayerSpawn;
         case 'E':
-            return TileType::EnemySpawn;
+            return TileType::GruntSpawn;
         case 'R':
-            return TileType::RiflemanSpawn;
+            return TileType::AssaultSpawn;
+        case 'S':
+            return TileType::ShieldSpawn;
+        case 'H':
+            return TileType::HeavySpawn;
+        case 'C':
+            return TileType::RadioSpawn;
+        case 'B':
+            return TileType::BossSpawn;
         default:
             return TileType::Empty;
         }

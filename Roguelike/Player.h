@@ -1,13 +1,9 @@
 #pragma once
 
 #include <memory>
-#include "CameraComponent.h"
-#include "GameWorld.h"
-#include "SpriteRendererComponent.h"
-#include "RenderSystem.h"
-#include "InputComponent.h"
 #include "GameObject.h"
 #include "Vector.h"
+#include "BloodPool.h"
 #include "Weapon.h"
 
 namespace RoguelikeGame
@@ -20,6 +16,7 @@ namespace RoguelikeGame
 
     private:
         XYZEngine::GameObject* gameObject;
+        std::unique_ptr<BloodPool> bloodPool;
         std::unique_ptr<Weapon> weapon;
     };
 }

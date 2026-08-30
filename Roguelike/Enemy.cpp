@@ -1,14 +1,17 @@
-#include "Enemy.h"
+﻿#include "Enemy.h"
 #include "GameSettings.h"
 #include "Projectile.h"
 #include "EnemyAttackComponent.h"
+#include "HitFlashComponent.h"
+#include <GameWorld.h>
+#include <SpriteRendererComponent.h>
 #include <LoggerRegistry.h>
 #include <ResourceSystem.h>
 #include <ChaseComponent.h>
 #include <MovementComponent.h>
 #include <RigidbodyComponent.h>
 #include <BoxColliderComponent.h>
-#include <SpriteDirectionComponent.h>
+#include <AimRotationComponent.h>
 #include <SpriteMovementAnimationComponent.h>
 #include <HealthComponent.h>
 #include <HealthBarComponent.h>
@@ -20,12 +23,23 @@ namespace RoguelikeGame
 {
     Enemy::Enemy(const EnemyConfig& config, const XYZEngine::Vector2Df& position)
     {
+        // Лужа должна рисоваться под телом, поэтому она создается первой.
+        try
+        {
+            bloodPool = std::make_unique<BloodPool>();
+        }
+        catch (const std::exception& exception)
+        {
+            LOG_ERROR(std::string("Enemy blood pool is not created: ") + exception.what());
+        }
+
         gameObject = XYZEngine::GameWorld::Instance()->CreateGameObject(config.objectName);
 
         auto transform = gameObject->GetComponent<XYZEngine::TransformComponent>();
         transform->SetWorldPosition(position);
 
-        auto texture = XYZEngine::ResourceSystem::Instance()->GetTextureMapElementShared(config.textureMapName, config.idleFirstFrame);
+        auto texture = XYZEngine::ResourceSystem::Instance()->GetTextureMapElementShared(config.textureMapName,
+                                                                                         AtlasFrameIndex(IDLE_ANIMATION.row, 0));
         if (texture == nullptr)
         {
             XYZEngine::GameWorld::Instance()->DestroyGameObject(gameObject);
@@ -36,7 +50,12 @@ namespace RoguelikeGame
         renderer->SetTexture(*texture);
         renderer->SetPixelSize(CHARACTER_SPRITE_SIZE, CHARACTER_SPRITE_SIZE);
 
-        // Chase sets the direction, movement applies it: keep chase updated first.
+        if (bloodPool != nullptr)
+        {
+            bloodPool->AttachTo(gameObject);
+        }
+
+        // Chase задает направление, а movement реализует его. Сначала обновляй Chase.
         auto chase = gameObject->AddComponent<XYZEngine::ChaseComponent>();
         chase->SetTargetName("Player");
         chase->SetDetectionRadius(config.detectionRadius);
@@ -49,19 +68,18 @@ namespace RoguelikeGame
         body->SetKinematic(false);
 
         auto collider = gameObject->AddComponent<XYZEngine::BoxColliderComponent>();
-        collider->SetSize(CHARACTER_COLLIDER_WIDTH, CHARACTER_COLLIDER_HEIGHT);
-        collider->SetOffset(0.f, CHARACTER_COLLIDER_OFFSET_Y);
+        collider->SetSize(CHARACTER_COLLIDER_SIZE, CHARACTER_COLLIDER_SIZE);
 
-        auto direction = gameObject->AddComponent<XYZEngine::SpriteDirectionComponent>();
+        auto aim = gameObject->AddComponent<XYZEngine::AimRotationComponent>();
+        aim->AimAtGameObject("Player");
+        aim->SetMaxDistance(config.detectionRadius);
 
         auto animation = gameObject->AddComponent<XYZEngine::SpriteMovementAnimationComponent>();
-        animation->SetWalkAnimation(config.textureMapName, config.walkFirstFrame, config.walkFrames, WALK_FRAMERATE);
-        animation->SetIdleAnimation(config.textureMapName, config.idleFirstFrame, config.idleFrames, IDLE_FRAMERATE);
-        animation->SetDeathAnimation(config.textureMapName, config.deathFirstFrame, config.deathFrames, DEATH_FRAMERATE);
-        if (config.hurtFrames > 0)
-        {
-            animation->SetHurtAnimation(config.textureMapName, config.hurtFirstFrame, config.hurtFrames, HURT_FRAMERATE);
-        }
+        animation->SetIdleAnimation(config.textureMapName, AtlasFrameIndex(IDLE_ANIMATION.row, 0), IDLE_ANIMATION.frames, IDLE_ANIMATION.framesPerSecond);
+        animation->SetWalkAnimation(config.textureMapName, AtlasFrameIndex(WALK_ANIMATION.row, 0), WALK_ANIMATION.frames, WALK_ANIMATION.framesPerSecond);
+        animation->SetShootAnimation(config.textureMapName, AtlasFrameIndex(SHOOT_ANIMATION.row, 0), SHOOT_ANIMATION.frames, SHOOT_ANIMATION.framesPerSecond);
+        animation->SetHurtAnimation(config.textureMapName, AtlasFrameIndex(HURT_ANIMATION.row, 0), HURT_ANIMATION.frames, HURT_ANIMATION.framesPerSecond);
+        animation->SetDeathAnimation(config.textureMapName, AtlasFrameIndex(DEATH_ANIMATION.row, 0), DEATH_ANIMATION.frames, DEATH_ANIMATION.framesPerSecond);
 
         auto health = gameObject->AddComponent<XYZEngine::HealthComponent>();
         health->SetMaxHealth(config.maxHealth);
@@ -76,7 +94,20 @@ namespace RoguelikeGame
         hurtAudio->SetSound(XYZEngine::ResourceSystem::Instance()->GetSound("hurt"));
         hurtAudio->SetVolume(HURT_VOLUME);
 
-        if (config.weaponTextureName.empty())
+        auto hitFlash = gameObject->AddComponent<HitFlashComponent>();
+        hitFlash->AddRenderer(renderer);
+
+        try
+        {
+            weapon = std::make_unique<Weapon>(gameObject, config.weapon, animation);
+            hitFlash->AddRenderer(weapon->GetRenderer());
+        }
+        catch (const std::exception& exception)
+        {
+            LOG_ERROR(std::string("Enemy weapon is not created: ") + exception.what());
+        }
+
+        if (config.attackRange <= 0.f)
         {
             LOG_INFO(config.objectName + " is unarmed and can't shoot");
         }
@@ -86,55 +117,59 @@ namespace RoguelikeGame
             shotAudio->SetSound(XYZEngine::ResourceSystem::Instance()->GetSound("shot"));
             shotAudio->SetVolume(SHOT_VOLUME);
 
+            const WeaponDefinition& weaponDefinition = GetWeapon(config.weapon);
+            auto muzzleFlash = weapon == nullptr ? nullptr : weapon->GetMuzzleFlash();
+
             auto weaponComponent = gameObject->AddComponent<XYZEngine::WeaponComponent>();
             weaponComponent->SetCooldown(config.attackCooldown);
             weaponComponent->SetDamage(config.attackDamage);
             weaponComponent->SetProjectileSpeed(config.projectileSpeed);
-            weaponComponent->SetShotOffset(SHOT_OFFSET);
+            weaponComponent->SetMuzzleOffset(ShotOffset(weaponDefinition));
 
             std::string shooterName = config.objectName;
+            BulletKind bullet = weaponDefinition.bullet;
             weaponComponent->SetShotAction(
-                [shooterName, shotAudio](const XYZEngine::Vector2Df& shotPosition, const XYZEngine::Vector2Df& shotDirection, float damage, float speed)
+                [shooterName, bullet, shotAudio, animation, muzzleFlash](const XYZEngine::Vector2Df& shotPosition, const XYZEngine::Vector2Df& shotDirection,
+                                                                         float damage, float speed)
                 {
-                    Projectile::Spawn(shotPosition, shotDirection, damage, speed, shooterName);
+                    Projectile::Spawn(shotPosition, shotDirection, damage, speed, shooterName, bullet);
                     shotAudio->Play();
+                    animation->PlayShoot();
+
+                    if (muzzleFlash != nullptr)
+                    {
+                        muzzleFlash->Play();
+                    }
                 });
 
             auto attack = gameObject->AddComponent<EnemyAttackComponent>();
             attack->SetTargetName("Player");
             attack->SetAttackRange(config.attackRange);
-
-            try
-            {
-                weapon = std::make_unique<Weapon>(gameObject, config.weaponTextureName);
-                attack->SetWeapon(weapon->GetTransform(), weapon->GetRenderer());
-            }
-            catch (const std::exception& exception)
-            {
-                LOG_ERROR(std::string("Enemy weapon is not created: ") + exception.what());
-            }
         }
 
-        auto weaponObject = weapon == nullptr ? nullptr : weapon->GetGameObject();
-        health->SubscribeDamage([animation, hurtAudio](float damage)
+        health->SubscribeDamage([animation, hurtAudio, hitFlash](float damage)
         {
             animation->PlayHurt();
             hurtAudio->Play();
+            hitFlash->Flash();
         });
-        health->SubscribeDeath([animation, movement, chase, collider, weaponObject]()
+
+        auto poolAnimation = bloodPool == nullptr ? nullptr : bloodPool->GetAnimation();
+        health->SubscribeDeath([animation, movement, chase, collider, aim, poolAnimation]()
         {
             animation->PlayDeath();
             movement->SetSpeed(0.f);
             chase->SetDetectionRadius(0.f);
             collider->SetTrigger(true);
+            aim->SetEnabled(false);
 
-            if (weaponObject != nullptr)
+            if (poolAnimation != nullptr)
             {
-                XYZEngine::GameWorld::Instance()->DestroyGameObject(weaponObject);
+                poolAnimation->Play();
             }
         });
 
-        LOG_INFO(config.objectName + " created at " + std::to_string((int)position.x) + ";" + std::to_string((int)position.y));
+        LOG_INFO(config.objectName + " created at " + std::to_string(static_cast<int>(position.x)) + ";" + std::to_string(static_cast<int>(position.y)));
     }
 
     XYZEngine::GameObject* Enemy::GetGameObject()

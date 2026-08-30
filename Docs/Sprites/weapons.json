@@ -1,0 +1,162 @@
+{
+  "atlas": "weapons.png",
+  "frame": {
+    "w": 160,
+    "h": 64
+  },
+  "pivot": {
+    "x": 80.0,
+    "y": 32.0
+  },
+  "variants": [
+    "обычный",
+    "без поддерживающей перчатки",
+    "без перчатки и магазина"
+  ],
+  "note": "пивот оружия совпадает с пивотом тела: рисуй оба спрайта в одной позиции с одним углом",
+  "weapons": [
+    {
+      "id": "ak47",
+      "name": "АК-47",
+      "row": 0,
+      "icon_row": 0,
+      "muzzle_offset": {
+        "x": 58.56,
+        "y": 12.16
+      },
+      "recoil": 1.0,
+      "flash_scale": 1.0,
+      "reload_item": "mag_rifle"
+    },
+    {
+      "id": "m16",
+      "name": "М16",
+      "row": 1,
+      "icon_row": 1,
+      "muzzle_offset": {
+        "x": 60.8,
+        "y": 12.16
+      },
+      "recoil": 0.85,
+      "flash_scale": 0.9,
+      "reload_item": "mag_rifle"
+    },
+    {
+      "id": "shotgun_double",
+      "name": "Дробовик двуствольный",
+      "row": 2,
+      "icon_row": 2,
+      "muzzle_offset": {
+        "x": 53.6,
+        "y": 12.16
+      },
+      "recoil": 1.5,
+      "flash_scale": 1.35,
+      "reload_item": "shell"
+    },
+    {
+      "id": "shotgun_pump",
+      "name": "Дробовик помповый",
+      "row": 3,
+      "icon_row": 3,
+      "muzzle_offset": {
+        "x": 55.2,
+        "y": 11.52
+      },
+      "recoil": 1.35,
+      "flash_scale": 1.25,
+      "reload_item": "shell"
+    },
+    {
+      "id": "smg_suppressed",
+      "name": "ПП с глушителем",
+      "row": 4,
+      "icon_row": 4,
+      "muzzle_offset": {
+        "x": 57.6,
+        "y": 12.16
+      },
+      "recoil": 0.6,
+      "flash_scale": 0.35,
+      "reload_item": "mag_smg"
+    },
+    {
+      "id": "glock",
+      "name": "Глок",
+      "row": 5,
+      "icon_row": 5,
+      "muzzle_offset": {
+        "x": 32.0,
+        "y": 11.68
+      },
+      "recoil": 0.55,
+      "flash_scale": 0.65,
+      "reload_item": "mag_pistol"
+    },
+    {
+      "id": "deagle",
+      "name": "Дигл",
+      "row": 6,
+      "icon_row": 6,
+      "muzzle_offset": {
+        "x": 38.88,
+        "y": 12.0
+      },
+      "recoil": 1.4,
+      "flash_scale": 1.2,
+      "reload_item": "mag_pistol"
+    },
+    {
+      "id": "pistol_suppressed",
+      "name": "Пистолет с глушителем",
+      "row": 7,
+      "icon_row": 7,
+      "muzzle_offset": {
+        "x": 56.0,
+        "y": 12.16
+      },
+      "recoil": 0.5,
+      "flash_scale": 0.3,
+      "reload_item": "mag_pistol"
+    },
+    {
+      "id": "knife",
+      "name": "Нож",
+      "row": 8,
+      "icon_row": 8,
+      "muzzle_offset": {
+        "x": 42.4,
+        "y": 15.36
+      },
+      "recoil": 0.0,
+      "flash_scale": 0.0,
+      "reload_item": null
+    },
+    {
+      "id": "bat",
+      "name": "Бита",
+      "row": 9,
+      "icon_row": 9,
+      "muzzle_offset": {
+        "x": 55.2,
+        "y": 12.32
+      },
+      "recoil": 0.0,
+      "flash_scale": 0.0,
+      "reload_item": null
+    },
+    {
+      "id": "rpg",
+      "name": "РПГ",
+      "row": 10,
+      "icon_row": 10,
+      "muzzle_offset": {
+        "x": 76.0,
+        "y": 12.16
+      },
+      "recoil": 1.8,
+      "flash_scale": 1.6,
+      "reload_item": "rocket"
+    }
+  ]
+}

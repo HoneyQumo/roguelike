@@ -10,8 +10,12 @@ namespace RoguelikeGame
         Floor,
         Wall,
         PlayerSpawn,
-        EnemySpawn,
-        RiflemanSpawn
+        GruntSpawn,
+        AssaultSpawn,
+        ShieldSpawn,
+        HeavySpawn,
+        RadioSpawn,
+        BossSpawn
     };
 
     struct LevelData

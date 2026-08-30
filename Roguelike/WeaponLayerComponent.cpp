@@ -60,6 +60,8 @@ namespace RoguelikeGame
         {
         case XYZEngine::MovementAnimation::Walk:
             return WALK_WEAPON_OFFSET[std::min(std::max(frame, 0), WALK_ANIMATION.frames - 1)];
+        case XYZEngine::MovementAnimation::Run:
+            return RUN_WEAPON_OFFSET[std::min(std::max(frame, 0), RUN_ANIMATION.frames - 1)];
         case XYZEngine::MovementAnimation::Shoot:
             return SHOOT_WEAPON_OFFSET[std::min(std::max(frame, 0), SHOOT_ANIMATION.frames - 1)];
         case XYZEngine::MovementAnimation::Hurt:

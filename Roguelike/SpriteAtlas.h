@@ -30,9 +30,10 @@ namespace RoguelikeGame
         return row * CHARACTER_ATLAS_COLUMNS + column;
     }
 
-    // Строки 2 (бег), 4 (перезарядка) и 5 (удар), а также восемь строк кувырка в player.png не реализованы:
+    // Строки 4 (перезарядка) и 5 (удар), а также восемь строк кувырка в player.png не реализованы:
     constexpr CharacterAnimation IDLE_ANIMATION = {0, 6, FramesPerSecond(175.f)};
     constexpr CharacterAnimation WALK_ANIMATION = {1, 8, FramesPerSecond(110.f)};
+    constexpr CharacterAnimation RUN_ANIMATION = {2, 8, FramesPerSecond(75.f)};
     constexpr CharacterAnimation SHOOT_ANIMATION = {3, 4, FramesPerSecond(60.f)};
     constexpr CharacterAnimation HURT_ANIMATION = {6, 3, FramesPerSecond(80.f)};
     constexpr CharacterAnimation DEATH_ANIMATION = {7, 8, FramesPerSecond(110.f)};
@@ -48,6 +49,7 @@ namespace RoguelikeGame
     };
 
     constexpr FrameOffset WALK_WEAPON_OFFSET[8] = {{0, 0}, {0, 1}, {0, 0}, {0, -1}, {0, 0}, {0, 1}, {0, 0}, {0, -1}};
+    constexpr FrameOffset RUN_WEAPON_OFFSET[8] = {{0, 3}, {0, 4}, {0, 3}, {0, 2}, {0, 3}, {0, 4}, {0, 3}, {0, 2}};
     constexpr FrameOffset SHOOT_WEAPON_OFFSET[4] = {{-3, 0}, {-2, 0}, {-1, 0}, {0, 0}};
     constexpr FrameOffset HURT_WEAPON_OFFSET[3] = {{-2, 1}, {-1, 0}, {0, 0}};
     constexpr FrameOffset DEATH_WEAPON_OFFSET[8] = {{0, 1}, {-2, 2}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}};

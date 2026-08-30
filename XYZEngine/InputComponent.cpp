@@ -30,6 +30,7 @@ namespace XYZEngine
 		}
 
 		isAttackPressed = sf::Mouse::isButtonPressed(sf::Mouse::Left);
+		isRunPressed = sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) || sf::Keyboard::isKeyPressed(sf::Keyboard::RShift);
 
 		auto& window = RenderSystem::Instance()->GetMainWindow();
 		auto worldPosition = window.mapPixelToCoords(sf::Mouse::getPosition(window));
@@ -52,6 +53,10 @@ namespace XYZEngine
 	bool InputComponent::IsAttackPressed() const
 	{
 		return isAttackPressed;
+	}
+	bool InputComponent::IsRunPressed() const
+	{
+		return isRunPressed;
 	}
 	Vector2Df InputComponent::GetMouseWorldPosition() const
 	{

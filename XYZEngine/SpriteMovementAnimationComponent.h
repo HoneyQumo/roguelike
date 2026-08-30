@@ -6,6 +6,7 @@
 #include "Component.h"
 #include "TransformComponent.h"
 #include "SpriteRendererComponent.h"
+#include "MovementComponent.h"
 #include "Vector.h"
 
 namespace XYZEngine
@@ -15,6 +16,7 @@ namespace XYZEngine
         None,
         Idle,
         Walk,
+        Run,
         Shoot,
         Hurt,
         Death
@@ -29,6 +31,7 @@ namespace XYZEngine
         void Render() override;
 
         void SetWalkAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float framesPerSecond);
+        void SetRunAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float framesPerSecond);
         void SetIdleAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float framesPerSecond);
         void SetShootAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float framesPerSecond);
         void SetHurtAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float framesPerSecond);
@@ -50,8 +53,10 @@ namespace XYZEngine
 
         TransformComponent* transform;
         SpriteRendererComponent* renderer = nullptr;
+        MovementComponent* movement = nullptr;
 
         Animation walkAnimation;
+        Animation runAnimation;
         Animation idleAnimation;
         Animation shootAnimation;
         Animation hurtAnimation;

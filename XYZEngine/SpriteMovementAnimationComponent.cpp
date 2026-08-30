@@ -26,6 +26,11 @@ namespace XYZEngine
             }
         }
 
+        if (movement == nullptr)
+        {
+            movement = gameObject->GetComponent<MovementComponent>();
+        }
+
         Vector2Df position = transform->GetWorldPosition();
         Vector2Df offset = position - previousPosition;
         previousPosition = position;
@@ -52,9 +57,15 @@ namespace XYZEngine
             stillTimer += deltaTime;
         }
 
+        bool isRunning = movement != nullptr && movement->IsRunning() && !runAnimation.frames.empty();
+
         if (stillTimer > STILL_DELAY)
         {
             Play(idleAnimation, MovementAnimation::Idle, true);
+        }
+        else if (isRunning)
+        {
+            Play(runAnimation, MovementAnimation::Run, true);
         }
         else
         {
@@ -78,6 +89,10 @@ namespace XYZEngine
         Fill(idleAnimation, textureMapName, firstFrameIndex, framesCount, framesPerSecond);
     }
 
+    void SpriteMovementAnimationComponent::SetRunAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float framesPerSecond)
+    {
+        Fill(runAnimation, textureMapName, firstFrameIndex, framesCount, framesPerSecond);
+    }
     void SpriteMovementAnimationComponent::SetShootAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float framesPerSecond)
     {
         Fill(shootAnimation, textureMapName, firstFrameIndex, framesCount, framesPerSecond);

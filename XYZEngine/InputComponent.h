@@ -18,11 +18,13 @@ namespace XYZEngine
 		float GetVerticalAxis() const;
 
 		bool IsAttackPressed() const;
+		bool IsRunPressed() const;
 		Vector2Df GetMouseWorldPosition() const;
 	private:
 		float horizontalAxis = 0.f;
 		float verticalAxis = 0.f;
 		bool isAttackPressed = false;
+		bool isRunPressed = false;
 		Vector2Df mouseWorldPosition = { 0.f, 0.f };
 	};
 }

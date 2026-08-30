@@ -18,6 +18,7 @@ namespace RoguelikeGame
     constexpr float CHARACTER_COLLIDER_SIZE = 30.f;
 
     constexpr float PLAYER_SPEED = 250.f;
+    constexpr float PLAYER_RUN_SPEED_MULTIPLIER = 1.5f;
     constexpr float PLAYER_MAX_HEALTH = 100.f;
     constexpr float PLAYER_ARMOR = 5.f;
     constexpr float PLAYER_ATTACK_DAMAGE = 25.f;

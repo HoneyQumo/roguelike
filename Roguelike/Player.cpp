@@ -52,6 +52,7 @@ namespace RoguelikeGame
 
         auto movement = gameObject->AddComponent<XYZEngine::MovementComponent>();
         movement->SetSpeed(PLAYER_SPEED);
+        movement->SetRunSpeedMultiplier(PLAYER_RUN_SPEED_MULTIPLIER);
 
         auto body = gameObject->AddComponent<XYZEngine::RigidbodyComponent>();
         body->SetKinematic(false);
@@ -65,6 +66,7 @@ namespace RoguelikeGame
         auto animation = gameObject->AddComponent<XYZEngine::SpriteMovementAnimationComponent>();
         animation->SetIdleAnimation(PLAYER_TEXTURE, AtlasFrameIndex(IDLE_ANIMATION.row, 0), IDLE_ANIMATION.frames, IDLE_ANIMATION.framesPerSecond);
         animation->SetWalkAnimation(PLAYER_TEXTURE, AtlasFrameIndex(WALK_ANIMATION.row, 0), WALK_ANIMATION.frames, WALK_ANIMATION.framesPerSecond);
+        animation->SetRunAnimation(PLAYER_TEXTURE, AtlasFrameIndex(RUN_ANIMATION.row, 0), RUN_ANIMATION.frames, RUN_ANIMATION.framesPerSecond);
         animation->SetShootAnimation(PLAYER_TEXTURE, AtlasFrameIndex(SHOOT_ANIMATION.row, 0), SHOOT_ANIMATION.frames, SHOOT_ANIMATION.framesPerSecond);
         animation->SetHurtAnimation(PLAYER_TEXTURE, AtlasFrameIndex(HURT_ANIMATION.row, 0), HURT_ANIMATION.frames, HURT_ANIMATION.framesPerSecond);
         animation->SetDeathAnimation(PLAYER_TEXTURE, AtlasFrameIndex(DEATH_ANIMATION.row, 0), DEATH_ANIMATION.frames, DEATH_ANIMATION.framesPerSecond);

@@ -21,14 +21,19 @@ namespace XYZEngine
 			direction = { input->GetHorizontalAxis(), input->GetVerticalAxis() };
 		}
 
+		isRunning = false;
+
 		float length = direction.GetLength();
-		if (length <= 0.f)
+		if (length <= 0.f || speed <= 0.f)
 		{
 			return;
 		}
 
+		isRunning = input != nullptr && input->IsRunPressed();
+		float currentSpeed = isRunning ? speed * runSpeedMultiplier : speed;
+
 		Vector2Df normalizedDirection = (1.f / length) * direction;
-		transform->MoveBy(speed * deltaTime * normalizedDirection);
+		transform->MoveBy(currentSpeed * deltaTime * normalizedDirection);
 	}
 	void MovementComponent::Render()
 	{
@@ -42,6 +47,15 @@ namespace XYZEngine
 	float MovementComponent::GetSpeed() const
 	{
 		return speed;
+	}
+
+	void MovementComponent::SetRunSpeedMultiplier(float newRunSpeedMultiplier)
+	{
+		runSpeedMultiplier = newRunSpeedMultiplier;
+	}
+	bool MovementComponent::IsRunning() const
+	{
+		return isRunning;
 	}
 
 	void MovementComponent::SetDirection(const Vector2Df& newDirection)

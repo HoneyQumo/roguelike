@@ -4,6 +4,7 @@
 #include <SFML/Graphics.hpp>
 #include <Component.h>
 #include <WeaponComponent.h>
+#include "WeaponCatalog.h"
 
 namespace RoguelikeGame
 {
@@ -16,19 +17,19 @@ namespace RoguelikeGame
         void Render() override;
 
         void SetTargetName(const std::string& newTargetName);
+        void SetWeapon(WeaponId newWeaponId);
 
     private:
         XYZEngine::WeaponComponent* weapon = nullptr;
 
         std::string targetName;
 
+        sf::Text nameText;
         sf::Text ammoText;
-        sf::Text statusText;
         bool isFontReady = false;
 
         void FindWeapon();
         std::string GetAmmoLine() const;
-        std::string GetStatusLine() const;
         sf::Color GetAmmoColor() const;
     };
 }

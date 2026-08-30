@@ -163,6 +163,7 @@
         <ClCompile Include="AmmoHud.cpp"/>
         <ClCompile Include="AmmoHudComponent.cpp"/>
         <ClCompile Include="BloodPool.cpp"/>
+        <ClCompile Include="ReloadIndicatorComponent.cpp"/>
         <ClCompile Include="Crosshair.cpp"/>
         <ClCompile Include="Fx.cpp"/>
         <ClCompile Include="GameResources.cpp"/>
@@ -186,6 +187,7 @@
         <ClInclude Include="AmmoHud.h"/>
         <ClInclude Include="AmmoHudComponent.h"/>
         <ClInclude Include="BloodPool.h"/>
+        <ClInclude Include="ReloadIndicatorComponent.h"/>
         <ClInclude Include="Crosshair.h"/>
         <ClInclude Include="Fx.h"/>
         <ClInclude Include="GameResources.h"/>

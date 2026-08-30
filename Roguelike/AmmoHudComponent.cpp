@@ -1,4 +1,4 @@
-#include "AmmoHudComponent.h"
+﻿#include "AmmoHudComponent.h"
 #include "GameSettings.h"
 #include <GameObject.h>
 #include <GameWorld.h>
@@ -17,15 +17,16 @@ namespace RoguelikeGame
             return;
         }
 
+        nameText.setFont(*font);
+        nameText.setCharacterSize(AMMO_HUD_NAME_FONT_SIZE);
+        nameText.setFillColor(AMMO_HUD_COLOR);
+        nameText.setOutlineColor(AMMO_HUD_OUTLINE_COLOR);
+        nameText.setOutlineThickness(AMMO_HUD_OUTLINE);
+
         ammoText.setFont(*font);
         ammoText.setCharacterSize(AMMO_HUD_FONT_SIZE);
         ammoText.setOutlineColor(AMMO_HUD_OUTLINE_COLOR);
         ammoText.setOutlineThickness(AMMO_HUD_OUTLINE);
-
-        statusText.setFont(*font);
-        statusText.setCharacterSize(AMMO_HUD_STATUS_FONT_SIZE);
-        statusText.setOutlineColor(AMMO_HUD_OUTLINE_COLOR);
-        statusText.setOutlineThickness(AMMO_HUD_OUTLINE);
 
         isFontReady = true;
     }
@@ -50,19 +51,17 @@ namespace RoguelikeGame
         window.setView(window.getDefaultView());
 
         sf::Vector2f screenSize = window.getDefaultView().getSize();
-        float statusY = screenSize.y - AMMO_HUD_MARGIN_Y - AMMO_HUD_STATUS_FONT_SIZE * AMMO_HUD_LINE_HEIGHT;
-        float ammoY = statusY - AMMO_HUD_FONT_SIZE * AMMO_HUD_LINE_HEIGHT;
+        float ammoY = screenSize.y - AMMO_HUD_MARGIN_Y - AMMO_HUD_FONT_SIZE * AMMO_HUD_LINE_HEIGHT;
+        float nameY = ammoY - AMMO_HUD_NAME_FONT_SIZE * AMMO_HUD_LINE_HEIGHT;
+
+        nameText.setPosition(AMMO_HUD_MARGIN_X, nameY);
 
         ammoText.setString(GetAmmoLine());
         ammoText.setFillColor(GetAmmoColor());
         ammoText.setPosition(AMMO_HUD_MARGIN_X, ammoY);
 
-        statusText.setString(GetStatusLine());
-        statusText.setFillColor(weapon->IsReloading() ? AMMO_HUD_RELOADING_COLOR : AMMO_HUD_COLOR);
-        statusText.setPosition(AMMO_HUD_MARGIN_X, statusY);
-
+        XYZEngine::RenderSystem::Instance()->Render(nameText);
         XYZEngine::RenderSystem::Instance()->Render(ammoText);
-        XYZEngine::RenderSystem::Instance()->Render(statusText);
 
         window.setView(worldView);
     }
@@ -71,6 +70,12 @@ namespace RoguelikeGame
     {
         targetName = newTargetName;
         weapon = nullptr;
+    }
+
+    void AmmoHudComponent::SetWeapon(WeaponId newWeaponId)
+    {
+        const char* name = GetWeapon(newWeaponId).name;
+        nameText.setString(sf::String::fromUtf8(name, name + std::char_traits<char>::length(name)));
     }
 
     void AmmoHudComponent::FindWeapon()
@@ -95,26 +100,6 @@ namespace RoguelikeGame
         std::string reserveText = reserve == XYZEngine::INFINITE_AMMO ? "--" : std::to_string(reserve);
 
         return std::to_string(weapon->GetAmmoInMagazine()) + " / " + reserveText;
-    }
-
-    std::string AmmoHudComponent::GetStatusLine() const
-    {
-        if (weapon->IsReloading())
-        {
-            return "RELOADING";
-        }
-
-        if (weapon->CanReload())
-        {
-            return "R - RELOAD";
-        }
-
-        if (weapon->IsMagazineEmpty())
-        {
-            return "NO AMMO";
-        }
-
-        return "";
     }
 
     sf::Color AmmoHudComponent::GetAmmoColor() const

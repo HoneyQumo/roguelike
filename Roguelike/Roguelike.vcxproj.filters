@@ -31,6 +31,9 @@
     <ClCompile Include="Projectile.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
+    <ClCompile Include="ReloadIndicatorComponent.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
     <ClCompile Include="AmmoHud.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
@@ -72,6 +75,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ReloadIndicatorComponent.h" />
     <ClInclude Include="AmmoHud.h" />
     <ClInclude Include="AmmoHudComponent.h" />
     <ClInclude Include="BloodPool.h" />

@@ -1,5 +1,6 @@
-#include "Crosshair.h"
+﻿#include "Crosshair.h"
 #include "GameSettings.h"
+#include "ReloadIndicatorComponent.h"
 #include <GameWorld.h>
 #include <ResourceSystem.h>
 #include <SpriteRendererComponent.h>
@@ -27,6 +28,9 @@ namespace RoguelikeGame
         renderer->SetAdditiveBlending(true);
 
         gameObject->AddComponent<XYZEngine::CursorFollowComponent>();
+
+        auto reloadIndicator = gameObject->AddComponent<ReloadIndicatorComponent>();
+        reloadIndicator->SetTargetName("Player");
 
         LOG_INFO("Crosshair created");
     }

@@ -50,7 +50,7 @@ namespace RoguelikeGame
 
     constexpr float SHOT_FORWARD_OFFSET = 0.5f * CHARACTER_COLLIDER_SIZE + 4.f;
 
-    inline Vector2Df ShotOffset(const WeaponDefinition& weapon)
+    inline XYZEngine::Vector2Df ShotOffset(const WeaponDefinition& weapon)
     {
         return {SHOT_FORWARD_OFFSET, ToWorldOffset(weapon.muzzleX, weapon.muzzleY).y};
     }
@@ -64,9 +64,12 @@ namespace RoguelikeGame
     constexpr int UI_RENDER_LAYER = 6;
 
     constexpr int CROSSHAIR_SIZE = 32;
+    constexpr int RELOAD_MAG_FRAME_SIZE = 64;
+    constexpr int RELOAD_MAG_FRAMES = 30;
+    constexpr int RELOAD_INDICATOR_SIZE = 44;
 
     constexpr int AMMO_HUD_FONT_SIZE = 30;
-    constexpr int AMMO_HUD_STATUS_FONT_SIZE = 16;
+    constexpr int AMMO_HUD_NAME_FONT_SIZE = 18;
     constexpr float AMMO_HUD_MARGIN_X = 26.f;
     constexpr float AMMO_HUD_MARGIN_Y = 22.f;
     constexpr float AMMO_HUD_LINE_HEIGHT = 1.35f;
@@ -87,6 +90,7 @@ namespace RoguelikeGame
 
     constexpr float MUSIC_VOLUME = 15.f;
     constexpr float SHOT_VOLUME = 20.f;
+    constexpr float RELOAD_VOLUME = 45.f;
     constexpr float HURT_VOLUME = 35.f;
 
     constexpr auto PLAYER_TEXTURE = "player";
@@ -97,6 +101,7 @@ namespace RoguelikeGame
     constexpr auto BLOOD_HIT_TEXTURE = "fx_blood_hit";
     constexpr auto IMPACT_TEXTURE = "fx_impact";
     constexpr auto BULLET_TEXTURE = "fx_bullet";
+    constexpr auto RELOAD_MAG_TEXTURE = "reload_mag";
     constexpr auto HIT_FLASH_SHADER = "hit_flash";
     constexpr auto HUD_FONT = "hud";
     constexpr auto SHOT_SOUND = "shot";
@@ -108,9 +113,11 @@ namespace RoguelikeGame
     const std::string SHADERS_PATH = "Resources/Shaders/";
     const std::string LEVELS_PATH = "Resources/Levels/";
     const std::string FONTS_PATH = "Resources/Fonts/";
+    const std::string WEAPONS_AUDIO_PATH = "Resources/Audio/Weapons/";
 
     const std::string CROSSHAIR_FILE = TEXTURES_PATH + "crosshair.png";
     const std::string WEAPONS_ATLAS_FILE = TEXTURES_PATH + "weapons.png";
+    const std::string RELOAD_MAG_FILE = TEXTURES_PATH + "reload_mag.png";
     const std::string FX_ATLAS_FILE = TEXTURES_PATH + "fx.png";
     const std::string HIT_FLASH_SHADER_FILE = SHADERS_PATH + "hit_flash.frag";
     const std::string SHOT_SOUND_FILE = AUDIO_PATH + "shot.wav";
@@ -128,6 +135,7 @@ namespace RoguelikeGame
     const sf::Color AMMO_HUD_LOW_COLOR = {220, 90, 70};
     const sf::Color AMMO_HUD_RELOADING_COLOR = {235, 190, 90};
     const sf::Color AMMO_HUD_OUTLINE_COLOR = {15, 13, 12, 220};
+    const sf::Color RELOAD_INDICATOR_COLOR = {235, 190, 90};
 
     const EnemyConfig GRUNT_CONFIG = {
         "Grunt", "enemy_grunt", WeaponId::Knife,

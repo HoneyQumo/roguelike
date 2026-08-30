@@ -37,6 +37,7 @@ namespace XYZEngine
 
         bool IsMagazineEmpty() const;
         bool IsReloading() const;
+        float GetReloadProgress() const;
         bool CanReload() const;
         bool TryReload();
         void CancelReload();

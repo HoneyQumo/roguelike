@@ -1,5 +1,6 @@
 ﻿#include "Player.h"
 #include "GameSettings.h"
+#include "GameResources.h"
 #include "Projectile.h"
 #include "PlayerAttackComponent.h"
 #include "HitFlashComponent.h"
@@ -84,9 +85,15 @@ namespace RoguelikeGame
             ammoPouch->SetAmmo(AmmoKindKey(reserve.kind), reserve.count);
         }
 
+        const WeaponDefinition& weaponDefinition = GetWeapon(PLAYER_WEAPON);
+
         auto shotAudio = gameObject->AddComponent<XYZEngine::AudioComponent>();
-        shotAudio->SetSound(XYZEngine::ResourceSystem::Instance()->GetSound(SHOT_SOUND));
+        shotAudio->SetSound(GameResources::GetWeaponSound(weaponDefinition.shotSound));
         shotAudio->SetVolume(SHOT_VOLUME);
+
+        auto reloadAudio = gameObject->AddComponent<XYZEngine::AudioComponent>();
+        reloadAudio->SetSound(GameResources::GetWeaponSound(weaponDefinition.reloadSound));
+        reloadAudio->SetVolume(RELOAD_VOLUME);
 
         auto hurtAudio = gameObject->AddComponent<XYZEngine::AudioComponent>();
         hurtAudio->SetSound(XYZEngine::ResourceSystem::Instance()->GetSound(HURT_SOUND));
@@ -105,7 +112,6 @@ namespace RoguelikeGame
             LOG_ERROR(std::string("Player weapon is not created: ") + exception.what());
         }
 
-        const WeaponDefinition& weaponDefinition = GetWeapon(PLAYER_WEAPON);
         auto muzzleFlash = weapon == nullptr ? nullptr : weapon->GetMuzzleFlash();
 
         auto weaponComponent = gameObject->AddComponent<XYZEngine::WeaponComponent>();
@@ -115,7 +121,11 @@ namespace RoguelikeGame
         weaponComponent->SetMuzzleOffset(ShotOffset(weaponDefinition));
         weaponComponent->SetMagazine(weaponDefinition.magazineSize, AmmoKindKey(weaponDefinition.ammo));
         weaponComponent->SetReloadTime(weaponDefinition.reloadTime);
-        weaponComponent->SetReloadStartAction([animation]() { animation->PlayReload(); });
+        weaponComponent->SetReloadStartAction([animation, reloadAudio]()
+        {
+            animation->PlayReload();
+            reloadAudio->Play();
+        });
         weaponComponent->SetShotAction(
             [shotAudio, animation, muzzleFlash](const XYZEngine::Vector2Df& shotPosition, const XYZEngine::Vector2Df& shotDirection, float damage, float speed)
             {
@@ -139,9 +149,10 @@ namespace RoguelikeGame
         });
 
         auto characterObject = gameObject;
-        health->SubscribeDeath([characterObject, transform, animation, movement, collider, aim, weaponComponent]()
+        health->SubscribeDeath([characterObject, transform, animation, movement, collider, aim, weaponComponent, reloadAudio]()
         {
             weaponComponent->CancelReload();
+            reloadAudio->Stop();
             animation->PlayDeath();
             movement->SetSpeed(0.f);
             collider->SetTrigger(true);

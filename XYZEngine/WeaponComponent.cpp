@@ -130,6 +130,22 @@ namespace XYZEngine
         return isReloading;
     }
 
+    float WeaponComponent::GetReloadProgress() const
+    {
+        if (!isReloading)
+        {
+            return 0.f;
+        }
+
+        if (reloadTime <= 0.f)
+        {
+            return 1.f;
+        }
+
+        float progress = 1.f - reloadTimer / reloadTime;
+        return std::min(std::max(progress, 0.f), 1.f);
+    }
+
     bool WeaponComponent::CanReload() const
     {
         if (!HasMagazine() || isReloading || ammoInMagazine >= magazineSize)

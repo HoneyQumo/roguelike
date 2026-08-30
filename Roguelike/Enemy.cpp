@@ -1,5 +1,6 @@
 ﻿#include "Enemy.h"
 #include "GameSettings.h"
+#include "GameResources.h"
 #include "Projectile.h"
 #include "EnemyAttackComponent.h"
 #include "HitFlashComponent.h"
@@ -101,11 +102,15 @@ namespace RoguelikeGame
         }
         else
         {
+            const WeaponDefinition& weaponDefinition = GetWeapon(config.weapon);
+
             auto shotAudio = gameObject->AddComponent<XYZEngine::AudioComponent>();
-            shotAudio->SetSound(XYZEngine::ResourceSystem::Instance()->GetSound(SHOT_SOUND));
+            shotAudio->SetSound(GameResources::GetWeaponSound(weaponDefinition.shotSound));
             shotAudio->SetVolume(SHOT_VOLUME);
 
-            const WeaponDefinition& weaponDefinition = GetWeapon(config.weapon);
+            auto reloadAudio = gameObject->AddComponent<XYZEngine::AudioComponent>();
+            reloadAudio->SetSound(GameResources::GetWeaponSound(weaponDefinition.reloadSound));
+            reloadAudio->SetVolume(RELOAD_VOLUME);
             auto muzzleFlash = weapon == nullptr ? nullptr : weapon->GetMuzzleFlash();
 
             auto weaponComponent = gameObject->AddComponent<XYZEngine::WeaponComponent>();
@@ -116,7 +121,11 @@ namespace RoguelikeGame
 
             weaponComponent->SetMagazine(weaponDefinition.magazineSize, AmmoKindKey(weaponDefinition.ammo));
             weaponComponent->SetReloadTime(weaponDefinition.reloadTime);
-            weaponComponent->SetReloadStartAction([animation]() { animation->PlayReload(); });
+            weaponComponent->SetReloadStartAction([animation, reloadAudio]()
+            {
+                animation->PlayReload();
+                reloadAudio->Play();
+            });
 
             std::string shooterName = config.objectName;
             BulletKind bullet = weaponDefinition.bullet;

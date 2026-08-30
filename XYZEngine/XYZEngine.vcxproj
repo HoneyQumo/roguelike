@@ -150,6 +150,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="AmmoPouchComponent.h" />
     <ClInclude Include="AudioComponent.h" />
     <ClInclude Include="BoxColliderComponent.h" />
     <ClInclude Include="CameraComponent.h" />
@@ -196,6 +197,7 @@
     <ClInclude Include="Vector.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AmmoPouchComponent.cpp" />
     <ClCompile Include="AudioComponent.cpp" />
     <ClCompile Include="BoxColliderComponent.cpp" />
     <ClCompile Include="CameraComponent.cpp" />

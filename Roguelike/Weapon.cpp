@@ -37,6 +37,7 @@ namespace RoguelikeGame
         auto layer = gameObject->AddComponent<WeaponLayerComponent>();
         layer->SetOwnerAnimation(ownerAnimation);
         layer->SetRecoil(weapon.recoil);
+        layer->SetWeaponId(id);
 
         if (weapon.flashScale > 0.f)
         {

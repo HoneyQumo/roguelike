@@ -26,12 +26,31 @@ namespace RoguelikeGame
     constexpr float PLAYER_PROJECTILE_SPEED = 800.f;
     constexpr auto PLAYER_WEAPON = WeaponId::Ak47;
 
+    struct AmmoReserve
+    {
+        AmmoKind kind;
+        int count;
+    };
+
+    constexpr AmmoReserve PLAYER_START_AMMO[] = {
+        {AmmoKind::Rifle, 300},
+        {AmmoKind::Smg, 200},
+        {AmmoKind::Pistol, 120},
+        {AmmoKind::Shell, 48},
+        {AmmoKind::Rocket, 6}
+    };
+
+    constexpr float ReloadFramesPerSecond(float reloadTime)
+    {
+        return reloadTime > 0.f ? RELOAD_ANIMATION.frames / reloadTime : RELOAD_ANIMATION.framesPerSecond;
+    }
+
     constexpr float PROJECTILE_COLLIDER_SIZE = 8.f;
     constexpr float PROJECTILE_LIFETIME = 2.f;
 
     constexpr float SHOT_FORWARD_OFFSET = 0.5f * CHARACTER_COLLIDER_SIZE + 4.f;
 
-    inline XYZEngine::Vector2Df ShotOffset(const WeaponDefinition& weapon)
+    inline Vector2Df ShotOffset(const WeaponDefinition& weapon)
     {
         return {SHOT_FORWARD_OFFSET, ToWorldOffset(weapon.muzzleX, weapon.muzzleY).y};
     }
@@ -45,6 +64,16 @@ namespace RoguelikeGame
     constexpr int UI_RENDER_LAYER = 6;
 
     constexpr int CROSSHAIR_SIZE = 32;
+
+    constexpr int AMMO_HUD_FONT_SIZE = 30;
+    constexpr int AMMO_HUD_STATUS_FONT_SIZE = 16;
+    constexpr float AMMO_HUD_MARGIN_X = 26.f;
+    constexpr float AMMO_HUD_MARGIN_Y = 22.f;
+    constexpr float AMMO_HUD_LINE_HEIGHT = 1.35f;
+    constexpr float AMMO_HUD_OUTLINE = 2.f;
+
+    // Красная зона обоймы
+    constexpr float AMMO_HUD_LOW_PART = 0.25f;
 
     constexpr float HEALTH_BAR_WIDTH = 48.f;
     constexpr float HEALTH_BAR_HEIGHT = 6.f;
@@ -69,6 +98,7 @@ namespace RoguelikeGame
     constexpr auto IMPACT_TEXTURE = "fx_impact";
     constexpr auto BULLET_TEXTURE = "fx_bullet";
     constexpr auto HIT_FLASH_SHADER = "hit_flash";
+    constexpr auto HUD_FONT = "hud";
     constexpr auto SHOT_SOUND = "shot";
     constexpr auto HURT_SOUND = "hurt";
     constexpr auto MAIN_THEME_MUSIC = "main_theme";
@@ -77,6 +107,7 @@ namespace RoguelikeGame
     const std::string AUDIO_PATH = "Resources/Audio/";
     const std::string SHADERS_PATH = "Resources/Shaders/";
     const std::string LEVELS_PATH = "Resources/Levels/";
+    const std::string FONTS_PATH = "Resources/Fonts/";
 
     const std::string CROSSHAIR_FILE = TEXTURES_PATH + "crosshair.png";
     const std::string WEAPONS_ATLAS_FILE = TEXTURES_PATH + "weapons.png";
@@ -86,12 +117,17 @@ namespace RoguelikeGame
     const std::string HURT_SOUND_FILE = AUDIO_PATH + "hurt.wav";
     const std::string MAIN_THEME_FILE = AUDIO_PATH + "main_music_1.ogg";
     const std::string TEST_LEVEL_FILE = LEVELS_PATH + "test_level.config";
+    const std::string HUD_FONT_FILE = FONTS_PATH + "Roboto-Medium.ttf";
 
     constexpr auto LOG_FILE_PATH = "log.txt";
 
     const sf::Color WALL_COLOR = {92, 86, 80};
     const sf::Color FLOOR_COLOR = {46, 42, 38};
     const sf::Color CROSSHAIR_COLOR = {255, 255, 255};
+    const sf::Color AMMO_HUD_COLOR = {235, 230, 220};
+    const sf::Color AMMO_HUD_LOW_COLOR = {220, 90, 70};
+    const sf::Color AMMO_HUD_RELOADING_COLOR = {235, 190, 90};
+    const sf::Color AMMO_HUD_OUTLINE_COLOR = {15, 13, 12, 220};
 
     const EnemyConfig GRUNT_CONFIG = {
         "Grunt", "enemy_grunt", WeaponId::Knife,

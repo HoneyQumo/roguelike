@@ -64,6 +64,8 @@ namespace RoguelikeGame
         animation->SetIdleAnimation(config.textureMapName, AtlasFrameIndex(IDLE_ANIMATION.row, 0), IDLE_ANIMATION.frames, IDLE_ANIMATION.framesPerSecond);
         animation->SetWalkAnimation(config.textureMapName, AtlasFrameIndex(WALK_ANIMATION.row, 0), WALK_ANIMATION.frames, WALK_ANIMATION.framesPerSecond);
         animation->SetShootAnimation(config.textureMapName, AtlasFrameIndex(SHOOT_ANIMATION.row, 0), SHOOT_ANIMATION.frames, SHOOT_ANIMATION.framesPerSecond);
+        animation->SetReloadAnimation(config.textureMapName, AtlasFrameIndex(RELOAD_ANIMATION.row, 0), RELOAD_ANIMATION.frames,
+                                      ReloadFramesPerSecond(GetWeapon(config.weapon).reloadTime));
         animation->SetHurtAnimation(config.textureMapName, AtlasFrameIndex(HURT_ANIMATION.row, 0), HURT_ANIMATION.frames, HURT_ANIMATION.framesPerSecond);
         animation->SetDeathAnimation(config.textureMapName, AtlasFrameIndex(DEATH_ANIMATION.row, 0), DEATH_ANIMATION.frames, DEATH_ANIMATION.framesPerSecond);
 
@@ -112,6 +114,10 @@ namespace RoguelikeGame
             weaponComponent->SetProjectileSpeed(config.projectileSpeed);
             weaponComponent->SetMuzzleOffset(ShotOffset(weaponDefinition));
 
+            weaponComponent->SetMagazine(weaponDefinition.magazineSize, AmmoKindKey(weaponDefinition.ammo));
+            weaponComponent->SetReloadTime(weaponDefinition.reloadTime);
+            weaponComponent->SetReloadStartAction([animation]() { animation->PlayReload(); });
+
             std::string shooterName = config.objectName;
             BulletKind bullet = weaponDefinition.bullet;
             weaponComponent->SetShotAction(
@@ -141,8 +147,14 @@ namespace RoguelikeGame
         });
 
         auto characterObject = gameObject;
-        health->SubscribeDeath([characterObject, transform, animation, movement, chase, collider, aim]()
+        auto weaponComponent = gameObject->GetComponent<XYZEngine::WeaponComponent>();
+        health->SubscribeDeath([characterObject, transform, animation, movement, chase, collider, aim, weaponComponent]()
         {
+            if (weaponComponent != nullptr)
+            {
+                weaponComponent->CancelReload();
+            }
+
             animation->PlayDeath();
             movement->SetSpeed(0.f);
             chase->SetDetectionRadius(0.f);

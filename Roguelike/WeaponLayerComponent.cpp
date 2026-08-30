@@ -1,5 +1,7 @@
 ﻿#include "WeaponLayerComponent.h"
+#include "GameSettings.h"
 #include <GameObject.h>
+#include <ResourceSystem.h>
 #include <algorithm>
 
 namespace RoguelikeGame
@@ -35,6 +37,8 @@ namespace RoguelikeGame
             return;
         }
 
+        ShowVariant(GetFrameVariant(animation, frame));
+
         FrameOffset offset = GetFrameOffset(animation, frame);
 
         // Отдача масштабирует только смещение выстрела: ствол тяжелее — слой отбрасывает дальше назад.
@@ -53,6 +57,38 @@ namespace RoguelikeGame
     {
         recoil = newRecoil;
     }
+    void WeaponLayerComponent::SetWeaponId(WeaponId newWeaponId)
+    {
+        for (int variant = 0; variant < WEAPON_VARIANTS; variant++)
+        {
+            variants[variant] = XYZEngine::ResourceSystem::Instance()->GetTextureMapElementShared(WEAPONS_TEXTURE,
+                                                                                                  WeaponFrameIndex(newWeaponId, variant));
+        }
+
+        currentVariant = WEAPON_DEFAULT_VARIANT;
+    }
+
+    // Ствол меняет хват только на перезарядке, во всех прочих кадрах он в обычном варианте.
+    int WeaponLayerComponent::GetFrameVariant(XYZEngine::MovementAnimation animation, int frame)
+    {
+        if (animation != XYZEngine::MovementAnimation::Reload)
+        {
+            return WEAPON_DEFAULT_VARIANT;
+        }
+
+        return RELOAD_WEAPON_VARIANT[std::min(std::max(frame, 0), RELOAD_ANIMATION.frames - 1)];
+    }
+
+    void WeaponLayerComponent::ShowVariant(int variant)
+    {
+        if (variant == currentVariant || renderer == nullptr || variants[variant] == nullptr)
+        {
+            return;
+        }
+
+        currentVariant = variant;
+        renderer->SetTexture(*variants[variant]);
+    }
 
     FrameOffset WeaponLayerComponent::GetFrameOffset(XYZEngine::MovementAnimation animation, int frame)
     {
@@ -64,6 +100,8 @@ namespace RoguelikeGame
             return RUN_WEAPON_OFFSET[std::min(std::max(frame, 0), RUN_ANIMATION.frames - 1)];
         case XYZEngine::MovementAnimation::Shoot:
             return SHOOT_WEAPON_OFFSET[std::min(std::max(frame, 0), SHOOT_ANIMATION.frames - 1)];
+        case XYZEngine::MovementAnimation::Reload:
+            return RELOAD_WEAPON_OFFSET[std::min(std::max(frame, 0), RELOAD_ANIMATION.frames - 1)];
         case XYZEngine::MovementAnimation::Hurt:
             return HURT_WEAPON_OFFSET[std::min(std::max(frame, 0), HURT_ANIMATION.frames - 1)];
         case XYZEngine::MovementAnimation::Death:

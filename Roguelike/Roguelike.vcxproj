@@ -160,6 +160,8 @@
         </Link>
     </ItemDefinitionGroup>
     <ItemGroup>
+        <ClCompile Include="AmmoHud.cpp"/>
+        <ClCompile Include="AmmoHudComponent.cpp"/>
         <ClCompile Include="BloodPool.cpp"/>
         <ClCompile Include="Crosshair.cpp"/>
         <ClCompile Include="Fx.cpp"/>
@@ -181,6 +183,8 @@
         <ClCompile Include="Player.cpp"/>
     </ItemGroup>
     <ItemGroup>
+        <ClInclude Include="AmmoHud.h"/>
+        <ClInclude Include="AmmoHudComponent.h"/>
         <ClInclude Include="BloodPool.h"/>
         <ClInclude Include="Crosshair.h"/>
         <ClInclude Include="Fx.h"/>

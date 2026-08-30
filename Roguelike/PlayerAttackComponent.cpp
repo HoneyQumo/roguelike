@@ -4,7 +4,9 @@
 
 namespace RoguelikeGame
 {
-    PlayerAttackComponent::PlayerAttackComponent(XYZEngine::GameObject* gameObject) : Component(gameObject) {}
+    PlayerAttackComponent::PlayerAttackComponent(XYZEngine::GameObject* gameObject) : Component(gameObject)
+    {
+    }
 
     void PlayerAttackComponent::Update(float deltaTime)
     {
@@ -30,6 +32,11 @@ namespace RoguelikeGame
         if (health != nullptr && !health->IsAlive())
         {
             return;
+        }
+
+        if (input->IsReloadPressed())
+        {
+            weapon->TryReload();
         }
 
         if (input->IsAttackPressed())

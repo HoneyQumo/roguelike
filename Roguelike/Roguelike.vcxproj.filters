@@ -31,6 +31,12 @@
     <ClCompile Include="Projectile.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
+    <ClCompile Include="AmmoHud.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="AmmoHudComponent.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
     <ClCompile Include="Crosshair.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
@@ -66,6 +72,8 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AmmoHud.h" />
+    <ClInclude Include="AmmoHudComponent.h" />
     <ClInclude Include="BloodPool.h" />
     <ClInclude Include="Crosshair.h" />
     <ClInclude Include="Fx.h" />

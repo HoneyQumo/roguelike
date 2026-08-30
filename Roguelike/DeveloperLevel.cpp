@@ -1,4 +1,4 @@
-#include "DeveloperLevel.h"
+﻿#include "DeveloperLevel.h"
 #include "GameSettings.h"
 #include "LevelLoader.h"
 #include <LoggerRegistry.h>
@@ -31,6 +31,8 @@ namespace RoguelikeGame
         {
             LOG_ERROR(std::string("Crosshair is not created: ") + exception.what());
         }
+
+        ammoHud = std::make_unique<AmmoHud>();
     }
 
     void DeveloperLevel::Restart()
@@ -43,6 +45,7 @@ namespace RoguelikeGame
     {
         LOG_INFO("Developer level is stopping");
 
+        ammoHud.reset();
         crosshair.reset();
         music.reset();
         levelBuilder.Clear();

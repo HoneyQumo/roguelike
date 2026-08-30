@@ -41,7 +41,7 @@ namespace XYZEngine
             return;
         }
 
-        if ((currentAnimation == &hurtAnimation || currentAnimation == &shootAnimation) && !isFinished)
+        if (IsInterruptingAnimation() && !isFinished)
         {
             AdvanceFrames(deltaTime);
             return;
@@ -93,9 +93,15 @@ namespace XYZEngine
     {
         Fill(runAnimation, textureMapName, firstFrameIndex, framesCount, framesPerSecond);
     }
+
     void SpriteMovementAnimationComponent::SetShootAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float framesPerSecond)
     {
         Fill(shootAnimation, textureMapName, firstFrameIndex, framesCount, framesPerSecond);
+    }
+
+    void SpriteMovementAnimationComponent::SetReloadAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float framesPerSecond)
+    {
+        Fill(reloadAnimation, textureMapName, firstFrameIndex, framesCount, framesPerSecond);
     }
 
     void SpriteMovementAnimationComponent::SetHurtAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float framesPerSecond)
@@ -115,7 +121,7 @@ namespace XYZEngine
             return;
         }
 
-        if (currentAnimation == &hurtAnimation && !isFinished)
+        if ((currentAnimation == &hurtAnimation || currentAnimation == &reloadAnimation) && !isFinished)
         {
             return;
         }
@@ -124,9 +130,37 @@ namespace XYZEngine
         Play(shootAnimation, MovementAnimation::Shoot, false);
     }
 
+    void SpriteMovementAnimationComponent::PlayReload()
+    {
+        if (isDead || reloadAnimation.frames.empty())
+        {
+            return;
+        }
+
+        currentAnimation = nullptr;
+        Play(reloadAnimation, MovementAnimation::Reload, false);
+    }
+
+    void SpriteMovementAnimationComponent::StopReload()
+    {
+        if (currentAnimation != &reloadAnimation)
+        {
+            return;
+        }
+
+        currentAnimation = nullptr;
+        currentAnimationKind = MovementAnimation::None;
+        isFinished = true;
+    }
+
     void SpriteMovementAnimationComponent::PlayHurt()
     {
         if (isDead || hurtAnimation.frames.empty())
+        {
+            return;
+        }
+
+        if (currentAnimation == &reloadAnimation && !isFinished)
         {
             return;
         }
@@ -156,6 +190,11 @@ namespace XYZEngine
     int SpriteMovementAnimationComponent::GetCurrentFrame() const
     {
         return currentFrame;
+    }
+
+    bool SpriteMovementAnimationComponent::IsInterruptingAnimation() const
+    {
+        return currentAnimation == &hurtAnimation || currentAnimation == &shootAnimation || currentAnimation == &reloadAnimation;
     }
 
     void SpriteMovementAnimationComponent::Fill(Animation& animation, const std::string& textureMapName, int firstFrameIndex, int framesCount, float framesPerSecond)

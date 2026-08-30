@@ -24,6 +24,9 @@
     <ClInclude Include="Engine.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
+    <ClInclude Include="AmmoPouchComponent.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
     <ClInclude Include="AudioComponent.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
@@ -153,6 +156,9 @@
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="Engine.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="AmmoPouchComponent.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="AudioComponent.cpp">

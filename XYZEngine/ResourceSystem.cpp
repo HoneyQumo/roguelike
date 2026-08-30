@@ -319,6 +319,51 @@ namespace XYZEngine
         delete deletingMusic;
     }
 
+    void ResourceSystem::LoadFont(const std::string& name, std::string sourcePath)
+    {
+        if (fonts.find(name) != fonts.end())
+        {
+            LOG_WARN("Font is already loaded: " + name);
+            return;
+        }
+
+        auto newFont = new sf::Font();
+        if (newFont->loadFromFile(sourcePath))
+        {
+            fonts.emplace(name, newFont);
+            LOG_INFO("Font loaded: " + name + " from " + sourcePath);
+            return;
+        }
+
+        LOG_ERROR("Can't load font: " + sourcePath);
+        delete newFont;
+    }
+
+    const sf::Font* ResourceSystem::GetFont(const std::string& name) const
+    {
+        auto fontPair = fonts.find(name);
+        if (fontPair == fonts.end())
+        {
+            LOG_ERROR("Font not found: " + name);
+            return nullptr;
+        }
+
+        return fontPair->second;
+    }
+
+    void ResourceSystem::DeleteFont(const std::string& name)
+    {
+        auto fontPair = fonts.find(name);
+        if (fontPair == fonts.end())
+        {
+            return;
+        }
+
+        sf::Font* deletingFont = fontPair->second;
+        fonts.erase(fontPair);
+        delete deletingFont;
+    }
+
     void ResourceSystem::LoadShader(const std::string& name, std::string sourcePath, sf::Shader::Type type)
     {
         if (shaders.find(name) != shaders.end())
@@ -374,6 +419,7 @@ namespace XYZEngine
         DeleteAllTextureMaps();
         DeleteAllSounds();
         DeleteAllMusic();
+        DeleteAllFonts();
         DeleteAllShaders();
     }
 
@@ -434,6 +480,21 @@ namespace XYZEngine
         for (const auto& key : keysToDelete)
         {
             DeleteMusic(key);
+        }
+    }
+
+    void ResourceSystem::DeleteAllFonts()
+    {
+        std::vector<std::string> keysToDelete;
+
+        for (const auto& fontPair : fonts)
+        {
+            keysToDelete.push_back(fontPair.first);
+        }
+
+        for (const auto& key : keysToDelete)
+        {
+            DeleteFont(key);
         }
     }
 

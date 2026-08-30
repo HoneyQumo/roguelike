@@ -1,9 +1,10 @@
-#pragma once
+﻿#pragma once
 
 #include <memory>
 #include "Scene.h"
 #include "Music.h"
 #include "Crosshair.h"
+#include "AmmoHud.h"
 #include "LevelBuilder.h"
 
 using namespace XYZEngine;
@@ -21,5 +22,6 @@ namespace RoguelikeGame
         LevelBuilder levelBuilder;
         std::unique_ptr<Music> music;
         std::unique_ptr<Crosshair> crosshair;
+        std::unique_ptr<AmmoHud> ammoHud;
     };
 }

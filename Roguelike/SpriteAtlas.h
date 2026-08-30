@@ -30,11 +30,12 @@ namespace RoguelikeGame
         return row * CHARACTER_ATLAS_COLUMNS + column;
     }
 
-    // Строки 4 (перезарядка) и 5 (удар), а также восемь строк кувырка в player.png не реализованы:
+    // Строка 5 (удар) и восемь строк кувырка в player.png не реализованы:
     constexpr CharacterAnimation IDLE_ANIMATION = {0, 6, FramesPerSecond(175.f)};
     constexpr CharacterAnimation WALK_ANIMATION = {1, 8, FramesPerSecond(110.f)};
     constexpr CharacterAnimation RUN_ANIMATION = {2, 8, FramesPerSecond(75.f)};
     constexpr CharacterAnimation SHOOT_ANIMATION = {3, 4, FramesPerSecond(60.f)};
+    constexpr CharacterAnimation RELOAD_ANIMATION = {4, 12, FramesPerSecond(90.f)};
     constexpr CharacterAnimation HURT_ANIMATION = {6, 3, FramesPerSecond(80.f)};
     constexpr CharacterAnimation DEATH_ANIMATION = {7, 8, FramesPerSecond(110.f)};
 
@@ -51,8 +52,17 @@ namespace RoguelikeGame
     constexpr FrameOffset WALK_WEAPON_OFFSET[8] = {{0, 0}, {0, 1}, {0, 0}, {0, -1}, {0, 0}, {0, 1}, {0, 0}, {0, -1}};
     constexpr FrameOffset RUN_WEAPON_OFFSET[8] = {{0, 3}, {0, 4}, {0, 3}, {0, 2}, {0, 3}, {0, 4}, {0, 3}, {0, 2}};
     constexpr FrameOffset SHOOT_WEAPON_OFFSET[4] = {{-3, 0}, {-2, 0}, {-1, 0}, {0, 0}};
+    constexpr FrameOffset RELOAD_WEAPON_OFFSET[12] = {{0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}};
     constexpr FrameOffset HURT_WEAPON_OFFSET[3] = {{-2, 1}, {-1, 0}, {0, 0}};
     constexpr FrameOffset DEATH_WEAPON_OFFSET[8] = {{0, 1}, {-2, 2}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}};
+
+    /**
+    *	Столбец weapons.png на каждом кадре перезарядки: 
+    *	0-обычный хват, 
+    *	1-рука к магазину, 
+    *	2-магазин вынут.
+    */
+    constexpr int RELOAD_WEAPON_VARIANT[12] = {0, 1, 1, 2, 2, 2, 2, 2, 2, 2, 1, 0};
 
     // Кадр смерти с которого оружие пропадает
     constexpr int DEATH_WEAPON_HIDDEN_FROM_FRAME = 2;

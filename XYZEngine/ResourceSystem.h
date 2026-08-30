@@ -33,6 +33,10 @@ namespace XYZEngine
 		sf::Music* GetMusic(const std::string& name) const;
 		void DeleteMusic(const std::string& name);
 
+		void LoadFont(const std::string& name, std::string sourcePath);
+		const sf::Font* GetFont(const std::string& name) const;
+		void DeleteFont(const std::string& name);
+
 		void LoadShader(const std::string& name, std::string sourcePath, sf::Shader::Type type);
 		sf::Shader* GetShader(const std::string& name) const;
 		void DeleteShader(const std::string& name);
@@ -44,6 +48,7 @@ namespace XYZEngine
 		std::map<std::string, std::vector<sf::Texture*>> textureMaps;
 		std::map<std::string, sf::SoundBuffer*> sounds;
 		std::map<std::string, sf::Music*> musicTracks;
+		std::map<std::string, sf::Font*> fonts;
 		std::map<std::string, sf::Shader*> shaders;
 
 		ResourceSystem() {}
@@ -58,6 +63,7 @@ namespace XYZEngine
 		void DeleteAllTextureMaps();
 		void DeleteAllSounds();
 		void DeleteAllMusic();
+		void DeleteAllFonts();
 		void DeleteAllShaders();
 	};
 }

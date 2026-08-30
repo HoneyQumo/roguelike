@@ -18,6 +18,7 @@ namespace XYZEngine
         Walk,
         Run,
         Shoot,
+        Reload,
         Hurt,
         Death
     };
@@ -34,10 +35,13 @@ namespace XYZEngine
         void SetRunAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float framesPerSecond);
         void SetIdleAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float framesPerSecond);
         void SetShootAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float framesPerSecond);
+        void SetReloadAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float framesPerSecond);
         void SetHurtAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float framesPerSecond);
         void SetDeathAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float framesPerSecond);
 
         void PlayShoot();
+        void PlayReload();
+        void StopReload();
         void PlayHurt();
         void PlayDeath();
 
@@ -59,6 +63,7 @@ namespace XYZEngine
         Animation runAnimation;
         Animation idleAnimation;
         Animation shootAnimation;
+        Animation reloadAnimation;
         Animation hurtAnimation;
         Animation deathAnimation;
         Animation* currentAnimation = nullptr;
@@ -74,6 +79,7 @@ namespace XYZEngine
         Vector2Df previousPosition = {0.f, 0.f};
         float stillTimer = 0.f;
 
+        bool IsInterruptingAnimation() const;
         void Fill(Animation& animation, const std::string& textureMapName, int firstFrameIndex, int framesCount, float framesPerSecond);
         void Play(Animation& animation, MovementAnimation kind, bool looped);
         void AdvanceFrames(float deltaTime);

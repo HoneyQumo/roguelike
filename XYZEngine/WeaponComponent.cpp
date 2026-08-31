@@ -84,6 +84,11 @@ namespace XYZEngine
         reloadTimer = 0.f;
     }
 
+    void WeaponComponent::SetAmmoInMagazine(int newAmmoInMagazine)
+    {
+        ammoInMagazine = std::min(std::max(newAmmoInMagazine, 0), magazineSize);
+    }
+
     void WeaponComponent::SetReloadTime(float newReloadTime)
     {
         assert(newReloadTime >= 0.f);

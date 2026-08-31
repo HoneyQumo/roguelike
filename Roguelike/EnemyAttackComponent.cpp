@@ -12,16 +12,20 @@ namespace RoguelikeGame
 
     void EnemyAttackComponent::Update(float deltaTime)
     {
-        if (weapon == nullptr)
+        if (!areWeaponsSearched)
         {
             weapon = gameObject->GetComponent<XYZEngine::WeaponComponent>();
-            if (weapon == nullptr)
+            meleeWeapon = gameObject->GetComponent<XYZEngine::MeleeWeaponComponent>();
+            areWeaponsSearched = true;
+
+            if (weapon == nullptr && meleeWeapon == nullptr)
             {
                 LOG_ERROR("Enemy attack needs a weapon component on " + gameObject->GetName());
                 gameObject->RemoveComponent(this);
                 return;
             }
         }
+
         if (health == nullptr)
         {
             health = gameObject->GetComponent<XYZEngine::HealthComponent>();
@@ -55,6 +59,12 @@ namespace RoguelikeGame
             return;
         }
 
+        if (meleeWeapon != nullptr)
+        {
+            meleeWeapon->TryQuickAttack();
+            return;
+        }
+
         weapon->TryShootAt(targetPosition);
     }
 
@@ -71,5 +81,4 @@ namespace RoguelikeGame
     {
         attackRange = newAttackRange;
     }
-
 }

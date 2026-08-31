@@ -24,7 +24,12 @@ namespace RoguelikeGame
     constexpr float PLAYER_ATTACK_DAMAGE = 25.f;
     constexpr float PLAYER_ATTACK_COOLDOWN = 0.3f;
     constexpr float PLAYER_PROJECTILE_SPEED = 800.f;
-    constexpr auto PLAYER_WEAPON = WeaponId::Ak47;
+    constexpr float PLAYER_MELEE_DAMAGE = 15.f;
+    constexpr float PLAYER_HEAVY_LUNGE_SPEED = 150.f;
+
+    constexpr int PLAYER_WEAPON_SLOTS = 3;
+    constexpr int PLAYER_START_WEAPON_SLOT = 0;
+    constexpr WeaponId PLAYER_LOADOUT[PLAYER_WEAPON_SLOTS] = {WeaponId::Ak47, WeaponId::Glock, WeaponId::Bat};
 
     struct AmmoReserve
     {
@@ -59,9 +64,10 @@ namespace RoguelikeGame
     constexpr int BLOOD_RENDER_LAYER = 1;
     constexpr int CORPSE_RENDER_LAYER = 2;
     constexpr int ENEMY_RENDER_LAYER = 3;
-    constexpr int PLAYER_RENDER_LAYER = 4;
-    constexpr int EFFECT_RENDER_LAYER = 5;
-    constexpr int UI_RENDER_LAYER = 6;
+    constexpr int STOWED_WEAPON_RENDER_LAYER = 4;
+    constexpr int PLAYER_RENDER_LAYER = 5;
+    constexpr int EFFECT_RENDER_LAYER = 6;
+    constexpr int UI_RENDER_LAYER = 7;
 
     constexpr int CROSSHAIR_SIZE = 32;
     constexpr int RELOAD_MAG_FRAME_SIZE = 64;
@@ -85,13 +91,17 @@ namespace RoguelikeGame
     constexpr float HIT_FLASH_DURATION = 0.12f;
     constexpr auto HIT_FLASH_UNIFORM = "amount";
 
-    // Лужа стартует на третьем кадре анимации смерти и продолжает расти после того, как тело замерло.
+    // Лужа кров начинается с 3го кадра анимации смерти
     constexpr float BLOOD_POOL_DELAY = 3.f * 110.f / 1000.f;
 
     constexpr float MUSIC_VOLUME = 15.f;
     constexpr float SHOT_VOLUME = 20.f;
     constexpr float RELOAD_VOLUME = 45.f;
     constexpr float HURT_VOLUME = 35.f;
+    constexpr float MELEE_HIT_VOLUME = 55.f;
+
+    constexpr float HEAVY_CHARGED_GLOW = 0.22f;
+    constexpr float HEAVY_CHARGED_GLOW_PERIOD = 0.18f;
 
     constexpr auto PLAYER_TEXTURE = "player";
     constexpr auto WEAPONS_TEXTURE = "weapons";
@@ -140,7 +150,7 @@ namespace RoguelikeGame
     const EnemyConfig GRUNT_CONFIG = {
         "Grunt", "enemy_grunt", WeaponId::Knife,
         150.f, 300.f, 40.f, 50.f, 0.f,
-        0.f, 0.f, 0.f, 0.f
+        50.f, 30.f, 0.9f, 0.f
     };
 
     const EnemyConfig ASSAULT_CONFIG = {

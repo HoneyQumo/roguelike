@@ -18,6 +18,8 @@ namespace XYZEngine
 		float GetFixedDeltaTime() const;
 		void Subscribe(ColliderComponent* collider);
 		void Unsubscribe(ColliderComponent* collider);
+
+		std::vector<ColliderComponent*> Overlap(const sf::FloatRect& area) const;
 	private:
 		PhysicsSystem() {}
 		~PhysicsSystem() {}

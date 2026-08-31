@@ -15,6 +15,9 @@ namespace XYZEngine
 		void Update(float deltaTime) override;
 		void Render() override;
 
+		void SetEnabled(bool newIsEnabled);
+		bool IsEnabled() const;
+
 		void SetSpeed(float newSpeed);
 		float GetSpeed() const;
 
@@ -27,6 +30,7 @@ namespace XYZEngine
 		TransformComponent* transform;
 		InputComponent* input = nullptr;
 
+		bool isEnabled = true;
 		float speed = 0.f;
 		float runSpeedMultiplier = 1.f;
 		bool isRunning = false;

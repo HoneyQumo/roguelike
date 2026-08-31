@@ -173,6 +173,8 @@
         <ClCompile Include="Enemy.cpp"/>
         <ClCompile Include="EnemyAttackComponent.cpp"/>
         <ClCompile Include="PlayerAttackComponent.cpp"/>
+        <ClCompile Include="PlayerLoadoutComponent.cpp"/>
+        <ClCompile Include="StowedWeaponComponent.cpp"/>
         <ClCompile Include="Projectile.cpp"/>
         <ClCompile Include="Weapon.cpp"/>
         <ClCompile Include="Floor.cpp"/>
@@ -201,6 +203,8 @@
         <ClInclude Include="EnemyConfig.h"/>
         <ClInclude Include="Floor.h"/>
         <ClInclude Include="PlayerAttackComponent.h"/>
+        <ClInclude Include="PlayerLoadoutComponent.h"/>
+        <ClInclude Include="StowedWeaponComponent.h"/>
         <ClInclude Include="Projectile.h"/>
         <ClInclude Include="Weapon.h"/>
         <ClInclude Include="GameSettings.h"/>

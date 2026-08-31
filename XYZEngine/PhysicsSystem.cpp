@@ -107,6 +107,20 @@ namespace XYZEngine
 		}
 	}
 
+	std::vector<ColliderComponent*> PhysicsSystem::Overlap(const sf::FloatRect& area) const
+	{
+		std::vector<ColliderComponent*> found;
+		for (auto collider : colliders)
+		{
+			if (collider != nullptr && collider->bounds.intersects(area))
+			{
+				found.push_back(collider);
+			}
+		}
+
+		return found;
+	}
+
 	void PhysicsSystem::Subscribe(ColliderComponent* collider)
 	{
 		assert(collider != nullptr);

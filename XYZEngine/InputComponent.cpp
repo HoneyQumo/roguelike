@@ -30,8 +30,23 @@ namespace XYZEngine
 		}
 
 		isAttackPressed = sf::Mouse::isButtonPressed(sf::Mouse::Left);
+		isHeavyAttackPressed = sf::Mouse::isButtonPressed(sf::Mouse::Right);
 		isRunPressed = sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) || sf::Keyboard::isKeyPressed(sf::Keyboard::RShift);
 		isReloadPressed = sf::Keyboard::isKeyPressed(sf::Keyboard::R);
+
+		selectedWeaponSlot = NO_WEAPON_SLOT;
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1))
+		{
+			selectedWeaponSlot = 0;
+		}
+		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num2))
+		{
+			selectedWeaponSlot = 1;
+		}
+		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num3))
+		{
+			selectedWeaponSlot = 2;
+		}
 
 		auto& window = RenderSystem::Instance()->GetMainWindow();
 		auto worldPosition = window.mapPixelToCoords(sf::Mouse::getPosition(window));
@@ -55,6 +70,10 @@ namespace XYZEngine
 	{
 		return isAttackPressed;
 	}
+	bool InputComponent::IsHeavyAttackPressed() const
+	{
+		return isHeavyAttackPressed;
+	}
 	bool InputComponent::IsRunPressed() const
 	{
 		return isRunPressed;
@@ -62,6 +81,10 @@ namespace XYZEngine
 	bool InputComponent::IsReloadPressed() const
 	{
 		return isReloadPressed;
+	}
+	int InputComponent::GetSelectedWeaponSlot() const
+	{
+		return selectedWeaponSlot;
 	}
 	Vector2Df InputComponent::GetMouseWorldPosition() const
 	{

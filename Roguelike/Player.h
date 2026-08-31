@@ -4,6 +4,7 @@
 #include "GameObject.h"
 #include "Vector.h"
 #include "Weapon.h"
+#include "StowedWeaponComponent.h"
 
 namespace RoguelikeGame
 {
@@ -16,5 +17,7 @@ namespace RoguelikeGame
     private:
         XYZEngine::GameObject* gameObject;
         std::unique_ptr<Weapon> weapon;
+
+        StowedWeaponComponent* CreateStowedWeapon(WeaponId startWeapon, XYZEngine::SpriteMovementAnimationComponent* animation);
     };
 }

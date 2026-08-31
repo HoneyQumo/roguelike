@@ -17,10 +17,15 @@ namespace RoguelikeGame
 
         void AddRenderer(XYZEngine::SpriteRendererComponent* renderer);
         void Flash();
+        void SetGlow(float newGlow);
 
     private:
         std::vector<XYZEngine::SpriteRendererComponent*> renderers;
         sf::Shader* shader = nullptr;
         float amount = 0.f;
+        float glow = 0.f;
+        bool isShaderApplied = false;
+
+        void Apply(float value);
     };
 }

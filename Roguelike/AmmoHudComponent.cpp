@@ -33,15 +33,26 @@ namespace RoguelikeGame
 
     void AmmoHudComponent::Update(float deltaTime)
     {
-        if (weapon == nullptr)
+        if (weapon == nullptr || loadout == nullptr)
         {
-            FindWeapon();
+            FindTarget();
+        }
+
+        if (loadout == nullptr)
+        {
+            return;
+        }
+
+        WeaponId currentWeapon = loadout->GetCurrentWeapon();
+        if (!hasShownWeapon || currentWeapon != shownWeapon)
+        {
+            ShowWeaponName(currentWeapon);
         }
     }
 
     void AmmoHudComponent::Render()
     {
-        if (!isFontReady || weapon == nullptr || !weapon->HasMagazine())
+        if (!isFontReady || !hasShownWeapon)
         {
             return;
         }
@@ -55,13 +66,16 @@ namespace RoguelikeGame
         float nameY = ammoY - AMMO_HUD_NAME_FONT_SIZE * AMMO_HUD_LINE_HEIGHT;
 
         nameText.setPosition(AMMO_HUD_MARGIN_X, nameY);
-
-        ammoText.setString(GetAmmoLine());
-        ammoText.setFillColor(GetAmmoColor());
-        ammoText.setPosition(AMMO_HUD_MARGIN_X, ammoY);
-
         XYZEngine::RenderSystem::Instance()->Render(nameText);
-        XYZEngine::RenderSystem::Instance()->Render(ammoText);
+
+        if (weapon != nullptr && weapon->HasMagazine())
+        {
+            ammoText.setString(GetAmmoLine());
+            ammoText.setFillColor(GetAmmoColor());
+            ammoText.setPosition(AMMO_HUD_MARGIN_X, ammoY);
+
+            XYZEngine::RenderSystem::Instance()->Render(ammoText);
+        }
 
         window.setView(worldView);
     }
@@ -70,15 +84,10 @@ namespace RoguelikeGame
     {
         targetName = newTargetName;
         weapon = nullptr;
+        loadout = nullptr;
     }
 
-    void AmmoHudComponent::SetWeapon(WeaponId newWeaponId)
-    {
-        const char* name = GetWeapon(newWeaponId).name;
-        nameText.setString(sf::String::fromUtf8(name, name + std::char_traits<char>::length(name)));
-    }
-
-    void AmmoHudComponent::FindWeapon()
+    void AmmoHudComponent::FindTarget()
     {
         if (targetName.empty())
         {
@@ -92,6 +101,16 @@ namespace RoguelikeGame
         }
 
         weapon = target->GetComponent<XYZEngine::WeaponComponent>();
+        loadout = target->GetComponent<PlayerLoadoutComponent>();
+    }
+
+    void AmmoHudComponent::ShowWeaponName(WeaponId weaponId)
+    {
+        const char* name = GetWeapon(weaponId).name;
+        nameText.setString(sf::String::fromUtf8(name, name + std::char_traits<char>::length(name)));
+
+        shownWeapon = weaponId;
+        hasShownWeapon = true;
     }
 
     std::string AmmoHudComponent::GetAmmoLine() const

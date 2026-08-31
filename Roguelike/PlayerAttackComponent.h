@@ -3,7 +3,10 @@
 #include <Component.h>
 #include <InputComponent.h>
 #include <WeaponComponent.h>
+#include <MeleeWeaponComponent.h>
 #include <HealthComponent.h>
+#include "HitFlashComponent.h"
+#include "PlayerLoadoutComponent.h"
 
 namespace RoguelikeGame
 {
@@ -19,6 +22,15 @@ namespace RoguelikeGame
     private:
         XYZEngine::InputComponent* input = nullptr;
         XYZEngine::WeaponComponent* weapon = nullptr;
+        XYZEngine::MeleeWeaponComponent* meleeWeapon = nullptr;
         XYZEngine::HealthComponent* health = nullptr;
+        PlayerLoadoutComponent* loadout = nullptr;
+        HitFlashComponent* hitFlash = nullptr;
+
+        float glowTimer = 0.f;
+
+        void UpdateMelee(float deltaTime);
+        void UpdateRanged();
+        void UpdateChargeGlow(float deltaTime);
     };
 }

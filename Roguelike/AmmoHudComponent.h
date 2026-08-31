@@ -5,6 +5,7 @@
 #include <Component.h>
 #include <WeaponComponent.h>
 #include "WeaponCatalog.h"
+#include "PlayerLoadoutComponent.h"
 
 namespace RoguelikeGame
 {
@@ -17,18 +18,21 @@ namespace RoguelikeGame
         void Render() override;
 
         void SetTargetName(const std::string& newTargetName);
-        void SetWeapon(WeaponId newWeaponId);
 
     private:
         XYZEngine::WeaponComponent* weapon = nullptr;
+        PlayerLoadoutComponent* loadout = nullptr;
 
         std::string targetName;
 
         sf::Text nameText;
         sf::Text ammoText;
         bool isFontReady = false;
+        bool hasShownWeapon = false;
+        WeaponId shownWeapon = WeaponId::Ak47;
 
-        void FindWeapon();
+        void FindTarget();
+        void ShowWeaponName(WeaponId weaponId);
         std::string GetAmmoLine() const;
         sf::Color GetAmmoColor() const;
     };

@@ -13,24 +13,17 @@ namespace RoguelikeGame
 
     void HitFlashComponent::Update(float deltaTime)
     {
-        if (shader == nullptr || amount <= 0.f)
+        if (shader == nullptr)
         {
             return;
         }
 
-        amount = std::max(0.f, amount - deltaTime / HIT_FLASH_DURATION);
-
-        for (auto renderer : renderers)
+        if (amount > 0.f)
         {
-            if (amount <= 0.f)
-            {
-                renderer->SetShader(nullptr);
-            }
-            else
-            {
-                renderer->SetShaderFloat(HIT_FLASH_UNIFORM, amount);
-            }
+            amount = std::max(0.f, amount - deltaTime / HIT_FLASH_DURATION);
         }
+
+        Apply(std::max(amount, glow));
     }
 
     void HitFlashComponent::Render()
@@ -53,11 +46,34 @@ namespace RoguelikeGame
         }
 
         amount = 1.f;
+        Apply(std::max(amount, glow));
+    }
+
+    void HitFlashComponent::SetGlow(float newGlow)
+    {
+        glow = std::max(newGlow, 0.f);
+    }
+
+    void HitFlashComponent::Apply(float value)
+    {
+        if (value <= 0.f && !isShaderApplied)
+        {
+            return;
+        }
+
+        isShaderApplied = value > 0.f;
 
         for (auto renderer : renderers)
         {
-            renderer->SetShader(shader);
-            renderer->SetShaderFloat(HIT_FLASH_UNIFORM, amount);
+            if (!isShaderApplied)
+            {
+                renderer->SetShader(nullptr);
+            }
+            else
+            {
+                renderer->SetShader(shader);
+                renderer->SetShaderFloat(HIT_FLASH_UNIFORM, value);
+            }
         }
     }
 }

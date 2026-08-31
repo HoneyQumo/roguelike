@@ -28,6 +28,12 @@
     <ClCompile Include="PlayerAttackComponent.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
+    <ClCompile Include="PlayerLoadoutComponent.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="StowedWeaponComponent.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
     <ClCompile Include="Projectile.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
@@ -92,6 +98,8 @@
     <ClInclude Include="EnemyConfig.h" />
     <ClInclude Include="Floor.h" />
     <ClInclude Include="PlayerAttackComponent.h" />
+    <ClInclude Include="PlayerLoadoutComponent.h" />
+    <ClInclude Include="StowedWeaponComponent.h" />
     <ClInclude Include="Projectile.h" />
     <ClInclude Include="Weapon.h" />
     <ClInclude Include="GameSettings.h" />

@@ -2,6 +2,7 @@
 #include "GameSettings.h"
 #include "GameResources.h"
 #include "Projectile.h"
+#include "Fx.h"
 #include "EnemyAttackComponent.h"
 #include "HitFlashComponent.h"
 #include "BloodPool.h"
@@ -18,6 +19,7 @@
 #include <HealthComponent.h>
 #include <HealthBarComponent.h>
 #include <WeaponComponent.h>
+#include <MeleeWeaponComponent.h>
 #include <AudioComponent.h>
 #include <stdexcept>
 
@@ -67,6 +69,8 @@ namespace RoguelikeGame
         animation->SetShootAnimation(config.textureMapName, AtlasFrameIndex(SHOOT_ANIMATION.row, 0), SHOOT_ANIMATION.frames, SHOOT_ANIMATION.framesPerSecond);
         animation->SetReloadAnimation(config.textureMapName, AtlasFrameIndex(RELOAD_ANIMATION.row, 0), RELOAD_ANIMATION.frames,
                                       ReloadFramesPerSecond(GetWeapon(config.weapon).reloadTime));
+        animation->SetMeleeAnimation(config.textureMapName, AtlasFrameIndex(MELEE_ANIMATION.row, 0), MELEE_ANIMATION.frames,
+                                     MELEE_ANIMATION.framesPerSecond);
         animation->SetHurtAnimation(config.textureMapName, AtlasFrameIndex(HURT_ANIMATION.row, 0), HURT_ANIMATION.frames, HURT_ANIMATION.framesPerSecond);
         animation->SetDeathAnimation(config.textureMapName, AtlasFrameIndex(DEATH_ANIMATION.row, 0), DEATH_ANIMATION.frames, DEATH_ANIMATION.framesPerSecond);
 
@@ -98,7 +102,46 @@ namespace RoguelikeGame
 
         if (config.attackRange <= 0.f)
         {
-            LOG_INFO(config.objectName + " is unarmed and can't shoot");
+            LOG_INFO(config.objectName + " is unarmed and can't attack");
+        }
+        else if (IsMelee(config.weapon))
+        {
+            const MeleeDefinition* melee = FindMelee(config.weapon);
+
+            auto meleeAudio = gameObject->AddComponent<XYZEngine::AudioComponent>();
+            meleeAudio->SetVolume(MELEE_HIT_VOLUME);
+
+            XYZEngine::MeleeAttack quick;
+            quick.damage = config.attackDamage * melee->quick.damageScale;
+            quick.chargedDamage = quick.damage;
+            quick.range = melee->quick.range;
+            quick.arcDegrees = melee->quick.arcDegrees;
+            quick.recovery = config.attackCooldown;
+            quick.hitFrame = MELEE_HIT_FRAME;
+            quick.windup = MELEE_HIT_FRAME / MELEE_ANIMATION.framesPerSecond;
+
+            auto meleeWeapon = gameObject->AddComponent<XYZEngine::MeleeWeaponComponent>();
+            meleeWeapon->SetQuickAttack(quick);
+            meleeWeapon->SetTargetName("Player");
+            meleeWeapon->SetStrikeAction([meleeAudio, melee](XYZEngine::MeleeAttackKind kind, int hits)
+            {
+                if (hits <= 0)
+                {
+                    return;
+                }
+
+                meleeAudio->SetSound(GameResources::GetMeleeHitSound(*melee));
+                meleeAudio->Play();
+            });
+            meleeWeapon->SetHitAction([](XYZEngine::MeleeAttackKind kind, const XYZEngine::Vector2Df& hitPosition,
+                                         const XYZEngine::Vector2Df& hitDirection)
+            {
+                Fx::SpawnBloodHit(hitPosition, hitDirection);
+            });
+
+            auto attack = gameObject->AddComponent<EnemyAttackComponent>();
+            attack->SetTargetName("Player");
+            attack->SetAttackRange(config.attackRange);
         }
         else
         {
@@ -148,8 +191,14 @@ namespace RoguelikeGame
             attack->SetAttackRange(config.attackRange);
         }
 
-        health->SubscribeDamage([animation, hurtAudio, hitFlash](float damage)
+        auto meleeComponent = gameObject->GetComponent<XYZEngine::MeleeWeaponComponent>();
+        health->SubscribeDamage([animation, hurtAudio, hitFlash, meleeComponent](float damage)
         {
+            if (meleeComponent != nullptr)
+            {
+                meleeComponent->CancelAttack();
+            }
+
             animation->PlayHurt();
             hurtAudio->Play();
             hitFlash->Flash();
@@ -157,11 +206,16 @@ namespace RoguelikeGame
 
         auto characterObject = gameObject;
         auto weaponComponent = gameObject->GetComponent<XYZEngine::WeaponComponent>();
-        health->SubscribeDeath([characterObject, transform, animation, movement, chase, collider, aim, weaponComponent]()
+        health->SubscribeDeath([characterObject, transform, animation, movement, chase, collider, aim, weaponComponent, meleeComponent]()
         {
             if (weaponComponent != nullptr)
             {
                 weaponComponent->CancelReload();
+            }
+
+            if (meleeComponent != nullptr)
+            {
+                meleeComponent->CancelAttack();
             }
 
             animation->PlayDeath();

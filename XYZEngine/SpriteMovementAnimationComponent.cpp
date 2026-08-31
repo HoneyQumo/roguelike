@@ -2,6 +2,7 @@
 #include "SpriteMovementAnimationComponent.h"
 #include "ResourceSystem.h"
 #include "LoggerRegistry.h"
+#include <algorithm>
 #include <cassert>
 
 namespace XYZEngine
@@ -104,6 +105,29 @@ namespace XYZEngine
         Fill(reloadAnimation, textureMapName, firstFrameIndex, framesCount, framesPerSecond);
     }
 
+    void SpriteMovementAnimationComponent::SetMeleeAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float framesPerSecond)
+    {
+        Fill(meleeAnimation, textureMapName, firstFrameIndex, framesCount, framesPerSecond);
+    }
+
+    void SpriteMovementAnimationComponent::SetHeavyAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, const float* frameSeconds,
+                                                             const ChargedAnimationLoops& loops)
+    {
+        assert(frameSeconds != nullptr);
+
+        Fill(heavyAnimation, textureMapName, firstFrameIndex, framesCount, 1.f);
+        heavyAnimation.frameSeconds = frameSeconds;
+        heavyLoops = loops;
+    }
+
+    void SpriteMovementAnimationComponent::SetSwapAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, const float* frameSeconds)
+    {
+        assert(frameSeconds != nullptr);
+
+        Fill(swapAnimation, textureMapName, firstFrameIndex, framesCount, 1.f);
+        swapAnimation.frameSeconds = frameSeconds;
+    }
+
     void SpriteMovementAnimationComponent::SetHurtAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float framesPerSecond)
     {
         Fill(hurtAnimation, textureMapName, firstFrameIndex, framesCount, framesPerSecond);
@@ -153,6 +177,58 @@ namespace XYZEngine
         isFinished = true;
     }
 
+    void SpriteMovementAnimationComponent::PlayMelee()
+    {
+        if (isDead || meleeAnimation.frames.empty())
+        {
+            return;
+        }
+
+        isHeavyHolding = false;
+        currentAnimation = nullptr;
+        Play(meleeAnimation, MovementAnimation::Melee, false);
+    }
+
+    void SpriteMovementAnimationComponent::PlayHeavy()
+    {
+        if (isDead || heavyAnimation.frames.empty())
+        {
+            return;
+        }
+
+        isHeavyHolding = true;
+        isHeavyCharged = false;
+        currentAnimation = nullptr;
+        Play(heavyAnimation, MovementAnimation::Heavy, false);
+    }
+
+    void SpriteMovementAnimationComponent::ReleaseHeavy()
+    {
+        isHeavyHolding = false;
+    }
+
+    void SpriteMovementAnimationComponent::SetHeavyCharged(bool newIsHeavyCharged)
+    {
+        isHeavyCharged = newIsHeavyCharged;
+    }
+
+    bool SpriteMovementAnimationComponent::IsHeavyHolding() const
+    {
+        return isHeavyHolding;
+    }
+
+    void SpriteMovementAnimationComponent::PlaySwap()
+    {
+        if (isDead || swapAnimation.frames.empty())
+        {
+            return;
+        }
+
+        isHeavyHolding = false;
+        currentAnimation = nullptr;
+        Play(swapAnimation, MovementAnimation::Swap, false);
+    }
+
     void SpriteMovementAnimationComponent::PlayHurt()
     {
         if (isDead || hurtAnimation.frames.empty())
@@ -192,9 +268,64 @@ namespace XYZEngine
         return currentFrame;
     }
 
+    bool SpriteMovementAnimationComponent::IsFinished() const
+    {
+        return isFinished;
+    }
+
     bool SpriteMovementAnimationComponent::IsInterruptingAnimation() const
     {
-        return currentAnimation == &hurtAnimation || currentAnimation == &shootAnimation || currentAnimation == &reloadAnimation;
+        return currentAnimation == &hurtAnimation || currentAnimation == &shootAnimation || currentAnimation == &reloadAnimation
+            || currentAnimation == &meleeAnimation || currentAnimation == &heavyAnimation || currentAnimation == &swapAnimation;
+    }
+
+    float SpriteMovementAnimationComponent::GetFrameSeconds(int frame) const
+    {
+        if (currentAnimation == nullptr)
+        {
+            return 0.125f;
+        }
+
+        if (currentAnimation->frameSeconds == nullptr)
+        {
+            return currentAnimation->secondsPerFrame;
+        }
+
+        return currentAnimation->frameSeconds[std::min(std::max(frame, 0), static_cast<int>(currentAnimation->frames.size()) - 1)];
+    }
+
+    bool SpriteMovementAnimationComponent::AdvanceHeavyFrame()
+    {
+        bool isInChargeLoop = currentFrame >= heavyLoops.chargeFirstFrame && currentFrame <= heavyLoops.chargeLastFrame;
+        bool isInChargedLoop = currentFrame >= heavyLoops.chargedFirstFrame && currentFrame <= heavyLoops.chargedLastFrame;
+
+        if (!isInChargeLoop && !isInChargedLoop)
+        {
+            return false;
+        }
+
+        if (!isHeavyHolding)
+        {
+            currentFrame = heavyLoops.releaseFrame;
+            return true;
+        }
+
+        if (isInChargeLoop)
+        {
+            if (currentFrame < heavyLoops.chargeLastFrame)
+            {
+                currentFrame++;
+            }
+            else
+            {
+                currentFrame = isHeavyCharged ? heavyLoops.chargedFirstFrame : heavyLoops.chargeFirstFrame;
+            }
+
+            return true;
+        }
+
+        currentFrame = currentFrame < heavyLoops.chargedLastFrame ? currentFrame + 1 : heavyLoops.chargedFirstFrame;
+        return true;
     }
 
     void SpriteMovementAnimationComponent::Fill(Animation& animation, const std::string& textureMapName, int firstFrameIndex, int framesCount, float framesPerSecond)
@@ -250,9 +381,15 @@ namespace XYZEngine
         if (!isFinished)
         {
             frameTimer += deltaTime;
-            while (frameTimer >= currentAnimation->secondsPerFrame)
+            while (frameTimer >= GetFrameSeconds(currentFrame))
             {
-                frameTimer -= currentAnimation->secondsPerFrame;
+                frameTimer -= GetFrameSeconds(currentFrame);
+
+                if (currentAnimation == &heavyAnimation && AdvanceHeavyFrame())
+                {
+                    continue;
+                }
+
                 currentFrame++;
 
                 if (currentFrame >= static_cast<int>(currentAnimation->frames.size()))

@@ -25,6 +25,7 @@ namespace XYZEngine
         void SetShotAction(std::function<void(const Vector2Df&, const Vector2Df&, float, float)> newShotAction);
 
         void SetMagazine(int newMagazineSize, int newAmmoKind);
+        void SetAmmoInMagazine(int newAmmoInMagazine);
         void SetReloadTime(float newReloadTime);
         void SetReloadStartAction(std::function<void()> newReloadStartAction);
         void SetReloadFinishAction(std::function<void()> newReloadFinishAction);

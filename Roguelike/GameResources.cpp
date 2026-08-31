@@ -2,6 +2,7 @@
 #include "GameSettings.h"
 #include "WeaponCatalog.h"
 #include <ResourceSystem.h>
+#include <randomizer.h>
 #include <SFML/Graphics/Shader.hpp>
 
 namespace RoguelikeGame
@@ -10,13 +11,13 @@ namespace RoguelikeGame
     {
         XYZEngine::ResourceSystem::Instance()->LoadTexture(CROSSHAIR_TEXTURE, CROSSHAIR_FILE, false);
 
-        LoadCharacterAtlas(PLAYER_TEXTURE);
-        LoadCharacterAtlas(GRUNT_CONFIG.textureMapName);
-        LoadCharacterAtlas(ASSAULT_CONFIG.textureMapName);
-        LoadCharacterAtlas(SHIELD_CONFIG.textureMapName);
-        LoadCharacterAtlas(HEAVY_CONFIG.textureMapName);
-        LoadCharacterAtlas(RADIO_CONFIG.textureMapName);
-        LoadCharacterAtlas(BOSS_CONFIG.textureMapName);
+        LoadCharacterAtlas(PLAYER_TEXTURE, PLAYER_ATLAS_FRAMES);
+        LoadCharacterAtlas(GRUNT_CONFIG.textureMapName, ENEMY_ATLAS_FRAMES);
+        LoadCharacterAtlas(ASSAULT_CONFIG.textureMapName, ENEMY_ATLAS_FRAMES);
+        LoadCharacterAtlas(SHIELD_CONFIG.textureMapName, ENEMY_ATLAS_FRAMES);
+        LoadCharacterAtlas(HEAVY_CONFIG.textureMapName, ENEMY_ATLAS_FRAMES);
+        LoadCharacterAtlas(RADIO_CONFIG.textureMapName, ENEMY_ATLAS_FRAMES);
+        LoadCharacterAtlas(BOSS_CONFIG.textureMapName, ENEMY_ATLAS_FRAMES);
 
         XYZEngine::ResourceSystem::Instance()->LoadTextureMap(WEAPONS_TEXTURE, WEAPONS_ATLAS_FILE,
                                                              {WEAPON_FRAME_WIDTH, WEAPON_FRAME_HEIGHT}, WEAPON_ATLAS_FRAMES, false);
@@ -43,10 +44,10 @@ namespace RoguelikeGame
     }
 
     // Имя карты совпадает с именем файла.
-    void GameResources::LoadCharacterAtlas(const std::string& name)
+    void GameResources::LoadCharacterAtlas(const std::string& name, int framesCount)
     {
         XYZEngine::ResourceSystem::Instance()->LoadTextureMap(name, TEXTURES_PATH + name + ".png",
-                                                             {CHARACTER_FRAME_SIZE, CHARACTER_FRAME_SIZE}, CHARACTER_ATLAS_FRAMES, false);
+                                                             {CHARACTER_FRAME_SIZE, CHARACTER_FRAME_SIZE}, framesCount, false);
     }
 
     const sf::SoundBuffer* GameResources::GetWeaponSound(const char* key)
@@ -54,8 +55,28 @@ namespace RoguelikeGame
         return key == nullptr ? nullptr : XYZEngine::ResourceSystem::Instance()->GetSound(key);
     }
 
+    const sf::SoundBuffer* GameResources::GetMeleeHitSound(const MeleeDefinition& melee)
+    {
+        if (melee.hitSound == nullptr || melee.hitSoundVariants <= 0)
+        {
+            return nullptr;
+        }
+
+        int variant = random<int>(1, melee.hitSoundVariants);
+        return XYZEngine::ResourceSystem::Instance()->GetSound(std::string(melee.hitSound) + "_" + std::to_string(variant));
+    }
+
     void GameResources::LoadWeaponSounds()
     {
+        for (const MeleeDefinition& melee : MELEE_WEAPONS)
+        {
+            for (int variant = 1; variant <= melee.hitSoundVariants; variant++)
+            {
+                std::string key = std::string(melee.hitSound) + "_" + std::to_string(variant);
+                XYZEngine::ResourceSystem::Instance()->LoadSound(key, WEAPONS_AUDIO_PATH + key + ".wav");
+            }
+        }
+
         for (const WeaponDefinition& weapon : WEAPONS)
         {
             if (weapon.shotSound != nullptr)

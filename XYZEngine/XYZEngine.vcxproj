@@ -178,6 +178,7 @@
     <ClInclude Include="pch.h" />
     <ClInclude Include="PhysicsSystem.h" />
     <ClInclude Include="ProjectileComponent.h" />
+    <ClInclude Include="MeleeWeaponComponent.h" />
     <ClInclude Include="WeaponComponent.h" />
     <ClInclude Include="randomizer.h" />
     <ClInclude Include="RectangleRendererComponent.h" />
@@ -227,6 +228,7 @@
     </ClCompile>
     <ClCompile Include="PhysicsSystem.cpp" />
     <ClCompile Include="ProjectileComponent.cpp" />
+    <ClCompile Include="MeleeWeaponComponent.cpp" />
     <ClCompile Include="WeaponComponent.cpp" />
     <ClCompile Include="RectangleRendererComponent.cpp" />
     <ClCompile Include="RenderSystem.cpp" />

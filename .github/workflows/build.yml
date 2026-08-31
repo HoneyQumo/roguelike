@@ -24,4 +24,4 @@ jobs:
       # Step 3: Build the solution
       - name: Build solution
         run: | 
-          msbuild Game.sln /p:Configuration=Release /p:Platform=x64
+          msbuild Roguelike.sln /p:Configuration=Release /p:Platform=x64

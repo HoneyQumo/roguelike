@@ -136,6 +136,32 @@ namespace RoguelikeGame
         }
     };
 
+    struct SpreadDefinition
+    {
+        WeaponId weapon;
+        int pellets;
+        float coneDegrees;
+        float damageScale;
+        float speedScale;
+        float cooldownScale;
+    };
+
+    constexpr int SPREAD_WEAPON_COUNT = 2;
+
+    constexpr SpreadDefinition SPREAD_WEAPONS[SPREAD_WEAPON_COUNT] = {
+        {WeaponId::ShotgunDouble, 6, 32.f, 1.08f, 0.85f, 1.20f},
+        {WeaponId::ShotgunPump, 5, 22.f, 1.12f, 0.85f, 2.20f}
+    };
+
+    struct ShotProfile
+    {
+        int pellets;
+        float coneDegrees;
+        float damage;
+        float speed;
+        float cooldown;
+    };
+
     constexpr const WeaponDefinition& GetWeapon(WeaponId id)
     {
         return WEAPONS[static_cast<int>(id)];
@@ -157,6 +183,30 @@ namespace RoguelikeGame
     constexpr bool IsMelee(WeaponId id)
     {
         return FindMelee(id) != nullptr;
+    }
+
+    constexpr const SpreadDefinition* FindSpread(WeaponId id)
+    {
+        for (const SpreadDefinition& spread : SPREAD_WEAPONS)
+        {
+            if (spread.weapon == id)
+            {
+                return &spread;
+            }
+        }
+
+        return nullptr;
+    }
+
+    constexpr ShotProfile MakeShotProfile(WeaponId id, float damage, float speed, float cooldown)
+    {
+        const SpreadDefinition* spread = FindSpread(id);
+        if (spread == nullptr)
+        {
+            return {1, 0.f, damage, speed, cooldown};
+        }
+
+        return {spread->pellets, spread->coneDegrees, damage * spread->damageScale, speed * spread->speedScale, cooldown * spread->cooldownScale};
     }
 
     constexpr int WeaponFrameIndex(WeaponId id, int variant)

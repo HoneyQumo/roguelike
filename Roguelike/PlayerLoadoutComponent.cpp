@@ -181,7 +181,7 @@ namespace RoguelikeGame
             weapon->SetWeaponId(id);
         }
 
-        ApplyRangedWeapon(definition, magazineAmmo[slot]);
+        ApplyRangedWeapon(id, magazineAmmo[slot]);
         ApplyMeleeWeapon(FindMelee(id));
 
         if (animation != nullptr)
@@ -191,17 +191,22 @@ namespace RoguelikeGame
         }
     }
 
-    void PlayerLoadoutComponent::ApplyRangedWeapon(const WeaponDefinition& definition, int ammoInMagazine)
+    void PlayerLoadoutComponent::ApplyRangedWeapon(WeaponId id, int ammoInMagazine)
     {
         if (rangedWeapon == nullptr)
         {
             return;
         }
 
+        const WeaponDefinition& definition = GetWeapon(id);
+        ShotProfile shot = MakeShotProfile(id, PLAYER_ATTACK_DAMAGE, PLAYER_PROJECTILE_SPEED, PLAYER_ATTACK_COOLDOWN);
+
         rangedWeapon->CancelReload();
-        rangedWeapon->SetCooldown(PLAYER_ATTACK_COOLDOWN);
-        rangedWeapon->SetDamage(PLAYER_ATTACK_DAMAGE);
-        rangedWeapon->SetProjectileSpeed(PLAYER_PROJECTILE_SPEED);
+        rangedWeapon->SetCooldown(shot.cooldown);
+        rangedWeapon->SetDamage(shot.damage);
+        rangedWeapon->SetProjectileSpeed(shot.speed);
+        rangedWeapon->SetPellets(shot.pellets);
+        rangedWeapon->SetConeDegrees(shot.coneDegrees);
         rangedWeapon->SetMuzzleOffset(ShotOffset(definition));
         rangedWeapon->SetMagazine(definition.magazineSize, AmmoKindKey(definition.ammo));
         rangedWeapon->SetAmmoInMagazine(ammoInMagazine);
@@ -222,11 +227,8 @@ namespace RoguelikeGame
         BulletKind bullet = definition.bullet;
         std::string shooterName = gameObject->GetName();
 
-        rangedWeapon->SetShotAction([this, bullet, shooterName](const XYZEngine::Vector2Df& shotPosition, const XYZEngine::Vector2Df& shotDirection,
-                                                                 float damage, float speed)
+        rangedWeapon->SetShotStartAction([this]()
         {
-            Projectile::Spawn(shotPosition, shotDirection, damage, speed, shooterName, bullet);
-
             if (shotAudio != nullptr)
             {
                 shotAudio->Play();
@@ -241,6 +243,12 @@ namespace RoguelikeGame
             {
                 weapon->PlayMuzzleFlash();
             }
+        });
+
+        rangedWeapon->SetShotAction([bullet, shooterName](const XYZEngine::Vector2Df& shotPosition, const XYZEngine::Vector2Df& shotDirection,
+                                                          float damage, float speed)
+        {
+            Projectile::Spawn(shotPosition, shotDirection, damage, speed, shooterName, bullet);
         });
     }
 

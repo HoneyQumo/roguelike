@@ -157,10 +157,14 @@ namespace RoguelikeGame
             reloadAudio->SetVolume(RELOAD_VOLUME);
             auto muzzleFlash = weapon == nullptr ? nullptr : weapon->GetMuzzleFlash();
 
+            ShotProfile shot = MakeShotProfile(config.weapon, config.attackDamage, config.projectileSpeed, config.attackCooldown);
+
             auto weaponComponent = gameObject->AddComponent<XYZEngine::WeaponComponent>();
-            weaponComponent->SetCooldown(config.attackCooldown);
-            weaponComponent->SetDamage(config.attackDamage);
-            weaponComponent->SetProjectileSpeed(config.projectileSpeed);
+            weaponComponent->SetCooldown(shot.cooldown);
+            weaponComponent->SetDamage(shot.damage);
+            weaponComponent->SetProjectileSpeed(shot.speed);
+            weaponComponent->SetPellets(shot.pellets);
+            weaponComponent->SetConeDegrees(shot.coneDegrees);
             weaponComponent->SetMuzzleOffset(ShotOffset(weaponDefinition));
 
             weaponComponent->SetMagazine(weaponDefinition.magazineSize, AmmoKindKey(weaponDefinition.ammo));
@@ -173,18 +177,21 @@ namespace RoguelikeGame
 
             std::string shooterName = config.objectName;
             BulletKind bullet = weaponDefinition.bullet;
+            weaponComponent->SetShotStartAction([shotAudio, animation, muzzleFlash]()
+            {
+                shotAudio->Play();
+                animation->PlayShoot();
+
+                if (muzzleFlash != nullptr)
+                {
+                    muzzleFlash->Play();
+                }
+            });
+
             weaponComponent->SetShotAction(
-                [shooterName, bullet, shotAudio, animation, muzzleFlash](const XYZEngine::Vector2Df& shotPosition, const XYZEngine::Vector2Df& shotDirection,
-                                                                         float damage, float speed)
+                [shooterName, bullet](const XYZEngine::Vector2Df& shotPosition, const XYZEngine::Vector2Df& shotDirection, float damage, float speed)
                 {
                     Projectile::Spawn(shotPosition, shotDirection, damage, speed, shooterName, bullet);
-                    shotAudio->Play();
-                    animation->PlayShoot();
-
-                    if (muzzleFlash != nullptr)
-                    {
-                        muzzleFlash->Play();
-                    }
                 });
 
             auto attack = gameObject->AddComponent<EnemyAttackComponent>();

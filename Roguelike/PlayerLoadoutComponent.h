@@ -58,7 +58,7 @@ namespace RoguelikeGame
 
         void FindComponents();
         void ApplyWeapon(int slot);
-        void ApplyRangedWeapon(const WeaponDefinition& definition, int ammoInMagazine);
+        void ApplyRangedWeapon(WeaponId id, int ammoInMagazine);
         void ApplyMeleeWeapon(const MeleeDefinition* melee);
     };
 }

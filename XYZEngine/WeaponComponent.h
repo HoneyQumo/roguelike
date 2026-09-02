@@ -22,7 +22,13 @@ namespace XYZEngine
         void SetDamage(float newDamage);
         void SetProjectileSpeed(float newProjectileSpeed);
         void SetMuzzleOffset(const Vector2Df& newMuzzleOffset);
+        void SetPellets(int newPellets);
+        void SetConeDegrees(float newConeDegrees);
+        void SetShotStartAction(std::function<void()> newShotStartAction);
         void SetShotAction(std::function<void(const Vector2Df&, const Vector2Df&, float, float)> newShotAction);
+
+        int GetPellets() const;
+        float GetConeDegrees() const;
 
         void SetMagazine(int newMagazineSize, int newAmmoKind);
         void SetAmmoInMagazine(int newAmmoInMagazine);
@@ -57,6 +63,9 @@ namespace XYZEngine
         float projectileSpeed = 600.f;
         Vector2Df muzzleOffset = {40.f, 0.f};
 
+        int pellets = 1;
+        float coneDegrees = 0.f;
+
         int magazineSize = 0;
         int ammoInMagazine = 0;
         int ammoKind = 0;
@@ -65,10 +74,13 @@ namespace XYZEngine
         float reloadTimer = 0.f;
         bool isReloading = false;
 
+        std::function<void()> shotStartAction;
         std::function<void(const Vector2Df&, const Vector2Df&, float, float)> shotAction;
         std::function<void()> reloadStartAction;
         std::function<void()> reloadFinishAction;
 
+        float PelletAngle(int index) const;
+        static Vector2Df RotateDirection(const Vector2Df& direction, float degrees);
         void FinishReload();
     };
 }

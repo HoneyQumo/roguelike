@@ -2,12 +2,15 @@
 #include "WeaponComponent.h"
 #include "GameObject.h"
 #include "LoggerRegistry.h"
+#include "randomizer.h"
 #include <algorithm>
 #include <cassert>
+#include <cmath>
 
 namespace XYZEngine
 {
     constexpr float MIN_AIM_CORRECTION_DISTANCE = 64.f;
+    constexpr float RADIANS_IN_DEGREE = 0.01745329f;
 
     WeaponComponent::WeaponComponent(GameObject* gameObject) : Component(gameObject)
     {
@@ -68,9 +71,36 @@ namespace XYZEngine
         muzzleOffset = newMuzzleOffset;
     }
 
+    void WeaponComponent::SetPellets(int newPellets)
+    {
+        assert(newPellets >= 1);
+        pellets = std::max(newPellets, 1);
+    }
+
+    void WeaponComponent::SetConeDegrees(float newConeDegrees)
+    {
+        assert(newConeDegrees >= 0.f);
+        coneDegrees = std::max(newConeDegrees, 0.f);
+    }
+
+    void WeaponComponent::SetShotStartAction(std::function<void()> newShotStartAction)
+    {
+        shotStartAction = newShotStartAction;
+    }
+
     void WeaponComponent::SetShotAction(std::function<void(const Vector2Df&, const Vector2Df&, float, float)> newShotAction)
     {
         shotAction = newShotAction;
+    }
+
+    int WeaponComponent::GetPellets() const
+    {
+        return pellets;
+    }
+
+    float WeaponComponent::GetConeDegrees() const
+    {
+        return coneDegrees;
     }
 
     void WeaponComponent::SetMagazine(int newMagazineSize, int newAmmoKind)
@@ -250,7 +280,16 @@ namespace XYZEngine
             }
         }
 
-        shotAction(shotPosition, shotDirection, damage, projectileSpeed);
+        if (shotStartAction != nullptr)
+        {
+            shotStartAction();
+        }
+
+        for (int pellet = 0; pellet < pellets; pellet++)
+        {
+            shotAction(shotPosition, RotateDirection(shotDirection, PelletAngle(pellet)), damage, projectileSpeed);
+        }
+
         cooldownTimer = cooldown;
 
         if (HasMagazine())
@@ -260,6 +299,33 @@ namespace XYZEngine
 
         LOG_INFO(gameObject->GetName() + " shoots");
         return true;
+    }
+
+    float WeaponComponent::PelletAngle(int index) const
+    {
+        if (coneDegrees <= 0.f)
+        {
+            return 0.f;
+        }
+
+        float step = coneDegrees / pellets;
+        float slotStart = index * step - 0.5f * coneDegrees;
+
+        return random<float>(slotStart, slotStart + step);
+    }
+
+    Vector2Df WeaponComponent::RotateDirection(const Vector2Df& direction, float degrees)
+    {
+        if (degrees == 0.f)
+        {
+            return direction;
+        }
+
+        float radians = degrees * RADIANS_IN_DEGREE;
+        float sinValue = std::sin(radians);
+        float cosValue = std::cos(radians);
+
+        return {direction.x * cosValue - direction.y * sinValue, direction.x * sinValue + direction.y * cosValue};
     }
 
     void WeaponComponent::FinishReload()

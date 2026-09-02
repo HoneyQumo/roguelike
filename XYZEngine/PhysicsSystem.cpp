@@ -43,13 +43,14 @@ namespace XYZEngine
 				{
 					if (colliders[i]->isTrigger != colliders[j]->isTrigger)
 					{
-						if (triggersEnteredPair.find(colliders[i]) == triggersEnteredPair.end() && triggersEnteredPair.find(colliders[j]) == triggersEnteredPair.end())
+						TriggerPair enteredPair = MakeTriggerPair(colliders[i], colliders[j]);
+						if (triggersEnteredPair.find(enteredPair) == triggersEnteredPair.end())
 						{
 							Trigger trigger(colliders[i], colliders[j]);
 							colliders[i]->OnTriggerEnter(trigger);
 							colliders[j]->OnTriggerEnter(trigger);
 
-							triggersEnteredPair.emplace(colliders[i], colliders[j]);
+							triggersEnteredPair.insert(enteredPair);
 						}
 					}
 					else if (!colliders[i]->isTrigger)
@@ -112,6 +113,11 @@ namespace XYZEngine
 				triggersEnteredPair.erase(triggeredPair);
 			}
 		}
+	}
+
+	PhysicsSystem::TriggerPair PhysicsSystem::MakeTriggerPair(ColliderComponent* first, ColliderComponent* second)
+	{
+		return first < second ? TriggerPair(first, second) : TriggerPair(second, first);
 	}
 
 	std::vector<ColliderComponent*> PhysicsSystem::Overlap(const sf::FloatRect& area) const

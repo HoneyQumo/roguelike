@@ -36,7 +36,7 @@ namespace RoguelikeGame
 
     constexpr int PLAYER_WEAPON_SLOTS = 3;
     constexpr int PLAYER_START_WEAPON_SLOT = 0;
-    constexpr WeaponId PLAYER_LOADOUT[PLAYER_WEAPON_SLOTS] = {WeaponId::Ak47, WeaponId::Glock, WeaponId::Bat};
+    constexpr WeaponId PLAYER_LOADOUT[PLAYER_WEAPON_SLOTS] = {WeaponId::Rpg, WeaponId::ShotgunPump, WeaponId::Bat};
 
     struct AmmoReserve
     {
@@ -187,6 +187,6 @@ namespace RoguelikeGame
     const EnemyConfig BOSS_CONFIG = {
         "Boss", "enemy_boss", WeaponId::ShotgunPump,
         90.f, 500.f, 170.f, 260.f, 18.f,
-        260.f, 26.f, 1.6f, 900.f
+        260.f, 16.f, 1.0f, 900.f
     };
 }

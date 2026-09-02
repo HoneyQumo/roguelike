@@ -30,7 +30,12 @@ namespace RoguelikeGame
         Spawn(IMPACT_TEXTURE, FX_IMPACT, position, ToAngle(direction) + 180.f);
     }
 
-    void Fx::Spawn(const std::string& textureMapName, const FxStrip& strip, const XYZEngine::Vector2Df& position, float angle)
+    void Fx::SpawnExplosion(const XYZEngine::Vector2Df& position, float radius)
+    {
+        Spawn(EXPLOSION_TEXTURE, FX_EXPLOSION, position, 0.f, 2.f * radius / static_cast<float>(FX_EXPLOSION.width));
+    }
+
+    void Fx::Spawn(const std::string& textureMapName, const FxStrip& strip, const XYZEngine::Vector2Df& position, float angle, float scale)
     {
         auto texture = XYZEngine::ResourceSystem::Instance()->GetTextureMapElementShared(textureMapName, 0);
         if (texture == nullptr)
@@ -48,7 +53,7 @@ namespace RoguelikeGame
 
         auto renderer = gameObject->AddComponent<XYZEngine::SpriteRendererComponent>();
         renderer->SetTexture(*texture);
-        renderer->SetPixelSize(strip.width, strip.height);
+        renderer->SetPixelSize(static_cast<int>(strip.width * scale), static_cast<int>(strip.height * scale));
         renderer->SetPivot(strip.pivotX / strip.width, strip.pivotY / strip.height);
 
         auto animation = gameObject->AddComponent<XYZEngine::SpriteAnimationComponent>();

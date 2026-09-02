@@ -11,9 +11,10 @@ namespace RoguelikeGame
     public:
         static void SpawnBloodHit(const XYZEngine::Vector2Df& position, const XYZEngine::Vector2Df& direction);
         static void SpawnImpact(const XYZEngine::Vector2Df& position, const XYZEngine::Vector2Df& direction);
+        static void SpawnExplosion(const XYZEngine::Vector2Df& position, float radius);
 
     private:
-        static void Spawn(const std::string& textureMapName, const FxStrip& strip, const XYZEngine::Vector2Df& position, float angle);
+        static void Spawn(const std::string& textureMapName, const FxStrip& strip, const XYZEngine::Vector2Df& position, float angle, float scale = 1.f);
         static float ToAngle(const XYZEngine::Vector2Df& direction);
     };
 }

@@ -59,6 +59,9 @@ namespace RoguelikeGame
 
     constexpr float PROJECTILE_COLLIDER_SIZE = 8.f;
     constexpr float PROJECTILE_LIFETIME = 2.f;
+    constexpr float ROCKET_SPRITE_SCALE = 2.f;
+    constexpr float ROCKET_BODY_OFFSET = 12.f * ROCKET_SPRITE_SCALE;
+    constexpr float EXPLOSION_CORE_RADIUS = 0.5f * TILE_SIZE;
 
     constexpr float SHOT_FORWARD_OFFSET = 0.5f * CHARACTER_COLLIDER_SIZE + 4.f;
 
@@ -118,6 +121,8 @@ namespace RoguelikeGame
     constexpr auto BLOOD_HIT_TEXTURE = "fx_blood_hit";
     constexpr auto IMPACT_TEXTURE = "fx_impact";
     constexpr auto BULLET_TEXTURE = "fx_bullet";
+    constexpr auto ROCKET_TEXTURE = "fx_rocket";
+    constexpr auto EXPLOSION_TEXTURE = "fx_explosion";
     constexpr auto RELOAD_MAG_TEXTURE = "reload_mag";
     constexpr auto HIT_FLASH_SHADER = "hit_flash";
     constexpr auto HUD_FONT = "hud";

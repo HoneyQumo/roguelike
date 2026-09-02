@@ -21,6 +21,9 @@ namespace XYZEngine
 		virtual void Render() = 0;
 
 		void SetTrigger(bool newIsTrigger);
+		bool IsTrigger() const;
+
+		const sf::FloatRect& GetBounds() const;
 
 		void SetCollisionLayer(unsigned int newCollisionLayer);
 		unsigned int GetCollisionLayer() const;

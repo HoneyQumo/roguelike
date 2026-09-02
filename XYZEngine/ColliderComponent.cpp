@@ -12,6 +12,16 @@ namespace XYZEngine
 	{
 		isTrigger = newIsTrigger;
 	}
+	bool ColliderComponent::IsTrigger() const
+	{
+		return isTrigger;
+	}
+
+	const sf::FloatRect& ColliderComponent::GetBounds() const
+	{
+		return bounds;
+	}
+
 	void ColliderComponent::SetCollisionLayer(unsigned int newCollisionLayer)
 	{
 		collisionLayer = newCollisionLayer;

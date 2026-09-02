@@ -176,7 +176,7 @@ namespace RoguelikeGame
             });
 
             std::string shooterName = config.objectName;
-            BulletKind bullet = weaponDefinition.bullet;
+            WeaponId shotWeapon = config.weapon;
             weaponComponent->SetShotStartAction([shotAudio, animation, muzzleFlash]()
             {
                 shotAudio->Play();
@@ -189,9 +189,9 @@ namespace RoguelikeGame
             });
 
             weaponComponent->SetShotAction(
-                [shooterName, bullet](const XYZEngine::Vector2Df& shotPosition, const XYZEngine::Vector2Df& shotDirection, float damage, float speed)
+                [shooterName, shotWeapon](const XYZEngine::Vector2Df& shotPosition, const XYZEngine::Vector2Df& shotDirection, float damage, float speed)
                 {
-                    Projectile::Spawn(shotPosition, shotDirection, damage, speed, shooterName, bullet);
+                    Projectile::Spawn(shotPosition, shotDirection, damage, speed, shooterName, shotWeapon);
                 });
 
             auto attack = gameObject->AddComponent<EnemyAttackComponent>();

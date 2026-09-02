@@ -36,6 +36,11 @@ namespace XYZEngine
 		lifetime -= deltaTime;
 		if (lifetime <= 0.f)
 		{
+			if (expireAction != nullptr)
+			{
+				expireAction(transform->GetWorldPosition());
+			}
+
 			Destroy();
 			return;
 		}
@@ -82,6 +87,10 @@ namespace XYZEngine
 	{
 		hitAction = newHitAction;
 	}
+	void ProjectileComponent::SetExpireAction(std::function<void(const Vector2Df&)> newExpireAction)
+	{
+		expireAction = newExpireAction;
+	}
 
 	void ProjectileComponent::OnTrigger(const Trigger& trigger)
 	{
@@ -109,7 +118,7 @@ namespace XYZEngine
 
 		auto health = target->GetComponent<HealthComponent>();
 		bool isCharacterHit = health != nullptr && health->IsAlive() && !health->IsInvulnerable();
-		if (isCharacterHit)
+		if (isCharacterHit && damage > 0.f)
 		{
 			health->TakeDamage(damage);
 		}

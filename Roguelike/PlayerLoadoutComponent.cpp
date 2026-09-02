@@ -224,7 +224,6 @@ namespace RoguelikeGame
             reloadAudio->SetSound(GameResources::GetWeaponSound(definition.reloadSound));
         }
 
-        BulletKind bullet = definition.bullet;
         std::string shooterName = gameObject->GetName();
 
         rangedWeapon->SetShotStartAction([this]()
@@ -245,10 +244,10 @@ namespace RoguelikeGame
             }
         });
 
-        rangedWeapon->SetShotAction([bullet, shooterName](const XYZEngine::Vector2Df& shotPosition, const XYZEngine::Vector2Df& shotDirection,
-                                                          float damage, float speed)
+        rangedWeapon->SetShotAction([id, shooterName](const XYZEngine::Vector2Df& shotPosition, const XYZEngine::Vector2Df& shotDirection,
+                                                      float damage, float speed)
         {
-            Projectile::Spawn(shotPosition, shotDirection, damage, speed, shooterName, bullet);
+            Projectile::Spawn(shotPosition, shotDirection, damage, speed, shooterName, id);
         });
     }
 

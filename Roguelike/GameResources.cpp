@@ -27,6 +27,8 @@ namespace RoguelikeGame
         LoadFxStrip(BLOOD_HIT_TEXTURE, FX_BLOOD_HIT);
         LoadFxStrip(IMPACT_TEXTURE, FX_IMPACT);
         LoadFxStrip(BULLET_TEXTURE, FX_BULLET);
+        LoadFxStrip(ROCKET_TEXTURE, FX_ROCKET);
+        LoadFxStrip(EXPLOSION_TEXTURE, FX_EXPLOSION);
 
         XYZEngine::ResourceSystem::Instance()->LoadTextureStrip(RELOAD_MAG_TEXTURE, RELOAD_MAG_FILE,
                                                                 {0, 0, RELOAD_MAG_FRAME_SIZE, RELOAD_MAG_FRAME_SIZE}, RELOAD_MAG_FRAMES, false);

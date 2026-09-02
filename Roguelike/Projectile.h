@@ -11,6 +11,6 @@ namespace RoguelikeGame
     {
     public:
         static void Spawn(const XYZEngine::Vector2Df& position, const XYZEngine::Vector2Df& direction, float damage, float speed,
-            const std::string& shooterName, BulletKind bullet);
+            const std::string& shooterName, WeaponId weapon);
     };
 }

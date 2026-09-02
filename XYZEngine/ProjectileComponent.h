@@ -23,6 +23,7 @@ namespace XYZEngine
         void SetLifetime(float newLifetime);
         void SetShooterName(const std::string& newShooterName);
         void SetHitAction(std::function<void(const Vector2Df&, const Vector2Df&, bool)> newHitAction);
+        void SetExpireAction(std::function<void(const Vector2Df&)> newExpireAction);
 
     private:
         TransformComponent* transform;
@@ -34,6 +35,7 @@ namespace XYZEngine
         float lifetime = 3.f;
         std::string shooterName;
         std::function<void(const Vector2Df&, const Vector2Df&, bool)> hitAction;
+        std::function<void(const Vector2Df&)> expireAction;
 
         bool isHandled = false;
 

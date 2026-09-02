@@ -66,6 +66,9 @@
     <ClInclude Include="HealthBarComponent.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
+    <ClInclude Include="ExplosiveComponent.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
     <ClInclude Include="ProjectileComponent.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
@@ -204,6 +207,9 @@
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="HealthBarComponent.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="ExplosiveComponent.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="ProjectileComponent.cpp">

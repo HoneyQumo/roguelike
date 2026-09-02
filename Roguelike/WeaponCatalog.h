@@ -26,7 +26,8 @@ namespace RoguelikeGame
     {
         Rifle = 0,
         Pistol = 1,
-        Pellet = 2
+        Pellet = 2,
+        Rocket = 3
     };
 
     /**	
@@ -98,7 +99,7 @@ namespace RoguelikeGame
         },
         {"knife", u8"Нож", 8, 42.40f, 15.36f, 0.00f, 0.00f, BulletKind::Pistol, AmmoKind::None, 0, 0.00f, nullptr, nullptr},
         {"bat", u8"Бита", 9, 55.20f, 12.32f, 0.00f, 0.00f, BulletKind::Pistol, AmmoKind::None, 0, 0.00f, nullptr, nullptr},
-        {"rpg", u8"РПГ", 10, 76.00f, 12.16f, 1.80f, 1.60f, BulletKind::Rifle, AmmoKind::Rocket, 1, 2.60f, "rpg_shot", "rpg_reload"}
+        {"rpg", u8"РПГ", 10, 76.00f, 12.16f, 1.80f, 1.60f, BulletKind::Rocket, AmmoKind::Rocket, 1, 2.60f, "rpg_shot", "rpg_reload"}
     };
 
     struct MeleeAttackProfile
@@ -153,6 +154,25 @@ namespace RoguelikeGame
         {WeaponId::ShotgunPump, 5, 22.f, 1.12f, 0.85f, 2.20f}
     };
 
+    struct ExplosiveDefinition
+    {
+        WeaponId weapon;
+        float radius;
+        float edgeDamagePart;
+        float selfDamagePart;
+        float damageScale;
+        float speedScale;
+        float cooldownScale;
+        float lifetime;
+        float colliderSize;
+    };
+
+    constexpr int EXPLOSIVE_WEAPON_COUNT = 1;
+
+    constexpr ExplosiveDefinition EXPLOSIVE_WEAPONS[EXPLOSIVE_WEAPON_COUNT] = {
+        {WeaponId::Rpg, 96.f, 0.30f, 0.45f, 4.80f, 0.55f, 1.00f, 2.40f, 22.f}
+    };
+
     struct ShotProfile
     {
         int pellets;
@@ -198,8 +218,32 @@ namespace RoguelikeGame
         return nullptr;
     }
 
+    constexpr const ExplosiveDefinition* FindExplosive(WeaponId id)
+    {
+        for (const ExplosiveDefinition& explosive : EXPLOSIVE_WEAPONS)
+        {
+            if (explosive.weapon == id)
+            {
+                return &explosive;
+            }
+        }
+
+        return nullptr;
+    }
+
+    constexpr bool IsExplosive(WeaponId id)
+    {
+        return FindExplosive(id) != nullptr;
+    }
+
     constexpr ShotProfile MakeShotProfile(WeaponId id, float damage, float speed, float cooldown)
     {
+        const ExplosiveDefinition* explosive = FindExplosive(id);
+        if (explosive != nullptr)
+        {
+            return {1, 0.f, damage * explosive->damageScale, speed * explosive->speedScale, cooldown * explosive->cooldownScale};
+        }
+
         const SpreadDefinition* spread = FindSpread(id);
         if (spread == nullptr)
         {

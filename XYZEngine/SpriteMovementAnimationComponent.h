@@ -23,8 +23,11 @@ namespace XYZEngine
         Heavy,
         Swap,
         Hurt,
-        Death
+        Death,
+        Roll
     };
+
+    constexpr int MAX_ROLL_DIRECTIONS = 8;
 
     struct ChargedAnimationLoops
     {
@@ -54,6 +57,8 @@ namespace XYZEngine
         void SetSwapAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, const float* frameSeconds);
         void SetHurtAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float framesPerSecond);
         void SetDeathAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float framesPerSecond);
+        void SetRollAnimations(const std::string& textureMapName, const int* firstFrameIndices, int directionsCount, int framesCount,
+                               float framesPerSecond);
 
         void PlayShoot();
         void PlayReload();
@@ -66,10 +71,12 @@ namespace XYZEngine
         void PlaySwap();
         void PlayHurt();
         void PlayDeath();
+        void PlayRoll(int direction);
 
         MovementAnimation GetCurrentAnimation() const;
         int GetCurrentFrame() const;
         bool IsFinished() const;
+        int GetRollDirectionsCount() const;
 
     private:
         struct Animation
@@ -93,6 +100,8 @@ namespace XYZEngine
         Animation swapAnimation;
         Animation hurtAnimation;
         Animation deathAnimation;
+        Animation rollAnimations[MAX_ROLL_DIRECTIONS];
+        int rollDirectionsCount = 0;
         Animation* currentAnimation = nullptr;
         MovementAnimation currentAnimationKind = MovementAnimation::None;
 
@@ -111,6 +120,7 @@ namespace XYZEngine
         float stillTimer = 0.f;
 
         bool IsInterruptingAnimation() const;
+        bool IsRollPlaying() const;
         void Fill(Animation& animation, const std::string& textureMapName, int firstFrameIndex, int framesCount, float framesPerSecond);
         void Play(Animation& animation, MovementAnimation kind, bool looped);
         void AdvanceFrames(float deltaTime);

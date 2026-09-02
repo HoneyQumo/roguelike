@@ -291,7 +291,7 @@ namespace XYZEngine
             }
 
             auto health = target->GetComponent<HealthComponent>();
-            if (health == nullptr || !health->IsAlive())
+            if (health == nullptr || !health->IsAlive() || health->IsInvulnerable())
             {
                 continue;
             }

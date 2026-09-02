@@ -3,6 +3,7 @@
 #include "GameResources.h"
 #include "PlayerAttackComponent.h"
 #include "PlayerLoadoutComponent.h"
+#include "PlayerRollComponent.h"
 #include "StowedWeaponComponent.h"
 #include "HitFlashComponent.h"
 #include "BloodPool.h"
@@ -21,6 +22,7 @@
 #include <RigidbodyComponent.h>
 #include <BoxColliderComponent.h>
 #include <AimRotationComponent.h>
+#include <DodgeRollComponent.h>
 #include <SpriteMovementAnimationComponent.h>
 #include <HealthComponent.h>
 #include <HealthBarComponent.h>
@@ -63,6 +65,7 @@ namespace RoguelikeGame
 
         auto collider = gameObject->AddComponent<XYZEngine::BoxColliderComponent>();
         collider->SetSize(CHARACTER_COLLIDER_SIZE, CHARACTER_COLLIDER_SIZE);
+        collider->SetCollisionLayer(PLAYER_COLLISION_LAYER);
 
         auto aim = gameObject->AddComponent<XYZEngine::AimRotationComponent>();
         aim->AimAtCursor();
@@ -88,6 +91,20 @@ namespace RoguelikeGame
         animation->SetSwapAnimation(PLAYER_TEXTURE, AtlasFrameIndex(SWAP_ANIMATION_ROW, 0), SWAP_ANIMATION_FRAMES, SWAP_FRAME_SECONDS);
         animation->SetHurtAnimation(PLAYER_TEXTURE, AtlasFrameIndex(HURT_ANIMATION.row, 0), HURT_ANIMATION.frames, HURT_ANIMATION.framesPerSecond);
         animation->SetDeathAnimation(PLAYER_TEXTURE, AtlasFrameIndex(DEATH_ANIMATION.row, 0), DEATH_ANIMATION.frames, DEATH_ANIMATION.framesPerSecond);
+
+        int rollFirstFrames[ROLL_DIRECTIONS];
+        for (int direction = 0; direction < ROLL_DIRECTIONS; direction++)
+        {
+            rollFirstFrames[direction] = RollFirstFrame(direction);
+        }
+        animation->SetRollAnimations(PLAYER_TEXTURE, rollFirstFrames, ROLL_DIRECTIONS, ROLL_ANIMATION_FRAMES, ROLL_FRAMES_PER_SECOND);
+
+        auto dodgeRoll = gameObject->AddComponent<XYZEngine::DodgeRollComponent>();
+        dodgeRoll->SetSpeeds(ROLL_MOVE_SPEED, ROLL_ANIMATION_FRAMES, PLAYER_ROLL_SPEED);
+        dodgeRoll->SetMaxStep(PLAYER_ROLL_MAX_STEP);
+        dodgeRoll->SetInvulnerableFrames(ROLL_INVULNERABLE_FIRST_FRAME, ROLL_INVULNERABLE_LAST_FRAME);
+        dodgeRoll->SetIgnoredLayers(ENEMY_COLLISION_LAYER);
+        dodgeRoll->SetCooldown(PLAYER_ROLL_COOLDOWN);
 
         auto health = gameObject->AddComponent<XYZEngine::HealthComponent>();
         health->SetMaxHealth(PLAYER_MAX_HEALTH);
@@ -143,6 +160,7 @@ namespace RoguelikeGame
         loadout->SetSlots(PLAYER_LOADOUT, PLAYER_WEAPON_SLOTS, PLAYER_START_WEAPON_SLOT);
 
         gameObject->AddComponent<PlayerAttackComponent>();
+        gameObject->AddComponent<PlayerRollComponent>();
 
         health->SubscribeDamage([animation, hurtAudio, hitFlash, meleeWeapon](float damage)
         {
@@ -153,8 +171,9 @@ namespace RoguelikeGame
         });
 
         auto characterObject = gameObject;
-        health->SubscribeDeath([characterObject, transform, animation, movement, collider, aim, weaponComponent, meleeWeapon, reloadAudio, hitFlash]()
+        health->SubscribeDeath([characterObject, transform, animation, movement, collider, aim, weaponComponent, meleeWeapon, dodgeRoll, reloadAudio, hitFlash]()
         {
+            dodgeRoll->CancelRoll();
             weaponComponent->CancelReload();
             meleeWeapon->CancelAttack();
             reloadAudio->Stop();

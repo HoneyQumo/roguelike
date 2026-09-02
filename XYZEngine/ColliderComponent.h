@@ -10,6 +10,8 @@
 
 namespace XYZEngine
 {
+	constexpr unsigned int DEFAULT_COLLISION_LAYER = 1u;
+
 	class ColliderComponent : public Component
 	{
 	public:
@@ -19,6 +21,12 @@ namespace XYZEngine
 		virtual void Render() = 0;
 
 		void SetTrigger(bool newIsTrigger);
+
+		void SetCollisionLayer(unsigned int newCollisionLayer);
+		unsigned int GetCollisionLayer() const;
+
+		void SetIgnoredLayers(unsigned int newIgnoredLayers);
+		unsigned int GetIgnoredLayers() const;
 
 		void SubscribeCollision(std::function<void(Collision)> onCollisionAction);
 		void UnsubscribeCollision(std::function<void(Collision)> onCollisionAction);
@@ -34,6 +42,8 @@ namespace XYZEngine
 	protected:
 		sf::FloatRect bounds;
 		bool isTrigger = false;
+		unsigned int collisionLayer = DEFAULT_COLLISION_LAYER;
+		unsigned int ignoredLayers = 0u;
 
 		void OnCollision(Collision collision);
 		void OnTriggerEnter(Trigger trigger);

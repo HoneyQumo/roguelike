@@ -33,6 +33,7 @@ namespace XYZEngine
 		isHeavyAttackPressed = sf::Mouse::isButtonPressed(sf::Mouse::Right);
 		isRunPressed = sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) || sf::Keyboard::isKeyPressed(sf::Keyboard::RShift);
 		isReloadPressed = sf::Keyboard::isKeyPressed(sf::Keyboard::R);
+		isRollPressed = sf::Keyboard::isKeyPressed(sf::Keyboard::Space);
 
 		selectedWeaponSlot = NO_WEAPON_SLOT;
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1))
@@ -81,6 +82,10 @@ namespace XYZEngine
 	bool InputComponent::IsReloadPressed() const
 	{
 		return isReloadPressed;
+	}
+	bool InputComponent::IsRollPressed() const
+	{
+		return isRollPressed;
 	}
 	int InputComponent::GetSelectedWeaponSlot() const
 	{

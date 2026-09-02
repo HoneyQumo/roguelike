@@ -38,7 +38,7 @@ namespace RoguelikeGame
             return;
         }
 
-        transform->SetLocalPosition(ToWorldOffset((float)SWAP_STOW_OFFSET[frame].x, (float)SWAP_STOW_OFFSET[frame].y));
+        transform->SetLocalPosition(ToWorldOffset(SWAP_STOW_OFFSET[frame].x, SWAP_STOW_OFFSET[frame].y));
         transform->SetLocalRotation(ToWorldAngle(SWAP_STOW_ROTATION[frame]));
     }
 

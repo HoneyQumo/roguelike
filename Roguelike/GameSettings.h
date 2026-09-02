@@ -27,6 +27,13 @@ namespace RoguelikeGame
     constexpr float PLAYER_MELEE_DAMAGE = 15.f;
     constexpr float PLAYER_HEAVY_LUNGE_SPEED = 150.f;
 
+    constexpr float PLAYER_ROLL_SPEED = 900.f;
+    constexpr float PLAYER_ROLL_MAX_STEP = 0.75f * CHARACTER_COLLIDER_SIZE;
+    constexpr float PLAYER_ROLL_COOLDOWN = 0.35f;
+
+    constexpr unsigned int PLAYER_COLLISION_LAYER = 1u << 1;
+    constexpr unsigned int ENEMY_COLLISION_LAYER = 1u << 2;
+
     constexpr int PLAYER_WEAPON_SLOTS = 3;
     constexpr int PLAYER_START_WEAPON_SLOT = 0;
     constexpr WeaponId PLAYER_LOADOUT[PLAYER_WEAPON_SLOTS] = {WeaponId::Ak47, WeaponId::Glock, WeaponId::Bat};

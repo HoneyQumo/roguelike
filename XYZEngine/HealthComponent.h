@@ -6,37 +6,42 @@
 
 namespace XYZEngine
 {
-	class HealthComponent : public Component
-	{
-	public:
-		HealthComponent(GameObject* gameObject);
+    class HealthComponent : public Component
+    {
+    public:
+        HealthComponent(GameObject* gameObject);
 
-		void Update(float deltaTime) override;
-		void Render() override;
+        void Update(float deltaTime) override;
+        void Render() override;
 
-		void SetMaxHealth(float newMaxHealth);
-		float GetMaxHealth() const;
-		float GetHealth() const;
-		float GetHealthPercent() const;
+        void SetMaxHealth(float newMaxHealth);
+        float GetMaxHealth() const;
+        float GetHealth() const;
+        float GetHealthPercent() const;
 
-		void SetArmor(float newArmor);
-		float GetArmor() const;
+        void SetArmor(float newArmor);
+        float GetArmor() const;
+        
+        void SetInvulnerable(bool newIsInvulnerable);
+        bool IsInvulnerable() const;
 
-		void TakeDamage(float damage);
-		void Heal(float amount);
+        void TakeDamage(float damage);
+        void Heal(float amount);
 
-		bool IsAlive() const;
+        bool IsAlive() const;
 
-		void SubscribeDamage(std::function<void(float)> onDamageAction);
-		void SubscribeDeath(std::function<void()> onDeathAction);
-	private:
-		float maxHealth = 100.f;
-		float health = 100.f;
-		float armor = 0.f;
+        void SubscribeDamage(std::function<void(float)> onDamageAction);
+        void SubscribeDeath(std::function<void()> onDeathAction);
 
-		std::vector<std::function<void(float)>> onDamageActions;
-		std::vector<std::function<void()>> onDeathActions;
+    private:
+        float maxHealth = 100.f;
+        float health = 100.f;
+        float armor = 0.f;
+        bool isInvulnerable = false;
 
-		float CalculateDamage(float damage) const;
-	};
+        std::vector<std::function<void(float)>> onDamageActions;
+        std::vector<std::function<void()>> onDeathActions;
+
+        float CalculateDamage(float damage) const;
+    };
 }

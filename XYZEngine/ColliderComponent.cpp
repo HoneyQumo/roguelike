@@ -12,6 +12,23 @@ namespace XYZEngine
 	{
 		isTrigger = newIsTrigger;
 	}
+	void ColliderComponent::SetCollisionLayer(unsigned int newCollisionLayer)
+	{
+		collisionLayer = newCollisionLayer;
+	}
+	unsigned int ColliderComponent::GetCollisionLayer() const
+	{
+		return collisionLayer;
+	}
+
+	void ColliderComponent::SetIgnoredLayers(unsigned int newIgnoredLayers)
+	{
+		ignoredLayers = newIgnoredLayers;
+	}
+	unsigned int ColliderComponent::GetIgnoredLayers() const
+	{
+		return ignoredLayers;
+	}
 
 	void ColliderComponent::SubscribeCollision(std::function<void(Collision)> onCollisionAction)
 	{

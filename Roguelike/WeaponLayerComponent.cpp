@@ -42,8 +42,8 @@ namespace RoguelikeGame
         FrameOffset offset = GetFrameOffset(animation, frame);
 
         // Отдача масштабирует только смещение выстрела: ствол тяжелее — слой отбрасывает дальше назад.
-        float forward = animation == XYZEngine::MovementAnimation::Shoot ? offset.x * recoil : static_cast<float>(offset.x);
-        transform->SetLocalPosition(ToWorldOffset(forward, static_cast<float>(offset.y)));
+        float forward = animation == XYZEngine::MovementAnimation::Shoot ? offset.x * recoil : offset.x;
+        transform->SetLocalPosition(ToWorldOffset(forward, offset.y));
         transform->SetLocalRotation(ToWorldAngle(GetFrameRotation(animation, frame)));
     }
 
@@ -114,6 +114,11 @@ namespace RoguelikeGame
             return SWAP_WEAPON_HIDDEN[ClampFrame(frame, SWAP_ANIMATION_FRAMES)];
         }
 
+        if (animation == XYZEngine::MovementAnimation::Roll)
+        {
+            return ROLL_WEAPON_HIDDEN[ClampFrame(frame, ROLL_ANIMATION_FRAMES)];
+        }
+
         return false;
     }
 
@@ -146,12 +151,14 @@ namespace RoguelikeGame
             return HEAVY_WEAPON_OFFSET[ClampFrame(frame, HEAVY_ANIMATION_FRAMES)];
         case XYZEngine::MovementAnimation::Swap:
             return SWAP_WEAPON_OFFSET[ClampFrame(frame, SWAP_ANIMATION_FRAMES)];
+        case XYZEngine::MovementAnimation::Roll:
+            return ROLL_WEAPON_OFFSET[ClampFrame(frame, ROLL_ANIMATION_FRAMES)];
         case XYZEngine::MovementAnimation::Hurt:
             return HURT_WEAPON_OFFSET[ClampFrame(frame, HURT_ANIMATION.frames)];
         case XYZEngine::MovementAnimation::Death:
             return DEATH_WEAPON_OFFSET[ClampFrame(frame, DEATH_ANIMATION.frames)];
         default:
-            return {0, 0};
+            return {0.f, 0.f};
         }
     }
 

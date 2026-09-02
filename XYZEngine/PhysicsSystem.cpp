@@ -32,6 +32,12 @@ namespace XYZEngine
 					continue;
 				}
 
+				if ((colliders[i]->collisionLayer & colliders[j]->ignoredLayers) != 0u
+					|| (colliders[j]->collisionLayer & colliders[i]->ignoredLayers) != 0u)
+				{
+					continue;
+				}
+
 				sf::FloatRect intersection;
 				if (colliders[i]->bounds.intersects(colliders[j]->bounds, intersection))
 				{
@@ -50,9 +56,10 @@ namespace XYZEngine
 					{
 						float intersectionWidth = intersection.width;
 						float intersectionHeight = intersection.height;
-						Vector2Df intersectionPosition = { intersection.left - 0.5f * intersectionWidth, intersection.top - 0.5f * intersectionHeight };
+						Vector2Df intersectionPosition = { intersection.left + 0.5f * intersectionWidth, intersection.top + 0.5f * intersectionHeight };
 
-						Vector2Df aPosition = { colliders[i]->bounds.left,  colliders[i]->bounds.top };
+						Vector2Df aPosition = { colliders[i]->bounds.left + 0.5f * colliders[i]->bounds.width,
+												colliders[i]->bounds.top + 0.5f * colliders[i]->bounds.height };
 						auto aTransform = colliders[i]->GetGameObject()->GetComponent<TransformComponent>();
 
 						Vector2Df pushOffset = { 0.f, 0.f };

@@ -58,6 +58,7 @@ namespace RoguelikeGame
 
         auto collider = gameObject->AddComponent<XYZEngine::BoxColliderComponent>();
         collider->SetSize(CHARACTER_COLLIDER_SIZE, CHARACTER_COLLIDER_SIZE);
+        collider->SetCollisionLayer(ENEMY_COLLISION_LAYER);
 
         auto aim = gameObject->AddComponent<XYZEngine::AimRotationComponent>();
         aim->AimAtGameObject("Player");

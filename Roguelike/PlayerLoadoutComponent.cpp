@@ -39,7 +39,7 @@ namespace RoguelikeGame
             return;
         }
 
-        if (input != nullptr)
+        if (input != nullptr && (dodgeRoll == nullptr || !dodgeRoll->IsRolling()))
         {
             TrySelectSlot(input->GetSelectedWeaponSlot());
         }
@@ -97,11 +97,7 @@ namespace RoguelikeGame
             return false;
         }
 
-        rangedWeapon->CancelReload();
-        if (reloadAudio != nullptr)
-        {
-            reloadAudio->Stop();
-        }
+        CancelReload();
 
         if (!IsMeleeEquipped())
         {
@@ -119,6 +115,19 @@ namespace RoguelikeGame
 
         LOG_INFO(std::string("Player swaps to ") + GetWeapon(slots[slot]).id);
         return true;
+    }
+
+    void PlayerLoadoutComponent::CancelReload()
+    {
+        if (rangedWeapon != nullptr)
+        {
+            rangedWeapon->CancelReload();
+        }
+
+        if (reloadAudio != nullptr)
+        {
+            reloadAudio->Stop();
+        }
     }
 
     bool PlayerLoadoutComponent::IsSwapping() const
@@ -153,6 +162,10 @@ namespace RoguelikeGame
         if (meleeWeapon == nullptr)
         {
             meleeWeapon = gameObject->GetComponent<XYZEngine::MeleeWeaponComponent>();
+        }
+        if (dodgeRoll == nullptr)
+        {
+            dodgeRoll = gameObject->GetComponent<XYZEngine::DodgeRollComponent>();
         }
     }
 

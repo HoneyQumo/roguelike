@@ -108,7 +108,7 @@ namespace XYZEngine
 		}
 
 		auto health = target->GetComponent<HealthComponent>();
-		bool isCharacterHit = health != nullptr && health->IsAlive();
+		bool isCharacterHit = health != nullptr && health->IsAlive() && !health->IsInvulnerable();
 		if (isCharacterHit)
 		{
 			health->TakeDamage(damage);

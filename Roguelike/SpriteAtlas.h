@@ -11,7 +11,7 @@ namespace RoguelikeGame
     constexpr int CHARACTER_FRAME_SIZE = 64;
     constexpr int CHARACTER_ATLAS_COLUMNS = 12;
     constexpr int ENEMY_ATLAS_ROWS = 8;
-    constexpr int PLAYER_ATLAS_ROWS = 10;
+    constexpr int PLAYER_ATLAS_ROWS = 18;
     constexpr int ENEMY_ATLAS_FRAMES = CHARACTER_ATLAS_COLUMNS * ENEMY_ATLAS_ROWS;
     constexpr int PLAYER_ATLAS_FRAMES = CHARACTER_ATLAS_COLUMNS * PLAYER_ATLAS_ROWS;
 
@@ -32,7 +32,6 @@ namespace RoguelikeGame
         return row * CHARACTER_ATLAS_COLUMNS + column;
     }
 
-    // Восемь строк кувырка в player.png не реализованы:
     constexpr CharacterAnimation IDLE_ANIMATION = {0, 6, FramesPerSecond(175.f)};
     constexpr CharacterAnimation WALK_ANIMATION = {1, 8, FramesPerSecond(110.f)};
     constexpr CharacterAnimation RUN_ANIMATION = {2, 8, FramesPerSecond(75.f)};
@@ -65,14 +64,36 @@ namespace RoguelikeGame
 
     constexpr int SWAP_CHANGE_FRAME = 5;
 
+    constexpr int ROLL_ANIMATION_ROW0 = 10;
+    constexpr int ROLL_DIRECTIONS = 8;
+    constexpr int ROLL_ANIMATION_FRAMES = 10;
+    constexpr float ROLL_FRAMES_PER_SECOND = FramesPerSecond(50.f);
+
+    constexpr int RollAtlasRow(int direction)
+    {
+        return ROLL_ANIMATION_ROW0 + (ROLL_DIRECTIONS - direction) % ROLL_DIRECTIONS;
+    }
+
+    constexpr int RollFirstFrame(int direction)
+    {
+        return AtlasFrameIndex(RollAtlasRow(direction), 0);
+    }
+
+    constexpr float ROLL_MOVE_SPEED[ROLL_ANIMATION_FRAMES] = {
+        0.10f, 0.55f, 1.00f, 1.00f, 0.92f, 0.66f, 0.46f, 0.30f, 0.10f, 0.00f
+    };
+
+    constexpr int ROLL_INVULNERABLE_FIRST_FRAME = 2;
+    constexpr int ROLL_INVULNERABLE_LAST_FRAME = 7;
+
     /**	
     *	Покадровое смещение слоя оружия, в пикселях кадра.
     *	В Idle оружие намеренно неподвижно.
     */
     struct FrameOffset
     {
-        int x;
-        int y;
+        float x;
+        float y;
     };
 
     constexpr FrameOffset WALK_WEAPON_OFFSET[8] = {{0, 0}, {0, 1}, {0, 0}, {0, -1}, {0, 0}, {0, 1}, {0, 0}, {0, -1}};
@@ -85,6 +106,13 @@ namespace RoguelikeGame
     };
     constexpr FrameOffset SWAP_WEAPON_OFFSET[SWAP_ANIMATION_FRAMES] = {
         {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}
+    };
+    constexpr FrameOffset ROLL_WEAPON_OFFSET[ROLL_ANIMATION_FRAMES] = {
+        {0.f, 1.5f}, {0.f, 0.f}, {0.f, 0.f}, {0.f, 0.f}, {0.f, 0.f},
+        {0.f, 0.f}, {0.f, 0.f}, {0.f, 0.f}, {-1.f, 1.f}, {0.f, 0.f}
+    };
+    constexpr bool ROLL_WEAPON_HIDDEN[ROLL_ANIMATION_FRAMES] = {
+        false, true, true, true, true, true, true, true, false, false
     };
     constexpr FrameOffset HURT_WEAPON_OFFSET[3] = {{-2, 1}, {-1, 0}, {0, 0}};
     constexpr FrameOffset DEATH_WEAPON_OFFSET[8] = {{0, 1}, {-2, 2}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}};

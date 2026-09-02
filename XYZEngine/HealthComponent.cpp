@@ -6,144 +6,162 @@
 
 namespace XYZEngine
 {
-	const float MIN_DAMAGE = 1.f;
-	const float LOW_HEALTH_PERCENT = 0.3f;
+    constexpr float MIN_DAMAGE = 1.f;
+    constexpr float LOW_HEALTH_PERCENT = 0.3f;
 
-	HealthComponent::HealthComponent(GameObject* gameObject) : Component(gameObject) {}
+    HealthComponent::HealthComponent(GameObject* gameObject) : Component(gameObject)
+    {
+    }
 
-	void HealthComponent::Update(float deltaTime)
-	{
+    void HealthComponent::Update(float deltaTime)
+    {
+    }
 
-	}
-	void HealthComponent::Render()
-	{
+    void HealthComponent::Render()
+    {
+    }
 
-	}
+    void HealthComponent::SetMaxHealth(float newMaxHealth)
+    {
+        assert(newMaxHealth > 0.f);
 
-	void HealthComponent::SetMaxHealth(float newMaxHealth)
-	{
-		assert(newMaxHealth > 0.f);
+        if (newMaxHealth <= 0.f)
+        {
+            LOG_WARN("Max health must be positive on " + gameObject->GetName());
+            return;
+        }
 
-		if (newMaxHealth <= 0.f)
-		{
-			LOG_WARN("Max health must be positive on " + gameObject->GetName());
-			return;
-		}
+        maxHealth = newMaxHealth;
+        health = newMaxHealth;
+    }
 
-		maxHealth = newMaxHealth;
-		health = newMaxHealth;
-	}
-	float HealthComponent::GetMaxHealth() const
-	{
-		return maxHealth;
-	}
-	float HealthComponent::GetHealth() const
-	{
-		return health;
-	}
-	float HealthComponent::GetHealthPercent() const
-	{
-		return health / maxHealth;
-	}
+    float HealthComponent::GetMaxHealth() const
+    {
+        return maxHealth;
+    }
 
-	void HealthComponent::SetArmor(float newArmor)
-	{
-		assert(newArmor >= 0.f);
+    float HealthComponent::GetHealth() const
+    {
+        return health;
+    }
 
-		if (newArmor < 0.f)
-		{
-			LOG_WARN("Armor can't be negative on " + gameObject->GetName());
-			return;
-		}
+    float HealthComponent::GetHealthPercent() const
+    {
+        return health / maxHealth;
+    }
 
-		armor = newArmor;
-	}
-	float HealthComponent::GetArmor() const
-	{
-		return armor;
-	}
+    void HealthComponent::SetArmor(float newArmor)
+    {
+        assert(newArmor >= 0.f);
 
-	void HealthComponent::TakeDamage(float damage)
-	{
-		assert(damage >= 0.f);
+        if (newArmor < 0.f)
+        {
+            LOG_WARN("Armor can't be negative on " + gameObject->GetName());
+            return;
+        }
 
-		if (damage < 0.f)
-		{
-			LOG_WARN("Negative damage is ignored on " + gameObject->GetName());
-			return;
-		}
+        armor = newArmor;
+    }
 
-		if (!IsAlive())
-		{
-			return;
-		}
+    float HealthComponent::GetArmor() const
+    {
+        return armor;
+    }
 
-		float takenDamage = CalculateDamage(damage);
-		health -= takenDamage;
-		if (health < 0.f)
-		{
-			health = 0.f;
-		}
+    void HealthComponent::SetInvulnerable(bool newIsInvulnerable)
+    {
+        isInvulnerable = newIsInvulnerable;
+    }
 
-		LOG_INFO(gameObject->GetName() + " takes " + std::to_string((int)takenDamage)
-			+ " damage, health " + std::to_string((int)health) + "/" + std::to_string((int)maxHealth));
+    bool HealthComponent::IsInvulnerable() const
+    {
+        return isInvulnerable;
+    }
 
-		for (auto& onDamageAction : onDamageActions)
-		{
-			onDamageAction(takenDamage);
-		}
+    void HealthComponent::TakeDamage(float damage)
+    {
+        assert(damage >= 0.f);
 
-		if (!IsAlive())
-		{
-			LOG_WARN(gameObject->GetName() + " is dead");
+        if (damage < 0.f)
+        {
+            LOG_WARN("Negative damage is ignored on " + gameObject->GetName());
+            return;
+        }
 
-			for (auto& onDeathAction : onDeathActions)
-			{
-				onDeathAction();
-			}
-			return;
-		}
+        if (isInvulnerable || !IsAlive())
+        {
+            return;
+        }
 
-		if (GetHealthPercent() <= LOW_HEALTH_PERCENT)
-		{
-			LOG_WARN(gameObject->GetName() + " health is low: " + std::to_string((int)health));
-		}
-	}
-	void HealthComponent::Heal(float amount)
-	{
-		assert(amount >= 0.f);
 
-		if (amount < 0.f || !IsAlive())
-		{
-			return;
-		}
+        float takenDamage = CalculateDamage(damage);
+        health -= takenDamage;
+        if (health < 0.f)
+        {
+            health = 0.f;
+        }
 
-		health += amount;
-		if (health > maxHealth)
-		{
-			health = maxHealth;
-		}
+        LOG_INFO(gameObject->GetName() + " takes " + std::to_string(static_cast<int>(takenDamage))
+            + " damage, health " + std::to_string(static_cast<int>(health)) + "/" + std::to_string(static_cast<int>(maxHealth)));
 
-		LOG_INFO(gameObject->GetName() + " healed to " + std::to_string((int)health));
-	}
+        for (auto& onDamageAction : onDamageActions)
+        {
+            onDamageAction(takenDamage);
+        }
 
-	bool HealthComponent::IsAlive() const
-	{
-		return health > 0.f;
-	}
+        if (!IsAlive())
+        {
+            LOG_WARN(gameObject->GetName() + " is dead");
 
-	void HealthComponent::SubscribeDamage(std::function<void(float)> onDamageAction)
-	{
-		onDamageActions.push_back(onDamageAction);
-	}
-	void HealthComponent::SubscribeDeath(std::function<void()> onDeathAction)
-	{
-		onDeathActions.push_back(onDeathAction);
-	}
+            for (auto& onDeathAction : onDeathActions)
+            {
+                onDeathAction();
+            }
+            return;
+        }
 
-	float HealthComponent::CalculateDamage(float damage) const
-	{
-		float reducedDamage = damage - armor;
-		return reducedDamage < MIN_DAMAGE ? MIN_DAMAGE : reducedDamage;
-	}
+        if (GetHealthPercent() <= LOW_HEALTH_PERCENT)
+        {
+            LOG_WARN(gameObject->GetName() + " health is low: " + std::to_string(static_cast<int>(health)));
+        }
+    }
+
+    void HealthComponent::Heal(float amount)
+    {
+        assert(amount >= 0.f);
+
+        if (amount < 0.f || !IsAlive())
+        {
+            return;
+        }
+
+        health += amount;
+        if (health > maxHealth)
+        {
+            health = maxHealth;
+        }
+
+        LOG_INFO(gameObject->GetName() + " healed to " + std::to_string(static_cast<int>(health)));
+    }
+
+    bool HealthComponent::IsAlive() const
+    {
+        return health > 0.f;
+    }
+
+    void HealthComponent::SubscribeDamage(std::function<void(float)> onDamageAction)
+    {
+        onDamageActions.push_back(onDamageAction);
+    }
+
+    void HealthComponent::SubscribeDeath(std::function<void()> onDeathAction)
+    {
+        onDeathActions.push_back(onDeathAction);
+    }
+
+    float HealthComponent::CalculateDamage(float damage) const
+    {
+        float reducedDamage = damage - armor;
+        return reducedDamage < MIN_DAMAGE ? MIN_DAMAGE : reducedDamage;
+    }
 }

@@ -138,9 +138,29 @@ namespace XYZEngine
         Fill(deathAnimation, textureMapName, firstFrameIndex, framesCount, framesPerSecond);
     }
 
+    void SpriteMovementAnimationComponent::SetRollAnimations(const std::string& textureMapName, const int* firstFrameIndices, int directionsCount,
+                                                             int framesCount, float framesPerSecond)
+    {
+        assert(firstFrameIndices != nullptr);
+        assert(directionsCount > 0 && directionsCount <= MAX_ROLL_DIRECTIONS);
+
+        if (IsRollPlaying())
+        {
+            currentAnimation = nullptr;
+            currentAnimationKind = MovementAnimation::None;
+            isFinished = true;
+        }
+
+        rollDirectionsCount = std::min(std::max(directionsCount, 0), MAX_ROLL_DIRECTIONS);
+        for (int direction = 0; direction < rollDirectionsCount; direction++)
+        {
+            Fill(rollAnimations[direction], textureMapName, firstFrameIndices[direction], framesCount, framesPerSecond);
+        }
+    }
+
     void SpriteMovementAnimationComponent::PlayShoot()
     {
-        if (isDead || shootAnimation.frames.empty())
+        if (isDead || shootAnimation.frames.empty() || IsRollPlaying())
         {
             return;
         }
@@ -156,7 +176,7 @@ namespace XYZEngine
 
     void SpriteMovementAnimationComponent::PlayReload()
     {
-        if (isDead || reloadAnimation.frames.empty())
+        if (isDead || reloadAnimation.frames.empty() || IsRollPlaying())
         {
             return;
         }
@@ -179,7 +199,7 @@ namespace XYZEngine
 
     void SpriteMovementAnimationComponent::PlayMelee()
     {
-        if (isDead || meleeAnimation.frames.empty())
+        if (isDead || meleeAnimation.frames.empty() || IsRollPlaying())
         {
             return;
         }
@@ -191,7 +211,7 @@ namespace XYZEngine
 
     void SpriteMovementAnimationComponent::PlayHeavy()
     {
-        if (isDead || heavyAnimation.frames.empty())
+        if (isDead || heavyAnimation.frames.empty() || IsRollPlaying())
         {
             return;
         }
@@ -219,7 +239,7 @@ namespace XYZEngine
 
     void SpriteMovementAnimationComponent::PlaySwap()
     {
-        if (isDead || swapAnimation.frames.empty())
+        if (isDead || swapAnimation.frames.empty() || IsRollPlaying())
         {
             return;
         }
@@ -231,7 +251,7 @@ namespace XYZEngine
 
     void SpriteMovementAnimationComponent::PlayHurt()
     {
-        if (isDead || hurtAnimation.frames.empty())
+        if (isDead || hurtAnimation.frames.empty() || IsRollPlaying())
         {
             return;
         }
@@ -258,6 +278,18 @@ namespace XYZEngine
         Play(deathAnimation, MovementAnimation::Death, false);
     }
 
+    void SpriteMovementAnimationComponent::PlayRoll(int direction)
+    {
+        if (isDead || direction < 0 || direction >= rollDirectionsCount || rollAnimations[direction].frames.empty())
+        {
+            return;
+        }
+
+        isHeavyHolding = false;
+        currentAnimation = nullptr;
+        Play(rollAnimations[direction], MovementAnimation::Roll, false);
+    }
+
     MovementAnimation SpriteMovementAnimationComponent::GetCurrentAnimation() const
     {
         return currentAnimationKind;
@@ -273,10 +305,21 @@ namespace XYZEngine
         return isFinished;
     }
 
+    int SpriteMovementAnimationComponent::GetRollDirectionsCount() const
+    {
+        return rollDirectionsCount;
+    }
+
     bool SpriteMovementAnimationComponent::IsInterruptingAnimation() const
     {
         return currentAnimation == &hurtAnimation || currentAnimation == &shootAnimation || currentAnimation == &reloadAnimation
-            || currentAnimation == &meleeAnimation || currentAnimation == &heavyAnimation || currentAnimation == &swapAnimation;
+            || currentAnimation == &meleeAnimation || currentAnimation == &heavyAnimation || currentAnimation == &swapAnimation
+            || currentAnimationKind == MovementAnimation::Roll;
+    }
+
+    bool SpriteMovementAnimationComponent::IsRollPlaying() const
+    {
+        return currentAnimationKind == MovementAnimation::Roll && !isFinished;
     }
 
     float SpriteMovementAnimationComponent::GetFrameSeconds(int frame) const

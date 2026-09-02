@@ -160,6 +160,7 @@
     <ClInclude Include="Component.h" />
     <ClInclude Include="ConsoleSink.h" />
     <ClInclude Include="CursorFollowComponent.h" />
+    <ClInclude Include="DodgeRollComponent.h" />
     <ClInclude Include="FileSink.h" />
     <ClInclude Include="HealthBarComponent.h" />
     <ClInclude Include="HealthComponent.h" />
@@ -208,6 +209,7 @@
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="ConsoleSink.cpp" />
     <ClCompile Include="CursorFollowComponent.cpp" />
+    <ClCompile Include="DodgeRollComponent.cpp" />
     <ClCompile Include="FileSink.cpp" />
     <ClCompile Include="HealthBarComponent.cpp" />
     <ClCompile Include="HealthComponent.cpp" />

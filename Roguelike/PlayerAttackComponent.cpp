@@ -30,6 +30,10 @@ namespace RoguelikeGame
         {
             health = gameObject->GetComponent<XYZEngine::HealthComponent>();
         }
+        if (dodgeRoll == nullptr)
+        {
+            dodgeRoll = gameObject->GetComponent<XYZEngine::DodgeRollComponent>();
+        }
         if (loadout == nullptr)
         {
             loadout = gameObject->GetComponent<PlayerLoadoutComponent>();
@@ -52,6 +56,11 @@ namespace RoguelikeGame
         }
 
         UpdateChargeGlow(deltaTime);
+
+        if (dodgeRoll != nullptr && dodgeRoll->IsRolling())
+        {
+            return;
+        }
 
         if (loadout->IsSwapping())
         {

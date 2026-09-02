@@ -23,6 +23,7 @@ namespace XYZEngine
 		bool IsHeavyAttackPressed() const;
 		bool IsRunPressed() const;
 		bool IsReloadPressed() const;
+		bool IsRollPressed() const;
 		int GetSelectedWeaponSlot() const;
 		Vector2Df GetMouseWorldPosition() const;
 	private:
@@ -32,6 +33,7 @@ namespace XYZEngine
 		bool isHeavyAttackPressed = false;
 		bool isRunPressed = false;
 		bool isReloadPressed = false;
+		bool isRollPressed = false;
 		int selectedWeaponSlot = NO_WEAPON_SLOT;
 		Vector2Df mouseWorldPosition = { 0.f, 0.f };
 	};

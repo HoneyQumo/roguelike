@@ -5,6 +5,7 @@
 #include <AudioComponent.h>
 #include <WeaponComponent.h>
 #include <MeleeWeaponComponent.h>
+#include <DodgeRollComponent.h>
 #include <SpriteMovementAnimationComponent.h>
 #include "GameSettings.h"
 #include "Weapon.h"
@@ -29,6 +30,7 @@ namespace RoguelikeGame
         void SetSlots(const WeaponId* newSlots, int newSlotsCount, int startSlot);
 
         bool TrySelectSlot(int slot);
+        void CancelReload();
         bool IsSwapping() const;
         bool IsMeleeEquipped() const;
         WeaponId GetCurrentWeapon() const;
@@ -41,6 +43,7 @@ namespace RoguelikeGame
         XYZEngine::SpriteMovementAnimationComponent* animation = nullptr;
         XYZEngine::WeaponComponent* rangedWeapon = nullptr;
         XYZEngine::MeleeWeaponComponent* meleeWeapon = nullptr;
+        XYZEngine::DodgeRollComponent* dodgeRoll = nullptr;
 
         XYZEngine::AudioComponent* shotAudio = nullptr;
         XYZEngine::AudioComponent* reloadAudio = nullptr;

@@ -93,6 +93,12 @@ namespace RoguelikeGame
     // Красная зона обоймы
     constexpr float AMMO_HUD_LOW_PART = 0.25f;
 
+    constexpr int OVERLAY_TITLE_FONT_SIZE = 56;
+    constexpr int OVERLAY_HINT_FONT_SIZE = 24;
+    constexpr float OVERLAY_LINE_GAP = 36.f;
+    constexpr auto PAUSE_TITLE = u8"ПАУЗА";
+    constexpr auto PAUSE_HINT = u8"Esc — продолжить";
+
     constexpr float HEALTH_BAR_WIDTH = 48.f;
     constexpr float HEALTH_BAR_HEIGHT = 6.f;
     constexpr float HEALTH_BAR_OFFSET_Y = 30.f;
@@ -157,4 +163,5 @@ namespace RoguelikeGame
     const sf::Color AMMO_HUD_RELOADING_COLOR = {235, 190, 90};
     const sf::Color AMMO_HUD_OUTLINE_COLOR = {15, 13, 12, 220};
     const sf::Color RELOAD_INDICATOR_COLOR = {235, 190, 90};
+    const sf::Color OVERLAY_BACKGROUND_COLOR = {0, 0, 0, 150};
 }

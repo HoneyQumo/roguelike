@@ -52,6 +52,12 @@
     <ClCompile Include="AmmoHudComponent.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
+    <ClCompile Include="MessageOverlayComponent.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="MessageOverlay.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
     <ClCompile Include="Crosshair.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
@@ -93,6 +99,9 @@
     <ClInclude Include="ReloadIndicatorComponent.h" />
     <ClInclude Include="AmmoHud.h" />
     <ClInclude Include="AmmoHudComponent.h" />
+    <ClInclude Include="TextUtils.h" />
+    <ClInclude Include="MessageOverlayComponent.h" />
+    <ClInclude Include="MessageOverlay.h" />
     <ClInclude Include="BloodPool.h" />
     <ClInclude Include="Crosshair.h" />
     <ClInclude Include="Fx.h" />

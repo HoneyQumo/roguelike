@@ -20,8 +20,10 @@ namespace XYZEngine
 		srand(seed);
 	}
 
-	void Engine::Run()
+	void Engine::Run(Scene& scene)
 	{
+		scene.Start();
+
 		LOG_INFO("Engine loop started");
 
 		sf::Clock gameClock;
@@ -50,10 +52,15 @@ namespace XYZEngine
 				break;
 			}
 
+			scene.Update(deltaTime);
+
 			RenderSystem::Instance()->GetMainWindow().clear();
 
-			GameWorld::Instance()->Update(deltaTime);
-			GameWorld::Instance()->FixedUpdate(deltaTime);
+			if (!isPaused)
+			{
+				GameWorld::Instance()->Update(deltaTime);
+				GameWorld::Instance()->FixedUpdate(deltaTime);
+			}
 			GameWorld::Instance()->Render();
 			GameWorld::Instance()->LateUpdate();
 
@@ -61,5 +68,16 @@ namespace XYZEngine
 		}
 
 		LOG_INFO("Engine loop finished");
+
+		scene.Stop();
+	}
+
+	void Engine::SetPaused(bool newIsPaused)
+	{
+		isPaused = newIsPaused;
+	}
+	bool Engine::IsPaused() const
+	{
+		return isPaused;
 	}
 }

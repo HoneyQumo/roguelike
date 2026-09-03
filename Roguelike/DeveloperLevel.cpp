@@ -6,7 +6,13 @@
 #include "Music.h"
 #include "Crosshair.h"
 #include "AmmoHud.h"
+#include "MessageOverlay.h"
+#include "MessageOverlayComponent.h"
+#include <Engine.h>
 #include <GameWorld.h>
+#include <InputSystem.h>
+#include <RenderSystem.h>
+#include <MusicComponent.h>
 #include <LoggerRegistry.h>
 
 using namespace XYZEngine;
@@ -56,6 +62,22 @@ namespace RoguelikeGame
         }
 
         ammoHud = CreateAmmoHud();
+        messageOverlay = CreateMessageOverlay();
+    }
+
+    void DeveloperLevel::Update(float deltaTime)
+    {
+        auto input = InputSystem::Instance();
+        bool isPaused = Engine::Instance()->IsPaused();
+
+        if (input->WasKeyPressed(sf::Keyboard::Escape))
+        {
+            SetPaused(!isPaused);
+        }
+        else if (!input->HasFocus() && !isPaused)
+        {
+            SetPaused(true);
+        }
     }
 
     void DeveloperLevel::Restart()
@@ -68,13 +90,14 @@ namespace RoguelikeGame
     {
         LOG_INFO("Developer level is stopping");
 
-        for (auto sceneObject : {ammoHud, crosshair, music, player})
+        for (auto sceneObject : {messageOverlay, ammoHud, crosshair, music, player})
         {
             if (sceneObject != nullptr)
             {
                 GameWorld::Instance()->DestroyGameObject(sceneObject);
             }
         }
+        messageOverlay = nullptr;
         ammoHud = nullptr;
         crosshair = nullptr;
         music = nullptr;
@@ -83,5 +106,25 @@ namespace RoguelikeGame
         level.Clear();
 
         GameWorld::Instance()->Clear();
+    }
+
+    void DeveloperLevel::SetPaused(bool isPaused)
+    {
+        Engine::Instance()->SetPaused(isPaused);
+        RenderSystem::Instance()->GetMainWindow().setMouseCursorVisible(isPaused);
+
+        if (music != nullptr)
+        {
+            auto musicPlayer = music->GetComponent<MusicComponent>();
+            isPaused ? musicPlayer->Pause() : musicPlayer->Resume();
+        }
+
+        if (messageOverlay != nullptr)
+        {
+            auto overlay = messageOverlay->GetComponent<MessageOverlayComponent>();
+            isPaused ? overlay->Show(PAUSE_TITLE, PAUSE_HINT) : overlay->Hide();
+        }
+
+        LOG_INFO(isPaused ? "Game paused" : "Game resumed");
     }
 }

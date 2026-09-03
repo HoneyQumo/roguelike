@@ -10,6 +10,7 @@ namespace RoguelikeGame
     {
     public:
         void Start() override;
+        void Update(float deltaTime) override;
         void Restart() override;
         void Stop() override;
 
@@ -19,5 +20,8 @@ namespace RoguelikeGame
         XYZEngine::GameObject* music = nullptr;
         XYZEngine::GameObject* crosshair = nullptr;
         XYZEngine::GameObject* ammoHud = nullptr;
+        XYZEngine::GameObject* messageOverlay = nullptr;
+
+        void SetPaused(bool isPaused);
     };
 }

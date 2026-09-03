@@ -162,6 +162,8 @@
     <ItemGroup>
         <ClCompile Include="AmmoHud.cpp"/>
         <ClCompile Include="AmmoHudComponent.cpp"/>
+        <ClCompile Include="MessageOverlayComponent.cpp"/>
+        <ClCompile Include="MessageOverlay.cpp"/>
         <ClCompile Include="BloodPool.cpp"/>
         <ClCompile Include="ReloadIndicatorComponent.cpp"/>
         <ClCompile Include="Crosshair.cpp"/>
@@ -191,6 +193,9 @@
     <ItemGroup>
         <ClInclude Include="AmmoHud.h"/>
         <ClInclude Include="AmmoHudComponent.h"/>
+        <ClInclude Include="TextUtils.h"/>
+        <ClInclude Include="MessageOverlayComponent.h"/>
+        <ClInclude Include="MessageOverlay.h"/>
         <ClInclude Include="BloodPool.h"/>
         <ClInclude Include="ReloadIndicatorComponent.h"/>
         <ClInclude Include="Crosshair.h"/>

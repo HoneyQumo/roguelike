@@ -2,6 +2,7 @@
 #define NOMINMAX
 
 #include "SFML/Graphics.hpp"
+#include "Scene.h"
 
 namespace XYZEngine
 {
@@ -13,9 +14,14 @@ namespace XYZEngine
 
 		static Engine* Instance();
 
-		void Run();
+		void Run(Scene& scene);
+
+		void SetPaused(bool newIsPaused);
+		bool IsPaused() const;
 
 	private:
+		bool isPaused = false;
+
 		Engine();
 		~Engine() = default;
 	};

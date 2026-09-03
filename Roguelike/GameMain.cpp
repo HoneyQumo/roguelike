@@ -37,10 +37,8 @@ int main()
 
     GameResources::Load();
 
-    auto developerLevel = std::make_shared<DeveloperLevel>();
-    developerLevel->Start();
-
-    Engine::Instance()->Run();
+    DeveloperLevel developerLevel;
+    Engine::Instance()->Run(developerLevel);
 
     LOG_INFO("Game closed");
 

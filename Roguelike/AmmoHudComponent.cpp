@@ -1,5 +1,6 @@
 ﻿#include "AmmoHudComponent.h"
 #include "GameSettings.h"
+#include "TextUtils.h"
 #include <GameObject.h>
 #include <GameWorld.h>
 #include <RenderSystem.h>
@@ -106,8 +107,7 @@ namespace RoguelikeGame
 
     void AmmoHudComponent::ShowWeaponName(WeaponId weaponId)
     {
-        const char* name = GetWeapon(weaponId).name;
-        nameText.setString(sf::String::fromUtf8(name, name + std::char_traits<char>::length(name)));
+        nameText.setString(FromUtf8(GetWeapon(weaponId).name));
 
         shownWeapon = weaponId;
         hasShownWeapon = true;

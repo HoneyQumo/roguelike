@@ -78,6 +78,11 @@ namespace XYZEngine
             + m[0][2] * m[1][0] * m[2][1]
             - m[0][2] * m[1][1] * m[2][0];
 
+        if (std::fabs(determinant) < 1e-6f)
+        {
+            return Matrix2D();
+        }
+
         float inversedDeterminant = 1.0f / determinant;
 
         Matrix2D minor(0.f, 0.f, 0.f,

@@ -19,6 +19,9 @@
     <ClCompile Include="Music.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
+    <ClCompile Include="CharacterFactory.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
     <ClCompile Include="Enemy.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
@@ -93,6 +96,7 @@
     <ClInclude Include="WeaponCatalog.h" />
     <ClInclude Include="WeaponLayerComponent.h" />
     <ClInclude Include="DeveloperLevel.h" />
+    <ClInclude Include="CharacterFactory.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="EnemyAttackComponent.h" />
     <ClInclude Include="EnemyConfig.h" />

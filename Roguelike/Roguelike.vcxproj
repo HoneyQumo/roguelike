@@ -170,6 +170,7 @@
         <ClCompile Include="HitFlashComponent.cpp"/>
         <ClCompile Include="WeaponLayerComponent.cpp"/>
         <ClCompile Include="DeveloperLevel.cpp"/>
+        <ClCompile Include="CharacterFactory.cpp"/>
         <ClCompile Include="Enemy.cpp"/>
         <ClCompile Include="EnemyAttackComponent.cpp"/>
         <ClCompile Include="PlayerAttackComponent.cpp"/>
@@ -198,6 +199,7 @@
         <ClInclude Include="WeaponCatalog.h"/>
         <ClInclude Include="WeaponLayerComponent.h"/>
         <ClInclude Include="DeveloperLevel.h"/>
+        <ClInclude Include="CharacterFactory.h"/>
         <ClInclude Include="Enemy.h"/>
         <ClInclude Include="EnemyAttackComponent.h"/>
         <ClInclude Include="EnemyConfig.h"/>

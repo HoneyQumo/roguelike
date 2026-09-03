@@ -18,10 +18,6 @@ namespace XYZEngine
 	}
 	SpriteColliderComponent::~SpriteColliderComponent()
 	{
-		if (&bounds != nullptr)
-		{
-			std::destroy_at(&bounds);
-		}
 		PhysicsSystem::Instance()->Unsubscribe(this);
 	}
 

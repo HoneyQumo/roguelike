@@ -10,7 +10,7 @@
 
 namespace RoguelikeGame
 {
-    Crosshair::Crosshair()
+    XYZEngine::GameObject* CreateCrosshair()
     {
         auto texture = XYZEngine::ResourceSystem::Instance()->GetTextureShared(CROSSHAIR_TEXTURE);
         if (texture == nullptr)
@@ -18,7 +18,7 @@ namespace RoguelikeGame
             throw std::runtime_error("crosshair texture is not loaded");
         }
 
-        gameObject = XYZEngine::GameWorld::Instance()->CreateGameObject("Crosshair");
+        auto gameObject = XYZEngine::GameWorld::Instance()->CreateGameObject("Crosshair");
         gameObject->SetRenderLayer(UI_RENDER_LAYER);
 
         auto renderer = gameObject->AddComponent<XYZEngine::SpriteRendererComponent>();
@@ -33,10 +33,6 @@ namespace RoguelikeGame
         reloadIndicator->SetTargetName("Player");
 
         LOG_INFO("Crosshair created");
-    }
-
-    XYZEngine::GameObject* Crosshair::GetGameObject()
-    {
         return gameObject;
     }
 }

@@ -179,6 +179,7 @@
         <ClCompile Include="StowedWeaponComponent.cpp"/>
         <ClCompile Include="Projectile.cpp"/>
         <ClCompile Include="Weapon.cpp"/>
+        <ClCompile Include="Level.cpp"/>
         <ClCompile Include="LevelBuilder.cpp"/>
         <ClCompile Include="LevelLoader.cpp"/>
         <ClCompile Include="Wall.cpp"/>
@@ -210,6 +211,7 @@
         <ClInclude Include="Projectile.h"/>
         <ClInclude Include="Weapon.h"/>
         <ClInclude Include="GameSettings.h"/>
+        <ClInclude Include="Level.h"/>
         <ClInclude Include="LevelBuilder.h"/>
         <ClInclude Include="LevelData.h"/>
         <ClInclude Include="LevelLoader.h"/>

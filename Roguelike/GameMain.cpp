@@ -10,6 +10,7 @@
 #include "FileSink.h"
 
 using namespace RoguelikeGame;
+using namespace XYZEngine;
 
 /**
  *	Спецификация по спрайтам лежит в: Docs/Sprites/SPRITE_SPEC.md.

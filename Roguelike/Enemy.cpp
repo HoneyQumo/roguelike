@@ -14,7 +14,7 @@
 
 namespace RoguelikeGame
 {
-    Enemy::Enemy(const EnemyConfig& config, const XYZEngine::Vector2Df& position)
+    XYZEngine::GameObject* CreateEnemy(const EnemyConfig& config, const XYZEngine::Vector2Df& position)
     {
         CharacterSpec spec;
         spec.objectName = config.objectName;
@@ -36,9 +36,8 @@ namespace RoguelikeGame
             chase->SetStopDistance(config.stopDistance);
         });
 
-        gameObject = parts.gameObject;
+        auto gameObject = parts.gameObject;
         auto weaponLayer = parts.weapon;
-
         auto transform = parts.transform;
         auto movement = parts.movement;
         auto collider = parts.collider;
@@ -161,9 +160,8 @@ namespace RoguelikeGame
             hitFlash->Flash();
         });
 
-        auto characterObject = gameObject;
         auto weaponComponent = gameObject->GetComponent<XYZEngine::WeaponComponent>();
-        health->SubscribeDeath([characterObject, transform, animation, movement, chase, collider, aim, weaponComponent, meleeComponent]()
+        health->SubscribeDeath([gameObject, transform, animation, movement, chase, collider, aim, weaponComponent, meleeComponent]()
         {
             if (weaponComponent != nullptr)
             {
@@ -181,17 +179,13 @@ namespace RoguelikeGame
             collider->SetTrigger(true);
             aim->SetEnabled(false);
 
-            characterObject->SetRenderLayer(CORPSE_RENDER_LAYER);
+            gameObject->SetRenderLayer(CORPSE_RENDER_LAYER);
             BloodPool::Spawn(transform->GetWorldPosition(), transform->GetWorldRotation());
         });
 
         gameObject->SetRenderLayer(ENEMY_RENDER_LAYER);
 
         LOG_INFO(config.objectName + " created at " + std::to_string(static_cast<int>(position.x)) + ";" + std::to_string(static_cast<int>(position.y)));
-    }
-
-    XYZEngine::GameObject* Enemy::GetGameObject()
-    {
         return gameObject;
     }
 }

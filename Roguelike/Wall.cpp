@@ -1,14 +1,14 @@
 #include "Wall.h"
-#include <GameObject.h>
 #include "GameSettings.h"
+#include <GameWorld.h>
 #include <RigidbodyComponent.h>
 #include <BoxColliderComponent.h>
 
 namespace RoguelikeGame
 {
-    Wall::Wall(const XYZEngine::Vector2Df& position)
+    XYZEngine::GameObject* CreateWall(const XYZEngine::Vector2Df& position)
     {
-        gameObject = XYZEngine::GameWorld::Instance()->CreateGameObject("Wall");
+        auto gameObject = XYZEngine::GameWorld::Instance()->CreateGameObject("Wall");
 
         auto transform = gameObject->GetComponent<XYZEngine::TransformComponent>();
         transform->SetWorldPosition(position);
@@ -19,10 +19,7 @@ namespace RoguelikeGame
 
         auto collider = gameObject->AddComponent<XYZEngine::BoxColliderComponent>();
         collider->SetSize(TILE_SIZE, TILE_SIZE);
-    }
 
-    XYZEngine::GameObject* Wall::GetGameObject()
-    {
         return gameObject;
     }
 }

@@ -1,17 +1,12 @@
-﻿#pragma once
+#pragma once
 
-#include <memory>
 #include "Scene.h"
-#include "Music.h"
-#include "Crosshair.h"
-#include "AmmoHud.h"
-#include "LevelBuilder.h"
-
-using namespace XYZEngine;
+#include "Level.h"
+#include <GameObject.h>
 
 namespace RoguelikeGame
 {
-    class DeveloperLevel : public Scene
+    class DeveloperLevel : public XYZEngine::Scene
     {
     public:
         void Start() override;
@@ -19,9 +14,10 @@ namespace RoguelikeGame
         void Stop() override;
 
     private:
-        LevelBuilder levelBuilder;
-        std::unique_ptr<Music> music;
-        std::unique_ptr<Crosshair> crosshair;
-        std::unique_ptr<AmmoHud> ammoHud;
+        Level level;
+        XYZEngine::GameObject* player = nullptr;
+        XYZEngine::GameObject* music = nullptr;
+        XYZEngine::GameObject* crosshair = nullptr;
+        XYZEngine::GameObject* ammoHud = nullptr;
     };
 }

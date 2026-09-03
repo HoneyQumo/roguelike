@@ -1,6 +1,12 @@
-﻿#include "DeveloperLevel.h"
+#include "DeveloperLevel.h"
 #include "GameSettings.h"
+#include "LevelBuilder.h"
 #include "LevelLoader.h"
+#include "Player.h"
+#include "Music.h"
+#include "Crosshair.h"
+#include "AmmoHud.h"
+#include <GameWorld.h>
 #include <LoggerRegistry.h>
 
 using namespace XYZEngine;
@@ -13,7 +19,7 @@ namespace RoguelikeGame
 
         try
         {
-            levelBuilder.Build(LevelLoader::Load(TEST_LEVEL_FILE));
+            level = LevelBuilder::Build(LevelLoader::Load(TEST_LEVEL_FILE));
         }
         catch (const std::exception& exception)
         {
@@ -21,18 +27,35 @@ namespace RoguelikeGame
             LOG_WARN("Game continues with an empty level");
         }
 
-        music = std::make_unique<Music>(MAIN_THEME_MUSIC, MUSIC_VOLUME);
+        auto playerSpawn = level.GetPlayerSpawn();
+        if (playerSpawn.has_value())
+        {
+            try
+            {
+                player = CreatePlayer(*playerSpawn);
+            }
+            catch (const std::exception& exception)
+            {
+                LOG_ERROR(std::string("Player is not created: ") + exception.what());
+            }
+        }
+        else
+        {
+            LOG_WARN("Level has no player spawn point");
+        }
+
+        music = CreateMusic(MAIN_THEME_MUSIC, MUSIC_VOLUME);
 
         try
         {
-            crosshair = std::make_unique<Crosshair>();
+            crosshair = CreateCrosshair();
         }
         catch (const std::exception& exception)
         {
             LOG_ERROR(std::string("Crosshair is not created: ") + exception.what());
         }
 
-        ammoHud = std::make_unique<AmmoHud>();
+        ammoHud = CreateAmmoHud();
     }
 
     void DeveloperLevel::Restart()
@@ -45,10 +68,19 @@ namespace RoguelikeGame
     {
         LOG_INFO("Developer level is stopping");
 
-        ammoHud.reset();
-        crosshair.reset();
-        music.reset();
-        levelBuilder.Clear();
+        for (auto sceneObject : {ammoHud, crosshair, music, player})
+        {
+            if (sceneObject != nullptr)
+            {
+                GameWorld::Instance()->DestroyGameObject(sceneObject);
+            }
+        }
+        ammoHud = nullptr;
+        crosshair = nullptr;
+        music = nullptr;
+        player = nullptr;
+
+        level.Clear();
 
         GameWorld::Instance()->Clear();
     }

@@ -79,6 +79,9 @@
     <ClCompile Include="LevelLoader.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
+    <ClCompile Include="Level.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
     <ClCompile Include="LevelBuilder.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
@@ -107,6 +110,7 @@
     <ClInclude Include="Projectile.h" />
     <ClInclude Include="Weapon.h" />
     <ClInclude Include="GameSettings.h" />
+    <ClInclude Include="Level.h" />
     <ClInclude Include="LevelBuilder.h" />
     <ClInclude Include="LevelData.h" />
     <ClInclude Include="LevelLoader.h" />

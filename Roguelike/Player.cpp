@@ -19,7 +19,39 @@
 
 namespace RoguelikeGame
 {
-    Player::Player(const XYZEngine::Vector2Df& position)
+    namespace
+    {
+        StowedWeaponComponent* CreateStowedWeapon(XYZEngine::GameObject* owner, WeaponId startWeapon,
+                                                  XYZEngine::SpriteMovementAnimationComponent* animation)
+        {
+            auto texture = XYZEngine::ResourceSystem::Instance()->GetTextureMapElementShared(WEAPONS_TEXTURE,
+                                                                                             WeaponFrameIndex(startWeapon, WEAPON_STOWED_VARIANT));
+            if (texture == nullptr)
+            {
+                LOG_ERROR("Stowed weapon texture is not loaded");
+                return nullptr;
+            }
+
+            auto stowedObject = XYZEngine::GameWorld::Instance()->CreateGameObject("StowedWeapon");
+
+            auto stowedTransform = stowedObject->GetComponent<XYZEngine::TransformComponent>();
+            stowedTransform->SetParent(owner->GetComponent<XYZEngine::TransformComponent>());
+            stowedTransform->SetLocalPosition(0.f, 0.f);
+
+            auto stowedRenderer = stowedObject->AddComponent<XYZEngine::SpriteRendererComponent>();
+            stowedRenderer->SetTexture(*texture);
+            stowedRenderer->SetPixelSize(WEAPON_FRAME_WIDTH, WEAPON_FRAME_HEIGHT);
+            stowedRenderer->SetVisible(false);
+
+            auto stowedWeapon = stowedObject->AddComponent<StowedWeaponComponent>();
+            stowedWeapon->SetOwnerAnimation(animation);
+            stowedWeapon->SetWeaponId(startWeapon);
+
+            return stowedWeapon;
+        }
+    }
+
+    XYZEngine::GameObject* CreatePlayer(const XYZEngine::Vector2Df& position)
     {
         WeaponId startWeapon = PLAYER_LOADOUT[PLAYER_START_WEAPON_SLOT];
 
@@ -44,8 +76,7 @@ namespace RoguelikeGame
             object->AddComponent<XYZEngine::InputComponent>();
         });
 
-        gameObject = parts.gameObject;
-
+        auto gameObject = parts.gameObject;
         auto transform = parts.transform;
         auto movement = parts.movement;
         auto collider = parts.collider;
@@ -98,7 +129,7 @@ namespace RoguelikeGame
         auto meleeAudio = gameObject->AddComponent<XYZEngine::AudioComponent>();
         meleeAudio->SetVolume(MELEE_HIT_VOLUME);
 
-        StowedWeaponComponent* stowedWeapon = CreateStowedWeapon(startWeapon, animation);
+        StowedWeaponComponent* stowedWeapon = CreateStowedWeapon(gameObject, startWeapon, animation);
 
         auto weaponComponent = gameObject->AddComponent<XYZEngine::WeaponComponent>();
         weaponComponent->SetReloadStartAction([animation, reloadAudio]()
@@ -126,8 +157,7 @@ namespace RoguelikeGame
             hitFlash->Flash();
         });
 
-        auto characterObject = gameObject;
-        health->SubscribeDeath([characterObject, transform, animation, movement, collider, aim, weaponComponent, meleeWeapon, dodgeRoll, reloadAudio, hitFlash]()
+        health->SubscribeDeath([gameObject, transform, animation, movement, collider, aim, weaponComponent, meleeWeapon, dodgeRoll, reloadAudio, hitFlash]()
         {
             dodgeRoll->CancelRoll();
             weaponComponent->CancelReload();
@@ -139,7 +169,7 @@ namespace RoguelikeGame
             collider->SetTrigger(true);
             aim->SetEnabled(false);
 
-            characterObject->SetRenderLayer(CORPSE_RENDER_LAYER);
+            gameObject->SetRenderLayer(CORPSE_RENDER_LAYER);
             BloodPool::Spawn(transform->GetWorldPosition(), transform->GetWorldRotation());
 
             LOG_WARN("Player is dead, controls are disabled");
@@ -153,38 +183,6 @@ namespace RoguelikeGame
         }
 
         LOG_INFO("Player created at " + std::to_string(static_cast<int>(position.x)) + ";" + std::to_string(static_cast<int>(position.y)));
-    }
-
-    XYZEngine::GameObject* Player::GetGameObject()
-    {
         return gameObject;
-    }
-
-    StowedWeaponComponent* Player::CreateStowedWeapon(WeaponId startWeapon, XYZEngine::SpriteMovementAnimationComponent* animation)
-    {
-        auto texture = XYZEngine::ResourceSystem::Instance()->GetTextureMapElementShared(WEAPONS_TEXTURE,
-                                                                                         WeaponFrameIndex(startWeapon, WEAPON_STOWED_VARIANT));
-        if (texture == nullptr)
-        {
-            LOG_ERROR("Stowed weapon texture is not loaded");
-            return nullptr;
-        }
-
-        auto stowedObject = XYZEngine::GameWorld::Instance()->CreateGameObject("StowedWeapon");
-
-        auto stowedTransform = stowedObject->GetComponent<XYZEngine::TransformComponent>();
-        stowedTransform->SetParent(gameObject->GetComponent<XYZEngine::TransformComponent>());
-        stowedTransform->SetLocalPosition(0.f, 0.f);
-
-        auto stowedRenderer = stowedObject->AddComponent<XYZEngine::SpriteRendererComponent>();
-        stowedRenderer->SetTexture(*texture);
-        stowedRenderer->SetPixelSize(WEAPON_FRAME_WIDTH, WEAPON_FRAME_HEIGHT);
-        stowedRenderer->SetVisible(false);
-
-        auto stowedWeapon = stowedObject->AddComponent<StowedWeaponComponent>();
-        stowedWeapon->SetOwnerAnimation(animation);
-        stowedWeapon->SetWeaponId(startWeapon);
-
-        return stowedWeapon;
     }
 }

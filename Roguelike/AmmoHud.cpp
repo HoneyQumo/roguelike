@@ -6,19 +6,15 @@
 
 namespace RoguelikeGame
 {
-    AmmoHud::AmmoHud()
+    XYZEngine::GameObject* CreateAmmoHud()
     {
-        gameObject = XYZEngine::GameWorld::Instance()->CreateGameObject("AmmoHud");
+        auto gameObject = XYZEngine::GameWorld::Instance()->CreateGameObject("AmmoHud");
         gameObject->SetRenderLayer(UI_RENDER_LAYER);
 
         auto hud = gameObject->AddComponent<AmmoHudComponent>();
         hud->SetTargetName("Player");
 
         LOG_INFO("Ammo hud created");
-    }
-
-    XYZEngine::GameObject* AmmoHud::GetGameObject()
-    {
         return gameObject;
     }
 }

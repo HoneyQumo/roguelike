@@ -4,13 +4,5 @@
 
 namespace RoguelikeGame
 {
-    class AmmoHud
-    {
-    public:
-        AmmoHud();
-        XYZEngine::GameObject* GetGameObject();
-
-    private:
-        XYZEngine::GameObject* gameObject;
-    };
+    XYZEngine::GameObject* CreateAmmoHud();
 }

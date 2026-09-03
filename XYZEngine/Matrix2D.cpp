@@ -1,7 +1,7 @@
 ﻿#include "pch.h"
 #include "Matrix2D.h"
+#include "MathUtils.h"
 
-constexpr float PI = 3.14159265358979323846f;
 
 namespace XYZEngine
 {
@@ -36,8 +36,8 @@ namespace XYZEngine
         m[0][2] = position.x;
         m[1][2] = position.y;
 
-        float cosA = cos(angle * PI / 180.f);
-        float sinA = sin(angle * PI / 180.f);
+        float cosA = cos(ToRadians(angle));
+        float sinA = sin(ToRadians(angle));
         m[0][0] = cosA * scale.x;
         m[0][1] = -sinA * scale.y;
         m[1][0] = sinA * scale.x;

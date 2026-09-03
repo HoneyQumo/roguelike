@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "DodgeRollComponent.h"
+#include "MathUtils.h"
 #include "GameObject.h"
 #include "TransformComponent.h"
 #include "MovementComponent.h"
@@ -13,8 +14,6 @@
 
 namespace XYZEngine
 {
-	constexpr float FULL_TURN_RADIANS = 6.2831853f;
-	constexpr float RADIANS_IN_DEGREE = 0.01745329f;
 
 	DodgeRollComponent::DodgeRollComponent(GameObject* gameObject) : Component(gameObject)
 	{
@@ -172,15 +171,14 @@ namespace XYZEngine
 
 	Vector2Df DodgeRollComponent::GetForward() const
 	{
-		float rotation = transform->GetWorldRotation() * RADIANS_IN_DEGREE;
-		return { std::cos(rotation), std::sin(rotation) };
+		return transform->GetForward();
 	}
 
 	int DodgeRollComponent::GetDirectionIndex(const Vector2Df& direction, int directionsCount) const
 	{
 		Vector2Df forward = GetForward();
 		float relative = std::atan2(direction.y, direction.x) - std::atan2(forward.y, forward.x);
-		float step = FULL_TURN_RADIANS / static_cast<float>(directionsCount);
+		float step = TWO_PI / static_cast<float>(directionsCount);
 
 		int index = static_cast<int>(std::lround(relative / step));
 		return ((index % directionsCount) + directionsCount) % directionsCount;

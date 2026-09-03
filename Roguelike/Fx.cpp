@@ -1,4 +1,5 @@
 ﻿#include "Fx.h"
+#include <MathUtils.h>
 #include "GameSettings.h"
 #include <GameWorld.h>
 #include <ResourceSystem.h>
@@ -10,7 +11,6 @@
 
 namespace RoguelikeGame
 {
-    constexpr float DEGREES_IN_RADIAN = 57.29578f;
 
     constexpr int BLOOD_HIT_SPLASHES = 2;
     constexpr float BLOOD_HIT_SPREAD = 20.f;
@@ -64,11 +64,11 @@ namespace RoguelikeGame
 
     float Fx::ToAngle(const XYZEngine::Vector2Df& direction)
     {
-        if (direction.GetLength() <= 0.f)
+        if (direction.IsZero())
         {
             return 0.f;
         }
 
-        return std::atan2(direction.y, direction.x) * DEGREES_IN_RADIAN;
+        return XYZEngine::DegreesFromDirection(direction);
     }
 }

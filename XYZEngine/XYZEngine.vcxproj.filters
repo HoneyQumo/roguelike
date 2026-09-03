@@ -111,6 +111,9 @@
     <ClInclude Include="IObserver.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
+    <ClInclude Include="MathUtils.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
     <ClInclude Include="Matrix2D.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>

@@ -41,6 +41,8 @@ namespace XYZEngine
 		const Vector2Df& GetWorldScale() const;
 		const Vector2Df& GetLocalScale() const;
 
+		Vector2Df GetForward() const;
+
 		void SetParent(TransformComponent* newParent);
 		TransformComponent* GetParent() const;
 

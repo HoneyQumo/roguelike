@@ -1,4 +1,5 @@
 ﻿#include "Projectile.h"
+#include <MathUtils.h>
 #include "GameSettings.h"
 #include "Fx.h"
 #include <GameWorld.h>
@@ -14,7 +15,6 @@
 
 namespace RoguelikeGame
 {
-    constexpr float DEGREES_IN_RADIAN = 57.29578f;
 
     void Projectile::Spawn(const XYZEngine::Vector2Df& position, const XYZEngine::Vector2Df& direction, float damage, float speed,
                            const std::string& shooterName, WeaponId weapon)
@@ -40,7 +40,7 @@ namespace RoguelikeGame
         }
         else
         {
-            transform->SetWorldRotation(std::atan2(direction.y, direction.x) * DEGREES_IN_RADIAN);
+            transform->SetWorldRotation(XYZEngine::DegreesFromDirection(direction));
 
             auto renderer = gameObject->AddComponent<XYZEngine::SpriteRendererComponent>();
             renderer->SetTexture(*texture);

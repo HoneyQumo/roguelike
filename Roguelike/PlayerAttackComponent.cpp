@@ -1,4 +1,5 @@
 ﻿#include "PlayerAttackComponent.h"
+#include <MathUtils.h>
 #include "GameSettings.h"
 #include <GameObject.h>
 #include <LoggerRegistry.h>
@@ -6,7 +7,6 @@
 
 namespace RoguelikeGame
 {
-    constexpr float TWO_PI = 6.2831853f;
 
     PlayerAttackComponent::PlayerAttackComponent(XYZEngine::GameObject* gameObject) : Component(gameObject)
     {
@@ -125,7 +125,7 @@ namespace RoguelikeGame
         }
 
         glowTimer += deltaTime;
-        float phase = TWO_PI * glowTimer / HEAVY_CHARGED_GLOW_PERIOD;
+        float phase = XYZEngine::TWO_PI * glowTimer / HEAVY_CHARGED_GLOW_PERIOD;
         hitFlash->SetGlow(HEAVY_CHARGED_GLOW * (0.5f + 0.5f * std::sin(phase)));
     }
 }

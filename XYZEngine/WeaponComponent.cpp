@@ -1,5 +1,6 @@
 ﻿#include "pch.h"
 #include "WeaponComponent.h"
+#include "MathUtils.h"
 #include "GameObject.h"
 #include "LoggerRegistry.h"
 #include "randomizer.h"
@@ -10,7 +11,6 @@
 namespace XYZEngine
 {
     constexpr float MIN_AIM_CORRECTION_DISTANCE = 64.f;
-    constexpr float RADIANS_IN_DEGREE = 0.01745329f;
 
     WeaponComponent::WeaponComponent(GameObject* gameObject) : Component(gameObject)
     {
@@ -307,16 +307,7 @@ namespace XYZEngine
 
     Vector2Df WeaponComponent::RotateDirection(const Vector2Df& direction, float degrees)
     {
-        if (degrees == 0.f)
-        {
-            return direction;
-        }
-
-        float radians = degrees * RADIANS_IN_DEGREE;
-        float sinValue = std::sin(radians);
-        float cosValue = std::cos(radians);
-
-        return {direction.x * cosValue - direction.y * sinValue, direction.x * sinValue + direction.y * cosValue};
+        return RotateByDegrees(direction, degrees);
     }
 
     void WeaponComponent::FinishReload()

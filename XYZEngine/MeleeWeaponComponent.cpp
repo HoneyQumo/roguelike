@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "MeleeWeaponComponent.h"
+#include "MathUtils.h"
 #include "GameObject.h"
 #include "HealthComponent.h"
 #include "PhysicsSystem.h"
@@ -10,7 +11,6 @@
 
 namespace XYZEngine
 {
-    constexpr float RADIANS_IN_DEGREE = 0.01745329f;
 
     MeleeWeaponComponent::MeleeWeaponComponent(GameObject* gameObject) : Component(gameObject)
     {
@@ -237,8 +237,7 @@ namespace XYZEngine
 
     Vector2Df MeleeWeaponComponent::GetForward() const
     {
-        float rotation = transform->GetWorldRotation() * RADIANS_IN_DEGREE;
-        return {std::cos(rotation), std::sin(rotation)};
+        return transform->GetForward();
     }
 
     void MeleeWeaponComponent::Start(MeleeAttackKind kind)
@@ -269,7 +268,7 @@ namespace XYZEngine
 
         Vector2Df origin = transform->GetWorldPosition();
         Vector2Df forward = GetForward();
-        float arcLimit = std::cos(0.5f * attack.arcDegrees * RADIANS_IN_DEGREE);
+        float arcLimit = std::cos(ToRadians(0.5f * attack.arcDegrees));
 
         sf::FloatRect area(origin.x - attack.range, origin.y - attack.range, 2.f * attack.range, 2.f * attack.range);
 

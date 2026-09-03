@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "TransformComponent.h"
 #include "GameObject.h"
+#include "MathUtils.h"
 #include <cmath>
 #include <iostream>
 
@@ -205,6 +206,11 @@ namespace XYZEngine
 		return localScale;
 	}
 
+	Vector2Df TransformComponent::GetForward() const
+	{
+		return DirectionFromDegrees(GetWorldRotation());
+	}
+
 	void TransformComponent::SetParent(TransformComponent* newParent)
 	{
 		if (parent == nullptr && newParent != nullptr)
@@ -271,7 +277,7 @@ namespace XYZEngine
 		scale.x = std::sqrt(transform.GetMatrix()[0][0] * transform.GetMatrix()[0][0] + transform.GetMatrix()[1][0] * transform.GetMatrix()[1][0]);
 		scale.y = std::sqrt(transform.GetMatrix()[0][1] * transform.GetMatrix()[0][1] + transform.GetMatrix()[1][1] * transform.GetMatrix()[1][1]);
 
-		rotation = std::atan2(transform.GetMatrix()[1][0], transform.GetMatrix()[0][0]) * 180 / 3.14159265;
+		rotation = ToDegrees(std::atan2(transform.GetMatrix()[1][0], transform.GetMatrix()[0][0]));
 	}
 	void TransformComponent::setLocalInfoFrom(const Matrix2D& transform) const
 	{
@@ -281,7 +287,7 @@ namespace XYZEngine
 		localScale.x = std::sqrt(transform.GetMatrix()[0][0] * transform.GetMatrix()[0][0] + transform.GetMatrix()[1][0] * transform.GetMatrix()[1][0]);
 		localScale.y = std::sqrt(transform.GetMatrix()[0][1] * transform.GetMatrix()[0][1] + transform.GetMatrix()[1][1] * transform.GetMatrix()[1][1]);
 
-		localRotation = std::atan2(transform.GetMatrix()[1][0], transform.GetMatrix()[0][0]) * 180 / 3.14159265;
+		localRotation = ToDegrees(std::atan2(transform.GetMatrix()[1][0], transform.GetMatrix()[0][0]));
 	}
 	void TransformComponent::updateLocalTransform() const
 	{

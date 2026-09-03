@@ -1,5 +1,6 @@
 ﻿#include "pch.h"
 #include "AimRotationComponent.h"
+#include "MathUtils.h"
 #include "GameObject.h"
 #include "GameWorld.h"
 #include <cmath>
@@ -7,7 +8,6 @@
 namespace XYZEngine
 {
     constexpr float MIN_AIM_DISTANCE = 0.01f;
-    constexpr float DEGREES_IN_RADIAN = 57.29578f;
 
     AimRotationComponent::AimRotationComponent(GameObject* gameObject) : Component(gameObject)
     {
@@ -36,7 +36,7 @@ namespace XYZEngine
         }
 
         aimDirection = (1.f / distance) * toAim;
-        transform->SetWorldRotation(std::atan2(aimDirection.y, aimDirection.x) * DEGREES_IN_RADIAN);
+        transform->SetWorldRotation(DegreesFromDirection(aimDirection));
     }
 
     void AimRotationComponent::Render()

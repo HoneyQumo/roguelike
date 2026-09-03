@@ -138,9 +138,8 @@ TEST(LoggerTests, BenchmarkFileSink)
 		double microseconds = MeasureLogInfo(logger, 5000);
 		std::cout << "LOG_INFO with FileSink: " << microseconds << " us per call" << std::endl;
 	}
-	std::remove(BENCHMARK_LOG_PATH);
-
 	LoggerRegistry::Instance()->RegisterLogger("global", std::make_shared<Logger>());
+	std::remove(BENCHMARK_LOG_PATH);
 }
 
 TEST(LoggerTests, BenchmarkCaptureSinkOnly)

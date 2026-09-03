@@ -2,6 +2,7 @@
 
 #include <string>
 #include <SFML/Graphics/Color.hpp>
+#include <SFML/Window/Keyboard.hpp>
 #include "SpriteAtlas.h"
 #include "WeaponCatalog.h"
 
@@ -96,8 +97,13 @@ namespace RoguelikeGame
     constexpr int OVERLAY_TITLE_FONT_SIZE = 56;
     constexpr int OVERLAY_HINT_FONT_SIZE = 24;
     constexpr float OVERLAY_LINE_GAP = 36.f;
+    constexpr sf::Keyboard::Key PAUSE_KEY = sf::Keyboard::Escape;
+    constexpr sf::Keyboard::Key RESTART_KEY = sf::Keyboard::R;
+    constexpr float GAME_OVER_DELAY = 1.5f;
     constexpr auto PAUSE_TITLE = u8"ПАУЗА";
     constexpr auto PAUSE_HINT = u8"Esc — продолжить";
+    constexpr auto GAME_OVER_TITLE = u8"ВЫ ПОГИБЛИ";
+    constexpr auto GAME_OVER_HINT = u8"R — заново";
 
     constexpr float HEALTH_BAR_WIDTH = 48.f;
     constexpr float HEALTH_BAR_HEIGHT = 6.f;

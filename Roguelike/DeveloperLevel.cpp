@@ -13,6 +13,7 @@
 #include <InputSystem.h>
 #include <RenderSystem.h>
 #include <MusicComponent.h>
+#include <HealthComponent.h>
 #include <LoggerRegistry.h>
 
 using namespace XYZEngine;
@@ -22,6 +23,9 @@ namespace RoguelikeGame
     void DeveloperLevel::Start()
     {
         LOG_INFO("Developer level is starting");
+
+        state = State::Playing;
+        gameOverDelay.Stop();
 
         try
         {
@@ -39,6 +43,16 @@ namespace RoguelikeGame
             try
             {
                 player = CreatePlayer(*playerSpawn);
+
+                auto health = player->GetComponent<HealthComponent>();
+                if (health != nullptr)
+                {
+                    health->SubscribeDeath([this]()
+                    {
+                        state = State::PlayerDied;
+                        gameOverDelay.Start(GAME_OVER_DELAY);
+                    });
+                }
             }
             catch (const std::exception& exception)
             {
@@ -70,18 +84,39 @@ namespace RoguelikeGame
         auto input = InputSystem::Instance();
         bool isPaused = Engine::Instance()->IsPaused();
 
-        if (input->WasKeyPressed(sf::Keyboard::Escape))
+        if (input->WasKeyPressed(PAUSE_KEY))
         {
             SetPaused(!isPaused);
+            return;
         }
-        else if (!input->HasFocus() && !isPaused)
+        if (!input->HasFocus() && !isPaused)
         {
             SetPaused(true);
+            return;
+        }
+        if (isPaused)
+        {
+            return;
+        }
+
+        if (state == State::PlayerDied)
+        {
+            gameOverDelay.Tick(deltaTime);
+            if (gameOverDelay.IsReady())
+            {
+                ShowGameOver();
+            }
+        }
+        else if (state == State::GameOver && input->WasKeyPressed(RESTART_KEY))
+        {
+            Restart();
         }
     }
 
     void DeveloperLevel::Restart()
     {
+        LOG_INFO("Level restarts");
+
         Stop();
         Start();
     }
@@ -119,12 +154,38 @@ namespace RoguelikeGame
             isPaused ? musicPlayer->Pause() : musicPlayer->Resume();
         }
 
-        if (messageOverlay != nullptr)
-        {
-            auto overlay = messageOverlay->GetComponent<MessageOverlayComponent>();
-            isPaused ? overlay->Show(PAUSE_TITLE, PAUSE_HINT) : overlay->Hide();
-        }
+        UpdateOverlay();
 
         LOG_INFO(isPaused ? "Game paused" : "Game resumed");
+    }
+
+    void DeveloperLevel::ShowGameOver()
+    {
+        state = State::GameOver;
+        UpdateOverlay();
+
+        LOG_INFO("Game over");
+    }
+
+    void DeveloperLevel::UpdateOverlay()
+    {
+        if (messageOverlay == nullptr)
+        {
+            return;
+        }
+
+        auto overlay = messageOverlay->GetComponent<MessageOverlayComponent>();
+        if (Engine::Instance()->IsPaused())
+        {
+            overlay->Show(PAUSE_TITLE, PAUSE_HINT);
+        }
+        else if (state == State::GameOver)
+        {
+            overlay->Show(GAME_OVER_TITLE, GAME_OVER_HINT);
+        }
+        else
+        {
+            overlay->Hide();
+        }
     }
 }

@@ -3,6 +3,7 @@
 #include "Scene.h"
 #include "Level.h"
 #include <GameObject.h>
+#include <Cooldown.h>
 
 namespace RoguelikeGame
 {
@@ -15,6 +16,13 @@ namespace RoguelikeGame
         void Stop() override;
 
     private:
+        enum class State
+        {
+            Playing,
+            PlayerDied,
+            GameOver
+        };
+
         Level level;
         XYZEngine::GameObject* player = nullptr;
         XYZEngine::GameObject* music = nullptr;
@@ -22,6 +30,11 @@ namespace RoguelikeGame
         XYZEngine::GameObject* ammoHud = nullptr;
         XYZEngine::GameObject* messageOverlay = nullptr;
 
+        State state = State::Playing;
+        XYZEngine::Cooldown gameOverDelay;
+
         void SetPaused(bool isPaused);
+        void ShowGameOver();
+        void UpdateOverlay();
     };
 }

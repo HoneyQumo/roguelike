@@ -4,3 +4,6 @@ x64
 x86
 *.user
 **/log.txt
+
+# NuGet packages restored on build
+packages/

@@ -21,6 +21,8 @@ namespace XYZEngine
 		void DestroyGameObject(GameObject* gameObject);
 		void Clear();
 
+		void InvalidateRenderOrder();
+
 		void Print() const;
 	private:
 		GameWorld() {}
@@ -31,6 +33,8 @@ namespace XYZEngine
 
 		std::vector<GameObject*> gameObjects = {};
 		std::vector<GameObject*> markedToDestroyGameObjects = {};
+		std::vector<GameObject*> renderOrder = {};
+		bool isRenderOrderDirty = true;
 
 		void DestroyGameObjectImmediate(GameObject* gameObject);
 	};

@@ -32,27 +32,35 @@ namespace XYZEngine
 					continue;
 				}
 
+				if ((colliders[i]->collisionLayer & colliders[j]->ignoredLayers) != 0u
+					|| (colliders[j]->collisionLayer & colliders[i]->ignoredLayers) != 0u)
+				{
+					continue;
+				}
+
 				sf::FloatRect intersection;
 				if (colliders[i]->bounds.intersects(colliders[j]->bounds, intersection))
 				{
 					if (colliders[i]->isTrigger != colliders[j]->isTrigger)
 					{
-						if (triggersEnteredPair.find(colliders[i]) == triggersEnteredPair.end() && triggersEnteredPair.find(colliders[j]) == triggersEnteredPair.end())
+						TriggerPair enteredPair = MakeTriggerPair(colliders[i], colliders[j]);
+						if (triggersEnteredPair.find(enteredPair) == triggersEnteredPair.end())
 						{
 							Trigger trigger(colliders[i], colliders[j]);
 							colliders[i]->OnTriggerEnter(trigger);
 							colliders[j]->OnTriggerEnter(trigger);
 
-							triggersEnteredPair.emplace(colliders[i], colliders[j]);
+							triggersEnteredPair.insert(enteredPair);
 						}
 					}
 					else if (!colliders[i]->isTrigger)
 					{
 						float intersectionWidth = intersection.width;
 						float intersectionHeight = intersection.height;
-						Vector2Df intersectionPosition = { intersection.left - 0.5f * intersectionWidth, intersection.top - 0.5f * intersectionHeight };
+						Vector2Df intersectionPosition = { intersection.left + 0.5f * intersectionWidth, intersection.top + 0.5f * intersectionHeight };
 
-						Vector2Df aPosition = { colliders[i]->bounds.left,  colliders[i]->bounds.top };
+						Vector2Df aPosition = { colliders[i]->bounds.left + 0.5f * colliders[i]->bounds.width,
+												colliders[i]->bounds.top + 0.5f * colliders[i]->bounds.height };
 						auto aTransform = colliders[i]->GetGameObject()->GetComponent<TransformComponent>();
 
 						Vector2Df pushOffset = { 0.f, 0.f };
@@ -105,6 +113,25 @@ namespace XYZEngine
 				triggersEnteredPair.erase(triggeredPair);
 			}
 		}
+	}
+
+	PhysicsSystem::TriggerPair PhysicsSystem::MakeTriggerPair(ColliderComponent* first, ColliderComponent* second)
+	{
+		return first < second ? TriggerPair(first, second) : TriggerPair(second, first);
+	}
+
+	std::vector<ColliderComponent*> PhysicsSystem::Overlap(const sf::FloatRect& area) const
+	{
+		std::vector<ColliderComponent*> found;
+		for (auto collider : colliders)
+		{
+			if (collider != nullptr && collider->bounds.intersects(area))
+			{
+				found.push_back(collider);
+			}
+		}
+
+		return found;
 	}
 
 	void PhysicsSystem::Subscribe(ColliderComponent* collider)

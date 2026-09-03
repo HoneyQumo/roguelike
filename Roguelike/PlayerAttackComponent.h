@@ -1,15 +1,17 @@
-#pragma once
+﻿#pragma once
 
 #include <Component.h>
-#include <TransformComponent.h>
 #include <InputComponent.h>
 #include <WeaponComponent.h>
+#include <MeleeWeaponComponent.h>
+#include <DodgeRollComponent.h>
 #include <HealthComponent.h>
-#include <SpriteRendererComponent.h>
-#include <Vector.h>
+#include "HitFlashComponent.h"
+#include "PlayerLoadoutComponent.h"
 
 namespace RoguelikeGame
 {
+    // Отвечает за аттаку. За направление отвечает AimRotationComponent.
     class PlayerAttackComponent : public XYZEngine::Component
     {
     public:
@@ -18,17 +20,19 @@ namespace RoguelikeGame
         void Update(float deltaTime) override;
         void Render() override;
 
-        void SetWeapon(XYZEngine::TransformComponent* weaponTransform, XYZEngine::SpriteRendererComponent* weaponRenderer);
-
     private:
-        XYZEngine::TransformComponent* transform;
         XYZEngine::InputComponent* input = nullptr;
         XYZEngine::WeaponComponent* weapon = nullptr;
+        XYZEngine::MeleeWeaponComponent* meleeWeapon = nullptr;
         XYZEngine::HealthComponent* health = nullptr;
+        XYZEngine::DodgeRollComponent* dodgeRoll = nullptr;
+        PlayerLoadoutComponent* loadout = nullptr;
+        HitFlashComponent* hitFlash = nullptr;
 
-        XYZEngine::TransformComponent* weaponTransform = nullptr;
-        XYZEngine::SpriteRendererComponent* weaponRenderer = nullptr;
+        float glowTimer = 0.f;
 
-        void AimWeapon(const XYZEngine::Vector2Df& direction);
+        void UpdateMelee(float deltaTime);
+        void UpdateRanged();
+        void UpdateChargeGlow(float deltaTime);
     };
 }

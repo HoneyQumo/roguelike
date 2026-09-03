@@ -22,10 +22,9 @@ namespace XYZEngine
 		}
 
 		auto position = transform->GetWorldPosition();
-		auto rotation = transform->GetWorldRotation();
 
 		view->setCenter(Convert<sf::Vector2f, Vector2Df>(position));
-		view->setRotation(rotation);
+		view->setRotation(isRotationEnabled ? transform->GetWorldRotation() : 0.f);
 
 		window->setView(*view);
 	}
@@ -44,6 +43,10 @@ namespace XYZEngine
 	void CameraComponent::SetWindow(sf::RenderWindow* newWindow)
 	{
 		window = newWindow;
+	}
+	void CameraComponent::SetRotationEnabled(bool newIsRotationEnabled)
+	{
+		isRotationEnabled = newIsRotationEnabled;
 	}
 	void CameraComponent::ZoomBy(float newZoom)
 	{

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <vector>
 
@@ -10,8 +10,31 @@ namespace RoguelikeGame
         Floor,
         Wall,
         PlayerSpawn,
-        EnemySpawn,
-        RiflemanSpawn
+        GruntSpawn,
+        AssaultSpawn,
+        ShieldSpawn,
+        HeavySpawn,
+        RadioSpawn,
+        BossSpawn
+    };
+
+    struct TileTypeName
+    {
+        const char* name;
+        TileType type;
+    };
+
+    constexpr TileTypeName TILE_TYPE_NAMES[] = {
+        {"Empty", TileType::Empty},
+        {"Floor", TileType::Floor},
+        {"Wall", TileType::Wall},
+        {"PlayerSpawn", TileType::PlayerSpawn},
+        {"GruntSpawn", TileType::GruntSpawn},
+        {"AssaultSpawn", TileType::AssaultSpawn},
+        {"ShieldSpawn", TileType::ShieldSpawn},
+        {"HeavySpawn", TileType::HeavySpawn},
+        {"RadioSpawn", TileType::RadioSpawn},
+        {"BossSpawn", TileType::BossSpawn}
     };
 
     struct LevelData

@@ -1,4 +1,4 @@
-#include "DeveloperLevel.h"
+﻿#include "DeveloperLevel.h"
 #include "GameSettings.h"
 #include "LevelLoader.h"
 #include <LoggerRegistry.h>
@@ -13,7 +13,7 @@ namespace RoguelikeGame
 
         try
         {
-            levelBuilder.Build(LevelLoader::Load(TEST_LEVEL_PATH));
+            levelBuilder.Build(LevelLoader::Load(TEST_LEVEL_FILE));
         }
         catch (const std::exception& exception)
         {
@@ -21,7 +21,7 @@ namespace RoguelikeGame
             LOG_WARN("Game continues with an empty level");
         }
 
-        music = std::make_unique<Music>("main_theme", MUSIC_VOLUME);
+        music = std::make_unique<Music>(MAIN_THEME_MUSIC, MUSIC_VOLUME);
 
         try
         {
@@ -31,6 +31,8 @@ namespace RoguelikeGame
         {
             LOG_ERROR(std::string("Crosshair is not created: ") + exception.what());
         }
+
+        ammoHud = std::make_unique<AmmoHud>();
     }
 
     void DeveloperLevel::Restart()
@@ -43,6 +45,7 @@ namespace RoguelikeGame
     {
         LOG_INFO("Developer level is stopping");
 
+        ammoHud.reset();
         crosshair.reset();
         music.reset();
         levelBuilder.Clear();

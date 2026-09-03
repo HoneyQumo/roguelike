@@ -40,11 +40,23 @@ namespace RoguelikeGame
                     case TileType::PlayerSpawn:
                         player = std::make_unique<Player>(position);
                         break;
-                    case TileType::EnemySpawn:
-                        enemies.push_back(std::make_unique<Enemy>(PRISONER_CONFIG, position));
+                    case TileType::GruntSpawn:
+                        enemies.push_back(std::make_unique<Enemy>(GRUNT_CONFIG, position));
                         break;
-                    case TileType::RiflemanSpawn:
-                        enemies.push_back(std::make_unique<Enemy>(RIFLEMAN_CONFIG, position));
+                    case TileType::AssaultSpawn:
+                        enemies.push_back(std::make_unique<Enemy>(ASSAULT_CONFIG, position));
+                        break;
+                    case TileType::ShieldSpawn:
+                        enemies.push_back(std::make_unique<Enemy>(SHIELD_CONFIG, position));
+                        break;
+                    case TileType::HeavySpawn:
+                        enemies.push_back(std::make_unique<Enemy>(HEAVY_CONFIG, position));
+                        break;
+                    case TileType::RadioSpawn:
+                        enemies.push_back(std::make_unique<Enemy>(RADIO_CONFIG, position));
+                        break;
+                    case TileType::BossSpawn:
+                        enemies.push_back(std::make_unique<Enemy>(BOSS_CONFIG, position));
                         break;
                     default:
                         break;

@@ -1,6 +1,7 @@
 #pragma once
 
-#include <map>
+#include <set>
+#include <utility>
 #include <iostream>
 #include "ColliderComponent.h"
 #include "RigidbodyComponent.h"
@@ -18,6 +19,8 @@ namespace XYZEngine
 		float GetFixedDeltaTime() const;
 		void Subscribe(ColliderComponent* collider);
 		void Unsubscribe(ColliderComponent* collider);
+
+		std::vector<ColliderComponent*> Overlap(const sf::FloatRect& area) const;
 	private:
 		PhysicsSystem() {}
 		~PhysicsSystem() {}
@@ -25,8 +28,12 @@ namespace XYZEngine
 		PhysicsSystem(PhysicsSystem const&) = delete;
 		PhysicsSystem& operator= (PhysicsSystem const&) = delete;
 
+		using TriggerPair = std::pair<ColliderComponent*, ColliderComponent*>;
+
+		static TriggerPair MakeTriggerPair(ColliderComponent* first, ColliderComponent* second);
+
 		std::vector<ColliderComponent*> colliders;
-		std::map<ColliderComponent*, ColliderComponent*> triggersEnteredPair;
+		std::set<TriggerPair> triggersEnteredPair;
 
 		float fixedDeltaTime = 0.02f;
 	};

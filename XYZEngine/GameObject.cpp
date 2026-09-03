@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "GameObject.h"
+#include "GameWorld.h"
 
 namespace XYZEngine
 {
@@ -56,6 +57,22 @@ namespace XYZEngine
 		{
 			component->Render();
 		}
+	}
+
+	void GameObject::SetRenderLayer(int newRenderLayer)
+	{
+		renderLayer = newRenderLayer;
+
+		for (GameObject* child : children)
+		{
+			child->SetRenderLayer(newRenderLayer);
+		}
+
+		GameWorld::Instance()->InvalidateRenderOrder();
+	}
+	int GameObject::GetRenderLayer() const
+	{
+		return renderLayer;
 	}
 
 	void GameObject::AddChild(GameObject* child)

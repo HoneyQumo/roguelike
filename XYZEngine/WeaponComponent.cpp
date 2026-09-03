@@ -1,84 +1,347 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "WeaponComponent.h"
 #include "GameObject.h"
 #include "LoggerRegistry.h"
+#include "randomizer.h"
+#include <algorithm>
 #include <cassert>
+#include <cmath>
 
 namespace XYZEngine
 {
-	WeaponComponent::WeaponComponent(GameObject* gameObject) : Component(gameObject)
-	{
-		transform = gameObject->GetComponent<TransformComponent>();
-	}
+    constexpr float MIN_AIM_CORRECTION_DISTANCE = 64.f;
+    constexpr float RADIANS_IN_DEGREE = 0.01745329f;
 
-	void WeaponComponent::Update(float deltaTime)
-	{
-		if (cooldownTimer > 0.f)
-		{
-			cooldownTimer -= deltaTime;
-		}
-	}
-	void WeaponComponent::Render()
-	{
+    WeaponComponent::WeaponComponent(GameObject* gameObject) : Component(gameObject)
+    {
+        transform = gameObject->GetComponent<TransformComponent>();
+        pouch = gameObject->GetComponent<AmmoPouchComponent>();
+    }
 
-	}
+    void WeaponComponent::Update(float deltaTime)
+    {
+        if (!isPouchSearched)
+        {
+            if (pouch == nullptr)
+            {
+                pouch = gameObject->GetComponent<AmmoPouchComponent>();
+            }
+            isPouchSearched = true;
+        }
 
-	void WeaponComponent::SetCooldown(float newCooldown)
-	{
-		assert(newCooldown >= 0.f);
-		cooldown = newCooldown;
-	}
-	void WeaponComponent::SetDamage(float newDamage)
-	{
-		assert(newDamage >= 0.f);
-		damage = newDamage;
-	}
-	void WeaponComponent::SetProjectileSpeed(float newProjectileSpeed)
-	{
-		assert(newProjectileSpeed > 0.f);
-		projectileSpeed = newProjectileSpeed;
-	}
-	void WeaponComponent::SetShotOffset(float newShotOffset)
-	{
-		shotOffset = newShotOffset;
-	}
-	void WeaponComponent::SetShotAction(std::function<void(const Vector2Df&, const Vector2Df&, float, float)> newShotAction)
-	{
-		shotAction = newShotAction;
-	}
+        if (cooldownTimer > 0.f)
+        {
+            cooldownTimer -= deltaTime;
+        }
 
-	bool WeaponComponent::IsReady() const
-	{
-		return cooldownTimer <= 0.f;
-	}
+        if (isReloading)
+        {
+            reloadTimer -= deltaTime;
+            if (reloadTimer <= 0.f)
+            {
+                FinishReload();
+            }
+        }
+    }
 
-	bool WeaponComponent::TryShoot(const Vector2Df& direction)
-	{
-		if (!IsReady())
-		{
-			return false;
-		}
+    void WeaponComponent::Render()
+    {
+    }
 
-		if (shotAction == nullptr)
-		{
-			LOG_ERROR("Weapon has no shot action on " + gameObject->GetName());
-			return false;
-		}
+    void WeaponComponent::SetCooldown(float newCooldown)
+    {
+        assert(newCooldown >= 0.f);
+        cooldown = newCooldown;
+    }
 
-		float length = direction.GetLength();
-		if (length <= 0.f)
-		{
-			LOG_WARN("Weapon can't shoot without direction on " + gameObject->GetName());
-			return false;
-		}
+    void WeaponComponent::SetDamage(float newDamage)
+    {
+        assert(newDamage >= 0.f);
+        damage = newDamage;
+    }
 
-		Vector2Df normalizedDirection = (1.f / length) * direction;
-		Vector2Df shotPosition = transform->GetWorldPosition() + shotOffset * normalizedDirection;
+    void WeaponComponent::SetProjectileSpeed(float newProjectileSpeed)
+    {
+        assert(newProjectileSpeed > 0.f);
+        projectileSpeed = newProjectileSpeed;
+    }
 
-		shotAction(shotPosition, normalizedDirection, damage, projectileSpeed);
-		cooldownTimer = cooldown;
+    void WeaponComponent::SetMuzzleOffset(const Vector2Df& newMuzzleOffset)
+    {
+        muzzleOffset = newMuzzleOffset;
+    }
 
-		LOG_INFO(gameObject->GetName() + " shoots");
-		return true;
-	}
+    void WeaponComponent::SetPellets(int newPellets)
+    {
+        assert(newPellets >= 1);
+        pellets = std::max(newPellets, 1);
+    }
+
+    void WeaponComponent::SetConeDegrees(float newConeDegrees)
+    {
+        assert(newConeDegrees >= 0.f);
+        coneDegrees = std::max(newConeDegrees, 0.f);
+    }
+
+    void WeaponComponent::SetShotStartAction(std::function<void()> newShotStartAction)
+    {
+        shotStartAction = newShotStartAction;
+    }
+
+    void WeaponComponent::SetShotAction(std::function<void(const Vector2Df&, const Vector2Df&, float, float)> newShotAction)
+    {
+        shotAction = newShotAction;
+    }
+
+    int WeaponComponent::GetPellets() const
+    {
+        return pellets;
+    }
+
+    float WeaponComponent::GetConeDegrees() const
+    {
+        return coneDegrees;
+    }
+
+    void WeaponComponent::SetMagazine(int newMagazineSize, int newAmmoKind)
+    {
+        magazineSize = std::max(newMagazineSize, 0);
+        ammoKind = newAmmoKind;
+
+        ammoInMagazine = magazineSize;
+
+        isReloading = false;
+        reloadTimer = 0.f;
+    }
+
+    void WeaponComponent::SetAmmoInMagazine(int newAmmoInMagazine)
+    {
+        ammoInMagazine = std::min(std::max(newAmmoInMagazine, 0), magazineSize);
+    }
+
+    void WeaponComponent::SetReloadTime(float newReloadTime)
+    {
+        assert(newReloadTime >= 0.f);
+        reloadTime = std::max(newReloadTime, 0.f);
+    }
+
+    void WeaponComponent::SetReloadStartAction(std::function<void()> newReloadStartAction)
+    {
+        reloadStartAction = newReloadStartAction;
+    }
+
+    void WeaponComponent::SetReloadFinishAction(std::function<void()> newReloadFinishAction)
+    {
+        reloadFinishAction = newReloadFinishAction;
+    }
+
+    bool WeaponComponent::HasMagazine() const
+    {
+        return magazineSize > 0;
+    }
+
+    int WeaponComponent::GetMagazineSize() const
+    {
+        return magazineSize;
+    }
+
+    int WeaponComponent::GetAmmoInMagazine() const
+    {
+        return HasMagazine() ? ammoInMagazine : INFINITE_AMMO;
+    }
+
+    int WeaponComponent::GetReserveAmmo() const
+    {
+        return pouch == nullptr ? INFINITE_AMMO : pouch->GetAmmo(ammoKind);
+    }
+
+    bool WeaponComponent::IsMagazineEmpty() const
+    {
+        return HasMagazine() && ammoInMagazine <= 0;
+    }
+
+    bool WeaponComponent::IsReloading() const
+    {
+        return isReloading;
+    }
+
+    float WeaponComponent::GetReloadProgress() const
+    {
+        if (!isReloading)
+        {
+            return 0.f;
+        }
+
+        if (reloadTime <= 0.f)
+        {
+            return 1.f;
+        }
+
+        float progress = 1.f - reloadTimer / reloadTime;
+        return std::min(std::max(progress, 0.f), 1.f);
+    }
+
+    bool WeaponComponent::CanReload() const
+    {
+        if (!HasMagazine() || isReloading || ammoInMagazine >= magazineSize)
+        {
+            return false;
+        }
+
+        return GetReserveAmmo() != 0;
+    }
+
+    bool WeaponComponent::TryReload()
+    {
+        if (!CanReload())
+        {
+            return false;
+        }
+
+        isReloading = true;
+        reloadTimer = reloadTime;
+
+        if (reloadStartAction != nullptr)
+        {
+            reloadStartAction();
+        }
+
+        LOG_INFO(gameObject->GetName() + " reloads");
+
+        if (reloadTime <= 0.f)
+        {
+            FinishReload();
+        }
+
+        return true;
+    }
+
+    void WeaponComponent::CancelReload()
+    {
+        if (!isReloading)
+        {
+            return;
+        }
+
+        isReloading = false;
+        reloadTimer = 0.f;
+    }
+
+    bool WeaponComponent::IsReady() const
+    {
+        return cooldownTimer <= 0.f && !isReloading && !IsMagazineEmpty();
+    }
+
+    bool WeaponComponent::TryShootAt(const Vector2Df& targetPosition)
+    {
+        if (isReloading)
+        {
+            return false;
+        }
+
+        if (IsMagazineEmpty())
+        {
+            TryReload();
+            return false;
+        }
+
+        if (!IsReady())
+        {
+            return false;
+        }
+
+        if (shotAction == nullptr)
+        {
+            LOG_ERROR("Weapon has no shot action on " + gameObject->GetName());
+            return false;
+        }
+
+        Vector2Df ownerPosition = transform->GetWorldPosition();
+        Vector2Df toTarget = targetPosition - ownerPosition;
+        float distance = toTarget.GetLength();
+        if (distance <= 0.f)
+        {
+            LOG_WARN("Weapon can't shoot at its own position on " + gameObject->GetName());
+            return false;
+        }
+
+        Vector2Df aimDirection = (1.f / distance) * toTarget;
+        Vector2Df sideDirection = {-aimDirection.y, aimDirection.x};
+        Vector2Df shotPosition = ownerPosition + muzzleOffset.x * aimDirection + muzzleOffset.y * sideDirection;
+
+        Vector2Df shotDirection = aimDirection;
+        if (distance > MIN_AIM_CORRECTION_DISTANCE)
+        {
+            Vector2Df fromMuzzle = targetPosition - shotPosition;
+            float muzzleDistance = fromMuzzle.GetLength();
+            if (muzzleDistance > 0.f)
+            {
+                shotDirection = (1.f / muzzleDistance) * fromMuzzle;
+            }
+        }
+
+        if (shotStartAction != nullptr)
+        {
+            shotStartAction();
+        }
+
+        for (int pellet = 0; pellet < pellets; pellet++)
+        {
+            shotAction(shotPosition, RotateDirection(shotDirection, PelletAngle(pellet)), damage, projectileSpeed);
+        }
+
+        cooldownTimer = cooldown;
+
+        if (HasMagazine())
+        {
+            ammoInMagazine--;
+        }
+
+        LOG_INFO(gameObject->GetName() + " shoots");
+        return true;
+    }
+
+    float WeaponComponent::PelletAngle(int index) const
+    {
+        if (coneDegrees <= 0.f)
+        {
+            return 0.f;
+        }
+
+        float step = coneDegrees / pellets;
+        float slotStart = index * step - 0.5f * coneDegrees;
+
+        return random<float>(slotStart, slotStart + step);
+    }
+
+    Vector2Df WeaponComponent::RotateDirection(const Vector2Df& direction, float degrees)
+    {
+        if (degrees == 0.f)
+        {
+            return direction;
+        }
+
+        float radians = degrees * RADIANS_IN_DEGREE;
+        float sinValue = std::sin(radians);
+        float cosValue = std::cos(radians);
+
+        return {direction.x * cosValue - direction.y * sinValue, direction.x * sinValue + direction.y * cosValue};
+    }
+
+    void WeaponComponent::FinishReload()
+    {
+        isReloading = false;
+        reloadTimer = 0.f;
+
+        int missing = magazineSize - ammoInMagazine;
+        int loaded = pouch == nullptr ? missing : pouch->TakeAmmo(ammoKind, missing);
+        ammoInMagazine += loaded;
+
+        if (reloadFinishAction != nullptr)
+        {
+            reloadFinishAction();
+        }
+
+        LOG_INFO(gameObject->GetName() + " loaded " + std::to_string(loaded) + " rounds");
+    }
 }

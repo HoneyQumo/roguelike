@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Sources">
@@ -28,13 +28,46 @@
     <ClCompile Include="PlayerAttackComponent.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
+    <ClCompile Include="PlayerLoadoutComponent.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerRollComponent.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="StowedWeaponComponent.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
     <ClCompile Include="Projectile.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="ReloadIndicatorComponent.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="AmmoHud.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="AmmoHudComponent.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Crosshair.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
     <ClCompile Include="Weapon.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
-    <ClCompile Include="Crosshair.cpp">
+    <ClCompile Include="WeaponLayerComponent.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="BloodPool.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Fx.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="GameResources.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="HitFlashComponent.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
     <ClCompile Include="Wall.cpp">
@@ -51,13 +84,26 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ReloadIndicatorComponent.h" />
+    <ClInclude Include="AmmoHud.h" />
+    <ClInclude Include="AmmoHudComponent.h" />
+    <ClInclude Include="BloodPool.h" />
     <ClInclude Include="Crosshair.h" />
+    <ClInclude Include="Fx.h" />
+    <ClInclude Include="GameResources.h" />
+    <ClInclude Include="HitFlashComponent.h" />
+    <ClInclude Include="SpriteAtlas.h" />
+    <ClInclude Include="WeaponCatalog.h" />
+    <ClInclude Include="WeaponLayerComponent.h" />
     <ClInclude Include="DeveloperLevel.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="EnemyAttackComponent.h" />
     <ClInclude Include="EnemyConfig.h" />
     <ClInclude Include="Floor.h" />
     <ClInclude Include="PlayerAttackComponent.h" />
+    <ClInclude Include="PlayerLoadoutComponent.h" />
+    <ClInclude Include="PlayerRollComponent.h" />
+    <ClInclude Include="StowedWeaponComponent.h" />
     <ClInclude Include="Projectile.h" />
     <ClInclude Include="Weapon.h" />
     <ClInclude Include="GameSettings.h" />

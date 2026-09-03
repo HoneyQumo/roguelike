@@ -2,12 +2,9 @@
 #include <GameObject.h>
 #include <GameWorld.h>
 #include <LoggerRegistry.h>
-#include <cmath>
 
 namespace RoguelikeGame
 {
-    const float DEGREES_IN_RADIAN = 57.29578f;
-
     EnemyAttackComponent::EnemyAttackComponent(XYZEngine::GameObject* gameObject) : Component(gameObject)
     {
         transform = gameObject->GetComponent<XYZEngine::TransformComponent>();
@@ -15,16 +12,20 @@ namespace RoguelikeGame
 
     void EnemyAttackComponent::Update(float deltaTime)
     {
-        if (weapon == nullptr)
+        if (!areWeaponsSearched)
         {
             weapon = gameObject->GetComponent<XYZEngine::WeaponComponent>();
-            if (weapon == nullptr)
+            meleeWeapon = gameObject->GetComponent<XYZEngine::MeleeWeaponComponent>();
+            areWeaponsSearched = true;
+
+            if (weapon == nullptr && meleeWeapon == nullptr)
             {
                 LOG_ERROR("Enemy attack needs a weapon component on " + gameObject->GetName());
                 gameObject->RemoveComponent(this);
                 return;
             }
         }
+
         if (health == nullptr)
         {
             health = gameObject->GetComponent<XYZEngine::HealthComponent>();
@@ -52,14 +53,19 @@ namespace RoguelikeGame
             return;
         }
 
-        XYZEngine::Vector2Df toTarget = target->GetComponent<XYZEngine::TransformComponent>()->GetWorldPosition() - transform->GetWorldPosition();
-        if (toTarget.GetLength() > attackRange)
+        XYZEngine::Vector2Df targetPosition = target->GetComponent<XYZEngine::TransformComponent>()->GetWorldPosition();
+        if ((targetPosition - transform->GetWorldPosition()).GetLength() > attackRange)
         {
             return;
         }
 
-        AimWeapon(toTarget);
-        weapon->TryShoot(toTarget);
+        if (meleeWeapon != nullptr)
+        {
+            meleeWeapon->TryQuickAttack();
+            return;
+        }
+
+        weapon->TryShootAt(targetPosition);
     }
 
     void EnemyAttackComponent::Render()
@@ -74,27 +80,5 @@ namespace RoguelikeGame
     void EnemyAttackComponent::SetAttackRange(float newAttackRange)
     {
         attackRange = newAttackRange;
-    }
-
-    void EnemyAttackComponent::SetWeapon(XYZEngine::TransformComponent* newWeaponTransform, XYZEngine::SpriteRendererComponent* newWeaponRenderer)
-    {
-        weaponTransform = newWeaponTransform;
-        weaponRenderer = newWeaponRenderer;
-    }
-
-    void EnemyAttackComponent::AimWeapon(const XYZEngine::Vector2Df& direction)
-    {
-        if (weaponTransform == nullptr || direction.GetLength() <= 0.f)
-        {
-            return;
-        }
-
-        float angle = std::atan2(direction.y, direction.x) * DEGREES_IN_RADIAN;
-        weaponTransform->SetWorldRotation(angle);
-
-        if (weaponRenderer != nullptr)
-        {
-            weaponRenderer->FlipY(direction.x < 0.f);
-        }
     }
 }

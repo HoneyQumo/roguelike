@@ -1,6 +1,7 @@
-#pragma once
+﻿#pragma once
 
 #include <string>
+#include "WeaponCatalog.h"
 
 namespace RoguelikeGame
 {
@@ -9,15 +10,7 @@ namespace RoguelikeGame
         std::string objectName;
         std::string textureMapName;
 
-        int walkFirstFrame = 0;
-        int walkFrames = 0;
-        int idleFirstFrame = 0;
-        int idleFrames = 0;
-        int hurtFirstFrame = 0;
-        int hurtFrames = 0;
-        int deathFirstFrame = 0;
-        int deathFrames = 0;
-        std::string weaponTextureName;
+        WeaponId weapon = WeaponId::Knife;
 
         float speed = 0.f;
         float detectionRadius = 0.f;

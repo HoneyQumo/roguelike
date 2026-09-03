@@ -1,9 +1,7 @@
 #pragma once
 
 #include <memory>
-#include "GameWorld.h"
 #include "GameObject.h"
-#include "SpriteRendererComponent.h"
 #include "Vector.h"
 #include "EnemyConfig.h"
 #include "Weapon.h"

@@ -1,5 +1,6 @@
-#include "Crosshair.h"
+﻿#include "Crosshair.h"
 #include "GameSettings.h"
+#include "ReloadIndicatorComponent.h"
 #include <GameWorld.h>
 #include <ResourceSystem.h>
 #include <SpriteRendererComponent.h>
@@ -11,13 +12,14 @@ namespace RoguelikeGame
 {
     Crosshair::Crosshair()
     {
-        auto texture = XYZEngine::ResourceSystem::Instance()->GetTextureShared("crosshair");
+        auto texture = XYZEngine::ResourceSystem::Instance()->GetTextureShared(CROSSHAIR_TEXTURE);
         if (texture == nullptr)
         {
             throw std::runtime_error("crosshair texture is not loaded");
         }
 
         gameObject = XYZEngine::GameWorld::Instance()->CreateGameObject("Crosshair");
+        gameObject->SetRenderLayer(UI_RENDER_LAYER);
 
         auto renderer = gameObject->AddComponent<XYZEngine::SpriteRendererComponent>();
         renderer->SetTexture(*texture);
@@ -26,6 +28,9 @@ namespace RoguelikeGame
         renderer->SetAdditiveBlending(true);
 
         gameObject->AddComponent<XYZEngine::CursorFollowComponent>();
+
+        auto reloadIndicator = gameObject->AddComponent<ReloadIndicatorComponent>();
+        reloadIndicator->SetTargetName("Player");
 
         LOG_INFO("Crosshair created");
     }

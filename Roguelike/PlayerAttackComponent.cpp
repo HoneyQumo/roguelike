@@ -1,15 +1,15 @@
-#include "PlayerAttackComponent.h"
+﻿#include "PlayerAttackComponent.h"
+#include "GameSettings.h"
 #include <GameObject.h>
 #include <LoggerRegistry.h>
 #include <cmath>
 
 namespace RoguelikeGame
 {
-    const float RADIANS_TO_DEGREES = 57.29578f;
+    constexpr float TWO_PI = 6.2831853f;
 
     PlayerAttackComponent::PlayerAttackComponent(XYZEngine::GameObject* gameObject) : Component(gameObject)
     {
-        transform = gameObject->GetComponent<XYZEngine::TransformComponent>();
     }
 
     void PlayerAttackComponent::Update(float deltaTime)
@@ -22,14 +22,30 @@ namespace RoguelikeGame
         {
             weapon = gameObject->GetComponent<XYZEngine::WeaponComponent>();
         }
+        if (meleeWeapon == nullptr)
+        {
+            meleeWeapon = gameObject->GetComponent<XYZEngine::MeleeWeaponComponent>();
+        }
         if (health == nullptr)
         {
             health = gameObject->GetComponent<XYZEngine::HealthComponent>();
         }
-
-        if (input == nullptr || weapon == nullptr)
+        if (dodgeRoll == nullptr)
         {
-            LOG_ERROR("Player attack needs input and weapon components");
+            dodgeRoll = gameObject->GetComponent<XYZEngine::DodgeRollComponent>();
+        }
+        if (loadout == nullptr)
+        {
+            loadout = gameObject->GetComponent<PlayerLoadoutComponent>();
+        }
+        if (hitFlash == nullptr)
+        {
+            hitFlash = gameObject->GetComponent<HitFlashComponent>();
+        }
+
+        if (input == nullptr || weapon == nullptr || meleeWeapon == nullptr || loadout == nullptr)
+        {
+            LOG_ERROR("Player attack needs input, weapon, melee weapon and loadout components");
             gameObject->RemoveComponent(this);
             return;
         }
@@ -39,38 +55,77 @@ namespace RoguelikeGame
             return;
         }
 
-        XYZEngine::Vector2Df aimDirection = input->GetMouseWorldPosition() - transform->GetWorldPosition();
-        AimWeapon(aimDirection);
+        UpdateChargeGlow(deltaTime);
 
-        if (input->IsAttackPressed())
+        if (dodgeRoll != nullptr && dodgeRoll->IsRolling())
         {
-            weapon->TryShoot(aimDirection);
+            return;
         }
+
+        if (loadout->IsSwapping())
+        {
+            return;
+        }
+
+        if (loadout->IsMeleeEquipped())
+        {
+            UpdateMelee(deltaTime);
+            return;
+        }
+
+        UpdateRanged();
     }
 
     void PlayerAttackComponent::Render()
     {
     }
 
-    void PlayerAttackComponent::SetWeapon(XYZEngine::TransformComponent* newWeaponTransform, XYZEngine::SpriteRendererComponent* newWeaponRenderer)
+    void PlayerAttackComponent::UpdateMelee(float deltaTime)
     {
-        weaponTransform = newWeaponTransform;
-        weaponRenderer = newWeaponRenderer;
+        if (input->IsHeavyAttackPressed())
+        {
+            meleeWeapon->TryStartHeavyAttack();
+        }
+        else
+        {
+            meleeWeapon->ReleaseHeavyAttack();
+
+            if (input->IsAttackPressed())
+            {
+                meleeWeapon->TryQuickAttack();
+            }
+        }
     }
 
-    void PlayerAttackComponent::AimWeapon(const XYZEngine::Vector2Df& direction)
+    void PlayerAttackComponent::UpdateRanged()
     {
-        if (weaponTransform == nullptr || direction.GetLength() <= 0.f)
+        if (input->IsReloadPressed())
+        {
+            weapon->TryReload();
+        }
+
+        if (input->IsAttackPressed())
+        {
+            weapon->TryShootAt(input->GetMouseWorldPosition());
+        }
+    }
+
+    void PlayerAttackComponent::UpdateChargeGlow(float deltaTime)
+    {
+        if (hitFlash == nullptr)
         {
             return;
         }
 
-        float angle = std::atan2(direction.y, direction.x) * RADIANS_TO_DEGREES;
-        weaponTransform->SetWorldRotation(angle);
-
-        if (weaponRenderer != nullptr)
+        if (!meleeWeapon->IsCharging() || !meleeWeapon->IsCharged())
         {
-            weaponRenderer->FlipY(direction.x < 0.f);
+            glowTimer = 0.f;
+            hitFlash->SetGlow(0.f);
+            return;
         }
+
+        glowTimer += deltaTime;
+        float phase = TWO_PI * glowTimer / HEAVY_CHARGED_GLOW_PERIOD;
+        hitFlash->SetGlow(HEAVY_CHARGED_GLOW * (0.5f + 0.5f * std::sin(phase)));
     }
 }

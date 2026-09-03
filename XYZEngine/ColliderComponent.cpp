@@ -12,6 +12,33 @@ namespace XYZEngine
 	{
 		isTrigger = newIsTrigger;
 	}
+	bool ColliderComponent::IsTrigger() const
+	{
+		return isTrigger;
+	}
+
+	const sf::FloatRect& ColliderComponent::GetBounds() const
+	{
+		return bounds;
+	}
+
+	void ColliderComponent::SetCollisionLayer(unsigned int newCollisionLayer)
+	{
+		collisionLayer = newCollisionLayer;
+	}
+	unsigned int ColliderComponent::GetCollisionLayer() const
+	{
+		return collisionLayer;
+	}
+
+	void ColliderComponent::SetIgnoredLayers(unsigned int newIgnoredLayers)
+	{
+		ignoredLayers = newIgnoredLayers;
+	}
+	unsigned int ColliderComponent::GetIgnoredLayers() const
+	{
+		return ignoredLayers;
+	}
 
 	void ColliderComponent::SubscribeCollision(std::function<void(Collision)> onCollisionAction)
 	{

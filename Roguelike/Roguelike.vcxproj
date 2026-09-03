@@ -169,6 +169,7 @@
         <ClCompile Include="GameResources.cpp"/>
         <ClCompile Include="HitFlashComponent.cpp"/>
         <ClCompile Include="WeaponLayerComponent.cpp"/>
+        <ClCompile Include="WeaponSetup.cpp"/>
         <ClCompile Include="DeveloperLevel.cpp"/>
         <ClCompile Include="CharacterFactory.cpp"/>
         <ClCompile Include="Enemy.cpp"/>
@@ -199,6 +200,7 @@
         <ClInclude Include="SpriteAtlas.h"/>
         <ClInclude Include="WeaponCatalog.h"/>
         <ClInclude Include="WeaponLayerComponent.h"/>
+        <ClInclude Include="WeaponSetup.h"/>
         <ClInclude Include="DeveloperLevel.h"/>
         <ClInclude Include="CharacterFactory.h"/>
         <ClInclude Include="Enemy.h"/>

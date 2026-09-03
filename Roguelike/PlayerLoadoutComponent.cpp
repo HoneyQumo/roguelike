@@ -1,4 +1,5 @@
 ﻿#include "PlayerLoadoutComponent.h"
+#include "WeaponSetup.h"
 #include "GameResources.h"
 #include "Projectile.h"
 #include "Fx.h"
@@ -205,15 +206,8 @@ namespace RoguelikeGame
         ShotProfile shot = MakeShotProfile(id, PLAYER_ATTACK_DAMAGE, PLAYER_PROJECTILE_SPEED, PLAYER_ATTACK_COOLDOWN);
 
         rangedWeapon->CancelReload();
-        rangedWeapon->SetCooldown(shot.cooldown);
-        rangedWeapon->SetDamage(shot.damage);
-        rangedWeapon->SetProjectileSpeed(shot.speed);
-        rangedWeapon->SetPellets(shot.pellets);
-        rangedWeapon->SetConeDegrees(shot.coneDegrees);
-        rangedWeapon->SetMuzzleOffset(ShotOffset(definition));
-        rangedWeapon->SetMagazine(definition.magazineSize, AmmoKindKey(definition.ammo));
+        ApplyWeaponDefinition(rangedWeapon, id, shot);
         rangedWeapon->SetAmmoInMagazine(ammoInMagazine);
-        rangedWeapon->SetReloadTime(definition.reloadTime);
 
         if (shotAudio != nullptr)
         {
@@ -227,31 +221,8 @@ namespace RoguelikeGame
             reloadAudio->SetSound(GameResources::GetWeaponSound(definition.reloadSound));
         }
 
-        std::string shooterName = gameObject->GetName();
-
-        rangedWeapon->SetShotStartAction([this]()
-        {
-            if (shotAudio != nullptr)
-            {
-                shotAudio->Play();
-            }
-
-            if (animation != nullptr)
-            {
-                animation->PlayShoot();
-            }
-
-            if (weapon != nullptr)
-            {
-                weapon->PlayMuzzleFlash();
-            }
-        });
-
-        rangedWeapon->SetShotAction([id, shooterName](const XYZEngine::Vector2Df& shotPosition, const XYZEngine::Vector2Df& shotDirection,
-                                                      float damage, float speed)
-        {
-            Projectile::Spawn(shotPosition, shotDirection, damage, speed, shooterName, id);
-        });
+        PlayEffectsOnShot(rangedWeapon, shotAudio, animation, weapon);
+        SpawnProjectilesOnShot(rangedWeapon, gameObject->GetName(), id);
     }
 
     void PlayerLoadoutComponent::ApplyMeleeWeapon(const MeleeDefinition* melee)
@@ -268,44 +239,10 @@ namespace RoguelikeGame
             return;
         }
 
-        XYZEngine::MeleeAttack quick;
-        quick.damage = PLAYER_MELEE_DAMAGE * melee->quick.damageScale;
-        quick.chargedDamage = quick.damage;
-        quick.range = melee->quick.range;
-        quick.arcDegrees = melee->quick.arcDegrees;
-        quick.recovery = melee->quick.recovery;
-        quick.hitFrame = MELEE_HIT_FRAME;
-        quick.windup = MELEE_HIT_FRAME / MELEE_ANIMATION.framesPerSecond;
-
-        XYZEngine::MeleeAttack heavy;
-        heavy.damage = PLAYER_MELEE_DAMAGE * melee->heavy.damageScale;
-        heavy.chargedDamage = PLAYER_MELEE_DAMAGE * melee->heavy.chargedDamageScale;
-        heavy.range = melee->heavy.range;
-        heavy.arcDegrees = melee->heavy.arcDegrees;
-        heavy.recovery = melee->heavy.recovery;
-        heavy.hitFrame = HEAVY_HIT_FIRST_FRAME;
-        heavy.windup = HEAVY_FRAME_SECONDS[HEAVY_RELEASE_FRAME];
-
-        meleeWeapon->SetQuickAttack(quick);
-        meleeWeapon->SetHeavyAttack(heavy);
+        meleeWeapon->SetQuickAttack(MakeQuickAttack(melee->quick, PLAYER_MELEE_DAMAGE, melee->quick.recovery));
+        meleeWeapon->SetHeavyAttack(MakeHeavyAttack(melee->heavy, PLAYER_MELEE_DAMAGE));
         meleeWeapon->SetChargeTime(HEAVY_CHARGE_TIME);
         meleeWeapon->SetLunge(HEAVY_MOVE_SPEED, HEAVY_ANIMATION_FRAMES, PLAYER_HEAVY_LUNGE_SPEED);
-
-        const MeleeDefinition* current = melee;
-        meleeWeapon->SetStrikeAction([this, current](XYZEngine::MeleeAttackKind kind, int hits)
-        {
-            if (hits <= 0 || meleeAudio == nullptr)
-            {
-                return;
-            }
-
-            meleeAudio->SetSound(GameResources::GetMeleeHitSound(*current));
-            meleeAudio->Play();
-        });
-
-        meleeWeapon->SetHitAction([](XYZEngine::MeleeAttackKind kind, const XYZEngine::Vector2Df& position, const XYZEngine::Vector2Df& direction)
-        {
-            Fx::SpawnBloodHit(position, direction);
-        });
+        PlayEffectsOnMeleeHit(meleeWeapon, meleeAudio, melee);
     }
 }

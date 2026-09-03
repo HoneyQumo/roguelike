@@ -6,6 +6,7 @@
 #include "PlayerRollComponent.h"
 #include "StowedWeaponComponent.h"
 #include "BloodPool.h"
+#include "WeaponSetup.h"
 #include <GameWorld.h>
 #include <RenderSystem.h>
 #include <CameraComponent.h>
@@ -132,11 +133,7 @@ namespace RoguelikeGame
         StowedWeaponComponent* stowedWeapon = CreateStowedWeapon(gameObject, startWeapon, animation);
 
         auto weaponComponent = gameObject->AddComponent<XYZEngine::WeaponComponent>();
-        weaponComponent->SetReloadStartAction([animation, reloadAudio]()
-        {
-            animation->PlayReload();
-            reloadAudio->Play();
-        });
+        PlayEffectsOnReload(weaponComponent, animation, reloadAudio);
 
         auto meleeWeapon = gameObject->AddComponent<XYZEngine::MeleeWeaponComponent>();
 

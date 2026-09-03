@@ -61,6 +61,9 @@
     <ClCompile Include="WeaponLayerComponent.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
+    <ClCompile Include="WeaponSetup.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
     <ClCompile Include="BloodPool.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
@@ -98,6 +101,7 @@
     <ClInclude Include="SpriteAtlas.h" />
     <ClInclude Include="WeaponCatalog.h" />
     <ClInclude Include="WeaponLayerComponent.h" />
+    <ClInclude Include="WeaponSetup.h" />
     <ClInclude Include="DeveloperLevel.h" />
     <ClInclude Include="CharacterFactory.h" />
     <ClInclude Include="Enemy.h" />

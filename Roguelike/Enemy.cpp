@@ -2,8 +2,7 @@
 #include "CharacterFactory.h"
 #include "GameSettings.h"
 #include "GameResources.h"
-#include "Projectile.h"
-#include "Fx.h"
+#include "WeaponSetup.h"
 #include "EnemyAttackComponent.h"
 #include "BloodPool.h"
 #include <GameWorld.h>
@@ -61,33 +60,10 @@ namespace RoguelikeGame
             auto meleeAudio = gameObject->AddComponent<XYZEngine::AudioComponent>();
             meleeAudio->SetVolume(MELEE_HIT_VOLUME);
 
-            XYZEngine::MeleeAttack quick;
-            quick.damage = config.attackDamage * melee->quick.damageScale;
-            quick.chargedDamage = quick.damage;
-            quick.range = melee->quick.range;
-            quick.arcDegrees = melee->quick.arcDegrees;
-            quick.recovery = config.attackCooldown;
-            quick.hitFrame = MELEE_HIT_FRAME;
-            quick.windup = MELEE_HIT_FRAME / MELEE_ANIMATION.framesPerSecond;
-
             auto meleeWeapon = gameObject->AddComponent<XYZEngine::MeleeWeaponComponent>();
-            meleeWeapon->SetQuickAttack(quick);
+            meleeWeapon->SetQuickAttack(MakeQuickAttack(melee->quick, config.attackDamage, config.attackCooldown));
             meleeWeapon->SetTargetName("Player");
-            meleeWeapon->SetStrikeAction([meleeAudio, melee](XYZEngine::MeleeAttackKind kind, int hits)
-            {
-                if (hits <= 0)
-                {
-                    return;
-                }
-
-                meleeAudio->SetSound(GameResources::GetMeleeHitSound(*melee));
-                meleeAudio->Play();
-            });
-            meleeWeapon->SetHitAction([](XYZEngine::MeleeAttackKind kind, const XYZEngine::Vector2Df& hitPosition,
-                                         const XYZEngine::Vector2Df& hitDirection)
-            {
-                Fx::SpawnBloodHit(hitPosition, hitDirection);
-            });
+            PlayEffectsOnMeleeHit(meleeWeapon, meleeAudio, melee);
 
             auto attack = gameObject->AddComponent<EnemyAttackComponent>();
             attack->SetTargetName("Player");
@@ -108,39 +84,10 @@ namespace RoguelikeGame
             ShotProfile shot = MakeShotProfile(config.weapon, config.attackDamage, config.projectileSpeed, config.attackCooldown);
 
             auto weaponComponent = gameObject->AddComponent<XYZEngine::WeaponComponent>();
-            weaponComponent->SetCooldown(shot.cooldown);
-            weaponComponent->SetDamage(shot.damage);
-            weaponComponent->SetProjectileSpeed(shot.speed);
-            weaponComponent->SetPellets(shot.pellets);
-            weaponComponent->SetConeDegrees(shot.coneDegrees);
-            weaponComponent->SetMuzzleOffset(ShotOffset(weaponDefinition));
-
-            weaponComponent->SetMagazine(weaponDefinition.magazineSize, AmmoKindKey(weaponDefinition.ammo));
-            weaponComponent->SetReloadTime(weaponDefinition.reloadTime);
-            weaponComponent->SetReloadStartAction([animation, reloadAudio]()
-            {
-                animation->PlayReload();
-                reloadAudio->Play();
-            });
-
-            std::string shooterName = config.objectName;
-            WeaponId shotWeapon = config.weapon;
-            weaponComponent->SetShotStartAction([shotAudio, animation, weaponLayer]()
-            {
-                shotAudio->Play();
-                animation->PlayShoot();
-
-                if (weaponLayer != nullptr)
-                {
-                    weaponLayer->PlayMuzzleFlash();
-                }
-            });
-
-            weaponComponent->SetShotAction(
-                [shooterName, shotWeapon](const XYZEngine::Vector2Df& shotPosition, const XYZEngine::Vector2Df& shotDirection, float damage, float speed)
-                {
-                    Projectile::Spawn(shotPosition, shotDirection, damage, speed, shooterName, shotWeapon);
-                });
+            ApplyWeaponDefinition(weaponComponent, config.weapon, shot);
+            PlayEffectsOnReload(weaponComponent, animation, reloadAudio);
+            PlayEffectsOnShot(weaponComponent, shotAudio, animation, weaponLayer);
+            SpawnProjectilesOnShot(weaponComponent, config.objectName, config.weapon);
 
             auto attack = gameObject->AddComponent<EnemyAttackComponent>();
             attack->SetTargetName("Player");

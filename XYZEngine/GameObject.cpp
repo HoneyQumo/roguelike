@@ -54,7 +54,7 @@ namespace XYZEngine
 		}
 	}
 
-	std::string GameObject::GetName() const
+	const std::string& GameObject::GetName() const
 	{
 		return name;
 	}

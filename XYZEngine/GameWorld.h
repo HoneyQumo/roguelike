@@ -1,5 +1,8 @@
 #pragma once
 
+#include <string>
+#include <unordered_map>
+#include <vector>
 #include "GameObject.h"
 #include "PhysicsSystem.h"
 
@@ -32,10 +35,13 @@ namespace XYZEngine
 		GameWorld& operator= (GameWorld const&) = delete;
 
 		std::vector<GameObject*> gameObjects = {};
+		std::unordered_map<std::string, std::vector<GameObject*>> gameObjectsByName;
 		std::vector<GameObject*> markedToDestroyGameObjects = {};
 		std::vector<GameObject*> renderOrder = {};
 		bool isRenderOrderDirty = true;
 
 		void DestroyGameObjectImmediate(GameObject* gameObject);
+		void RegisterGameObject(GameObject* gameObject);
+		void UnregisterGameObject(GameObject* gameObject);
 	};
 }

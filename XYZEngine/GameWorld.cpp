@@ -53,28 +53,24 @@ namespace XYZEngine
 	GameObject* GameWorld::CreateGameObject()
 	{
 		GameObject* newGameObject = new GameObject();
-		gameObjects.push_back(newGameObject);
-		isRenderOrderDirty = true;
+		RegisterGameObject(newGameObject);
 		return newGameObject;
 	}
 	GameObject* GameWorld::CreateGameObject(std::string name)
 	{
 		GameObject* newGameObject = new GameObject(name);
-		gameObjects.push_back(newGameObject);
-		isRenderOrderDirty = true;
+		RegisterGameObject(newGameObject);
 		return newGameObject;
 	}
 	GameObject* GameWorld::FindGameObject(const std::string& name) const
 	{
-		for (const auto& gameObject : gameObjects)
+		auto found = gameObjectsByName.find(name);
+		if (found == gameObjectsByName.end() || found->second.empty())
 		{
-			if (gameObject != nullptr && gameObject->GetName() == name)
-			{
-				return gameObject;
-			}
+			return nullptr;
 		}
 
-		return nullptr;
+		return found->second.front();
 	}
 	void GameWorld::DestroyGameObject(GameObject* gameObject)
 	{
@@ -127,12 +123,35 @@ namespace XYZEngine
 		{
 			GameObject* gameObjectToDelete = transform->GetGameObject();
 
-			gameObjects.erase(std::remove_if(gameObjects.begin(), gameObjects.end(), [gameObjectToDelete](GameObject* obj) { return obj == gameObjectToDelete; }), gameObjects.end());
+			UnregisterGameObject(gameObjectToDelete);
 			markedToDestroyGameObjects.erase(std::remove_if(markedToDestroyGameObjects.begin(), markedToDestroyGameObjects.end(), [gameObjectToDelete](GameObject* obj) { return obj == gameObjectToDelete; }), markedToDestroyGameObjects.end());
 
 			delete gameObjectToDelete;
 		}
 
 		isRenderOrderDirty = true;
+	}
+
+	void GameWorld::RegisterGameObject(GameObject* gameObject)
+	{
+		gameObjects.push_back(gameObject);
+		gameObjectsByName[gameObject->GetName()].push_back(gameObject);
+		isRenderOrderDirty = true;
+	}
+
+	void GameWorld::UnregisterGameObject(GameObject* gameObject)
+	{
+		gameObjects.erase(std::remove(gameObjects.begin(), gameObjects.end(), gameObject), gameObjects.end());
+
+		auto named = gameObjectsByName.find(gameObject->GetName());
+		if (named != gameObjectsByName.end())
+		{
+			auto& sameName = named->second;
+			sameName.erase(std::remove(sameName.begin(), sameName.end(), gameObject), sameName.end());
+			if (sameName.empty())
+			{
+				gameObjectsByName.erase(named);
+			}
+		}
 	}
 }

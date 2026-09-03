@@ -16,7 +16,7 @@ namespace XYZEngine
 
 		~GameObject();
 
-		std::string GetName() const;
+		const std::string& GetName() const;
 		void Print(int depth = 0) const;
 
 		void SetRenderLayer(int newRenderLayer);

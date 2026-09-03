@@ -1,0 +1,94 @@
+#include "pch.h"
+#include "GameWorld.h"
+#include <chrono>
+
+using XYZEngine::GameObject;
+using XYZEngine::GameWorld;
+
+namespace
+{
+	class GameWorldTest : public ::testing::Test
+	{
+	protected:
+		void SetUp() override { GameWorld::Instance()->Clear(); }
+		void TearDown() override { GameWorld::Instance()->Clear(); }
+	};
+}
+
+TEST_F(GameWorldTest, FindsObjectByName)
+{
+	GameObject* created = GameWorld::Instance()->CreateGameObject("Player");
+
+	EXPECT_EQ(GameWorld::Instance()->FindGameObject("Player"), created);
+}
+
+TEST_F(GameWorldTest, ReturnsNullForUnknownName)
+{
+	GameWorld::Instance()->CreateGameObject("Player");
+
+	EXPECT_EQ(GameWorld::Instance()->FindGameObject("NoSuchObject"), nullptr);
+}
+
+TEST_F(GameWorldTest, ReturnsFirstCreatedAmongSameNames)
+{
+	GameObject* first = GameWorld::Instance()->CreateGameObject("Grunt");
+	GameWorld::Instance()->CreateGameObject("Grunt");
+	GameWorld::Instance()->CreateGameObject("Grunt");
+
+	EXPECT_EQ(GameWorld::Instance()->FindGameObject("Grunt"), first);
+}
+
+TEST_F(GameWorldTest, DestroyedObjectIsNotFoundAfterLateUpdate)
+{
+	GameObject* player = GameWorld::Instance()->CreateGameObject("Player");
+	GameWorld::Instance()->DestroyGameObject(player);
+
+	EXPECT_EQ(GameWorld::Instance()->FindGameObject("Player"), player);
+
+	GameWorld::Instance()->LateUpdate();
+
+	EXPECT_EQ(GameWorld::Instance()->FindGameObject("Player"), nullptr);
+}
+
+TEST_F(GameWorldTest, DestroyingOneOfSameNamesKeepsTheOthers)
+{
+	GameObject* first = GameWorld::Instance()->CreateGameObject("Grunt");
+	GameObject* second = GameWorld::Instance()->CreateGameObject("Grunt");
+
+	GameWorld::Instance()->DestroyGameObject(first);
+	GameWorld::Instance()->LateUpdate();
+
+	EXPECT_EQ(GameWorld::Instance()->FindGameObject("Grunt"), second);
+}
+
+TEST_F(GameWorldTest, ClearForgetsEveryName)
+{
+	GameWorld::Instance()->CreateGameObject("Player");
+	GameWorld::Instance()->CreateGameObject("Grunt");
+
+	GameWorld::Instance()->Clear();
+
+	EXPECT_EQ(GameWorld::Instance()->FindGameObject("Player"), nullptr);
+	EXPECT_EQ(GameWorld::Instance()->FindGameObject("Grunt"), nullptr);
+}
+
+TEST_F(GameWorldTest, LookupDoesNotScaleWithObjectCount)
+{
+	for (int i = 0; i < 600; i++)
+	{
+		GameWorld::Instance()->CreateGameObject("Wall");
+	}
+	GameObject* player = GameWorld::Instance()->CreateGameObject("Player");
+
+	constexpr int LOOKUPS = 100000;
+	auto started = std::chrono::steady_clock::now();
+	for (int i = 0; i < LOOKUPS; i++)
+	{
+		ASSERT_EQ(GameWorld::Instance()->FindGameObject("Player"), player);
+	}
+	auto elapsed = std::chrono::steady_clock::now() - started;
+
+	double microsecondsPerLookup = std::chrono::duration<double, std::micro>(elapsed).count() / LOOKUPS;
+	std::cout << "FindGameObject among 601 objects: " << microsecondsPerLookup << " us per call" << std::endl;
+	EXPECT_LT(microsecondsPerLookup, 5.0);
+}

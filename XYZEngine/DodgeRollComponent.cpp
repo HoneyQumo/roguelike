@@ -123,8 +123,7 @@ namespace XYZEngine
 			return false;
 		}
 
-		float length = direction.GetLength();
-		rollVector = length > 0.f ? (1.f / length) * direction : GetForward();
+		rollVector = direction.Normalized(GetForward());
 		rollDirection = GetDirectionIndex(rollVector, animation->GetRollDirectionsCount());
 
 		animation->PlayRoll(rollDirection);

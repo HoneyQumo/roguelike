@@ -45,15 +45,13 @@ namespace XYZEngine
 			return;
 		}
 
-		float length = direction.GetLength();
-		if (length <= 0.f)
+		if (direction.IsZero())
 		{
 			Destroy();
 			return;
 		}
 
-		Vector2Df normalizedDirection = (1.f / length) * direction;
-		transform->MoveBy(speed * deltaTime * normalizedDirection);
+		transform->MoveBy(speed * deltaTime * direction.Normalized());
 	}
 	void ProjectileComponent::Render()
 	{
@@ -125,9 +123,7 @@ namespace XYZEngine
 
 		if (hitAction != nullptr)
 		{
-			float length = direction.GetLength();
-			Vector2Df normalizedDirection = length > 0.f ? (1.f / length) * direction : Vector2Df(1.f, 0.f);
-			hitAction(transform->GetWorldPosition(), normalizedDirection, isCharacterHit);
+			hitAction(transform->GetWorldPosition(), direction.Normalized(), isCharacterHit);
 		}
 
 		Destroy();

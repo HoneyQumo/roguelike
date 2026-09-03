@@ -27,6 +27,27 @@ namespace XYZEngine
 			return sqrtf(x * x + y * y);
 		}
 
+		float GetLengthSquared() const
+		{
+			return static_cast<float>(x * x + y * y);
+		}
+
+		bool IsZero() const
+		{
+			return GetLengthSquared() <= 0.f;
+		}
+
+		Vector2D<float> Normalized(const Vector2D<float>& fallback = { 1.f, 0.f }) const
+		{
+			float length = GetLength();
+			if (length <= 0.f)
+			{
+				return fallback;
+			}
+
+			return { x / length, y / length };
+		}
+
 		float DotProduct(const Vector2D<T>& vector) const
 		{
 			return x * vector.x + y * vector.y;

@@ -169,7 +169,7 @@ namespace XYZEngine
 
             if (hitAction != nullptr)
             {
-                Vector2Df hitDirection = distance > 0.f ? (1.f / distance) * (targetPosition - position) : Vector2Df(1.f, 0.f);
+                Vector2Df hitDirection = (targetPosition - position).Normalized();
                 hitAction(targetPosition, hitDirection);
             }
         }

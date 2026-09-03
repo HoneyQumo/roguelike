@@ -30,8 +30,7 @@ namespace XYZEngine
 
 		isRunning = false;
 
-		float length = direction.GetLength();
-		if (length <= 0.f || speed <= 0.f)
+		if (direction.IsZero() || speed <= 0.f)
 		{
 			return;
 		}
@@ -39,8 +38,7 @@ namespace XYZEngine
 		isRunning = input != nullptr && input->IsRunPressed();
 		float currentSpeed = isRunning ? speed * runSpeedMultiplier : speed;
 
-		Vector2Df normalizedDirection = (1.f / length) * direction;
-		transform->MoveBy(currentSpeed * deltaTime * normalizedDirection);
+		transform->MoveBy(currentSpeed * deltaTime * direction.Normalized());
 	}
 	void MovementComponent::Render()
 	{

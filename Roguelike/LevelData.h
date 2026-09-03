@@ -28,13 +28,7 @@ namespace RoguelikeGame
         {"Empty", TileType::Empty},
         {"Floor", TileType::Floor},
         {"Wall", TileType::Wall},
-        {"PlayerSpawn", TileType::PlayerSpawn},
-        {"GruntSpawn", TileType::GruntSpawn},
-        {"AssaultSpawn", TileType::AssaultSpawn},
-        {"ShieldSpawn", TileType::ShieldSpawn},
-        {"HeavySpawn", TileType::HeavySpawn},
-        {"RadioSpawn", TileType::RadioSpawn},
-        {"BossSpawn", TileType::BossSpawn}
+        {"PlayerSpawn", TileType::PlayerSpawn}
     };
 
     struct LevelData

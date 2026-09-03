@@ -205,6 +205,7 @@
         <ClInclude Include="CharacterFactory.h"/>
         <ClInclude Include="Enemy.h"/>
         <ClInclude Include="EnemyAttackComponent.h"/>
+        <ClInclude Include="EnemyCatalog.h"/>
         <ClInclude Include="EnemyConfig.h"/>
         <ClInclude Include="PlayerAttackComponent.h"/>
         <ClInclude Include="PlayerLoadoutComponent.h"/>

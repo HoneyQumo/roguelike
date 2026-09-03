@@ -1,6 +1,7 @@
 #include "LevelBuilder.h"
 #include "GameSettings.h"
 #include "Enemy.h"
+#include "EnemyCatalog.h"
 #include "Wall.h"
 #include <GameWorld.h>
 #include <VertexArrayRendererComponent.h>
@@ -16,12 +17,6 @@ namespace RoguelikeGame
         int wallsCount = 0;
         int enemiesCount = 0;
 
-        auto spawnEnemy = [&level, &enemiesCount](const EnemyConfig& config, const XYZEngine::Vector2Df& position)
-        {
-            level.Add(CreateEnemy(config, position));
-            enemiesCount++;
-        };
-
         for (int row = 0; row < levelData.height; row++)
         {
             for (int column = 0; column < (int)levelData.tiles[row].size(); column++)
@@ -30,7 +25,8 @@ namespace RoguelikeGame
 
                 try
                 {
-                    switch (levelData.tiles[row][column])
+                    TileType tile = levelData.tiles[row][column];
+                    switch (tile)
                     {
                     case TileType::Wall:
                         level.Add(CreateWall(position));
@@ -47,25 +43,12 @@ namespace RoguelikeGame
                             level.SetPlayerSpawn(position);
                         }
                         break;
-                    case TileType::GruntSpawn:
-                        spawnEnemy(GRUNT_CONFIG, position);
-                        break;
-                    case TileType::AssaultSpawn:
-                        spawnEnemy(ASSAULT_CONFIG, position);
-                        break;
-                    case TileType::ShieldSpawn:
-                        spawnEnemy(SHIELD_CONFIG, position);
-                        break;
-                    case TileType::HeavySpawn:
-                        spawnEnemy(HEAVY_CONFIG, position);
-                        break;
-                    case TileType::RadioSpawn:
-                        spawnEnemy(RADIO_CONFIG, position);
-                        break;
-                    case TileType::BossSpawn:
-                        spawnEnemy(BOSS_CONFIG, position);
-                        break;
                     default:
+                        if (const EnemyConfig* config = FindEnemyConfig(tile))
+                        {
+                            level.Add(CreateEnemy(*config, position));
+                            enemiesCount++;
+                        }
                         break;
                     }
                 }

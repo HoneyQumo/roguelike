@@ -1,4 +1,5 @@
 ﻿#include "LevelLoader.h"
+#include "EnemyCatalog.h"
 #include <LoggerRegistry.h>
 #include <fstream>
 #include <stdexcept>
@@ -7,8 +8,8 @@ namespace RoguelikeGame
 {
     const std::string LEGEND_SECTION = "legend";
     const std::string MAP_SECTION = "map";
-    const char COMMENT_SYMBOL = ';';
-    const char EMPTY_SYMBOL = ' ';
+    constexpr char COMMENT_SYMBOL = ';';
+    constexpr char EMPTY_SYMBOL = ' ';
     const std::string WHITESPACE = " \t";
     const std::string UTF8_BOM = "\xEF\xBB\xBF";
 
@@ -72,7 +73,7 @@ namespace RoguelikeGame
             ReadMapLine(line, legend, levelData);
         }
 
-        levelData.height = (int)levelData.tiles.size();
+        levelData.height = static_cast<int>(levelData.tiles.size());
         if (levelData.height == 0)
         {
             LOG_ERROR("Level file is empty: " + sourceName);
@@ -114,12 +115,12 @@ namespace RoguelikeGame
 
     void LevelLoader::ReadMapLine(const std::string& line, const Legend& legend, LevelData& levelData)
     {
-        int row = (int)levelData.tiles.size();
+        int row = static_cast<int>(levelData.tiles.size());
 
         std::vector<TileType> tiles;
         tiles.reserve(line.size());
 
-        for (int column = 0; column < (int)line.size(); column++)
+        for (int column = 0; column < static_cast<int>(line.size()); column++)
         {
             char symbol = line[column];
 
@@ -139,9 +140,9 @@ namespace RoguelikeGame
             tiles.push_back(TileType::Empty);
         }
 
-        if ((int)tiles.size() > levelData.width)
+        if (static_cast<int>(tiles.size()) > levelData.width)
         {
-            levelData.width = (int)tiles.size();
+            levelData.width = static_cast<int>(tiles.size());
         }
         levelData.tiles.push_back(tiles);
     }
@@ -157,22 +158,35 @@ namespace RoguelikeGame
             }
         }
 
+        for (const EnemyDefinition& enemy : ENEMIES)
+        {
+            if (name == enemy.tileName)
+            {
+                tileType = enemy.tile;
+                return true;
+            }
+        }
+
         return false;
     }
 
     const LevelLoader::Legend& LevelLoader::GetDefaultLegend()
     {
-        static const Legend defaultLegend = {
-            {'#', TileType::Wall},
-            {'.', TileType::Floor},
-            {'@', TileType::PlayerSpawn},
-            {'g', TileType::GruntSpawn},
-            {'a', TileType::AssaultSpawn},
-            {'s', TileType::ShieldSpawn},
-            {'h', TileType::HeavySpawn},
-            {'r', TileType::RadioSpawn},
-            {'b', TileType::BossSpawn}
-        };
+        static const Legend defaultLegend = []()
+        {
+            Legend legend = {
+                {'#', TileType::Wall},
+                {'.', TileType::Floor},
+                {'@', TileType::PlayerSpawn}
+            };
+
+            for (const EnemyDefinition& enemy : ENEMIES)
+            {
+                legend[enemy.levelSymbol] = enemy.tile;
+            }
+
+            return legend;
+        }();
 
         return defaultLegend;
     }

@@ -51,7 +51,7 @@ namespace RoguelikeGame
 
         if (config.attackRange <= 0.f)
         {
-            LOG_INFO(config.objectName + " is unarmed and can't attack");
+            LOG_INFO(std::string(config.objectName) + " is unarmed and can't attack");
         }
         else if (IsMelee(config.weapon))
         {
@@ -132,7 +132,7 @@ namespace RoguelikeGame
 
         gameObject->SetRenderLayer(ENEMY_RENDER_LAYER);
 
-        LOG_INFO(config.objectName + " created at " + std::to_string(static_cast<int>(position.x)) + ";" + std::to_string(static_cast<int>(position.y)));
+        LOG_INFO(std::string(config.objectName) + " created at " + std::to_string(static_cast<int>(position.x)) + ";" + std::to_string(static_cast<int>(position.y)));
         return gameObject;
     }
 }

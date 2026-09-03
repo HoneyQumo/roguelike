@@ -1,6 +1,7 @@
 ﻿#include "GameResources.h"
 #include "GameSettings.h"
 #include "WeaponCatalog.h"
+#include "EnemyCatalog.h"
 #include <ResourceSystem.h>
 #include <randomizer.h>
 #include <SFML/Graphics/Shader.hpp>
@@ -12,12 +13,10 @@ namespace RoguelikeGame
         XYZEngine::ResourceSystem::Instance()->LoadTexture(CROSSHAIR_TEXTURE, CROSSHAIR_FILE, false);
 
         LoadCharacterAtlas(PLAYER_TEXTURE, PLAYER_ATLAS_FRAMES);
-        LoadCharacterAtlas(GRUNT_CONFIG.textureMapName, ENEMY_ATLAS_FRAMES);
-        LoadCharacterAtlas(ASSAULT_CONFIG.textureMapName, ENEMY_ATLAS_FRAMES);
-        LoadCharacterAtlas(SHIELD_CONFIG.textureMapName, ENEMY_ATLAS_FRAMES);
-        LoadCharacterAtlas(HEAVY_CONFIG.textureMapName, ENEMY_ATLAS_FRAMES);
-        LoadCharacterAtlas(RADIO_CONFIG.textureMapName, ENEMY_ATLAS_FRAMES);
-        LoadCharacterAtlas(BOSS_CONFIG.textureMapName, ENEMY_ATLAS_FRAMES);
+        for (const EnemyDefinition& enemy : ENEMIES)
+        {
+            LoadCharacterAtlas(enemy.config.textureMapName, ENEMY_ATLAS_FRAMES);
+        }
 
         XYZEngine::ResourceSystem::Instance()->LoadTextureMap(WEAPONS_TEXTURE, WEAPONS_ATLAS_FILE,
                                                              {WEAPON_FRAME_WIDTH, WEAPON_FRAME_HEIGHT}, WEAPON_ATLAS_FRAMES, false);

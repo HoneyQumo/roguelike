@@ -2,7 +2,6 @@
 
 #include <string>
 #include <SFML/Graphics/Color.hpp>
-#include "EnemyConfig.h"
 #include "SpriteAtlas.h"
 #include "WeaponCatalog.h"
 
@@ -158,40 +157,4 @@ namespace RoguelikeGame
     const sf::Color AMMO_HUD_RELOADING_COLOR = {235, 190, 90};
     const sf::Color AMMO_HUD_OUTLINE_COLOR = {15, 13, 12, 220};
     const sf::Color RELOAD_INDICATOR_COLOR = {235, 190, 90};
-
-    const EnemyConfig GRUNT_CONFIG = {
-        "Grunt", "enemy_grunt", WeaponId::Knife,
-        150.f, 300.f, 40.f, 50.f, 0.f,
-        50.f, 30.f, 0.9f, 0.f
-    };
-
-    const EnemyConfig ASSAULT_CONFIG = {
-        "Assault", "enemy_assault", WeaponId::Ak47,
-        110.f, 420.f, 220.f, 70.f, 5.f,
-        360.f, 12.f, 1.4f, 700.f
-    };
-
-    const EnemyConfig SHIELD_CONFIG = {
-        "Shield", "enemy_shield", WeaponId::Glock,
-        95.f, 380.f, 150.f, 120.f, 14.f,
-        300.f, 9.f, 1.1f, 650.f
-    };
-
-    const EnemyConfig HEAVY_CONFIG = {
-        "Heavy", "enemy_heavy", WeaponId::M16,
-        80.f, 400.f, 200.f, 150.f, 10.f,
-        340.f, 6.f, 0.3f, 720.f
-    };
-
-    const EnemyConfig RADIO_CONFIG = {
-        "Radio", "enemy_radio", WeaponId::SmgSuppressed,
-        165.f, 460.f, 260.f, 55.f, 2.f,
-        300.f, 5.f, 0.45f, 680.f
-    };
-
-    const EnemyConfig BOSS_CONFIG = {
-        "Boss", "enemy_boss", WeaponId::ShotgunPump,
-        90.f, 500.f, 170.f, 260.f, 18.f,
-        260.f, 16.f, 1.0f, 900.f
-    };
 }

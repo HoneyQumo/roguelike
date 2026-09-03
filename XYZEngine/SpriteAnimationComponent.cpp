@@ -10,17 +10,22 @@ namespace XYZEngine
 {
 	SpriteAnimationComponent::SpriteAnimationComponent(GameObject* gameObject) : Component(gameObject) {}
 
+	void SpriteAnimationComponent::Start()
+	{
+		renderer = gameObject->GetComponent<SpriteRendererComponent>();
+		if (renderer == nullptr)
+		{
+			return;
+		}
+
+		renderer->SetVisible(isPlaying && startDelay.IsReady());
+	}
+
 	void SpriteAnimationComponent::Update(float deltaTime)
 	{
 		if (renderer == nullptr)
 		{
-			renderer = gameObject->GetComponent<SpriteRendererComponent>();
-			if (renderer == nullptr)
-			{
-				return;
-			}
-
-			renderer->SetVisible(isPlaying && startDelay.IsReady());
+			return;
 		}
 
 		if (!isPlaying || frames.empty())

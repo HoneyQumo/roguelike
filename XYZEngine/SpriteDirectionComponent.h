@@ -11,6 +11,7 @@ namespace XYZEngine
 	public:
 		SpriteDirectionComponent(GameObject* gameObject);
 
+		void Start() override;
 		void Update(float deltaTime) override;
 		void Render() override;
 	private:

@@ -10,26 +10,21 @@ namespace RoguelikeGame
         transform = gameObject->GetComponent<XYZEngine::TransformComponent>();
     }
 
+    void EnemyAttackComponent::Start()
+    {
+        weapon = gameObject->GetComponent<XYZEngine::WeaponComponent>();
+        meleeWeapon = gameObject->GetComponent<XYZEngine::MeleeWeaponComponent>();
+        health = gameObject->GetComponent<XYZEngine::HealthComponent>();
+
+        if (weapon == nullptr && meleeWeapon == nullptr)
+        {
+            LOG_ERROR("Enemy attack needs a weapon component on " + gameObject->GetName());
+            gameObject->DestroyComponent(this);
+        }
+    }
+
     void EnemyAttackComponent::Update(float deltaTime)
     {
-        if (!areWeaponsSearched)
-        {
-            weapon = gameObject->GetComponent<XYZEngine::WeaponComponent>();
-            meleeWeapon = gameObject->GetComponent<XYZEngine::MeleeWeaponComponent>();
-            areWeaponsSearched = true;
-
-            if (weapon == nullptr && meleeWeapon == nullptr)
-            {
-                LOG_ERROR("Enemy attack needs a weapon component on " + gameObject->GetName());
-                gameObject->DestroyComponent(this);
-                return;
-            }
-        }
-
-        if (health == nullptr)
-        {
-            health = gameObject->GetComponent<XYZEngine::HealthComponent>();
-        }
 
         if (health != nullptr && !health->IsAlive())
         {

@@ -15,20 +15,15 @@ namespace XYZEngine
     WeaponComponent::WeaponComponent(GameObject* gameObject) : Component(gameObject)
     {
         transform = gameObject->GetComponent<TransformComponent>();
+    }
+
+    void WeaponComponent::Start()
+    {
         pouch = gameObject->GetComponent<AmmoPouchComponent>();
     }
 
     void WeaponComponent::Update(float deltaTime)
     {
-        if (!isPouchSearched)
-        {
-            if (pouch == nullptr)
-            {
-                pouch = gameObject->GetComponent<AmmoPouchComponent>();
-            }
-            isPouchSearched = true;
-        }
-
         shotCooldown.Tick(deltaTime);
 
         if (isReloading)

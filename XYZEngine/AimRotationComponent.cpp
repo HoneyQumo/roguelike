@@ -14,6 +14,11 @@ namespace XYZEngine
         transform = gameObject->GetComponent<TransformComponent>();
     }
 
+3    void AimRotationComponent::Start()
+    {
+        input = gameObject->GetComponent<InputComponent>();
+    }
+
     void AimRotationComponent::Update(float deltaTime)
     {
         if (!isEnabled)
@@ -74,11 +79,6 @@ namespace XYZEngine
     {
         if (isCursorAim)
         {
-            if (input == nullptr)
-            {
-                input = gameObject->GetComponent<InputComponent>();
-            }
-
             if (input == nullptr)
             {
                 return false;

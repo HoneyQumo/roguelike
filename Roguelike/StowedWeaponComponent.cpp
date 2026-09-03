@@ -11,15 +11,16 @@ namespace RoguelikeGame
         transform = gameObject->GetComponent<XYZEngine::TransformComponent>();
     }
 
+    void StowedWeaponComponent::Start()
+    {
+        renderer = gameObject->GetComponent<XYZEngine::SpriteRendererComponent>();
+    }
+
     void StowedWeaponComponent::Update(float deltaTime)
     {
         if (renderer == nullptr)
         {
-            renderer = gameObject->GetComponent<XYZEngine::SpriteRendererComponent>();
-            if (renderer == nullptr)
-            {
-                return;
-            }
+            return;
         }
 
         if (ownerAnimation == nullptr)

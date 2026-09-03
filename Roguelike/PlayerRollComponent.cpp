@@ -8,36 +8,23 @@ namespace RoguelikeGame
     {
     }
 
-    void PlayerRollComponent::Update(float deltaTime)
+    void PlayerRollComponent::Start()
     {
-        if (input == nullptr)
-        {
-            input = gameObject->GetComponent<XYZEngine::InputComponent>();
-        }
-        if (dodgeRoll == nullptr)
-        {
-            dodgeRoll = gameObject->GetComponent<XYZEngine::DodgeRollComponent>();
-        }
-        if (meleeWeapon == nullptr)
-        {
-            meleeWeapon = gameObject->GetComponent<XYZEngine::MeleeWeaponComponent>();
-        }
-        if (health == nullptr)
-        {
-            health = gameObject->GetComponent<XYZEngine::HealthComponent>();
-        }
-        if (loadout == nullptr)
-        {
-            loadout = gameObject->GetComponent<PlayerLoadoutComponent>();
-        }
+        input = gameObject->GetComponent<XYZEngine::InputComponent>();
+        dodgeRoll = gameObject->GetComponent<XYZEngine::DodgeRollComponent>();
+        meleeWeapon = gameObject->GetComponent<XYZEngine::MeleeWeaponComponent>();
+        health = gameObject->GetComponent<XYZEngine::HealthComponent>();
+        loadout = gameObject->GetComponent<PlayerLoadoutComponent>();
 
         if (input == nullptr || dodgeRoll == nullptr)
         {
             LOG_ERROR("Player roll needs input and dodge roll components");
             gameObject->DestroyComponent(this);
-            return;
         }
+    }
 
+    void PlayerRollComponent::Update(float deltaTime)
+    {
         bool isRollPressed = input->IsRollPressed();
         bool isRollJustPressed = isRollPressed && !wasRollPressed;
         wasRollPressed = isRollPressed;

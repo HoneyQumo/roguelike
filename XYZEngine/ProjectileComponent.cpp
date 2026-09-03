@@ -13,6 +13,19 @@ namespace XYZEngine
 		transform = gameObject->GetComponent<TransformComponent>();
 	}
 
+	void ProjectileComponent::Start()
+	{
+		collider = gameObject->GetComponent<ColliderComponent>();
+		if (collider == nullptr)
+		{
+			LOG_ERROR("Projectile needs a collider on " + gameObject->GetName());
+			Destroy();
+			return;
+		}
+
+		collider->SubscribeTriggerEnter([this](Trigger trigger) { OnTrigger(trigger); });
+	}
+
 	void ProjectileComponent::Update(float deltaTime)
 	{
 		if (isHandled)
@@ -22,15 +35,7 @@ namespace XYZEngine
 
 		if (collider == nullptr)
 		{
-			collider = gameObject->GetComponent<ColliderComponent>();
-			if (collider == nullptr)
-			{
-				LOG_ERROR("Projectile needs a collider on " + gameObject->GetName());
-				Destroy();
-				return;
-			}
-
-			collider->SubscribeTriggerEnter([this](Trigger trigger) { OnTrigger(trigger); });
+			return;
 		}
 
 		lifetime.Tick(deltaTime);

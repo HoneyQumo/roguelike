@@ -17,20 +17,17 @@ namespace XYZEngine
         previousPosition = transform->GetWorldPosition();
     }
 
+    void SpriteMovementAnimationComponent::Start()
+    {
+        renderer = gameObject->GetComponent<SpriteRendererComponent>();
+        movement = gameObject->GetComponent<MovementComponent>();
+    }
+
     void SpriteMovementAnimationComponent::Update(float deltaTime)
     {
         if (renderer == nullptr)
         {
-            renderer = gameObject->GetComponent<SpriteRendererComponent>();
-            if (renderer == nullptr)
-            {
-                return;
-            }
-        }
-
-        if (movement == nullptr)
-        {
-            movement = gameObject->GetComponent<MovementComponent>();
+            return;
         }
 
         Vector2Df position = transform->GetWorldPosition();

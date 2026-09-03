@@ -11,12 +11,13 @@ namespace RoguelikeGame
         transform = gameObject->GetComponent<XYZEngine::TransformComponent>();
     }
 
+    void WeaponLayerComponent::Start()
+    {
+        renderer = gameObject->GetComponent<XYZEngine::SpriteRendererComponent>();
+    }
+
     void WeaponLayerComponent::Update(float deltaTime)
     {
-        if (renderer == nullptr)
-        {
-            renderer = gameObject->GetComponent<XYZEngine::SpriteRendererComponent>();
-        }
 
         if (ownerAnimation == nullptr)
         {

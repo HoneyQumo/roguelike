@@ -15,6 +15,7 @@ namespace XYZEngine
     public:
         ProjectileComponent(GameObject* gameObject);
 
+        void Start() override;
         void Update(float deltaTime) override;
         void Render() override;
 

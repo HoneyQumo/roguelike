@@ -12,44 +12,25 @@ namespace RoguelikeGame
     {
     }
 
-    void PlayerAttackComponent::Update(float deltaTime)
+    void PlayerAttackComponent::Start()
     {
-        if (input == nullptr)
-        {
-            input = gameObject->GetComponent<XYZEngine::InputComponent>();
-        }
-        if (weapon == nullptr)
-        {
-            weapon = gameObject->GetComponent<XYZEngine::WeaponComponent>();
-        }
-        if (meleeWeapon == nullptr)
-        {
-            meleeWeapon = gameObject->GetComponent<XYZEngine::MeleeWeaponComponent>();
-        }
-        if (health == nullptr)
-        {
-            health = gameObject->GetComponent<XYZEngine::HealthComponent>();
-        }
-        if (dodgeRoll == nullptr)
-        {
-            dodgeRoll = gameObject->GetComponent<XYZEngine::DodgeRollComponent>();
-        }
-        if (loadout == nullptr)
-        {
-            loadout = gameObject->GetComponent<PlayerLoadoutComponent>();
-        }
-        if (hitFlash == nullptr)
-        {
-            hitFlash = gameObject->GetComponent<HitFlashComponent>();
-        }
+        input = gameObject->GetComponent<XYZEngine::InputComponent>();
+        weapon = gameObject->GetComponent<XYZEngine::WeaponComponent>();
+        meleeWeapon = gameObject->GetComponent<XYZEngine::MeleeWeaponComponent>();
+        health = gameObject->GetComponent<XYZEngine::HealthComponent>();
+        dodgeRoll = gameObject->GetComponent<XYZEngine::DodgeRollComponent>();
+        loadout = gameObject->GetComponent<PlayerLoadoutComponent>();
+        hitFlash = gameObject->GetComponent<HitFlashComponent>();
 
         if (input == nullptr || weapon == nullptr || meleeWeapon == nullptr || loadout == nullptr)
         {
             LOG_ERROR("Player attack needs input, weapon, melee weapon and loadout components");
             gameObject->DestroyComponent(this);
-            return;
         }
+    }
 
+    void PlayerAttackComponent::Update(float deltaTime)
+    {
         if (health != nullptr && !health->IsAlive())
         {
             return;

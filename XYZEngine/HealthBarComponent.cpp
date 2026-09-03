@@ -22,17 +22,18 @@ namespace XYZEngine
 		delete fill;
 	}
 
-	void HealthBarComponent::Update(float deltaTime)
+	void HealthBarComponent::Start()
 	{
+		health = gameObject->GetComponent<HealthComponent>();
 		if (health == nullptr)
 		{
-			health = gameObject->GetComponent<HealthComponent>();
-			if (health == nullptr)
-			{
-				LOG_ERROR("HealthBar needs HealthComponent on " + gameObject->GetName());
-				gameObject->DestroyComponent(this);
-			}
+			LOG_ERROR("HealthBar needs HealthComponent on " + gameObject->GetName());
+			gameObject->DestroyComponent(this);
 		}
+	}
+
+	void HealthBarComponent::Update(float deltaTime)
+	{
 	}
 	void HealthBarComponent::Render()
 	{

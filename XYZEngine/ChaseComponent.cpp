@@ -10,15 +10,16 @@ namespace XYZEngine
 		transform = gameObject->GetComponent<TransformComponent>();
 	}
 
+	void ChaseComponent::Start()
+	{
+		movement = gameObject->GetComponent<MovementComponent>();
+	}
+
 	void ChaseComponent::Update(float deltaTime)
 	{
 		if (movement == nullptr)
 		{
-			movement = gameObject->GetComponent<MovementComponent>();
-			if (movement == nullptr)
-			{
-				return;
-			}
+			return;
 		}
 
 		isChasing = false;

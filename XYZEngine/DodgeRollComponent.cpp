@@ -20,10 +20,13 @@ namespace XYZEngine
 		transform = gameObject->GetComponent<TransformComponent>();
 	}
 
-	void DodgeRollComponent::Update(float deltaTime)
+	void DodgeRollComponent::Start()
 	{
 		FindComponents();
+	}
 
+	void DodgeRollComponent::Update(float deltaTime)
+	{
 		cooldown.Tick(deltaTime);
 
 		if (!isRolling)

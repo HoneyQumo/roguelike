@@ -14,6 +14,7 @@ namespace XYZEngine
 		HealthBarComponent(GameObject* gameObject);
 		~HealthBarComponent();
 
+		void Start() override;
 		void Update(float deltaTime) override;
 		void Render() override;
 

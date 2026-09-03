@@ -77,6 +77,17 @@ namespace XYZEngine
 	{
 		for (int i = 0; i < components.size(); i++)
 		{
+			if (components[i]->isDestroyed || components[i]->isStarted)
+			{
+				continue;
+			}
+
+			components[i]->isStarted = true;
+			components[i]->Start();
+		}
+
+		for (int i = 0; i < components.size(); i++)
+		{
 			if (!components[i]->isDestroyed)
 			{
 				components[i]->Update(deltaTime);

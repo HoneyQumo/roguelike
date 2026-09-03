@@ -9,6 +9,11 @@ namespace XYZEngine
 		transform = gameObject->GetComponent<TransformComponent>();
 	}
 
+	void MovementComponent::Start()
+	{
+		input = gameObject->GetComponent<InputComponent>();
+	}
+
 	void MovementComponent::Update(float deltaTime)
 	{
 		if (!isEnabled)
@@ -18,11 +23,6 @@ namespace XYZEngine
 		}
 
 		// If the owner is player-controlled, input overrides any direction set from the outside.
-		if (input == nullptr)
-		{
-			input = gameObject->GetComponent<InputComponent>();
-		}
-
 		if (input != nullptr)
 		{
 			direction = { input->GetHorizontalAxis(), input->GetVerticalAxis() };

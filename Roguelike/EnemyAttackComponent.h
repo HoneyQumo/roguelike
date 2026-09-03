@@ -16,6 +16,7 @@ namespace RoguelikeGame
     public:
         EnemyAttackComponent(XYZEngine::GameObject* gameObject);
 
+        void Start() override;
         void Update(float deltaTime) override;
         void Render() override;
 
@@ -27,7 +28,6 @@ namespace RoguelikeGame
         XYZEngine::WeaponComponent* weapon = nullptr;
         XYZEngine::MeleeWeaponComponent* meleeWeapon = nullptr;
         XYZEngine::HealthComponent* health = nullptr;
-        bool areWeaponsSearched = false;
 
         std::string targetName;
         float attackRange = 0.f;

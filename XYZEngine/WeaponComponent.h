@@ -16,6 +16,7 @@ namespace XYZEngine
     public:
         WeaponComponent(GameObject* gameObject);
 
+        void Start() override;
         void Update(float deltaTime) override;
         void Render() override;
 
@@ -56,7 +57,6 @@ namespace XYZEngine
     private:
         TransformComponent* transform;
         AmmoPouchComponent* pouch = nullptr;
-        bool isPouchSearched = false;
 
         Cooldown shotCooldown{0.5f};
         float damage = 10.f;

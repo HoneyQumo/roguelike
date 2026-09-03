@@ -12,10 +12,13 @@ namespace RoguelikeGame
     {
     }
 
-    void PlayerLoadoutComponent::Update(float deltaTime)
+    void PlayerLoadoutComponent::Start()
     {
         FindComponents();
+    }
 
+    void PlayerLoadoutComponent::Update(float deltaTime)
+    {
         if (animation == nullptr)
         {
             return;

@@ -33,6 +33,7 @@ namespace XYZEngine
     public:
         MeleeWeaponComponent(GameObject* gameObject);
 
+        void Start() override;
         void Update(float deltaTime) override;
         void Render() override;
 
@@ -61,7 +62,6 @@ namespace XYZEngine
         TransformComponent* transform;
         SpriteMovementAnimationComponent* animation = nullptr;
         MovementComponent* movement = nullptr;
-        bool areComponentsSearched = false;
 
         MeleeAttack quickAttack;
         MeleeAttack heavyAttack;
@@ -86,7 +86,7 @@ namespace XYZEngine
 
         const MeleeAttack& GetAttack() const;
         Vector2Df GetForward() const;
-        void Start(MeleeAttackKind kind);
+        void BeginAttack(MeleeAttackKind kind);
         void Strike();
         void Finish();
         void UpdateLunge(float deltaTime);

@@ -10,17 +10,14 @@ namespace XYZEngine
 
 	// Direction comes from the movement intent, not from the actual offset:
 	// physics pushes a blocked object backwards, and the sprite would flip away from the obstacle.
+	void SpriteDirectionComponent::Start()
+	{
+		movement = gameObject->GetComponent<MovementComponent>();
+		renderer = gameObject->GetComponent<SpriteRendererComponent>();
+	}
+
 	void SpriteDirectionComponent::Update(float deltaTime)
 	{
-		if (movement == nullptr)
-		{
-			movement = gameObject->GetComponent<MovementComponent>();
-		}
-		if (renderer == nullptr)
-		{
-			renderer = gameObject->GetComponent<SpriteRendererComponent>();
-		}
-
 		if (movement == nullptr || renderer == nullptr)
 		{
 			return;

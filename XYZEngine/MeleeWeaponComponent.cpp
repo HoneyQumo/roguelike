@@ -17,15 +17,14 @@ namespace XYZEngine
         transform = gameObject->GetComponent<TransformComponent>();
     }
 
+    void MeleeWeaponComponent::Start()
+    {
+        animation = gameObject->GetComponent<SpriteMovementAnimationComponent>();
+        movement = gameObject->GetComponent<MovementComponent>();
+    }
+
     void MeleeWeaponComponent::Update(float deltaTime)
     {
-        if (!areComponentsSearched)
-        {
-            animation = gameObject->GetComponent<SpriteMovementAnimationComponent>();
-            movement = gameObject->GetComponent<MovementComponent>();
-            areComponentsSearched = true;
-        }
-
         cooldown.Tick(deltaTime);
 
         if (!isAttacking)
@@ -170,7 +169,7 @@ namespace XYZEngine
             return false;
         }
 
-        Start(MeleeAttackKind::Quick);
+        BeginAttack(MeleeAttackKind::Quick);
 
         if (animation != nullptr)
         {
@@ -187,7 +186,7 @@ namespace XYZEngine
             return false;
         }
 
-        Start(MeleeAttackKind::Heavy);
+        BeginAttack(MeleeAttackKind::Heavy);
         isHolding = true;
 
         if (animation != nullptr)
@@ -240,7 +239,7 @@ namespace XYZEngine
         return transform->GetForward();
     }
 
-    void MeleeWeaponComponent::Start(MeleeAttackKind kind)
+    void MeleeWeaponComponent::BeginAttack(MeleeAttackKind kind)
     {
         currentKind = kind;
         isAttacking = true;

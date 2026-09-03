@@ -200,6 +200,7 @@
     <ClInclude Include="TransformComponent.h" />
     <ClInclude Include="Trigger.h" />
     <ClInclude Include="Vector.h" />
+    <ClInclude Include="VertexArrayRendererComponent.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AmmoPouchComponent.cpp" />
@@ -248,6 +249,7 @@
     <ClCompile Include="SpriteMovementAnimationComponent.cpp" />
     <ClCompile Include="SpriteRendererComponent.cpp" />
     <ClCompile Include="TransformComponent.cpp" />
+    <ClCompile Include="VertexArrayRendererComponent.cpp" />
     <ClCompile Include="Trigger.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

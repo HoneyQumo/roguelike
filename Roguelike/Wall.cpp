@@ -1,7 +1,6 @@
 #include "Wall.h"
 #include <GameObject.h>
 #include "GameSettings.h"
-#include <RectangleRendererComponent.h>
 #include <RigidbodyComponent.h>
 #include <BoxColliderComponent.h>
 
@@ -13,10 +12,6 @@ namespace RoguelikeGame
 
         auto transform = gameObject->GetComponent<XYZEngine::TransformComponent>();
         transform->SetWorldPosition(position);
-
-        auto renderer = gameObject->AddComponent<XYZEngine::RectangleRendererComponent>();
-        renderer->SetSize(TILE_SIZE, TILE_SIZE);
-        renderer->SetColor(WALL_COLOR);
 
         // Kinematic body keeps the wall in place when something bumps into it.
         auto body = gameObject->AddComponent<XYZEngine::RigidbodyComponent>();

@@ -9,20 +9,7 @@ namespace RoguelikeGame
     {
         Clear();
 
-        // Game objects are rendered in creation order, so the floor goes first and never covers walls.
-        for (int row = 0; row < levelData.height; row++)
-        {
-            for (int column = 0; column < (int)levelData.tiles[row].size(); column++)
-            {
-                TileType tile = levelData.tiles[row][column];
-                if (tile == TileType::Empty || tile == TileType::Wall)
-                {
-                    continue;
-                }
-
-                floors.push_back(std::make_unique<Floor>(TileToWorldPosition(column, row, levelData.height)));
-            }
-        }
+        BuildTiles(levelData);
 
         for (int row = 0; row < levelData.height; row++)
         {
@@ -74,7 +61,7 @@ namespace RoguelikeGame
             LOG_WARN("Level has no player spawn point");
         }
 
-        LOG_INFO("Level built: floors " + std::to_string(floors.size())
+        LOG_INFO("Level built: tiles " + std::to_string(tilesCount)
             + ", walls " + std::to_string(walls.size())
             + ", enemies " + std::to_string(enemies.size()));
     }
@@ -84,7 +71,39 @@ namespace RoguelikeGame
         player.reset();
         enemies.clear();
         walls.clear();
-        floors.clear();
+
+        if (tilesObject != nullptr)
+        {
+            XYZEngine::GameWorld::Instance()->DestroyGameObject(tilesObject);
+            tilesObject = nullptr;
+        }
+        tilesCount = 0;
+    }
+    
+    void LevelBuilder::BuildTiles(const LevelData& levelData)
+    {
+        tilesObject = XYZEngine::GameWorld::Instance()->CreateGameObject("LevelTiles");
+        tilesObject->SetRenderLayer(GROUND_RENDER_LAYER);
+
+        auto renderer = tilesObject->AddComponent<XYZEngine::VertexArrayRendererComponent>();
+        const XYZEngine::Vector2Df tileSize = {TILE_SIZE, TILE_SIZE};
+
+        for (int row = 0; row < levelData.height; row++)
+        {
+            for (int column = 0; column < (int)levelData.tiles[row].size(); column++)
+            {
+                TileType tile = levelData.tiles[row][column];
+                if (tile == TileType::Empty)
+                {
+                    continue;
+                }
+
+                const sf::Color& color = tile == TileType::Wall ? WALL_COLOR : FLOOR_COLOR;
+                renderer->AddQuad(TileToWorldPosition(column, row, levelData.height), tileSize, color);
+            }
+        }
+
+        tilesCount = (int)renderer->GetQuadsCount();
     }
 
     Player* LevelBuilder::GetPlayer() const

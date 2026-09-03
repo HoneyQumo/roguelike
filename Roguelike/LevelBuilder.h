@@ -6,7 +6,7 @@
 #include "Player.h"
 #include "Enemy.h"
 #include "Wall.h"
-#include "Floor.h"
+#include <VertexArrayRendererComponent.h>
 
 namespace RoguelikeGame
 {
@@ -19,11 +19,14 @@ namespace RoguelikeGame
         Player* GetPlayer() const;
 
     private:
-        std::vector<std::unique_ptr<Floor>> floors;
         std::vector<std::unique_ptr<Wall>> walls;
         std::vector<std::unique_ptr<Enemy>> enemies;
         std::unique_ptr<Player> player;
 
+        XYZEngine::GameObject* tilesObject = nullptr;
+        int tilesCount = 0;
+
+        void BuildTiles(const LevelData& levelData);
         static XYZEngine::Vector2Df TileToWorldPosition(int column, int row, int levelHeight);
     };
 }

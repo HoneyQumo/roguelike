@@ -73,9 +73,6 @@
     <ClCompile Include="Wall.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
-    <ClCompile Include="Floor.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
     <ClCompile Include="LevelLoader.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
@@ -99,7 +96,6 @@
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="EnemyAttackComponent.h" />
     <ClInclude Include="EnemyConfig.h" />
-    <ClInclude Include="Floor.h" />
     <ClInclude Include="PlayerAttackComponent.h" />
     <ClInclude Include="PlayerLoadoutComponent.h" />
     <ClInclude Include="PlayerRollComponent.h" />

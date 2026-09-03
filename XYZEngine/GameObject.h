@@ -49,11 +49,8 @@ namespace XYZEngine
 			return newComponent;
 		}
 
-		void RemoveComponent(Component* component)
-		{
-			components.erase(std::remove_if(components.begin(), components.end(), [component](Component* obj) { return obj == component; }), components.end());
-			delete component;
-		}
+		void DestroyComponent(Component* component);
+		void DestroyMarkedComponents();
 
 		template <typename T>
 		T* GetComponent() const
@@ -132,6 +129,7 @@ namespace XYZEngine
 
 		std::vector<GameObject*> children = {};
 		std::vector<Component*> components = {};
+		std::vector<Component*> markedToDestroyComponents = {};
 
 		void AddChild(GameObject* child);
 		void RemoveChild(GameObject* child);

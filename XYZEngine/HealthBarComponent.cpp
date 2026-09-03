@@ -30,7 +30,7 @@ namespace XYZEngine
 			if (health == nullptr)
 			{
 				LOG_ERROR("HealthBar needs HealthComponent on " + gameObject->GetName());
-				gameObject->RemoveComponent(this);
+				gameObject->DestroyComponent(this);
 			}
 		}
 	}

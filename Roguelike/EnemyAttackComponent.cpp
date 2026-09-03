@@ -21,7 +21,7 @@ namespace RoguelikeGame
             if (weapon == nullptr && meleeWeapon == nullptr)
             {
                 LOG_ERROR("Enemy attack needs a weapon component on " + gameObject->GetName());
-                gameObject->RemoveComponent(this);
+                gameObject->DestroyComponent(this);
                 return;
             }
         }

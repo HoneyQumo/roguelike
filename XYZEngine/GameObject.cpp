@@ -22,7 +22,36 @@ namespace XYZEngine
 			delete component;
 		}
 		components.clear();
+		markedToDestroyComponents.clear();
 		children.clear();
+	}
+
+	void GameObject::DestroyComponent(Component* component)
+	{
+		if (component == nullptr || component->isDestroyed)
+		{
+			return;
+		}
+
+		component->isDestroyed = true;
+		markedToDestroyComponents.push_back(component);
+	}
+
+	void GameObject::DestroyMarkedComponents()
+	{
+		if (markedToDestroyComponents.empty())
+		{
+			return;
+		}
+
+		std::vector<Component*> destroying;
+		destroying.swap(markedToDestroyComponents);
+
+		for (auto component : destroying)
+		{
+			components.erase(std::remove(components.begin(), components.end(), component), components.end());
+			delete component;
+		}
 	}
 
 	std::string GameObject::GetName() const
@@ -46,16 +75,22 @@ namespace XYZEngine
 
 	void GameObject::Update(float deltaTime)
 	{
-		for (auto& component : components)
+		for (int i = 0; i < components.size(); i++)
 		{
-			component->Update(deltaTime);
+			if (!components[i]->isDestroyed)
+			{
+				components[i]->Update(deltaTime);
+			}
 		}
 	}
 	void GameObject::Render()
 	{
-		for (auto& component : components)
+		for (int i = 0; i < components.size(); i++)
 		{
-			component->Render();
+			if (!components[i]->isDestroyed)
+			{
+				components[i]->Render();
+			}
 		}
 	}
 

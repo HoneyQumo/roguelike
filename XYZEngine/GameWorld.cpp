@@ -43,6 +43,11 @@ namespace XYZEngine
 		{
 			DestroyGameObjectImmediate(markedToDestroyGameObjects[i]);
 		}
+
+		for (int i = 0; i < gameObjects.size(); i++)
+		{
+			gameObjects[i]->DestroyMarkedComponents();
+		}
 	}
 
 	GameObject* GameWorld::CreateGameObject()

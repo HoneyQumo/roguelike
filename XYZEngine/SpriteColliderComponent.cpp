@@ -9,7 +9,7 @@ namespace XYZEngine
 		if (spriteRenderer == nullptr)
 		{
 			LOG_ERROR("SpriteRenderer required to SpriteCollider on " + gameObject->GetName());
-			gameObject->RemoveComponent(this);
+			gameObject->DestroyComponent(this);
 			return;
 		}
 

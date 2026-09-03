@@ -14,7 +14,13 @@ namespace XYZEngine
 		virtual void Render() = 0;
 
 		GameObject* GetGameObject();
+
+		bool IsDestroyed() const;
+
+		friend class GameObject;
 	protected:
 		GameObject* gameObject;
+	private:
+		bool isDestroyed = false;
 	};
 }

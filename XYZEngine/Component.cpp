@@ -13,4 +13,8 @@ namespace XYZEngine
 	{
 		return gameObject;
 	}
+	bool Component::IsDestroyed() const
+	{
+		return isDestroyed;
+	}
 }

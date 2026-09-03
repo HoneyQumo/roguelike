@@ -34,7 +34,7 @@ namespace RoguelikeGame
         if (input == nullptr || dodgeRoll == nullptr)
         {
             LOG_ERROR("Player roll needs input and dodge roll components");
-            gameObject->RemoveComponent(this);
+            gameObject->DestroyComponent(this);
             return;
         }
 

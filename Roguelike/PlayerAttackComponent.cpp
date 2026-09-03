@@ -46,7 +46,7 @@ namespace RoguelikeGame
         if (input == nullptr || weapon == nullptr || meleeWeapon == nullptr || loadout == nullptr)
         {
             LOG_ERROR("Player attack needs input, weapon, melee weapon and loadout components");
-            gameObject->RemoveComponent(this);
+            gameObject->DestroyComponent(this);
             return;
         }
 

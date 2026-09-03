@@ -6,6 +6,8 @@
 
 namespace XYZEngine
 {
+	constexpr float MAX_FRAME_TIME = 0.05f;
+
 	class Engine
 	{
 	public:

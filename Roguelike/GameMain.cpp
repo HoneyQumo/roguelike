@@ -33,6 +33,7 @@ int main()
 
     auto window = new sf::RenderWindow(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "Roguelike by HoneyQumo");
     window->setMouseCursorVisible(false);
+    window->setFramerateLimit(FRAME_RATE_LIMIT);
     RenderSystem::Instance()->SetMainWindow(window);
 
     GameResources::Load();

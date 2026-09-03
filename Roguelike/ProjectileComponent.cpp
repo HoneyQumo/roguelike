@@ -2,8 +2,11 @@
 #include <GameObject.h>
 #include <GameWorld.h>
 #include "HealthComponent.h"
+#include <PhysicsSystem.h>
 #include <LoggerRegistry.h>
+#include <algorithm>
 #include <cassert>
+#include <cmath>
 
 using namespace XYZEngine;
 
@@ -57,7 +60,23 @@ namespace RoguelikeGame
 			return;
 		}
 
-		transform->MoveBy(speed * deltaTime * direction.Normalized());
+		Vector2Df move = speed * deltaTime * direction.Normalized();
+		int steps = std::max(1, static_cast<int>(std::ceil(move.GetLength() / GetMaxStep())));
+		Vector2Df step = (1.f / steps) * move;
+		Vector2Df moved = {0.f, 0.f};
+
+		for (int i = 0; i < steps; i++)
+		{
+			transform->MoveBy(step);
+			moved = moved + step;
+
+			ColliderComponent* target = FindHit(moved);
+			if (target != nullptr)
+			{
+				Hit(target);
+				return;
+			}
+		}
 	}
 	void ProjectileComponent::Render()
 	{
@@ -114,13 +133,44 @@ namespace RoguelikeGame
 			return;
 		}
 
-		GameObject* target = otherCollider->GetGameObject();
-		if (target->GetName() == shooterName)
+		if (otherCollider->GetGameObject()->GetName() == shooterName)
 		{
 			return;
 		}
 
-		auto health = target->GetComponent<HealthComponent>();
+		Hit(otherCollider);
+	}
+
+	float ProjectileComponent::GetMaxStep() const
+	{
+		const sf::FloatRect& bounds = collider->GetBounds();
+		return std::max(1.f, 0.5f * std::min(bounds.width, bounds.height));
+	}
+
+	ColliderComponent* ProjectileComponent::FindHit(const Vector2Df& moved) const
+	{
+		sf::FloatRect area = collider->GetBounds();
+		area.left += moved.x;
+		area.top += moved.y;
+
+		for (ColliderComponent* other : PhysicsSystem::Instance()->Overlap(area))
+		{
+			bool isIgnored = (collider->GetCollisionLayer() & other->GetIgnoredLayers()) != 0u
+				|| (other->GetCollisionLayer() & collider->GetIgnoredLayers()) != 0u;
+			if (other == collider || other->IsTrigger() || isIgnored || other->GetGameObject()->GetName() == shooterName)
+			{
+				continue;
+			}
+
+			return other;
+		}
+
+		return nullptr;
+	}
+
+	void ProjectileComponent::Hit(ColliderComponent* target)
+	{
+		auto health = target->GetGameObject()->GetComponent<HealthComponent>();
 		bool isCharacterHit = health != nullptr && health->IsAlive() && !health->IsInvulnerable();
 		if (isCharacterHit && damage > 0.f)
 		{

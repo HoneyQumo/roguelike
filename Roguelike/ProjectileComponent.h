@@ -42,6 +42,9 @@ namespace RoguelikeGame
         bool isHandled = false;
 
         void OnTrigger(const XYZEngine::Trigger& trigger);
+        float GetMaxStep() const;
+        XYZEngine::ColliderComponent* FindHit(const XYZEngine::Vector2Df& moved) const;
+        void Hit(XYZEngine::ColliderComponent* target);
         void Destroy();
     };
 }

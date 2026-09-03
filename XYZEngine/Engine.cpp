@@ -34,7 +34,7 @@ namespace XYZEngine
 		while (RenderSystem::Instance()->GetMainWindow().isOpen())
 		{
 			sf::Time dt = gameClock.restart();
-			float deltaTime = dt.asSeconds();
+			float deltaTime = std::min(dt.asSeconds(), MAX_FRAME_TIME);
 
 			InputSystem::Instance()->BeginFrame();
 			while (RenderSystem::Instance()->GetMainWindow().pollEvent(event))

@@ -10,6 +10,7 @@ namespace RoguelikeGame
 {
     constexpr int SCREEN_WIDTH = 1280;
     constexpr int SCREEN_HEIGHT = 720;
+    constexpr unsigned int FRAME_RATE_LIMIT = 60;
 
     constexpr float TILE_SIZE = 64.f;
 

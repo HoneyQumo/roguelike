@@ -81,6 +81,10 @@ namespace XYZEngine
     void ResourceSystem::DeleteSharedTexture(const std::string& name)
     {
         auto texturePair = textures.find(name);
+        if (texturePair == textures.end())
+        {
+            return;
+        }
 
         sf::Texture* deletingTexure = texturePair->second;
         textures.erase(texturePair);
@@ -198,7 +202,12 @@ namespace XYZEngine
     void ResourceSystem::DeleteSharedTextureMap(const std::string& name)
     {
         auto textureMap = textureMaps.find(name);
-        auto deletingTextures = textureMap->second;
+        if (textureMap == textureMaps.end())
+        {
+            return;
+        }
+
+        const std::vector<sf::Texture*>& deletingTextures = textureMap->second;
 
         for (int i = 0; i < deletingTextures.size(); i++)
         {

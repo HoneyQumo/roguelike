@@ -3,6 +3,7 @@
 #include <iostream>
 #include "GameWorld.h"
 #include "RenderSystem.h"
+#include "InputSystem.h"
 #include "LoggerRegistry.h"
 
 namespace XYZEngine
@@ -26,17 +27,22 @@ namespace XYZEngine
 		sf::Clock gameClock;
 		sf::Event event;
 
+		RenderSystem::Instance()->GetMainWindow().setKeyRepeatEnabled(false);
+
 		while (RenderSystem::Instance()->GetMainWindow().isOpen())
 		{
 			sf::Time dt = gameClock.restart();
 			float deltaTime = dt.asSeconds();
 
+			InputSystem::Instance()->BeginFrame();
 			while (RenderSystem::Instance()->GetMainWindow().pollEvent(event))
 			{
 				if (event.type == sf::Event::Closed)
 				{
 					RenderSystem::Instance()->GetMainWindow().close();
 				}
+
+				InputSystem::Instance()->HandleEvent(event);
 			}
 
 			if (!RenderSystem::Instance()->GetMainWindow().isOpen())

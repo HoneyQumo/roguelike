@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "InputComponent.h"
+#include "InputSystem.h"
 #include "RenderSystem.h"
 
 namespace XYZEngine
@@ -8,45 +9,42 @@ namespace XYZEngine
 
 	void InputComponent::Update(float deltaTime)
 	{
+		auto input = InputSystem::Instance();
+
 		verticalAxis = 0.f;
 		horizontalAxis = 0.f;
 
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+		if (input->IsKeyHeld(bindings.moveUp))
 		{
 			verticalAxis += 1.0f;
 		}
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+		if (input->IsKeyHeld(bindings.moveDown))
 		{
 			verticalAxis -= 1.0f;
 		}
-
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+		if (input->IsKeyHeld(bindings.moveRight))
 		{
 			horizontalAxis += 1.0f;
 		}
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+		if (input->IsKeyHeld(bindings.moveLeft))
 		{
 			horizontalAxis -= 1.0f;
 		}
 
-		isAttackPressed = sf::Mouse::isButtonPressed(sf::Mouse::Left);
-		isHeavyAttackPressed = sf::Mouse::isButtonPressed(sf::Mouse::Right);
-		isRunPressed = sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) || sf::Keyboard::isKeyPressed(sf::Keyboard::RShift);
-		isReloadPressed = sf::Keyboard::isKeyPressed(sf::Keyboard::R);
-		isRollPressed = sf::Keyboard::isKeyPressed(sf::Keyboard::Space);
+		isAttackPressed = input->IsButtonHeld(bindings.attack);
+		isHeavyAttackPressed = input->IsButtonHeld(bindings.heavyAttack);
+		isRunPressed = input->IsKeyHeld(bindings.run) || input->IsKeyHeld(bindings.runAlternative);
+		isReloadPressed = input->IsKeyHeld(bindings.reload);
+		isRollJustPressed = input->WasKeyPressed(bindings.roll);
 
 		selectedWeaponSlot = NO_WEAPON_SLOT;
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1))
+		for (int digit = 0; digit < DIGIT_KEYS_COUNT; digit++)
 		{
-			selectedWeaponSlot = 0;
-		}
-		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num2))
-		{
-			selectedWeaponSlot = 1;
-		}
-		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num3))
-		{
-			selectedWeaponSlot = 2;
+			if (input->WasKeyPressed(bindings.digits[digit]))
+			{
+				selectedWeaponSlot = digit;
+				break;
+			}
 		}
 
 		auto& window = RenderSystem::Instance()->GetMainWindow();
@@ -55,7 +53,15 @@ namespace XYZEngine
 	}
 	void InputComponent::Render()
 	{
+	}
 
+	void InputComponent::SetBindings(const InputBindings& newBindings)
+	{
+		bindings = newBindings;
+	}
+	const InputBindings& InputComponent::GetBindings() const
+	{
+		return bindings;
 	}
 
 	float InputComponent::GetHorizontalAxis() const
@@ -83,9 +89,9 @@ namespace XYZEngine
 	{
 		return isReloadPressed;
 	}
-	bool InputComponent::IsRollPressed() const
+	bool InputComponent::WasRollJustPressed() const
 	{
-		return isRollPressed;
+		return isRollJustPressed;
 	}
 	int InputComponent::GetSelectedWeaponSlot() const
 	{

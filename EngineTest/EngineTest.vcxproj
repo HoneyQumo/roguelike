@@ -115,6 +115,7 @@
     <ClCompile Include="Logger.tests.cpp" />
     <ClCompile Include="WeaponSetup.tests.cpp" />
     <ClCompile Include="EnemyCatalog.tests.cpp" />
+    <ClCompile Include="InputSystem.tests.cpp" />
     <ClCompile Include="..\Roguelike\LevelLoader.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>

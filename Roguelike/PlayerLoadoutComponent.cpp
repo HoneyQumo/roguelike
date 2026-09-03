@@ -20,9 +20,15 @@ namespace RoguelikeGame
 
     void PlayerLoadoutComponent::Update(float deltaTime)
     {
-        if (animation == nullptr)
+        if (animation == nullptr || (health != nullptr && !health->IsAlive()))
         {
             return;
+        }
+
+        int selectedSlot = input != nullptr ? input->GetSelectedWeaponSlot() : XYZEngine::NO_WEAPON_SLOT;
+        if (selectedSlot != XYZEngine::NO_WEAPON_SLOT)
+        {
+            requestedSlot = selectedSlot;
         }
 
         if (isSwapping)
@@ -43,10 +49,13 @@ namespace RoguelikeGame
             return;
         }
 
-        if (input != nullptr && (dodgeRoll == nullptr || !dodgeRoll->IsRolling()))
+        if (dodgeRoll != nullptr && dodgeRoll->IsRolling())
         {
-            TrySelectSlot(input->GetSelectedWeaponSlot());
+            return;
         }
+
+        TrySelectSlot(requestedSlot);
+        requestedSlot = XYZEngine::NO_WEAPON_SLOT;
     }
 
     void PlayerLoadoutComponent::Render()
@@ -170,6 +179,10 @@ namespace RoguelikeGame
         if (dodgeRoll == nullptr)
         {
             dodgeRoll = gameObject->GetComponent<XYZEngine::DodgeRollComponent>();
+        }
+        if (health == nullptr)
+        {
+            health = gameObject->GetComponent<XYZEngine::HealthComponent>();
         }
     }
 

@@ -6,6 +6,7 @@
 #include <WeaponComponent.h>
 #include <MeleeWeaponComponent.h>
 #include <DodgeRollComponent.h>
+#include <HealthComponent.h>
 #include <SpriteMovementAnimationComponent.h>
 #include "GameSettings.h"
 #include "Weapon.h"
@@ -45,6 +46,7 @@ namespace RoguelikeGame
         XYZEngine::WeaponComponent* rangedWeapon = nullptr;
         XYZEngine::MeleeWeaponComponent* meleeWeapon = nullptr;
         XYZEngine::DodgeRollComponent* dodgeRoll = nullptr;
+        XYZEngine::HealthComponent* health = nullptr;
 
         XYZEngine::AudioComponent* shotAudio = nullptr;
         XYZEngine::AudioComponent* reloadAudio = nullptr;
@@ -55,6 +57,7 @@ namespace RoguelikeGame
         int slotsCount = 0;
         int currentSlot = 0;
         int pendingSlot = XYZEngine::NO_WEAPON_SLOT;
+        int requestedSlot = XYZEngine::NO_WEAPON_SLOT;
         bool isSwapping = false;
 
         void FindComponents();

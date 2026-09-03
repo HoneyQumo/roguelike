@@ -25,11 +25,7 @@ namespace RoguelikeGame
 
     void PlayerRollComponent::Update(float deltaTime)
     {
-        bool isRollPressed = input->IsRollPressed();
-        bool isRollJustPressed = isRollPressed && !wasRollPressed;
-        wasRollPressed = isRollPressed;
-
-        if (!isRollJustPressed || !CanRoll())
+        if (!input->WasRollJustPressed() || !CanRoll())
         {
             return;
         }

@@ -25,8 +25,6 @@ namespace RoguelikeGame
         XYZEngine::HealthComponent* health = nullptr;
         PlayerLoadoutComponent* loadout = nullptr;
 
-        bool wasRollPressed = false;
-
         bool CanRoll() const;
     };
 }

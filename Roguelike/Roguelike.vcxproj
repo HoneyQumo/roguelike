@@ -72,12 +72,10 @@
     </ImportGroup>
     <PropertyGroup Label="UserMacros"/>
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-        <CustomBuildAfterTargets>Build</CustomBuildAfterTargets>
         <OutDir>$(ProjectDir)\$(Platform)\$(Configuration)\</OutDir>
         <IntDir>$(ProjectDir)\$(Platform)\$(Configuration)\</IntDir>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-        <CustomBuildAfterTargets>Build</CustomBuildAfterTargets>
         <OutDir>$(ProjectDir)\$(Platform)\$(Configuration)\</OutDir>
         <IntDir>$(ProjectDir)\$(Platform)\$(Configuration)\</IntDir>
     </PropertyGroup>
@@ -251,6 +249,14 @@
         </ProjectReference>
     </ItemGroup>
     <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets"/>
+    <ItemGroup>
+        <GameResourceFiles Include="$(ProjectDir)Resources\**\*"/>
+        <GameRuntimeFiles Include="$(ProjectDir)openal32.dll"/>
+    </ItemGroup>
+    <Target Name="CopyGameFiles" AfterTargets="Build">
+        <Copy SourceFiles="@(GameResourceFiles)" DestinationFiles="@(GameResourceFiles->'$(OutDir)Resources\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true"/>
+        <Copy SourceFiles="@(GameRuntimeFiles)" DestinationFolder="$(OutDir)" SkipUnchangedFiles="true"/>
+    </Target>
     <ImportGroup Label="ExtensionTargets">
     </ImportGroup>
 </Project>

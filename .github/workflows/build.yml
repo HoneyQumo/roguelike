@@ -51,3 +51,15 @@ jobs:
           name: test-results-${{ matrix.configuration }}
           path: test-results.xml
           if-no-files-found: error
+
+      # Step 7: Playable build: exe, resources and OpenAL next to it
+      - name: Upload game build
+        if: matrix.configuration == 'Release'
+        uses: actions/upload-artifact@v4
+        with:
+          name: roguelike-${{ matrix.configuration }}
+          path: |
+            Roguelike/x64/Release/Roguelike.exe
+            Roguelike/x64/Release/openal32.dll
+            Roguelike/x64/Release/Resources/
+          if-no-files-found: error

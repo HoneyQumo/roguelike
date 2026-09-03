@@ -25,7 +25,7 @@ namespace RoguelikeGame
         void Update(float deltaTime) override;
         void Render() override;
 
-        void SetWeapon(Weapon* newWeapon);
+        void SetWeapon(WeaponLayerComponent* newWeapon);
         void SetStowedWeapon(StowedWeaponComponent* newStowedWeapon);
         void SetAudio(XYZEngine::AudioComponent* newShotAudio, XYZEngine::AudioComponent* newReloadAudio, XYZEngine::AudioComponent* newMeleeAudio);
         void SetSlots(const WeaponId* newSlots, int newSlotsCount, int startSlot);
@@ -37,7 +37,7 @@ namespace RoguelikeGame
         WeaponId GetCurrentWeapon() const;
 
     private:
-        Weapon* weapon = nullptr;
+        WeaponLayerComponent* weapon = nullptr;
         StowedWeaponComponent* stowedWeapon = nullptr;
 
         XYZEngine::InputComponent* input = nullptr;

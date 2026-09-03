@@ -43,7 +43,7 @@ namespace RoguelikeGame
         XYZEngine::HealthComponent* health = nullptr;
         XYZEngine::AudioComponent* hurtAudio = nullptr;
         HitFlashComponent* hitFlash = nullptr;
-        std::unique_ptr<Weapon> weapon;
+        WeaponLayerComponent* weapon = nullptr;
     };
 
     using AddControls = std::function<void(XYZEngine::GameObject*)>;

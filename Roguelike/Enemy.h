@@ -16,6 +16,5 @@ namespace RoguelikeGame
 
     private:
         XYZEngine::GameObject* gameObject;
-        std::unique_ptr<Weapon> weapon;
     };
 }

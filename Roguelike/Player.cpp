@@ -45,7 +45,6 @@ namespace RoguelikeGame
         });
 
         gameObject = parts.gameObject;
-        weapon = std::move(parts.weapon);
 
         auto transform = parts.transform;
         auto movement = parts.movement;
@@ -111,7 +110,7 @@ namespace RoguelikeGame
         auto meleeWeapon = gameObject->AddComponent<XYZEngine::MeleeWeaponComponent>();
 
         auto loadout = gameObject->AddComponent<PlayerLoadoutComponent>();
-        loadout->SetWeapon(weapon.get());
+        loadout->SetWeapon(parts.weapon);
         loadout->SetStowedWeapon(stowedWeapon);
         loadout->SetAudio(shotAudio, reloadAudio, meleeAudio);
         loadout->SetSlots(PLAYER_LOADOUT, PLAYER_WEAPON_SLOTS, PLAYER_START_WEAPON_SLOT);

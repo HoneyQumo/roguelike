@@ -52,7 +52,7 @@ namespace RoguelikeGame
     {
     }
 
-    void PlayerLoadoutComponent::SetWeapon(Weapon* newWeapon)
+    void PlayerLoadoutComponent::SetWeapon(WeaponLayerComponent* newWeapon)
     {
         weapon = newWeapon;
     }

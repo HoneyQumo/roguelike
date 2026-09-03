@@ -37,7 +37,7 @@ namespace RoguelikeGame
         });
 
         gameObject = parts.gameObject;
-        weapon = std::move(parts.weapon);
+        auto weaponLayer = parts.weapon;
 
         auto transform = parts.transform;
         auto movement = parts.movement;
@@ -105,7 +105,6 @@ namespace RoguelikeGame
             auto reloadAudio = gameObject->AddComponent<XYZEngine::AudioComponent>();
             reloadAudio->SetSound(GameResources::GetWeaponSound(weaponDefinition.reloadSound));
             reloadAudio->SetVolume(RELOAD_VOLUME);
-            auto muzzleFlash = weapon == nullptr ? nullptr : weapon->GetMuzzleFlash();
 
             ShotProfile shot = MakeShotProfile(config.weapon, config.attackDamage, config.projectileSpeed, config.attackCooldown);
 
@@ -127,14 +126,14 @@ namespace RoguelikeGame
 
             std::string shooterName = config.objectName;
             WeaponId shotWeapon = config.weapon;
-            weaponComponent->SetShotStartAction([shotAudio, animation, muzzleFlash]()
+            weaponComponent->SetShotStartAction([shotAudio, animation, weaponLayer]()
             {
                 shotAudio->Play();
                 animation->PlayShoot();
 
-                if (muzzleFlash != nullptr)
+                if (weaponLayer != nullptr)
                 {
-                    muzzleFlash->Play();
+                    weaponLayer->PlayMuzzleFlash();
                 }
             });
 

@@ -16,7 +16,6 @@ namespace RoguelikeGame
 
     private:
         XYZEngine::GameObject* gameObject;
-        std::unique_ptr<Weapon> weapon;
 
         StowedWeaponComponent* CreateStowedWeapon(WeaponId startWeapon, XYZEngine::SpriteMovementAnimationComponent* animation);
     };

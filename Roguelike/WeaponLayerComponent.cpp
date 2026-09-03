@@ -1,7 +1,9 @@
 ﻿#include "WeaponLayerComponent.h"
 #include "GameSettings.h"
 #include <GameObject.h>
+#include <GameWorld.h>
 #include <ResourceSystem.h>
+#include <LoggerRegistry.h>
 #include <algorithm>
 
 namespace RoguelikeGame
@@ -9,6 +11,7 @@ namespace RoguelikeGame
     WeaponLayerComponent::WeaponLayerComponent(XYZEngine::GameObject* gameObject) : Component(gameObject)
     {
         transform = gameObject->GetComponent<XYZEngine::TransformComponent>();
+        CreateMuzzleFlash();
     }
 
     void WeaponLayerComponent::Start()
@@ -57,11 +60,6 @@ namespace RoguelikeGame
         ownerAnimation = newOwnerAnimation;
     }
 
-    void WeaponLayerComponent::SetRecoil(float newRecoil)
-    {
-        recoil = newRecoil;
-    }
-
     void WeaponLayerComponent::SetWeaponId(WeaponId newWeaponId)
     {
         for (int variant = 0; variant < WEAPON_VARIANTS; variant++)
@@ -80,6 +78,59 @@ namespace RoguelikeGame
         {
             renderer->SetTexture(*variants[currentVariant]);
         }
+
+        const WeaponDefinition& weapon = GetWeapon(newWeaponId);
+        recoil = weapon.recoil;
+
+        if (muzzleFlashTransform == nullptr)
+        {
+            return;
+        }
+
+        muzzleFlashTransform->SetLocalPosition(ToWorldOffset(weapon.muzzleX, weapon.muzzleY));
+
+        hasMuzzleFlash = weapon.flashScale > 0.f;
+        float flashScale = hasMuzzleFlash ? weapon.flashScale : 1.f;
+        muzzleFlashTransform->SetLocalScale(flashScale, flashScale);
+
+        if (!hasMuzzleFlash)
+        {
+            muzzleFlash->Stop();
+            muzzleFlashRenderer->SetVisible(false);
+        }
+    }
+
+    void WeaponLayerComponent::PlayMuzzleFlash()
+    {
+        if (muzzleFlash != nullptr && hasMuzzleFlash)
+        {
+            muzzleFlash->Play();
+        }
+    }
+
+    void WeaponLayerComponent::CreateMuzzleFlash()
+    {
+        auto texture = XYZEngine::ResourceSystem::Instance()->GetTextureMapElementShared(MUZZLE_FLASH_TEXTURE, 0);
+        if (texture == nullptr)
+        {
+            LOG_ERROR("Muzzle flash texture is not loaded");
+            return;
+        }
+
+        auto flashObject = XYZEngine::GameWorld::Instance()->CreateGameObject("MuzzleFlash");
+
+        muzzleFlashTransform = flashObject->GetComponent<XYZEngine::TransformComponent>();
+        muzzleFlashTransform->SetParent(transform);
+
+        muzzleFlashRenderer = flashObject->AddComponent<XYZEngine::SpriteRendererComponent>();
+        muzzleFlashRenderer->SetTexture(*texture);
+        muzzleFlashRenderer->SetPixelSize(FX_MUZZLE_FLASH.width, FX_MUZZLE_FLASH.height);
+        muzzleFlashRenderer->SetPivot(FX_MUZZLE_FLASH.pivotX / FX_MUZZLE_FLASH.width, FX_MUZZLE_FLASH.pivotY / FX_MUZZLE_FLASH.height);
+        muzzleFlashRenderer->SetVisible(false);
+
+        muzzleFlash = flashObject->AddComponent<XYZEngine::SpriteAnimationComponent>();
+        muzzleFlash->SetFrames(MUZZLE_FLASH_TEXTURE, 0, FX_MUZZLE_FLASH.frames, FramesPerSecond(FX_MUZZLE_FLASH.millisecondsPerFrame));
+        muzzleFlash->SetEndBehaviour(XYZEngine::SpriteAnimationEnd::Hide);
     }
 
     int WeaponLayerComponent::ClampFrame(int frame, int framesCount)

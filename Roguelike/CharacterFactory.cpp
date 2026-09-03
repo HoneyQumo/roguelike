@@ -75,8 +75,8 @@ namespace RoguelikeGame
 
         try
         {
-            parts.weapon = std::make_unique<Weapon>(parts.gameObject, spec.weapon, parts.animation);
-            parts.hitFlash->AddRenderer(parts.weapon->GetRenderer());
+            parts.weapon = CreateWeapon(parts.gameObject, spec.weapon, parts.animation);
+            parts.hitFlash->AddRenderer(parts.weapon->GetGameObject()->GetComponent<XYZEngine::SpriteRendererComponent>());
         }
         catch (const std::exception& exception)
         {

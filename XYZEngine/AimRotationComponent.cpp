@@ -14,7 +14,7 @@ namespace XYZEngine
         transform = gameObject->GetComponent<TransformComponent>();
     }
 
-3    void AimRotationComponent::Start()
+    void AimRotationComponent::Start()
     {
         input = gameObject->GetComponent<InputComponent>();
     }

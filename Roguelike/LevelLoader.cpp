@@ -21,13 +21,18 @@ namespace RoguelikeGame
             throw std::runtime_error("Level file is not available: " + filePath);
         }
 
+        return Parse(file, filePath);
+    }
+
+    LevelData LevelLoader::Parse(std::istream& input, const std::string& sourceName)
+    {
         LevelData levelData;
         Legend legend = GetDefaultLegend();
         bool isLegendSection = false;
 
         std::string line;
         int lineNumber = 0;
-        while (std::getline(file, line))
+        while (std::getline(input, line))
         {
             lineNumber++;
 
@@ -67,16 +72,14 @@ namespace RoguelikeGame
             ReadMapLine(line, legend, levelData);
         }
 
-        file.close();
-
         levelData.height = (int)levelData.tiles.size();
         if (levelData.height == 0)
         {
-            LOG_ERROR("Level file is empty: " + filePath);
-            throw std::runtime_error("Level file has no tiles: " + filePath);
+            LOG_ERROR("Level file is empty: " + sourceName);
+            throw std::runtime_error("Level file has no tiles: " + sourceName);
         }
 
-        LOG_INFO("Level loaded: " + filePath + ", size " + std::to_string(levelData.width) + "x" + std::to_string(levelData.height)
+        LOG_INFO("Level loaded: " + sourceName + ", size " + std::to_string(levelData.width) + "x" + std::to_string(levelData.height)
             + ", legend entries " + std::to_string(legend.size()));
         return levelData;
     }

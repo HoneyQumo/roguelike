@@ -29,15 +29,12 @@ namespace XYZEngine
             isPouchSearched = true;
         }
 
-        if (cooldownTimer > 0.f)
-        {
-            cooldownTimer -= deltaTime;
-        }
+        shotCooldown.Tick(deltaTime);
 
         if (isReloading)
         {
-            reloadTimer -= deltaTime;
-            if (reloadTimer <= 0.f)
+            reload.Tick(deltaTime);
+            if (reload.IsReady())
             {
                 FinishReload();
             }
@@ -51,7 +48,7 @@ namespace XYZEngine
     void WeaponComponent::SetCooldown(float newCooldown)
     {
         assert(newCooldown >= 0.f);
-        cooldown = newCooldown;
+        shotCooldown.SetDuration(newCooldown);
     }
 
     void WeaponComponent::SetDamage(float newDamage)
@@ -111,7 +108,7 @@ namespace XYZEngine
         ammoInMagazine = magazineSize;
 
         isReloading = false;
-        reloadTimer = 0.f;
+        reload.Stop();
     }
 
     void WeaponComponent::SetAmmoInMagazine(int newAmmoInMagazine)
@@ -122,7 +119,7 @@ namespace XYZEngine
     void WeaponComponent::SetReloadTime(float newReloadTime)
     {
         assert(newReloadTime >= 0.f);
-        reloadTime = std::max(newReloadTime, 0.f);
+        reload.SetDuration(newReloadTime);
     }
 
     void WeaponComponent::SetReloadStartAction(std::function<void()> newReloadStartAction)
@@ -172,13 +169,7 @@ namespace XYZEngine
             return 0.f;
         }
 
-        if (reloadTime <= 0.f)
-        {
-            return 1.f;
-        }
-
-        float progress = 1.f - reloadTimer / reloadTime;
-        return std::min(std::max(progress, 0.f), 1.f);
+        return reload.GetProgress();
     }
 
     bool WeaponComponent::CanReload() const
@@ -199,7 +190,7 @@ namespace XYZEngine
         }
 
         isReloading = true;
-        reloadTimer = reloadTime;
+        reload.Restart();
 
         if (reloadStartAction != nullptr)
         {
@@ -208,7 +199,7 @@ namespace XYZEngine
 
         LOG_INFO(gameObject->GetName() + " reloads");
 
-        if (reloadTime <= 0.f)
+        if (reload.GetDuration() <= 0.f)
         {
             FinishReload();
         }
@@ -224,12 +215,12 @@ namespace XYZEngine
         }
 
         isReloading = false;
-        reloadTimer = 0.f;
+        reload.Stop();
     }
 
     bool WeaponComponent::IsReady() const
     {
-        return cooldownTimer <= 0.f && !isReloading && !IsMagazineEmpty();
+        return shotCooldown.IsReady() && !isReloading && !IsMagazineEmpty();
     }
 
     bool WeaponComponent::TryShootAt(const Vector2Df& targetPosition)
@@ -290,7 +281,7 @@ namespace XYZEngine
             shotAction(shotPosition, RotateDirection(shotDirection, PelletAngle(pellet)), damage, projectileSpeed);
         }
 
-        cooldownTimer = cooldown;
+        shotCooldown.Restart();
 
         if (HasMagazine())
         {
@@ -331,7 +322,7 @@ namespace XYZEngine
     void WeaponComponent::FinishReload()
     {
         isReloading = false;
-        reloadTimer = 0.f;
+        reload.Stop();
 
         int missing = magazineSize - ammoInMagazine;
         int loaded = pouch == nullptr ? missing : pouch->TakeAmmo(ammoKind, missing);

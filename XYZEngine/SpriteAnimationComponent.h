@@ -5,6 +5,7 @@
 #include <SFML/Graphics.hpp>
 #include "Component.h"
 #include "SpriteRendererComponent.h"
+#include "Cooldown.h"
 
 namespace XYZEngine
 {
@@ -42,8 +43,7 @@ namespace XYZEngine
         bool isLooped = false;
         bool isPlaying = false;
 
-        float startDelay = 0.f;
-        float delayTimer = 0.f;
+        Cooldown startDelay;
         float frameTimer = 0.f;
         int currentFrame = 0;
 

@@ -5,6 +5,7 @@
 #include "TransformComponent.h"
 #include "AmmoPouchComponent.h"
 #include "Vector.h"
+#include "Cooldown.h"
 
 namespace XYZEngine
 {
@@ -57,8 +58,7 @@ namespace XYZEngine
         AmmoPouchComponent* pouch = nullptr;
         bool isPouchSearched = false;
 
-        float cooldown = 0.5f;
-        float cooldownTimer = 0.f;
+        Cooldown shotCooldown{0.5f};
         float damage = 10.f;
         float projectileSpeed = 600.f;
         Vector2Df muzzleOffset = {40.f, 0.f};
@@ -70,8 +70,7 @@ namespace XYZEngine
         int ammoInMagazine = 0;
         int ammoKind = 0;
 
-        float reloadTime = 0.f;
-        float reloadTimer = 0.f;
+        Cooldown reload;
         bool isReloading = false;
 
         std::function<void()> shotStartAction;

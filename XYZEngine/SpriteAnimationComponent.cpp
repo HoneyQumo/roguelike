@@ -20,7 +20,7 @@ namespace XYZEngine
 				return;
 			}
 
-			renderer->SetVisible(isPlaying && delayTimer <= 0.f);
+			renderer->SetVisible(isPlaying && startDelay.IsReady());
 		}
 
 		if (!isPlaying || frames.empty())
@@ -28,10 +28,10 @@ namespace XYZEngine
 			return;
 		}
 
-		if (delayTimer > 0.f)
+		if (startDelay.IsRunning())
 		{
-			delayTimer -= deltaTime;
-			if (delayTimer > 0.f)
+			startDelay.Tick(deltaTime);
+			if (startDelay.IsRunning())
 			{
 				return;
 			}
@@ -99,7 +99,7 @@ namespace XYZEngine
 	}
 	void SpriteAnimationComponent::SetStartDelay(float newStartDelay)
 	{
-		startDelay = newStartDelay;
+		startDelay.SetDuration(newStartDelay);
 	}
 
 	void SpriteAnimationComponent::Play()
@@ -110,11 +110,11 @@ namespace XYZEngine
 		}
 
 		isPlaying = true;
-		delayTimer = startDelay;
+		startDelay.Restart();
 		frameTimer = 0.f;
 		currentFrame = 0;
 
-		if (delayTimer <= 0.f)
+		if (startDelay.IsReady())
 		{
 			ShowFirstFrame();
 		}

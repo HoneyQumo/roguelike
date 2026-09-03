@@ -26,10 +26,7 @@ namespace XYZEngine
             areComponentsSearched = true;
         }
 
-        if (cooldownTimer > 0.f)
-        {
-            cooldownTimer = std::max(0.f, cooldownTimer - deltaTime);
-        }
+        cooldown.Tick(deltaTime);
 
         if (!isAttacking)
         {
@@ -138,7 +135,7 @@ namespace XYZEngine
 
     bool MeleeWeaponComponent::IsReady() const
     {
-        return !isAttacking && cooldownTimer <= 0.f;
+        return !isAttacking && cooldown.IsReady();
     }
 
     bool MeleeWeaponComponent::IsAttacking() const
@@ -340,7 +337,7 @@ namespace XYZEngine
 
     void MeleeWeaponComponent::Finish()
     {
-        cooldownTimer = GetAttack().recovery;
+        cooldown.Start(GetAttack().recovery);
 
         isAttacking = false;
         isHolding = false;

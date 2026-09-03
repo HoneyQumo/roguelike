@@ -33,8 +33,8 @@ namespace XYZEngine
 			collider->SubscribeTriggerEnter([this](Trigger trigger) { OnTrigger(trigger); });
 		}
 
-		lifetime -= deltaTime;
-		if (lifetime <= 0.f)
+		lifetime.Tick(deltaTime);
+		if (lifetime.IsReady())
 		{
 			if (expireAction != nullptr)
 			{
@@ -77,7 +77,7 @@ namespace XYZEngine
 	void ProjectileComponent::SetLifetime(float newLifetime)
 	{
 		assert(newLifetime > 0.f);
-		lifetime = newLifetime;
+		lifetime.Start(newLifetime);
 	}
 	void ProjectileComponent::SetShooterName(const std::string& newShooterName)
 	{

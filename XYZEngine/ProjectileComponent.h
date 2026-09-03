@@ -6,6 +6,7 @@
 #include "TransformComponent.h"
 #include "ColliderComponent.h"
 #include "Vector.h"
+#include "Cooldown.h"
 
 namespace XYZEngine
 {
@@ -32,7 +33,7 @@ namespace XYZEngine
         Vector2Df direction = {1.f, 0.f};
         float speed = 600.f;
         float damage = 10.f;
-        float lifetime = 3.f;
+        Cooldown lifetime = Cooldown::Started(3.f);
         std::string shooterName;
         std::function<void(const Vector2Df&, const Vector2Df&, bool)> hitAction;
         std::function<void(const Vector2Df&)> expireAction;

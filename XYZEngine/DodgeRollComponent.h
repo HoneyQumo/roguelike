@@ -2,6 +2,7 @@
 
 #include "Component.h"
 #include "Vector.h"
+#include "Cooldown.h"
 
 namespace XYZEngine
 {
@@ -48,11 +49,10 @@ namespace XYZEngine
 		int invulnerableFirstFrame = 0;
 		int invulnerableLastFrame = -1;
 		unsigned int ignoredLayers = 0u;
-		float cooldown = 0.f;
 
 		bool isRolling = false;
 		int rollDirection = 0;
-		float cooldownTimer = 0.f;
+		Cooldown cooldown;
 		Vector2Df rollVector = { 1.f, 0.f };
 
 		void FindComponents();

@@ -7,6 +7,7 @@
 #include "MovementComponent.h"
 #include "SpriteMovementAnimationComponent.h"
 #include "Vector.h"
+#include "Cooldown.h"
 
 namespace XYZEngine
 {
@@ -77,7 +78,7 @@ namespace XYZEngine
         bool hasStruck = false;
         float chargeTimer = 0.f;
         float attackTimer = 0.f;
-        float cooldownTimer = 0.f;
+        Cooldown cooldown;
 
         std::function<void(MeleeAttackKind)> swingAction;
         std::function<void(MeleeAttackKind, int)> strikeAction;

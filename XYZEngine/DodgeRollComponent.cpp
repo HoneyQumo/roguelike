@@ -25,10 +25,7 @@ namespace XYZEngine
 	{
 		FindComponents();
 
-		if (cooldownTimer > 0.f)
-		{
-			cooldownTimer = std::max(0.f, cooldownTimer - deltaTime);
-		}
+		cooldown.Tick(deltaTime);
 
 		if (!isRolling)
 		{
@@ -98,12 +95,12 @@ namespace XYZEngine
 	void DodgeRollComponent::SetCooldown(float newCooldown)
 	{
 		assert(newCooldown >= 0.f);
-		cooldown = newCooldown;
+		cooldown.SetDuration(newCooldown);
 	}
 
 	bool DodgeRollComponent::IsReady() const
 	{
-		return !isRolling && cooldownTimer <= 0.f && frameSpeeds != nullptr && animation != nullptr
+		return !isRolling && cooldown.IsReady() && frameSpeeds != nullptr && animation != nullptr
 			&& animation->GetRollDirectionsCount() > 0 && (health == nullptr || health->IsAlive());
 	}
 
@@ -193,7 +190,7 @@ namespace XYZEngine
 	void DodgeRollComponent::Finish()
 	{
 		isRolling = false;
-		cooldownTimer = cooldown;
+		cooldown.Restart();
 
 		if (health != nullptr)
 		{

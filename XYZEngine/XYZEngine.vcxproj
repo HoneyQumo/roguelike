@@ -157,6 +157,7 @@
     <ClInclude Include="ChaseComponent.h" />
     <ClInclude Include="ColliderComponent.h" />
     <ClInclude Include="Collision.h" />
+    <ClInclude Include="Cooldown.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="ConsoleSink.h" />
     <ClInclude Include="CursorFollowComponent.h" />

@@ -75,16 +75,10 @@
     <ClInclude Include="GameWorld.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="IDelayedAction.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
     <ClInclude Include="InputComponent.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="InputSystem.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="IObserver.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="MathUtils.h">

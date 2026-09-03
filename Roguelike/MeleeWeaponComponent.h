@@ -2,14 +2,14 @@
 
 #include <functional>
 #include <string>
-#include "Component.h"
-#include "TransformComponent.h"
-#include "MovementComponent.h"
-#include "SpriteMovementAnimationComponent.h"
-#include "Vector.h"
-#include "Cooldown.h"
+#include <Component.h>
+#include <TransformComponent.h>
+#include <MovementComponent.h>
+#include <SpriteMovementAnimationComponent.h>
+#include <Vector.h>
+#include <Cooldown.h>
 
-namespace XYZEngine
+namespace RoguelikeGame
 {
     enum class MeleeAttackKind
     {
@@ -28,10 +28,10 @@ namespace XYZEngine
         int hitFrame = 0;
     };
 
-    class MeleeWeaponComponent : public Component
+    class MeleeWeaponComponent : public XYZEngine::Component
     {
     public:
-        MeleeWeaponComponent(GameObject* gameObject);
+        MeleeWeaponComponent(XYZEngine::GameObject* gameObject);
 
         void Start() override;
         void Update(float deltaTime) override;
@@ -45,7 +45,7 @@ namespace XYZEngine
 
         void SetSwingAction(std::function<void(MeleeAttackKind)> newSwingAction);
         void SetStrikeAction(std::function<void(MeleeAttackKind, int)> newStrikeAction);
-        void SetHitAction(std::function<void(MeleeAttackKind, const Vector2Df&, const Vector2Df&)> newHitAction);
+        void SetHitAction(std::function<void(MeleeAttackKind, const XYZEngine::Vector2Df&, const XYZEngine::Vector2Df&)> newHitAction);
 
         bool IsReady() const;
         bool IsAttacking() const;
@@ -59,9 +59,9 @@ namespace XYZEngine
         void CancelAttack();
 
     private:
-        TransformComponent* transform;
-        SpriteMovementAnimationComponent* animation = nullptr;
-        MovementComponent* movement = nullptr;
+        XYZEngine::TransformComponent* transform;
+        XYZEngine::SpriteMovementAnimationComponent* animation = nullptr;
+        XYZEngine::MovementComponent* movement = nullptr;
 
         MeleeAttack quickAttack;
         MeleeAttack heavyAttack;
@@ -78,14 +78,14 @@ namespace XYZEngine
         bool hasStruck = false;
         float chargeTimer = 0.f;
         float attackTimer = 0.f;
-        Cooldown cooldown;
+        XYZEngine::Cooldown cooldown;
 
         std::function<void(MeleeAttackKind)> swingAction;
         std::function<void(MeleeAttackKind, int)> strikeAction;
-        std::function<void(MeleeAttackKind, const Vector2Df&, const Vector2Df&)> hitAction;
+        std::function<void(MeleeAttackKind, const XYZEngine::Vector2Df&, const XYZEngine::Vector2Df&)> hitAction;
 
         const MeleeAttack& GetAttack() const;
-        Vector2Df GetForward() const;
+        XYZEngine::Vector2Df GetForward() const;
         void BeginAttack(MeleeAttackKind kind);
         void Strike();
         void Finish();

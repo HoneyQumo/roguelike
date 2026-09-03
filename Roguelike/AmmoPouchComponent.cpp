@@ -1,10 +1,11 @@
-﻿#include "pch.h"
-#include "AmmoPouchComponent.h"
-#include "GameObject.h"
-#include "LoggerRegistry.h"
+﻿#include "AmmoPouchComponent.h"
+#include <GameObject.h>
+#include <LoggerRegistry.h>
 #include <algorithm>
 
-namespace XYZEngine
+using namespace XYZEngine;
+
+namespace RoguelikeGame
 {
 	AmmoPouchComponent::AmmoPouchComponent(GameObject* gameObject) : Component(gameObject) {}
 

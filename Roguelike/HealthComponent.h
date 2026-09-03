@@ -2,14 +2,14 @@
 
 #include <functional>
 #include <vector>
-#include "Component.h"
+#include <Component.h>
 
-namespace XYZEngine
+namespace RoguelikeGame
 {
-    class HealthComponent : public Component
+    class HealthComponent : public XYZEngine::Component
     {
     public:
-        HealthComponent(GameObject* gameObject);
+        HealthComponent(XYZEngine::GameObject* gameObject);
 
         void Update(float deltaTime) override;
         void Render() override;

@@ -52,6 +52,33 @@
     <ClCompile Include="AmmoHudComponent.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
+    <ClCompile Include="ChaseComponent.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="AmmoPouchComponent.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="HealthBarComponent.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="HealthComponent.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="ProjectileComponent.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="DodgeRollComponent.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="ExplosiveComponent.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="MeleeWeaponComponent.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="WeaponComponent.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
     <ClCompile Include="MessageOverlayComponent.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
@@ -99,6 +126,15 @@
     <ClInclude Include="ReloadIndicatorComponent.h" />
     <ClInclude Include="AmmoHud.h" />
     <ClInclude Include="AmmoHudComponent.h" />
+    <ClInclude Include="ChaseComponent.h" />
+    <ClInclude Include="AmmoPouchComponent.h" />
+    <ClInclude Include="HealthBarComponent.h" />
+    <ClInclude Include="HealthComponent.h" />
+    <ClInclude Include="ProjectileComponent.h" />
+    <ClInclude Include="DodgeRollComponent.h" />
+    <ClInclude Include="ExplosiveComponent.h" />
+    <ClInclude Include="MeleeWeaponComponent.h" />
+    <ClInclude Include="WeaponComponent.h" />
     <ClInclude Include="TextUtils.h" />
     <ClInclude Include="MessageOverlayComponent.h" />
     <ClInclude Include="MessageOverlay.h" />

@@ -3,10 +3,10 @@
 #include <Component.h>
 #include <InputComponent.h>
 #include <AudioComponent.h>
-#include <WeaponComponent.h>
-#include <MeleeWeaponComponent.h>
-#include <DodgeRollComponent.h>
-#include <HealthComponent.h>
+#include "WeaponComponent.h"
+#include "MeleeWeaponComponent.h"
+#include "DodgeRollComponent.h"
+#include "HealthComponent.h"
 #include <SpriteMovementAnimationComponent.h>
 #include "GameSettings.h"
 #include "Weapon.h"
@@ -43,10 +43,10 @@ namespace RoguelikeGame
 
         XYZEngine::InputComponent* input = nullptr;
         XYZEngine::SpriteMovementAnimationComponent* animation = nullptr;
-        XYZEngine::WeaponComponent* rangedWeapon = nullptr;
-        XYZEngine::MeleeWeaponComponent* meleeWeapon = nullptr;
-        XYZEngine::DodgeRollComponent* dodgeRoll = nullptr;
-        XYZEngine::HealthComponent* health = nullptr;
+        WeaponComponent* rangedWeapon = nullptr;
+        MeleeWeaponComponent* meleeWeapon = nullptr;
+        DodgeRollComponent* dodgeRoll = nullptr;
+        HealthComponent* health = nullptr;
 
         XYZEngine::AudioComponent* shotAudio = nullptr;
         XYZEngine::AudioComponent* reloadAudio = nullptr;

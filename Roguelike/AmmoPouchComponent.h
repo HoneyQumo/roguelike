@@ -1,14 +1,14 @@
 ﻿#pragma once
 
 #include <map>
-#include "Component.h"
+#include <Component.h>
 
-namespace XYZEngine
+namespace RoguelikeGame
 {
-    class AmmoPouchComponent : public Component
+    class AmmoPouchComponent : public XYZEngine::Component
     {
     public:
-        AmmoPouchComponent(GameObject* gameObject);
+        AmmoPouchComponent(XYZEngine::GameObject* gameObject);
 
         void Update(float deltaTime) override;
         void Render() override;

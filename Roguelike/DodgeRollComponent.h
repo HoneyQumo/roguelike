@@ -1,21 +1,25 @@
 #pragma once
 
-#include "Component.h"
-#include "Vector.h"
-#include "Cooldown.h"
+#include <Component.h>
+#include <Vector.h>
+#include <Cooldown.h>
 
 namespace XYZEngine
 {
 	class TransformComponent;
 	class MovementComponent;
 	class ColliderComponent;
-	class HealthComponent;
 	class SpriteMovementAnimationComponent;
+}
 
-	class DodgeRollComponent : public Component
+namespace RoguelikeGame
+{
+	class HealthComponent;
+
+	class DodgeRollComponent : public XYZEngine::Component
 	{
 	public:
-		DodgeRollComponent(GameObject* gameObject);
+		DodgeRollComponent(XYZEngine::GameObject* gameObject);
 
 		void Start() override;
 		void Update(float deltaTime) override;
@@ -31,15 +35,15 @@ namespace XYZEngine
 		bool IsRolling() const;
 		int GetDirection() const;
 
-		bool TryRoll(const Vector2Df& direction);
+		bool TryRoll(const XYZEngine::Vector2Df& direction);
 		void CancelRoll();
 
 	private:
-		TransformComponent* transform;
-		MovementComponent* movement = nullptr;
-		ColliderComponent* collider = nullptr;
+		XYZEngine::TransformComponent* transform;
+		XYZEngine::MovementComponent* movement = nullptr;
+		XYZEngine::ColliderComponent* collider = nullptr;
 		HealthComponent* health = nullptr;
-		SpriteMovementAnimationComponent* animation = nullptr;
+		XYZEngine::SpriteMovementAnimationComponent* animation = nullptr;
 		bool areComponentsSearched = false;
 
 		const float* frameSpeeds = nullptr;
@@ -53,12 +57,12 @@ namespace XYZEngine
 
 		bool isRolling = false;
 		int rollDirection = 0;
-		Cooldown cooldown;
-		Vector2Df rollVector = { 1.f, 0.f };
+		XYZEngine::Cooldown cooldown;
+		XYZEngine::Vector2Df rollVector = { 1.f, 0.f };
 
 		void FindComponents();
-		Vector2Df GetForward() const;
-		int GetDirectionIndex(const Vector2Df& direction, int directionsCount) const;
+		XYZEngine::Vector2Df GetForward() const;
+		int GetDirectionIndex(const XYZEngine::Vector2Df& direction, int directionsCount) const;
 		void Finish();
 	};
 }

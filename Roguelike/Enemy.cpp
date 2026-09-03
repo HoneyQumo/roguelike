@@ -6,9 +6,9 @@
 #include "EnemyAttackComponent.h"
 #include "BloodPool.h"
 #include <GameWorld.h>
-#include <ChaseComponent.h>
-#include <WeaponComponent.h>
-#include <MeleeWeaponComponent.h>
+#include "ChaseComponent.h"
+#include "WeaponComponent.h"
+#include "MeleeWeaponComponent.h"
 #include <LoggerRegistry.h>
 
 namespace RoguelikeGame
@@ -26,10 +26,10 @@ namespace RoguelikeGame
         spec.weapon = config.weapon;
         spec.healthBarColor = {200, 60, 60};
 
-        XYZEngine::ChaseComponent* chase = nullptr;
+        ChaseComponent* chase = nullptr;
         CharacterParts parts = CreateCharacter(spec, [&chase, &config](XYZEngine::GameObject* object)
         {
-            chase = object->AddComponent<XYZEngine::ChaseComponent>();
+            chase = object->AddComponent<ChaseComponent>();
             chase->SetTargetName("Player");
             chase->SetDetectionRadius(config.detectionRadius);
             chase->SetStopDistance(config.stopDistance);
@@ -60,7 +60,7 @@ namespace RoguelikeGame
             auto meleeAudio = gameObject->AddComponent<XYZEngine::AudioComponent>();
             meleeAudio->SetVolume(MELEE_HIT_VOLUME);
 
-            auto meleeWeapon = gameObject->AddComponent<XYZEngine::MeleeWeaponComponent>();
+            auto meleeWeapon = gameObject->AddComponent<MeleeWeaponComponent>();
             meleeWeapon->SetQuickAttack(MakeQuickAttack(melee->quick, config.attackDamage, config.attackCooldown));
             meleeWeapon->SetTargetName("Player");
             PlayEffectsOnMeleeHit(meleeWeapon, meleeAudio, melee);
@@ -83,7 +83,7 @@ namespace RoguelikeGame
 
             ShotProfile shot = MakeShotProfile(config.weapon, config.attackDamage, config.projectileSpeed, config.attackCooldown);
 
-            auto weaponComponent = gameObject->AddComponent<XYZEngine::WeaponComponent>();
+            auto weaponComponent = gameObject->AddComponent<WeaponComponent>();
             ApplyWeaponDefinition(weaponComponent, config.weapon, shot);
             PlayEffectsOnReload(weaponComponent, animation, reloadAudio);
             PlayEffectsOnShot(weaponComponent, shotAudio, animation, weaponLayer);
@@ -94,7 +94,7 @@ namespace RoguelikeGame
             attack->SetAttackRange(config.attackRange);
         }
 
-        auto meleeComponent = gameObject->GetComponent<XYZEngine::MeleeWeaponComponent>();
+        auto meleeComponent = gameObject->GetComponent<MeleeWeaponComponent>();
         health->SubscribeDamage([animation, hurtAudio, hitFlash, meleeComponent](float damage)
         {
             if (meleeComponent != nullptr)
@@ -107,7 +107,7 @@ namespace RoguelikeGame
             hitFlash->Flash();
         });
 
-        auto weaponComponent = gameObject->GetComponent<XYZEngine::WeaponComponent>();
+        auto weaponComponent = gameObject->GetComponent<WeaponComponent>();
         health->SubscribeDeath([gameObject, transform, animation, movement, chase, collider, aim, weaponComponent, meleeComponent]()
         {
             if (weaponComponent != nullptr)

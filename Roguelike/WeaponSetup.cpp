@@ -6,7 +6,7 @@
 
 namespace RoguelikeGame
 {
-    void ApplyWeaponDefinition(XYZEngine::WeaponComponent* weapon, WeaponId id, const ShotProfile& shot)
+    void ApplyWeaponDefinition(WeaponComponent* weapon, WeaponId id, const ShotProfile& shot)
     {
         const WeaponDefinition& definition = GetWeapon(id);
 
@@ -20,7 +20,7 @@ namespace RoguelikeGame
         weapon->SetReloadTime(definition.reloadTime);
     }
 
-    void SpawnProjectilesOnShot(XYZEngine::WeaponComponent* weapon, const std::string& shooterName, WeaponId id)
+    void SpawnProjectilesOnShot(WeaponComponent* weapon, const std::string& shooterName, WeaponId id)
     {
         weapon->SetShotAction([shooterName, id](const XYZEngine::Vector2Df& shotPosition, const XYZEngine::Vector2Df& shotDirection,
                                                 float damage, float speed)
@@ -29,7 +29,7 @@ namespace RoguelikeGame
         });
     }
 
-    void PlayEffectsOnShot(XYZEngine::WeaponComponent* weapon, XYZEngine::AudioComponent* shotAudio,
+    void PlayEffectsOnShot(WeaponComponent* weapon, XYZEngine::AudioComponent* shotAudio,
                           XYZEngine::SpriteMovementAnimationComponent* animation, WeaponLayerComponent* weaponLayer)
     {
         weapon->SetShotStartAction([shotAudio, animation, weaponLayer]()
@@ -51,7 +51,7 @@ namespace RoguelikeGame
         });
     }
 
-    void PlayEffectsOnReload(XYZEngine::WeaponComponent* weapon, XYZEngine::SpriteMovementAnimationComponent* animation,
+    void PlayEffectsOnReload(WeaponComponent* weapon, XYZEngine::SpriteMovementAnimationComponent* animation,
                             XYZEngine::AudioComponent* reloadAudio)
     {
         weapon->SetReloadStartAction([animation, reloadAudio]()
@@ -68,10 +68,10 @@ namespace RoguelikeGame
         });
     }
 
-    void PlayEffectsOnMeleeHit(XYZEngine::MeleeWeaponComponent* melee, XYZEngine::AudioComponent* meleeAudio,
+    void PlayEffectsOnMeleeHit(MeleeWeaponComponent* melee, XYZEngine::AudioComponent* meleeAudio,
                            const MeleeDefinition* definition)
     {
-        melee->SetStrikeAction([meleeAudio, definition](XYZEngine::MeleeAttackKind kind, int hits)
+        melee->SetStrikeAction([meleeAudio, definition](MeleeAttackKind kind, int hits)
         {
             if (hits <= 0 || meleeAudio == nullptr || definition == nullptr)
             {
@@ -82,7 +82,7 @@ namespace RoguelikeGame
             meleeAudio->Play();
         });
 
-        melee->SetHitAction([](XYZEngine::MeleeAttackKind kind, const XYZEngine::Vector2Df& position, const XYZEngine::Vector2Df& direction)
+        melee->SetHitAction([](MeleeAttackKind kind, const XYZEngine::Vector2Df& position, const XYZEngine::Vector2Df& direction)
         {
             Fx::SpawnBloodHit(position, direction);
         });

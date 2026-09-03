@@ -10,7 +10,7 @@ namespace
 
 TEST(WeaponSetupTests, QuickAttackScalesDamageAndTakesRecoveryFromCaller)
 {
-	XYZEngine::MeleeAttack attack = MakeQuickAttack(PROFILE, 20.f, 0.7f);
+	RoguelikeGame::MeleeAttack attack = MakeQuickAttack(PROFILE, 20.f, 0.7f);
 
 	EXPECT_FLOAT_EQ(attack.damage, 30.f);
 	EXPECT_FLOAT_EQ(attack.chargedDamage, 30.f);
@@ -23,7 +23,7 @@ TEST(WeaponSetupTests, QuickAttackScalesDamageAndTakesRecoveryFromCaller)
 
 TEST(WeaponSetupTests, HeavyAttackUsesChargedScaleAndProfileRecovery)
 {
-	XYZEngine::MeleeAttack attack = MakeHeavyAttack(PROFILE, 20.f);
+	RoguelikeGame::MeleeAttack attack = MakeHeavyAttack(PROFILE, 20.f);
 
 	EXPECT_FLOAT_EQ(attack.damage, 30.f);
 	EXPECT_FLOAT_EQ(attack.chargedDamage, 60.f);
@@ -36,8 +36,8 @@ TEST(WeaponSetupTests, CatalogMeleeProfilesProduceSaneAttacks)
 {
 	for (const MeleeDefinition& melee : MELEE_WEAPONS)
 	{
-		XYZEngine::MeleeAttack quick = MakeQuickAttack(melee.quick, PLAYER_MELEE_DAMAGE, melee.quick.recovery);
-		XYZEngine::MeleeAttack heavy = MakeHeavyAttack(melee.heavy, PLAYER_MELEE_DAMAGE);
+		RoguelikeGame::MeleeAttack quick = MakeQuickAttack(melee.quick, PLAYER_MELEE_DAMAGE, melee.quick.recovery);
+		RoguelikeGame::MeleeAttack heavy = MakeHeavyAttack(melee.heavy, PLAYER_MELEE_DAMAGE);
 
 		EXPECT_GT(quick.damage, 0.f) << GetWeapon(melee.weapon).id;
 		EXPECT_GT(quick.range, 0.f) << GetWeapon(melee.weapon).id;

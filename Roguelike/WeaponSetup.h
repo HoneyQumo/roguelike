@@ -3,8 +3,8 @@
 #include <string>
 #include "GameSettings.h"
 #include "WeaponCatalog.h"
-#include <WeaponComponent.h>
-#include <MeleeWeaponComponent.h>
+#include "WeaponComponent.h"
+#include "MeleeWeaponComponent.h"
 #include <AudioComponent.h>
 #include <SpriteMovementAnimationComponent.h>
 
@@ -12,9 +12,9 @@ namespace RoguelikeGame
 {
     class WeaponLayerComponent;
 
-    inline XYZEngine::MeleeAttack MakeQuickAttack(const MeleeAttackProfile& profile, float baseDamage, float recovery)
+    inline MeleeAttack MakeQuickAttack(const MeleeAttackProfile& profile, float baseDamage, float recovery)
     {
-        XYZEngine::MeleeAttack attack;
+        MeleeAttack attack;
         attack.damage = baseDamage * profile.damageScale;
         attack.chargedDamage = attack.damage;
         attack.range = profile.range;
@@ -25,9 +25,9 @@ namespace RoguelikeGame
         return attack;
     }
 
-    inline XYZEngine::MeleeAttack MakeHeavyAttack(const MeleeAttackProfile& profile, float baseDamage)
+    inline MeleeAttack MakeHeavyAttack(const MeleeAttackProfile& profile, float baseDamage)
     {
-        XYZEngine::MeleeAttack attack;
+        MeleeAttack attack;
         attack.damage = baseDamage * profile.damageScale;
         attack.chargedDamage = baseDamage * profile.chargedDamageScale;
         attack.range = profile.range;
@@ -38,13 +38,13 @@ namespace RoguelikeGame
         return attack;
     }
 
-    void ApplyWeaponDefinition(XYZEngine::WeaponComponent* weapon, WeaponId id, const ShotProfile& shot);
+    void ApplyWeaponDefinition(WeaponComponent* weapon, WeaponId id, const ShotProfile& shot);
 
-    void SpawnProjectilesOnShot(XYZEngine::WeaponComponent* weapon, const std::string& shooterName, WeaponId id);
-    void PlayEffectsOnShot(XYZEngine::WeaponComponent* weapon, XYZEngine::AudioComponent* shotAudio,
+    void SpawnProjectilesOnShot(WeaponComponent* weapon, const std::string& shooterName, WeaponId id);
+    void PlayEffectsOnShot(WeaponComponent* weapon, XYZEngine::AudioComponent* shotAudio,
                           XYZEngine::SpriteMovementAnimationComponent* animation, WeaponLayerComponent* weaponLayer);
-    void PlayEffectsOnReload(XYZEngine::WeaponComponent* weapon, XYZEngine::SpriteMovementAnimationComponent* animation,
+    void PlayEffectsOnReload(WeaponComponent* weapon, XYZEngine::SpriteMovementAnimationComponent* animation,
                             XYZEngine::AudioComponent* reloadAudio);
-    void PlayEffectsOnMeleeHit(XYZEngine::MeleeWeaponComponent* melee, XYZEngine::AudioComponent* meleeAudio,
+    void PlayEffectsOnMeleeHit(MeleeWeaponComponent* melee, XYZEngine::AudioComponent* meleeAudio,
                            const MeleeDefinition* definition);
 }

@@ -74,7 +74,7 @@ namespace RoguelikeGame
             return;
         }
 
-        weapon = target->GetComponent<XYZEngine::WeaponComponent>();
+        weapon = target->GetComponent<WeaponComponent>();
     }
 
     void ReloadIndicatorComponent::ShowMagazineFrame(int frame)

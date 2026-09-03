@@ -3,9 +3,9 @@
 #include <string>
 #include <Component.h>
 #include <TransformComponent.h>
-#include <WeaponComponent.h>
-#include <MeleeWeaponComponent.h>
-#include <HealthComponent.h>
+#include "WeaponComponent.h"
+#include "MeleeWeaponComponent.h"
+#include "HealthComponent.h"
 #include <Vector.h>
 
 namespace RoguelikeGame
@@ -25,9 +25,9 @@ namespace RoguelikeGame
 
     private:
         XYZEngine::TransformComponent* transform;
-        XYZEngine::WeaponComponent* weapon = nullptr;
-        XYZEngine::MeleeWeaponComponent* meleeWeapon = nullptr;
-        XYZEngine::HealthComponent* health = nullptr;
+        WeaponComponent* weapon = nullptr;
+        MeleeWeaponComponent* meleeWeapon = nullptr;
+        HealthComponent* health = nullptr;
 
         std::string targetName;
         float attackRange = 0.f;

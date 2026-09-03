@@ -15,10 +15,10 @@ namespace RoguelikeGame
     void PlayerAttackComponent::Start()
     {
         input = gameObject->GetComponent<XYZEngine::InputComponent>();
-        weapon = gameObject->GetComponent<XYZEngine::WeaponComponent>();
-        meleeWeapon = gameObject->GetComponent<XYZEngine::MeleeWeaponComponent>();
-        health = gameObject->GetComponent<XYZEngine::HealthComponent>();
-        dodgeRoll = gameObject->GetComponent<XYZEngine::DodgeRollComponent>();
+        weapon = gameObject->GetComponent<WeaponComponent>();
+        meleeWeapon = gameObject->GetComponent<MeleeWeaponComponent>();
+        health = gameObject->GetComponent<HealthComponent>();
+        dodgeRoll = gameObject->GetComponent<DodgeRollComponent>();
         loadout = gameObject->GetComponent<PlayerLoadoutComponent>();
         hitFlash = gameObject->GetComponent<HitFlashComponent>();
 

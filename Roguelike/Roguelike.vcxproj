@@ -162,6 +162,15 @@
     <ItemGroup>
         <ClCompile Include="AmmoHud.cpp"/>
         <ClCompile Include="AmmoHudComponent.cpp"/>
+        <ClCompile Include="ChaseComponent.cpp"/>
+        <ClCompile Include="AmmoPouchComponent.cpp"/>
+        <ClCompile Include="HealthBarComponent.cpp"/>
+        <ClCompile Include="HealthComponent.cpp"/>
+        <ClCompile Include="ProjectileComponent.cpp"/>
+        <ClCompile Include="DodgeRollComponent.cpp"/>
+        <ClCompile Include="ExplosiveComponent.cpp"/>
+        <ClCompile Include="MeleeWeaponComponent.cpp"/>
+        <ClCompile Include="WeaponComponent.cpp"/>
         <ClCompile Include="MessageOverlayComponent.cpp"/>
         <ClCompile Include="MessageOverlay.cpp"/>
         <ClCompile Include="BloodPool.cpp"/>
@@ -193,6 +202,15 @@
     <ItemGroup>
         <ClInclude Include="AmmoHud.h"/>
         <ClInclude Include="AmmoHudComponent.h"/>
+        <ClInclude Include="ChaseComponent.h"/>
+        <ClInclude Include="AmmoPouchComponent.h"/>
+        <ClInclude Include="HealthBarComponent.h"/>
+        <ClInclude Include="HealthComponent.h"/>
+        <ClInclude Include="ProjectileComponent.h"/>
+        <ClInclude Include="DodgeRollComponent.h"/>
+        <ClInclude Include="ExplosiveComponent.h"/>
+        <ClInclude Include="MeleeWeaponComponent.h"/>
+        <ClInclude Include="WeaponComponent.h"/>
         <ClInclude Include="TextUtils.h"/>
         <ClInclude Include="MessageOverlayComponent.h"/>
         <ClInclude Include="MessageOverlay.h"/>

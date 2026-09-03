@@ -1,16 +1,16 @@
 #pragma once
 
 #include <string>
-#include "Component.h"
-#include "TransformComponent.h"
-#include "MovementComponent.h"
+#include <Component.h>
+#include <TransformComponent.h>
+#include <MovementComponent.h>
 
-namespace XYZEngine
+namespace RoguelikeGame
 {
-	class ChaseComponent : public Component
+	class ChaseComponent : public XYZEngine::Component
 	{
 	public:
-		ChaseComponent(GameObject* gameObject);
+		ChaseComponent(XYZEngine::GameObject* gameObject);
 
 		void Start() override;
 		void Update(float deltaTime) override;
@@ -27,8 +27,8 @@ namespace XYZEngine
 
 		bool IsChasing() const;
 	private:
-		TransformComponent* transform;
-		MovementComponent* movement = nullptr;
+		XYZEngine::TransformComponent* transform;
+		XYZEngine::MovementComponent* movement = nullptr;
 
 		std::string targetName;
 		float detectionRadius = 0.f;

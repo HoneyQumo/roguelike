@@ -3,7 +3,7 @@
 #include <GameWorld.h>
 #include <ResourceSystem.h>
 #include <RigidbodyComponent.h>
-#include <HealthBarComponent.h>
+#include "HealthBarComponent.h"
 #include <LoggerRegistry.h>
 #include <stdexcept>
 
@@ -57,11 +57,11 @@ namespace RoguelikeGame
         parts.animation->SetHurtAnimation(atlas, AtlasFrameIndex(HURT_ANIMATION.row, 0), HURT_ANIMATION.frames, HURT_ANIMATION.framesPerSecond);
         parts.animation->SetDeathAnimation(atlas, AtlasFrameIndex(DEATH_ANIMATION.row, 0), DEATH_ANIMATION.frames, DEATH_ANIMATION.framesPerSecond);
 
-        parts.health = parts.gameObject->AddComponent<XYZEngine::HealthComponent>();
+        parts.health = parts.gameObject->AddComponent<HealthComponent>();
         parts.health->SetMaxHealth(spec.maxHealth);
         parts.health->SetArmor(spec.armor);
 
-        auto healthBar = parts.gameObject->AddComponent<XYZEngine::HealthBarComponent>();
+        auto healthBar = parts.gameObject->AddComponent<HealthBarComponent>();
         healthBar->SetSize(HEALTH_BAR_WIDTH, HEALTH_BAR_HEIGHT);
         healthBar->SetOffset(0.f, HEALTH_BAR_OFFSET_Y);
         healthBar->SetColors(spec.healthBarColor, {20, 20, 20, 200});

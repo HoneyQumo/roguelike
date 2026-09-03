@@ -1,12 +1,13 @@
-#include "pch.h"
 #include "ProjectileComponent.h"
-#include "GameObject.h"
-#include "GameWorld.h"
+#include <GameObject.h>
+#include <GameWorld.h>
 #include "HealthComponent.h"
-#include "LoggerRegistry.h"
+#include <LoggerRegistry.h>
 #include <cassert>
 
-namespace XYZEngine
+using namespace XYZEngine;
+
+namespace RoguelikeGame
 {
 	ProjectileComponent::ProjectileComponent(GameObject* gameObject) : Component(gameObject)
 	{

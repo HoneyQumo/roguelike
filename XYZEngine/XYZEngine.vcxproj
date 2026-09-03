@@ -150,21 +150,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="AmmoPouchComponent.h" />
     <ClInclude Include="AudioComponent.h" />
     <ClInclude Include="BoxColliderComponent.h" />
     <ClInclude Include="CameraComponent.h" />
-    <ClInclude Include="ChaseComponent.h" />
     <ClInclude Include="ColliderComponent.h" />
     <ClInclude Include="Collision.h" />
     <ClInclude Include="Cooldown.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="ConsoleSink.h" />
     <ClInclude Include="CursorFollowComponent.h" />
-    <ClInclude Include="DodgeRollComponent.h" />
     <ClInclude Include="FileSink.h" />
-    <ClInclude Include="HealthBarComponent.h" />
-    <ClInclude Include="HealthComponent.h" />
     <ClInclude Include="Logger.h" />
     <ClInclude Include="LoggerRegistry.h" />
     <ClInclude Include="Engine.h" />
@@ -181,10 +176,6 @@
     <ClInclude Include="MusicComponent.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="PhysicsSystem.h" />
-    <ClInclude Include="ExplosiveComponent.h" />
-    <ClInclude Include="ProjectileComponent.h" />
-    <ClInclude Include="MeleeWeaponComponent.h" />
-    <ClInclude Include="WeaponComponent.h" />
     <ClInclude Include="randomizer.h" />
     <ClInclude Include="RectangleRendererComponent.h" />
     <ClInclude Include="RenderSystem.h" />
@@ -204,20 +195,15 @@
     <ClInclude Include="VertexArrayRendererComponent.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AmmoPouchComponent.cpp" />
     <ClCompile Include="AudioComponent.cpp" />
     <ClCompile Include="BoxColliderComponent.cpp" />
     <ClCompile Include="CameraComponent.cpp" />
-    <ClCompile Include="ChaseComponent.cpp" />
     <ClCompile Include="ColliderComponent.cpp" />
     <ClCompile Include="Collision.cpp" />
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="ConsoleSink.cpp" />
     <ClCompile Include="CursorFollowComponent.cpp" />
-    <ClCompile Include="DodgeRollComponent.cpp" />
     <ClCompile Include="FileSink.cpp" />
-    <ClCompile Include="HealthBarComponent.cpp" />
-    <ClCompile Include="HealthComponent.cpp" />
     <ClCompile Include="Logger.cpp" />
     <ClCompile Include="LoggerRegistry.cpp" />
     <ClCompile Include="Engine.cpp" />
@@ -235,10 +221,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="PhysicsSystem.cpp" />
-    <ClCompile Include="ExplosiveComponent.cpp" />
-    <ClCompile Include="ProjectileComponent.cpp" />
-    <ClCompile Include="MeleeWeaponComponent.cpp" />
-    <ClCompile Include="WeaponComponent.cpp" />
     <ClCompile Include="RectangleRendererComponent.cpp" />
     <ClCompile Include="RenderSystem.cpp" />
     <ClCompile Include="ResourceSystem.cpp" />

@@ -13,7 +13,7 @@
 #include <BoxColliderComponent.h>
 #include <AimRotationComponent.h>
 #include <SpriteMovementAnimationComponent.h>
-#include <HealthComponent.h>
+#include "HealthComponent.h"
 #include <AudioComponent.h>
 
 namespace RoguelikeGame
@@ -40,7 +40,7 @@ namespace RoguelikeGame
         XYZEngine::BoxColliderComponent* collider = nullptr;
         XYZEngine::AimRotationComponent* aim = nullptr;
         XYZEngine::SpriteMovementAnimationComponent* animation = nullptr;
-        XYZEngine::HealthComponent* health = nullptr;
+        HealthComponent* health = nullptr;
         XYZEngine::AudioComponent* hurtAudio = nullptr;
         HitFlashComponent* hitFlash = nullptr;
         WeaponLayerComponent* weapon = nullptr;

@@ -11,9 +11,9 @@ namespace RoguelikeGame
     void PlayerRollComponent::Start()
     {
         input = gameObject->GetComponent<XYZEngine::InputComponent>();
-        dodgeRoll = gameObject->GetComponent<XYZEngine::DodgeRollComponent>();
-        meleeWeapon = gameObject->GetComponent<XYZEngine::MeleeWeaponComponent>();
-        health = gameObject->GetComponent<XYZEngine::HealthComponent>();
+        dodgeRoll = gameObject->GetComponent<DodgeRollComponent>();
+        meleeWeapon = gameObject->GetComponent<MeleeWeaponComponent>();
+        health = gameObject->GetComponent<HealthComponent>();
         loadout = gameObject->GetComponent<PlayerLoadoutComponent>();
 
         if (input == nullptr || dodgeRoll == nullptr)

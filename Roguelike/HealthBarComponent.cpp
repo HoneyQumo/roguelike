@@ -1,10 +1,11 @@
-#include "pch.h"
 #include "HealthBarComponent.h"
-#include "GameObject.h"
-#include "RenderSystem.h"
-#include "LoggerRegistry.h"
+#include <GameObject.h>
+#include <RenderSystem.h>
+#include <LoggerRegistry.h>
 
-namespace XYZEngine
+using namespace XYZEngine;
+
+namespace RoguelikeGame
 {
 	HealthBarComponent::HealthBarComponent(GameObject* gameObject) : Component(gameObject)
 	{

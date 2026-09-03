@@ -12,9 +12,9 @@ namespace RoguelikeGame
 
     void EnemyAttackComponent::Start()
     {
-        weapon = gameObject->GetComponent<XYZEngine::WeaponComponent>();
-        meleeWeapon = gameObject->GetComponent<XYZEngine::MeleeWeaponComponent>();
-        health = gameObject->GetComponent<XYZEngine::HealthComponent>();
+        weapon = gameObject->GetComponent<WeaponComponent>();
+        meleeWeapon = gameObject->GetComponent<MeleeWeaponComponent>();
+        health = gameObject->GetComponent<HealthComponent>();
 
         if (weapon == nullptr && meleeWeapon == nullptr)
         {
@@ -42,7 +42,7 @@ namespace RoguelikeGame
             return;
         }
 
-        auto targetHealth = target->GetComponent<XYZEngine::HealthComponent>();
+        auto targetHealth = target->GetComponent<HealthComponent>();
         if (targetHealth != nullptr && !targetHealth->IsAlive())
         {
             return;

@@ -1,14 +1,15 @@
-﻿#include "pch.h"
-#include "WeaponComponent.h"
-#include "MathUtils.h"
-#include "GameObject.h"
-#include "LoggerRegistry.h"
-#include "randomizer.h"
+﻿#include "WeaponComponent.h"
+#include <MathUtils.h>
+#include <GameObject.h>
+#include <LoggerRegistry.h>
+#include <randomizer.h>
 #include <algorithm>
 #include <cassert>
 #include <cmath>
 
-namespace XYZEngine
+using namespace XYZEngine;
+
+namespace RoguelikeGame
 {
     constexpr float MIN_AIM_CORRECTION_DISTANCE = 64.f;
 

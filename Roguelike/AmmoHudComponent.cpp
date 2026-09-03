@@ -101,7 +101,7 @@ namespace RoguelikeGame
             return;
         }
 
-        weapon = target->GetComponent<XYZEngine::WeaponComponent>();
+        weapon = target->GetComponent<WeaponComponent>();
         loadout = target->GetComponent<PlayerLoadoutComponent>();
     }
 
@@ -116,7 +116,7 @@ namespace RoguelikeGame
     std::string AmmoHudComponent::GetAmmoLine() const
     {
         int reserve = weapon->GetReserveAmmo();
-        std::string reserveText = reserve == XYZEngine::INFINITE_AMMO ? "--" : std::to_string(reserve);
+        std::string reserveText = reserve == INFINITE_AMMO ? "--" : std::to_string(reserve);
 
         return std::to_string(weapon->GetAmmoInMagazine()) + " / " + reserveText;
     }

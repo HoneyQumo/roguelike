@@ -1,15 +1,16 @@
-#include "pch.h"
 #include "ExplosiveComponent.h"
-#include "GameObject.h"
+#include <GameObject.h>
 #include "HealthComponent.h"
-#include "TransformComponent.h"
-#include "PhysicsSystem.h"
-#include "LoggerRegistry.h"
+#include <TransformComponent.h>
+#include <PhysicsSystem.h>
+#include <LoggerRegistry.h>
 #include <algorithm>
 #include <cassert>
 #include <cmath>
 
-namespace XYZEngine
+using namespace XYZEngine;
+
+namespace RoguelikeGame
 {
     constexpr float MIN_SEGMENT_LENGTH = 0.0001f;
 

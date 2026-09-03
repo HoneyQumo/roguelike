@@ -13,7 +13,7 @@
 #include <InputSystem.h>
 #include <RenderSystem.h>
 #include <MusicComponent.h>
-#include <HealthComponent.h>
+#include "HealthComponent.h"
 #include <LoggerRegistry.h>
 
 using namespace XYZEngine;

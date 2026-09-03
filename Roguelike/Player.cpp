@@ -11,10 +11,10 @@
 #include <RenderSystem.h>
 #include <CameraComponent.h>
 #include <InputComponent.h>
-#include <WeaponComponent.h>
-#include <MeleeWeaponComponent.h>
-#include <AmmoPouchComponent.h>
-#include <DodgeRollComponent.h>
+#include "WeaponComponent.h"
+#include "MeleeWeaponComponent.h"
+#include "AmmoPouchComponent.h"
+#include "DodgeRollComponent.h"
 #include <LoggerRegistry.h>
 #include <ResourceSystem.h>
 
@@ -108,14 +108,14 @@ namespace RoguelikeGame
         }
         animation->SetRollAnimations(PLAYER_TEXTURE, rollFirstFrames, ROLL_DIRECTIONS, ROLL_ANIMATION_FRAMES, ROLL_FRAMES_PER_SECOND);
 
-        auto dodgeRoll = gameObject->AddComponent<XYZEngine::DodgeRollComponent>();
+        auto dodgeRoll = gameObject->AddComponent<DodgeRollComponent>();
         dodgeRoll->SetSpeeds(ROLL_MOVE_SPEED, ROLL_ANIMATION_FRAMES, PLAYER_ROLL_SPEED);
         dodgeRoll->SetMaxStep(PLAYER_ROLL_MAX_STEP);
         dodgeRoll->SetInvulnerableFrames(ROLL_INVULNERABLE_FIRST_FRAME, ROLL_INVULNERABLE_LAST_FRAME);
         dodgeRoll->SetIgnoredLayers(ENEMY_COLLISION_LAYER);
         dodgeRoll->SetCooldown(PLAYER_ROLL_COOLDOWN);
 
-        auto ammoPouch = gameObject->AddComponent<XYZEngine::AmmoPouchComponent>();
+        auto ammoPouch = gameObject->AddComponent<AmmoPouchComponent>();
         for (const AmmoReserve& reserve : PLAYER_START_AMMO)
         {
             ammoPouch->SetAmmo(AmmoKindKey(reserve.kind), reserve.count);
@@ -132,10 +132,10 @@ namespace RoguelikeGame
 
         StowedWeaponComponent* stowedWeapon = CreateStowedWeapon(gameObject, startWeapon, animation);
 
-        auto weaponComponent = gameObject->AddComponent<XYZEngine::WeaponComponent>();
+        auto weaponComponent = gameObject->AddComponent<WeaponComponent>();
         PlayEffectsOnReload(weaponComponent, animation, reloadAudio);
 
-        auto meleeWeapon = gameObject->AddComponent<XYZEngine::MeleeWeaponComponent>();
+        auto meleeWeapon = gameObject->AddComponent<MeleeWeaponComponent>();
 
         auto loadout = gameObject->AddComponent<PlayerLoadoutComponent>();
         loadout->SetWeapon(parts.weapon);

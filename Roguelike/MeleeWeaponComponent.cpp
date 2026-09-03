@@ -1,15 +1,16 @@
-#include "pch.h"
 #include "MeleeWeaponComponent.h"
-#include "MathUtils.h"
-#include "GameObject.h"
+#include <MathUtils.h>
+#include <GameObject.h>
 #include "HealthComponent.h"
-#include "PhysicsSystem.h"
-#include "LoggerRegistry.h"
+#include <PhysicsSystem.h>
+#include <LoggerRegistry.h>
 #include <algorithm>
 #include <cassert>
 #include <cmath>
 
-namespace XYZEngine
+using namespace XYZEngine;
+
+namespace RoguelikeGame
 {
 
     MeleeWeaponComponent::MeleeWeaponComponent(GameObject* gameObject) : Component(gameObject)

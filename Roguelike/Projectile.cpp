@@ -8,8 +8,8 @@
 #include <SpriteAnimationComponent.h>
 #include <RigidbodyComponent.h>
 #include <BoxColliderComponent.h>
-#include <ProjectileComponent.h>
-#include <ExplosiveComponent.h>
+#include "ProjectileComponent.h"
+#include "ExplosiveComponent.h"
 #include <LoggerRegistry.h>
 #include <cmath>
 
@@ -74,7 +74,7 @@ namespace RoguelikeGame
         collider->SetOffset(bodyOffset.x, bodyOffset.y);
         collider->SetTrigger(true);
 
-        auto projectile = gameObject->AddComponent<XYZEngine::ProjectileComponent>();
+        auto projectile = gameObject->AddComponent<ProjectileComponent>();
         projectile->SetDirection(direction);
         projectile->SetSpeed(speed);
         projectile->SetShooterName(shooterName);
@@ -103,7 +103,7 @@ namespace RoguelikeGame
 
         float blastRadius = explosive->radius;
 
-        auto blast = gameObject->AddComponent<XYZEngine::ExplosiveComponent>();
+        auto blast = gameObject->AddComponent<ExplosiveComponent>();
         blast->SetRadius(blastRadius);
         blast->SetCoreRadius(EXPLOSION_CORE_RADIUS);
         blast->SetCenterDamage(damage);

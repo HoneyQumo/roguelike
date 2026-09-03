@@ -170,19 +170,19 @@ namespace RoguelikeGame
         }
         if (rangedWeapon == nullptr)
         {
-            rangedWeapon = gameObject->GetComponent<XYZEngine::WeaponComponent>();
+            rangedWeapon = gameObject->GetComponent<WeaponComponent>();
         }
         if (meleeWeapon == nullptr)
         {
-            meleeWeapon = gameObject->GetComponent<XYZEngine::MeleeWeaponComponent>();
+            meleeWeapon = gameObject->GetComponent<MeleeWeaponComponent>();
         }
         if (dodgeRoll == nullptr)
         {
-            dodgeRoll = gameObject->GetComponent<XYZEngine::DodgeRollComponent>();
+            dodgeRoll = gameObject->GetComponent<DodgeRollComponent>();
         }
         if (health == nullptr)
         {
-            health = gameObject->GetComponent<XYZEngine::HealthComponent>();
+            health = gameObject->GetComponent<HealthComponent>();
         }
     }
 

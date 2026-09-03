@@ -1,10 +1,11 @@
-#include "pch.h"
 #include "HealthComponent.h"
-#include "GameObject.h"
-#include "LoggerRegistry.h"
+#include <GameObject.h>
+#include <LoggerRegistry.h>
 #include <cassert>
 
-namespace XYZEngine
+using namespace XYZEngine;
+
+namespace RoguelikeGame
 {
     constexpr float MIN_DAMAGE = 1.f;
     constexpr float LOW_HEALTH_PERCENT = 0.3f;

@@ -2,10 +2,10 @@
 
 #include <Component.h>
 #include <InputComponent.h>
-#include <WeaponComponent.h>
-#include <MeleeWeaponComponent.h>
-#include <DodgeRollComponent.h>
-#include <HealthComponent.h>
+#include "WeaponComponent.h"
+#include "MeleeWeaponComponent.h"
+#include "DodgeRollComponent.h"
+#include "HealthComponent.h"
 #include "HitFlashComponent.h"
 #include "PlayerLoadoutComponent.h"
 
@@ -23,10 +23,10 @@ namespace RoguelikeGame
 
     private:
         XYZEngine::InputComponent* input = nullptr;
-        XYZEngine::WeaponComponent* weapon = nullptr;
-        XYZEngine::MeleeWeaponComponent* meleeWeapon = nullptr;
-        XYZEngine::HealthComponent* health = nullptr;
-        XYZEngine::DodgeRollComponent* dodgeRoll = nullptr;
+        WeaponComponent* weapon = nullptr;
+        MeleeWeaponComponent* meleeWeapon = nullptr;
+        HealthComponent* health = nullptr;
+        DodgeRollComponent* dodgeRoll = nullptr;
         PlayerLoadoutComponent* loadout = nullptr;
         HitFlashComponent* hitFlash = nullptr;
 

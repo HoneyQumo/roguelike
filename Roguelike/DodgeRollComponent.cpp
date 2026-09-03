@@ -1,18 +1,19 @@
-#include "pch.h"
 #include "DodgeRollComponent.h"
-#include "MathUtils.h"
-#include "GameObject.h"
-#include "TransformComponent.h"
-#include "MovementComponent.h"
-#include "ColliderComponent.h"
+#include <MathUtils.h>
+#include <GameObject.h>
+#include <TransformComponent.h>
+#include <MovementComponent.h>
+#include <ColliderComponent.h>
 #include "HealthComponent.h"
-#include "SpriteMovementAnimationComponent.h"
-#include "LoggerRegistry.h"
+#include <SpriteMovementAnimationComponent.h>
+#include <LoggerRegistry.h>
 #include <algorithm>
 #include <cassert>
 #include <cmath>
 
-namespace XYZEngine
+using namespace XYZEngine;
+
+namespace RoguelikeGame
 {
 
 	DodgeRollComponent::DodgeRollComponent(GameObject* gameObject) : Component(gameObject)

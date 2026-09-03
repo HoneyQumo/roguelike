@@ -1,17 +1,17 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include "Component.h"
-#include "TransformComponent.h"
+#include <Component.h>
+#include <TransformComponent.h>
 #include "HealthComponent.h"
-#include "Vector.h"
+#include <Vector.h>
 
-namespace XYZEngine
+namespace RoguelikeGame
 {
-	class HealthBarComponent : public Component
+	class HealthBarComponent : public XYZEngine::Component
 	{
 	public:
-		HealthBarComponent(GameObject* gameObject);
+		HealthBarComponent(XYZEngine::GameObject* gameObject);
 		~HealthBarComponent();
 
 		void Start() override;
@@ -22,13 +22,13 @@ namespace XYZEngine
 		void SetOffset(float offsetX, float offsetY);
 		void SetColors(const sf::Color& newFillColor, const sf::Color& newBackgroundColor);
 	private:
-		TransformComponent* transform;
+		XYZEngine::TransformComponent* transform;
 		HealthComponent* health = nullptr;
 
 		sf::RectangleShape* background;
 		sf::RectangleShape* fill;
 
-		Vector2Df size = { 48.f, 6.f };
-		Vector2Df offset = { 0.f, 40.f };
+		XYZEngine::Vector2Df size = { 48.f, 6.f };
+		XYZEngine::Vector2Df offset = { 0.f, 40.f };
 	};
 }

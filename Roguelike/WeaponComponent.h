@@ -1,20 +1,20 @@
 ﻿#pragma once
 
 #include <functional>
-#include "Component.h"
-#include "TransformComponent.h"
+#include <Component.h>
+#include <TransformComponent.h>
 #include "AmmoPouchComponent.h"
-#include "Vector.h"
-#include "Cooldown.h"
+#include <Vector.h>
+#include <Cooldown.h>
 
-namespace XYZEngine
+namespace RoguelikeGame
 {
     constexpr int INFINITE_AMMO = -1;
 
-    class WeaponComponent : public Component
+    class WeaponComponent : public XYZEngine::Component
     {
     public:
-        WeaponComponent(GameObject* gameObject);
+        WeaponComponent(XYZEngine::GameObject* gameObject);
 
         void Start() override;
         void Update(float deltaTime) override;
@@ -23,11 +23,11 @@ namespace XYZEngine
         void SetCooldown(float newCooldown);
         void SetDamage(float newDamage);
         void SetProjectileSpeed(float newProjectileSpeed);
-        void SetMuzzleOffset(const Vector2Df& newMuzzleOffset);
+        void SetMuzzleOffset(const XYZEngine::Vector2Df& newMuzzleOffset);
         void SetPellets(int newPellets);
         void SetConeDegrees(float newConeDegrees);
         void SetShotStartAction(std::function<void()> newShotStartAction);
-        void SetShotAction(std::function<void(const Vector2Df&, const Vector2Df&, float, float)> newShotAction);
+        void SetShotAction(std::function<void(const XYZEngine::Vector2Df&, const XYZEngine::Vector2Df&, float, float)> newShotAction);
 
         int GetPellets() const;
         float GetConeDegrees() const;
@@ -52,16 +52,16 @@ namespace XYZEngine
         void CancelReload();
 
         bool IsReady() const;
-        bool TryShootAt(const Vector2Df& targetPosition);
+        bool TryShootAt(const XYZEngine::Vector2Df& targetPosition);
 
     private:
-        TransformComponent* transform;
+        XYZEngine::TransformComponent* transform;
         AmmoPouchComponent* pouch = nullptr;
 
-        Cooldown shotCooldown{0.5f};
+        XYZEngine::Cooldown shotCooldown{0.5f};
         float damage = 10.f;
         float projectileSpeed = 600.f;
-        Vector2Df muzzleOffset = {40.f, 0.f};
+        XYZEngine::Vector2Df muzzleOffset = {40.f, 0.f};
 
         int pellets = 1;
         float coneDegrees = 0.f;
@@ -70,16 +70,16 @@ namespace XYZEngine
         int ammoInMagazine = 0;
         int ammoKind = 0;
 
-        Cooldown reload;
+        XYZEngine::Cooldown reload;
         bool isReloading = false;
 
         std::function<void()> shotStartAction;
-        std::function<void(const Vector2Df&, const Vector2Df&, float, float)> shotAction;
+        std::function<void(const XYZEngine::Vector2Df&, const XYZEngine::Vector2Df&, float, float)> shotAction;
         std::function<void()> reloadStartAction;
         std::function<void()> reloadFinishAction;
 
         float PelletAngle(int index) const;
-        static Vector2Df RotateDirection(const Vector2Df& direction, float degrees);
+        static XYZEngine::Vector2Df RotateDirection(const XYZEngine::Vector2Df& direction, float degrees);
         void FinishReload();
     };
 }

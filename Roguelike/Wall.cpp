@@ -1,4 +1,5 @@
 #include "Wall.h"
+#include <GameObject.h>
 #include "GameSettings.h"
 #include <RectangleRendererComponent.h>
 #include <RigidbodyComponent.h>

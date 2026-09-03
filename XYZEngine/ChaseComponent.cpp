@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "ChaseComponent.h"
+#include "GameObject.h"
 #include "GameWorld.h"
 
 namespace XYZEngine

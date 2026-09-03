@@ -1,9 +1,6 @@
 #pragma once
 
-#include <memory>
-#include <SFML/Graphics.hpp>
 #include "Component.h"
-#include "GameObject.h"
 #include "Vector.h"
 #include "Matrix2D.h"
 

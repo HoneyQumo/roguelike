@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "SpriteDirectionComponent.h"
+#include "GameObject.h"
 
 namespace XYZEngine
 {

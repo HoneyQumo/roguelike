@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "CameraComponent.h"
+#include "GameObject.h"
 #include "TransformComponent.h"
 
 namespace XYZEngine

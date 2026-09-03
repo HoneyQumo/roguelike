@@ -1,5 +1,6 @@
 ﻿#include "pch.h"
 #include "SpriteMovementAnimationComponent.h"
+#include "GameObject.h"
 #include "ResourceSystem.h"
 #include "LoggerRegistry.h"
 #include <algorithm>

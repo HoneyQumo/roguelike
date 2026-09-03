@@ -1,4 +1,5 @@
 #include "Music.h"
+#include <GameObject.h>
 #include <ResourceSystem.h>
 
 namespace RoguelikeGame

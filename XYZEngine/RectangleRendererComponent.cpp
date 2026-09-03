@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "RectangleRendererComponent.h"
+#include "GameObject.h"
 #include "RenderSystem.h"
 
 namespace XYZEngine

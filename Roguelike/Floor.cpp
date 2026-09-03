@@ -1,4 +1,5 @@
 #include "Floor.h"
+#include <GameObject.h>
 #include "GameSettings.h"
 #include <RectangleRendererComponent.h>
 

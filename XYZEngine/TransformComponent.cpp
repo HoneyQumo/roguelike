@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "TransformComponent.h"
+#include "GameObject.h"
 #include <cmath>
 #include <iostream>
 

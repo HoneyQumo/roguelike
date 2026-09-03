@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "BoxColliderComponent.h"
+#include "GameObject.h"
 
 namespace XYZEngine
 {

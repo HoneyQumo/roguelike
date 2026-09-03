@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "PhysicsSystem.h"
+#include "GameObject.h"
 #include <cassert>
 
 namespace XYZEngine

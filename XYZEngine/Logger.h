@@ -29,6 +29,10 @@ namespace XYZEngine
 	public:
 		void AddSink(std::shared_ptr<LogSink> sink);
 
+		void SetMinLevel(LogLevel level);
+		LogLevel GetMinLevel() const;
+		bool IsEnabled(LogLevel level) const;
+
 		void Log(LogLevel level, const std::string& message);
 
 		void Info(const std::string& message);
@@ -37,5 +41,6 @@ namespace XYZEngine
 	private:
 		std::vector<std::shared_ptr<LogSink>> sinks;
 		std::mutex logMutex;
+		LogLevel minLevel = LogLevel::Info;
 	};
 }

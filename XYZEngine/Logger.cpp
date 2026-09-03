@@ -29,8 +29,26 @@ namespace XYZEngine
 		sinks.push_back(sink);
 	}
 
+	void Logger::SetMinLevel(LogLevel level)
+	{
+		minLevel = level;
+	}
+	LogLevel Logger::GetMinLevel() const
+	{
+		return minLevel;
+	}
+	bool Logger::IsEnabled(LogLevel level) const
+	{
+		return level >= minLevel;
+	}
+
 	void Logger::Log(LogLevel level, const std::string& message)
 	{
+		if (!IsEnabled(level))
+		{
+			return;
+		}
+
 		std::lock_guard<std::mutex> lock(logMutex);
 		for (auto& sink : sinks)
 		{

@@ -33,6 +33,16 @@ namespace XYZEngine
 	};
 }
 
-#define LOG_INFO(message) XYZEngine::LoggerRegistry::Instance()->GetLogger("global")->Info(message)
-#define LOG_WARN(message) XYZEngine::LoggerRegistry::Instance()->GetLogger("global")->Warning(message)
-#define LOG_ERROR(message) XYZEngine::LoggerRegistry::Instance()->GetLogger("global")->Error(message)
+#define XYZ_LOG_AT(level, message) \
+	do \
+	{ \
+		auto xyzLogger = XYZEngine::LoggerRegistry::Instance()->GetLogger("global"); \
+		if (xyzLogger->IsEnabled(level)) \
+		{ \
+			xyzLogger->Log(level, message); \
+		} \
+	} while (false)
+
+#define LOG_INFO(message) XYZ_LOG_AT(XYZEngine::LogLevel::Info, message)
+#define LOG_WARN(message) XYZ_LOG_AT(XYZEngine::LogLevel::Warning, message)
+#define LOG_ERROR(message) XYZ_LOG_AT(XYZEngine::LogLevel::Error, message)

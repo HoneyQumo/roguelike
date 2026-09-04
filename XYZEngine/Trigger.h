@@ -13,7 +13,7 @@ namespace XYZEngine
 		ColliderComponent* GetFirst() const { return first; }
 		ColliderComponent* GetSecond() const { return second; }
 	private:
-		ColliderComponent* first;
-		ColliderComponent* second;
+		ColliderComponent* first = nullptr;
+		ColliderComponent* second = nullptr;
 	};
 }

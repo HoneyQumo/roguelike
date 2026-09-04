@@ -21,9 +21,9 @@ namespace XYZEngine
         void SetRotationEnabled(bool newIsRotationEnabled);
 
     private:
-        TransformComponent* transform;
-        sf::RenderWindow* window;
-        sf::View* view;
+        TransformComponent* transform = nullptr;
+        sf::RenderWindow* window = nullptr;
+        sf::View* view = nullptr;
 
         bool isRotationEnabled = true;
     };

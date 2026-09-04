@@ -21,7 +21,7 @@ namespace XYZEngine
 		void SetOffset(float offsetX, float offsetY);
 		Vector2Df GetOffset() const;
 	private:
-		TransformComponent* transform;
+		TransformComponent* transform = nullptr;
 
 		Vector2Df size = { 0.f, 0.f };
 		Vector2Df offset = { 0.f, 0.f };

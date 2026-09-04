@@ -27,7 +27,7 @@ namespace RoguelikeGame
 
 		bool IsChasing() const;
 	private:
-		XYZEngine::TransformComponent* transform;
+		XYZEngine::TransformComponent* transform = nullptr;
 		XYZEngine::MovementComponent* movement = nullptr;
 
 		std::string targetName;

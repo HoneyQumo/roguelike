@@ -25,6 +25,6 @@ namespace XYZEngine
 
 		bool IsPlaying() const;
 	private:
-		sf::Sound* sound;
+		sf::Sound* sound = nullptr;
 	};
 }

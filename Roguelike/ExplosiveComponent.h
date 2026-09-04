@@ -33,7 +33,7 @@ namespace RoguelikeGame
         int Explode(const XYZEngine::Vector2Df& position);
 
     private:
-        XYZEngine::TransformComponent* transform;
+        XYZEngine::TransformComponent* transform = nullptr;
 
         float radius = 64.f;
         float coreRadius = 0.f;

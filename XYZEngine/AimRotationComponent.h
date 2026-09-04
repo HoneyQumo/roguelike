@@ -25,7 +25,7 @@ namespace XYZEngine
 
 		const Vector2Df& GetAimDirection() const;
 	private:
-		TransformComponent* transform;
+		TransformComponent* transform = nullptr;
 		InputComponent* input = nullptr;
 
 		std::string targetName;

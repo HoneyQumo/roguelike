@@ -92,3 +92,18 @@ TEST_F(GameWorldTest, LookupDoesNotScaleWithObjectCount)
 	std::cout << "FindGameObject among 601 objects: " << microsecondsPerLookup << " us per call" << std::endl;
 	EXPECT_LT(microsecondsPerLookup, 5.0);
 }
+
+TEST_F(GameWorldTest, DestroyingChildAndParentInOneFrameIsSafe)
+{
+	GameObject* parent = GameWorld::Instance()->CreateGameObject("Parent");
+	GameObject* child = GameWorld::Instance()->CreateGameObject("Child");
+	child->GetComponent<XYZEngine::TransformComponent>()->SetParent(parent->GetComponent<XYZEngine::TransformComponent>());
+
+	GameWorld::Instance()->DestroyGameObject(child);
+	GameWorld::Instance()->DestroyGameObject(parent);
+	GameWorld::Instance()->LateUpdate();
+
+	EXPECT_EQ(GameWorld::Instance()->FindGameObject("Parent"), nullptr);
+	EXPECT_EQ(GameWorld::Instance()->FindGameObject("Child"), nullptr);
+	EXPECT_EQ(GameWorld::Instance()->GetObjectsCount(), 0u);
+}

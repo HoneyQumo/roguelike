@@ -16,7 +16,7 @@ namespace XYZEngine
 		void Render(const sf::Drawable& drawable, const sf::RenderStates& states);
 
 	private:
-		sf::RenderWindow* window;
+		sf::RenderWindow* window = nullptr;
 
 		RenderSystem() {}
 		~RenderSystem() {}

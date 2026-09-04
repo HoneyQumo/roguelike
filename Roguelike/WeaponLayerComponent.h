@@ -25,7 +25,7 @@ namespace RoguelikeGame
         void PlayMuzzleFlash();
 
     private:
-        XYZEngine::TransformComponent* transform;
+        XYZEngine::TransformComponent* transform = nullptr;
         XYZEngine::SpriteRendererComponent* renderer = nullptr;
         XYZEngine::SpriteMovementAnimationComponent* ownerAnimation = nullptr;
 

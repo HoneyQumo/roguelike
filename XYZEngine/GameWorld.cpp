@@ -39,9 +39,15 @@ namespace XYZEngine
 	}
 	void GameWorld::LateUpdate()
 	{
-		for (int i = markedToDestroyGameObjects.size() - 1; i >= 0; i--)
+		std::vector<GameObject*> toDestroy;
+		toDestroy.swap(markedToDestroyGameObjects);
+
+		for (GameObject* gameObject : toDestroy)
 		{
-			DestroyGameObjectImmediate(markedToDestroyGameObjects[i]);
+			if (IsRegistered(gameObject))
+			{
+				DestroyGameObjectImmediate(gameObject);
+			}
 		}
 
 		for (int i = 0; i < gameObjects.size(); i++)
@@ -134,6 +140,11 @@ namespace XYZEngine
 		}
 
 		isRenderOrderDirty = true;
+	}
+
+	bool GameWorld::IsRegistered(GameObject* gameObject) const
+	{
+		return std::find(gameObjects.begin(), gameObjects.end(), gameObject) != gameObjects.end();
 	}
 
 	void GameWorld::RegisterGameObject(GameObject* gameObject)

@@ -22,11 +22,11 @@ namespace RoguelikeGame
 		void SetOffset(float offsetX, float offsetY);
 		void SetColors(const sf::Color& newFillColor, const sf::Color& newBackgroundColor);
 	private:
-		XYZEngine::TransformComponent* transform;
+		XYZEngine::TransformComponent* transform = nullptr;
 		HealthComponent* health = nullptr;
 
-		sf::RectangleShape* background;
-		sf::RectangleShape* fill;
+		sf::RectangleShape* background = nullptr;
+		sf::RectangleShape* fill = nullptr;
 
 		XYZEngine::Vector2Df size = { 48.f, 6.f };
 		XYZEngine::Vector2Df offset = { 0.f, 40.f };

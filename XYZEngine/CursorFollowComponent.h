@@ -13,6 +13,6 @@ namespace XYZEngine
 		void Update(float deltaTime) override;
 		void Render() override;
 	private:
-		TransformComponent* transform;
+		TransformComponent* transform = nullptr;
 	};
 }

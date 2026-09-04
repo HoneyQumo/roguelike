@@ -37,8 +37,8 @@ namespace XYZEngine
     private:
         Vector2Df scale;
         Vector2Df pivot = {0.5f, 0.5f};
-        sf::Sprite* sprite;
-        TransformComponent* transform;
+        sf::Sprite* sprite = nullptr;
+        TransformComponent* transform = nullptr;
 
         sf::Shader* shader = nullptr;
         std::map<std::string, float> shaderFloats;

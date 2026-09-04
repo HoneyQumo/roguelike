@@ -20,7 +20,7 @@ namespace XYZEngine
 
 		friend class GameObject;
 	protected:
-		GameObject* gameObject;
+		GameObject* gameObject = nullptr;
 	private:
 		bool isStarted = false;
 		bool isDestroyed = false;

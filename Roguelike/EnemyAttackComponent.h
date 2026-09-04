@@ -24,7 +24,7 @@ namespace RoguelikeGame
         void SetAttackRange(float newAttackRange);
 
     private:
-        XYZEngine::TransformComponent* transform;
+        XYZEngine::TransformComponent* transform = nullptr;
         WeaponComponent* weapon = nullptr;
         MeleeWeaponComponent* meleeWeapon = nullptr;
         HealthComponent* health = nullptr;

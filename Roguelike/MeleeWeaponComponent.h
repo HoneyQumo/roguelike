@@ -59,7 +59,7 @@ namespace RoguelikeGame
         void CancelAttack();
 
     private:
-        XYZEngine::TransformComponent* transform;
+        XYZEngine::TransformComponent* transform = nullptr;
         XYZEngine::SpriteMovementAnimationComponent* animation = nullptr;
         XYZEngine::MovementComponent* movement = nullptr;
 

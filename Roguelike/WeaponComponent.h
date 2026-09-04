@@ -55,7 +55,7 @@ namespace RoguelikeGame
         bool TryShootAt(const XYZEngine::Vector2Df& targetPosition);
 
     private:
-        XYZEngine::TransformComponent* transform;
+        XYZEngine::TransformComponent* transform = nullptr;
         AmmoPouchComponent* pouch = nullptr;
 
         XYZEngine::Cooldown shotCooldown{0.5f};

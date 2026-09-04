@@ -28,7 +28,7 @@ namespace XYZEngine
 		void SetDirection(const Vector2Df& newDirection);
 		Vector2Df GetDirection() const;
 	private:
-		TransformComponent* transform;
+		TransformComponent* transform = nullptr;
 		InputComponent* input = nullptr;
 
 		bool isEnabled = true;

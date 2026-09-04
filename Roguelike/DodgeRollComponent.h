@@ -39,7 +39,7 @@ namespace RoguelikeGame
 		void CancelRoll();
 
 	private:
-		XYZEngine::TransformComponent* transform;
+		XYZEngine::TransformComponent* transform = nullptr;
 		XYZEngine::MovementComponent* movement = nullptr;
 		XYZEngine::ColliderComponent* collider = nullptr;
 		HealthComponent* health = nullptr;

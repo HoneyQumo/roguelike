@@ -21,8 +21,8 @@ namespace XYZEngine
 
 		void SetColor(const sf::Color& newColor);
 	private:
-		sf::RectangleShape* rectangle;
-		TransformComponent* transform;
+		sf::RectangleShape* rectangle = nullptr;
+		TransformComponent* transform = nullptr;
 
 		Vector2Df size = { 0.f, 0.f };
 	};

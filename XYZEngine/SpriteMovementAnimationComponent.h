@@ -87,7 +87,7 @@ namespace XYZEngine
             const float* frameSeconds = nullptr;
         };
 
-        TransformComponent* transform;
+        TransformComponent* transform = nullptr;
         SpriteRendererComponent* renderer = nullptr;
         MovementComponent* movement = nullptr;
 

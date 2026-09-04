@@ -28,7 +28,7 @@ namespace RoguelikeGame
         void SetExpireAction(std::function<void(const XYZEngine::Vector2Df&)> newExpireAction);
 
     private:
-        XYZEngine::TransformComponent* transform;
+        XYZEngine::TransformComponent* transform = nullptr;
         XYZEngine::ColliderComponent* collider = nullptr;
 
         XYZEngine::Vector2Df direction = {1.f, 0.f};

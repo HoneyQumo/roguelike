@@ -55,6 +55,7 @@ namespace RoguelikeGame
         spec.speed = PLAYER_SPEED;
         spec.maxHealth = PLAYER_MAX_HEALTH;
         spec.armor = PLAYER_ARMOR;
+        spec.faction = Faction::Player;
         spec.weapon = startWeapon;
         spec.healthBarColor = {90, 200, 90};
 
@@ -126,7 +127,7 @@ namespace RoguelikeGame
         auto weaponComponent = gameObject->AddComponent<WeaponComponent>();
         PlayEffectsOnReload(weaponComponent, animation, reloadAudio);
         PlayEffectsOnShot(weaponComponent, shotAudio, animation, parts.weapon);
-        SpawnProjectilesOnShot(weaponComponent, gameObject->GetName());
+        SpawnProjectilesOnShot(weaponComponent);
 
         auto meleeWeapon = gameObject->AddComponent<MeleeWeaponComponent>();
         PlayEffectsOnMeleeHit(meleeWeapon, meleeAudio);

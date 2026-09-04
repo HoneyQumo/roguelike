@@ -55,6 +55,9 @@
     <ClCompile Include="AreaDamage.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
+    <ClCompile Include="FactionComponent.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
     <ClCompile Include="ChaseComponent.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
@@ -130,6 +133,8 @@
     <ClInclude Include="AmmoHud.h" />
     <ClInclude Include="AmmoHudComponent.h" />
     <ClInclude Include="AreaDamage.h" />
+    <ClInclude Include="Faction.h" />
+    <ClInclude Include="FactionComponent.h" />
     <ClInclude Include="ChaseComponent.h" />
     <ClInclude Include="AmmoPouchComponent.h" />
     <ClInclude Include="HealthBarComponent.h" />

@@ -4,6 +4,7 @@
 #include <SFML/Graphics/Rect.hpp>
 #include <GameObject.h>
 #include <Vector.h>
+#include "FactionComponent.h"
 #include "HealthComponent.h"
 
 namespace RoguelikeGame
@@ -12,6 +13,7 @@ namespace RoguelikeGame
     {
         XYZEngine::GameObject* gameObject;
         HealthComponent* health;
+        Faction faction;
         XYZEngine::Vector2Df position;
         XYZEngine::Vector2Df direction;
         float distance;

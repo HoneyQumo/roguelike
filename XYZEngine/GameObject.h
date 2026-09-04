@@ -8,6 +8,9 @@ namespace XYZEngine
 {
 	class TransformComponent;
 
+	using GameObjectId = unsigned int;
+	constexpr GameObjectId NO_GAME_OBJECT = 0;
+
 	class GameObject
 	{
 	public:
@@ -17,6 +20,7 @@ namespace XYZEngine
 		~GameObject();
 
 		const std::string& GetName() const;
+		GameObjectId GetId() const;
 		TransformComponent* GetTransform() const;
 		void Print(int depth = 0) const;
 
@@ -126,6 +130,7 @@ namespace XYZEngine
 
 	private:
 		std::string name;
+		GameObjectId id = NO_GAME_OBJECT;
 		int renderLayer = 0;
 		TransformComponent* transform = nullptr;
 

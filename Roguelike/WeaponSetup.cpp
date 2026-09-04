@@ -22,12 +22,12 @@ namespace RoguelikeGame
     }
 
     // Ствол меняется на ходу, поэтому идентификатор берётся у компонента, а не запоминается подпиской.
-    void SpawnProjectilesOnShot(WeaponComponent* weapon, const std::string& shooterName)
+    void SpawnProjectilesOnShot(WeaponComponent* weapon)
     {
-        weapon->SubscribeShot([weapon, shooterName](const XYZEngine::Vector2Df& shotPosition, const XYZEngine::Vector2Df& shotDirection,
-                                                    float damage, float speed)
+        weapon->SubscribeShot([weapon](const XYZEngine::Vector2Df& shotPosition, const XYZEngine::Vector2Df& shotDirection,
+                                       float damage, float speed)
         {
-            Projectile::Spawn(shotPosition, shotDirection, damage, speed, shooterName, weapon->GetWeaponId());
+            Projectile::Spawn(shotPosition, shotDirection, damage, speed, weapon->GetGameObject(), weapon->GetWeaponId());
         });
     }
 

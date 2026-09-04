@@ -161,6 +161,7 @@
         <ClCompile Include="AmmoHud.cpp"/>
         <ClCompile Include="AmmoHudComponent.cpp"/>
         <ClCompile Include="AreaDamage.cpp"/>
+        <ClCompile Include="FactionComponent.cpp"/>
         <ClCompile Include="ChaseComponent.cpp"/>
         <ClCompile Include="AmmoPouchComponent.cpp"/>
         <ClCompile Include="HealthBarComponent.cpp"/>
@@ -202,6 +203,8 @@
         <ClInclude Include="AmmoHud.h"/>
         <ClInclude Include="AmmoHudComponent.h"/>
         <ClInclude Include="AreaDamage.h"/>
+        <ClInclude Include="Faction.h"/>
+        <ClInclude Include="FactionComponent.h"/>
         <ClInclude Include="ChaseComponent.h"/>
         <ClInclude Include="AmmoPouchComponent.h"/>
         <ClInclude Include="HealthBarComponent.h"/>

@@ -5,6 +5,7 @@
 #include <string>
 #include <SFML/Graphics/Color.hpp>
 #include "Weapon.h"
+#include "FactionComponent.h"
 #include "HitFlashComponent.h"
 #include <GameObject.h>
 #include <TransformComponent.h>
@@ -27,6 +28,7 @@ namespace RoguelikeGame
         float speed = 0.f;
         float maxHealth = 0.f;
         float armor = 0.f;
+        Faction faction = Faction::Neutral;
         WeaponId weapon = WeaponId::Knife;
         sf::Color healthBarColor;
     };

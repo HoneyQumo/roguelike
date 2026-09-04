@@ -23,6 +23,7 @@ namespace RoguelikeGame
         spec.speed = config.speed;
         spec.maxHealth = config.maxHealth;
         spec.armor = config.armor;
+        spec.faction = Faction::Enemy;
         spec.weapon = config.weapon;
         spec.healthBarColor = {200, 60, 60};
 
@@ -62,7 +63,6 @@ namespace RoguelikeGame
 
             auto meleeWeapon = gameObject->AddComponent<MeleeWeaponComponent>();
             meleeWeapon->SetQuickAttack(MakeQuickAttack(melee->quick, config.attackDamage, config.attackCooldown));
-            meleeWeapon->SetTargetName(PLAYER_OBJECT_NAME);
             meleeWeapon->SetDefinition(melee);
             PlayEffectsOnMeleeHit(meleeWeapon, meleeAudio);
 
@@ -88,7 +88,7 @@ namespace RoguelikeGame
             ApplyWeaponDefinition(weaponComponent, config.weapon, shot);
             PlayEffectsOnReload(weaponComponent, animation, reloadAudio);
             PlayEffectsOnShot(weaponComponent, shotAudio, animation, weaponLayer);
-            SpawnProjectilesOnShot(weaponComponent, config.objectName);
+            SpawnProjectilesOnShot(weaponComponent);
 
             auto attack = gameObject->AddComponent<EnemyAttackComponent>();
             attack->SetTargetName(PLAYER_OBJECT_NAME);

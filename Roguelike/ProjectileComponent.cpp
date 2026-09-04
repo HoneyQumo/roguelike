@@ -99,9 +99,10 @@ namespace RoguelikeGame
 		assert(newLifetime > 0.f);
 		lifetime.Start(newLifetime);
 	}
-	void ProjectileComponent::SetShooterName(const std::string& newShooterName)
+	void ProjectileComponent::SetShooter(GameObjectId newShooterId, Faction newShooterFaction)
 	{
-		shooterName = newShooterName;
+		shooterId = newShooterId;
+		shooterFaction = newShooterFaction;
 	}
 	SubscriptionId ProjectileComponent::SubscribeHit(std::function<void(const Vector2Df&, const Vector2Df&, bool)> onHit)
 	{
@@ -130,12 +131,22 @@ namespace RoguelikeGame
 			return;
 		}
 
-		if (otherCollider->GetGameObject()->GetName() == shooterName)
+		if (IsFriendly(otherCollider->GetGameObject()))
 		{
 			return;
 		}
 
 		Hit(otherCollider);
+	}
+
+	bool ProjectileComponent::IsFriendly(GameObject* target) const
+	{
+		if (target->GetId() == shooterId)
+		{
+			return true;
+		}
+
+		return !CanDamage(shooterFaction, GetFactionOf(target));
 	}
 
 	float ProjectileComponent::GetMaxStep() const
@@ -154,7 +165,7 @@ namespace RoguelikeGame
 		{
 			bool isIgnored = (collider->GetCollisionLayer() & other->GetIgnoredLayers()) != 0u
 				|| (other->GetCollisionLayer() & collider->GetIgnoredLayers()) != 0u;
-			if (other == collider || other->IsTrigger() || isIgnored || other->GetGameObject()->GetName() == shooterName)
+			if (other == collider || other->IsTrigger() || isIgnored || IsFriendly(other->GetGameObject()))
 			{
 				continue;
 			}

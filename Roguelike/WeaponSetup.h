@@ -40,7 +40,7 @@ namespace RoguelikeGame
 
     void ApplyWeaponDefinition(WeaponComponent* weapon, WeaponId id, const ShotProfile& shot);
 
-    void SpawnProjectilesOnShot(WeaponComponent* weapon, const std::string& shooterName);
+    void SpawnProjectilesOnShot(WeaponComponent* weapon);
     void PlayEffectsOnShot(WeaponComponent* weapon, XYZEngine::AudioComponent* shotAudio,
                           XYZEngine::SpriteMovementAnimationComponent* animation, WeaponLayerComponent* weaponLayer);
     void PlayEffectsOnReload(WeaponComponent* weapon, XYZEngine::SpriteMovementAnimationComponent* animation,

@@ -57,7 +57,7 @@ namespace RoguelikeGame
                 continue;
             }
 
-            query.targets.push_back({candidate, health, position, toTarget.Normalized(), distance});
+            query.targets.push_back({candidate, health, GetFactionOf(candidate), position, toTarget.Normalized(), distance});
         }
 
         return query;

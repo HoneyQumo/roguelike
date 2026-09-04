@@ -64,9 +64,9 @@ namespace RoguelikeGame
         selfDamagePart = std::max(newSelfDamagePart, 0.f);
     }
 
-    void ExplosiveComponent::SetOwnerName(const std::string& newOwnerName)
+    void ExplosiveComponent::SetOwnerId(GameObjectId newOwnerId)
     {
-        ownerName = newOwnerName;
+        ownerId = newOwnerId;
     }
 
     SubscriptionId ExplosiveComponent::SubscribeExplode(std::function<void(const Vector2Df&)> onExplode)
@@ -110,7 +110,7 @@ namespace RoguelikeGame
             }
 
             float damage = DamageAt(target.distance);
-            if (!ownerName.empty() && target.gameObject->GetName() == ownerName)
+            if (ownerId != NO_GAME_OBJECT && target.gameObject->GetId() == ownerId)
             {
                 damage *= selfDamagePart;
             }

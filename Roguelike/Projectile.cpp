@@ -10,6 +10,7 @@
 #include <BoxColliderComponent.h>
 #include "ProjectileComponent.h"
 #include "ExplosiveComponent.h"
+#include "FactionComponent.h"
 #include <LoggerRegistry.h>
 #include <cmath>
 
@@ -17,7 +18,7 @@ namespace RoguelikeGame
 {
 
     void Projectile::Spawn(const XYZEngine::Vector2Df& position, const XYZEngine::Vector2Df& direction, float damage, float speed,
-                           const std::string& shooterName, WeaponId weapon)
+                           XYZEngine::GameObject* shooter, WeaponId weapon)
     {
         const WeaponDefinition& definition = GetWeapon(weapon);
         const ExplosiveDefinition* explosive = FindExplosive(weapon);
@@ -66,7 +67,7 @@ namespace RoguelikeGame
         auto projectile = gameObject->AddComponent<ProjectileComponent>();
         projectile->SetDirection(direction);
         projectile->SetSpeed(speed);
-        projectile->SetShooterName(shooterName);
+        projectile->SetShooter(shooter == nullptr ? XYZEngine::NO_GAME_OBJECT : shooter->GetId(), GetFactionOf(shooter));
 
         if (explosive == nullptr)
         {
@@ -98,7 +99,7 @@ namespace RoguelikeGame
         blast->SetCenterDamage(damage);
         blast->SetEdgeDamagePart(explosive->edgeDamagePart);
         blast->SetSelfDamagePart(explosive->selfDamagePart);
-        blast->SetOwnerName(shooterName);
+        blast->SetOwnerId(shooter == nullptr ? XYZEngine::NO_GAME_OBJECT : shooter->GetId());
         blast->SubscribeExplode([blastRadius](const XYZEngine::Vector2Df& blastPosition)
         {
             Fx::SpawnExplosion(blastPosition, blastRadius);

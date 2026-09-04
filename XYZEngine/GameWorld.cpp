@@ -165,6 +165,7 @@ namespace XYZEngine
 
 	void GameWorld::RegisterGameObject(GameObject* gameObject)
 	{
+		gameObject->id = nextId++;
 		gameObjects.push_back(gameObject);
 		gameObjectsByName[gameObject->GetName()].push_back(gameObject);
 		isRenderOrderDirty = true;

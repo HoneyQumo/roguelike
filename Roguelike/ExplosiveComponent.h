@@ -6,6 +6,7 @@
 #include <SFML/Graphics/Rect.hpp>
 #include <Component.h>
 #include <EventList.h>
+#include <GameObject.h>
 #include <TransformComponent.h>
 #include <Vector.h>
 
@@ -24,7 +25,7 @@ namespace RoguelikeGame
         void SetCenterDamage(float newCenterDamage);
         void SetEdgeDamagePart(float newEdgeDamagePart);
         void SetSelfDamagePart(float newSelfDamagePart);
-        void SetOwnerName(const std::string& newOwnerName);
+        void SetOwnerId(XYZEngine::GameObjectId newOwnerId);
         XYZEngine::SubscriptionId SubscribeExplode(std::function<void(const XYZEngine::Vector2Df&)> onExplode);
         XYZEngine::SubscriptionId SubscribeHit(std::function<void(const XYZEngine::Vector2Df&, const XYZEngine::Vector2Df&)> onHit);
 
@@ -41,7 +42,7 @@ namespace RoguelikeGame
         float centerDamage = 50.f;
         float edgeDamagePart = 0.25f;
         float selfDamagePart = 1.f;
-        std::string ownerName;
+        XYZEngine::GameObjectId ownerId = XYZEngine::NO_GAME_OBJECT;
         bool hasExploded = false;
 
         XYZEngine::EventList<const XYZEngine::Vector2Df&> explodeEvent;

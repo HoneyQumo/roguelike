@@ -23,6 +23,8 @@ namespace RoguelikeGame
     {
         animation = gameObject->GetComponent<SpriteMovementAnimationComponent>();
         movement = gameObject->GetComponent<MovementComponent>();
+
+        faction = gameObject->GetComponent<FactionComponent>();
     }
 
     void MeleeWeaponComponent::Update(float deltaTime)
@@ -105,11 +107,6 @@ namespace RoguelikeGame
     {
         assert(newChargeTime > 0.f);
         chargeTime = newChargeTime;
-    }
-
-    void MeleeWeaponComponent::SetTargetName(const std::string& newTargetName)
-    {
-        targetName = newTargetName;
     }
 
     void MeleeWeaponComponent::SetLunge(const float* frameSpeeds, int framesCount, float peakSpeed)
@@ -280,7 +277,7 @@ namespace RoguelikeGame
         int hits = 0;
         for (const AreaTarget& target : QueryDamageArea(origin, attack.range, gameObject).targets)
         {
-            if (!targetName.empty() && target.gameObject->GetName() != targetName)
+            if (!CanDamage(faction == nullptr ? Faction::Neutral : faction->GetFaction(), target.faction))
             {
                 continue;
             }

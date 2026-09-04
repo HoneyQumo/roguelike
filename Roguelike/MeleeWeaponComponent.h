@@ -4,6 +4,7 @@
 #include <string>
 #include <Component.h>
 #include <EventList.h>
+#include "FactionComponent.h"
 #include "WeaponCatalog.h"
 #include <TransformComponent.h>
 #include <MovementComponent.h>
@@ -42,7 +43,6 @@ namespace RoguelikeGame
         void SetQuickAttack(const MeleeAttack& newQuickAttack);
         void SetHeavyAttack(const MeleeAttack& newHeavyAttack);
         void SetChargeTime(float newChargeTime);
-        void SetTargetName(const std::string& newTargetName);
         void SetLunge(const float* frameSpeeds, int framesCount, float peakSpeed);
 
         void SetDefinition(const MeleeDefinition* newDefinition);
@@ -71,7 +71,7 @@ namespace RoguelikeGame
         MeleeAttack quickAttack;
         MeleeAttack heavyAttack;
         float chargeTime = 0.44f;
-        std::string targetName;
+        FactionComponent* faction = nullptr;
 
         const float* lungeSpeeds = nullptr;
         int lungeFramesCount = 0;

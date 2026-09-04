@@ -59,6 +59,11 @@ namespace XYZEngine
 		return name;
 	}
 
+	GameObjectId GameObject::GetId() const
+	{
+		return id;
+	}
+
 	TransformComponent* GameObject::GetTransform() const
 	{
 		return transform;

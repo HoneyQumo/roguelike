@@ -61,6 +61,8 @@ namespace RoguelikeGame
         parts.health->SetMaxHealth(spec.maxHealth);
         parts.health->SetArmor(spec.armor);
 
+        parts.gameObject->AddComponent<FactionComponent>()->SetFaction(spec.faction);
+
         auto healthBar = parts.gameObject->AddComponent<HealthBarComponent>();
         healthBar->SetSize(HEALTH_BAR_WIDTH, HEALTH_BAR_HEIGHT);
         healthBar->SetOffset(0.f, HEALTH_BAR_OFFSET_Y);

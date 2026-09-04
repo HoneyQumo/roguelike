@@ -44,6 +44,7 @@ namespace XYZEngine
 		GameWorld(GameWorld const&) = delete;
 		GameWorld& operator= (GameWorld const&) = delete;
 
+		GameObjectId nextId = NO_GAME_OBJECT + 1;
 		std::vector<GameObject*> gameObjects = {};
 		std::unordered_map<std::string, std::vector<GameObject*>> gameObjectsByName;
 		std::vector<GameObject*> markedToDestroyGameObjects = {};

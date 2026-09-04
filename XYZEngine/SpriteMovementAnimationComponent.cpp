@@ -79,34 +79,34 @@ namespace XYZEngine
     {
     }
 
-    void SpriteMovementAnimationComponent::SetWalkAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float framesPerSecond)
+    void SpriteMovementAnimationComponent::SetWalkAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float secondsPerFrame)
     {
-        walkAnimation.Load(textureMapName, firstFrameIndex, framesCount, framesPerSecond);
+        walkAnimation.Load(textureMapName, firstFrameIndex, framesCount, secondsPerFrame);
     }
 
-    void SpriteMovementAnimationComponent::SetIdleAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float framesPerSecond)
+    void SpriteMovementAnimationComponent::SetIdleAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float secondsPerFrame)
     {
-        idleAnimation.Load(textureMapName, firstFrameIndex, framesCount, framesPerSecond);
+        idleAnimation.Load(textureMapName, firstFrameIndex, framesCount, secondsPerFrame);
     }
 
-    void SpriteMovementAnimationComponent::SetRunAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float framesPerSecond)
+    void SpriteMovementAnimationComponent::SetRunAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float secondsPerFrame)
     {
-        runAnimation.Load(textureMapName, firstFrameIndex, framesCount, framesPerSecond);
+        runAnimation.Load(textureMapName, firstFrameIndex, framesCount, secondsPerFrame);
     }
 
-    void SpriteMovementAnimationComponent::SetShootAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float framesPerSecond)
+    void SpriteMovementAnimationComponent::SetShootAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float secondsPerFrame)
     {
-        shootAnimation.Load(textureMapName, firstFrameIndex, framesCount, framesPerSecond);
+        shootAnimation.Load(textureMapName, firstFrameIndex, framesCount, secondsPerFrame);
     }
 
-    void SpriteMovementAnimationComponent::SetReloadAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float framesPerSecond)
+    void SpriteMovementAnimationComponent::SetReloadAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float secondsPerFrame)
     {
-        reloadAnimation.Load(textureMapName, firstFrameIndex, framesCount, framesPerSecond);
+        reloadAnimation.Load(textureMapName, firstFrameIndex, framesCount, secondsPerFrame);
     }
 
-    void SpriteMovementAnimationComponent::SetMeleeAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float framesPerSecond)
+    void SpriteMovementAnimationComponent::SetMeleeAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float secondsPerFrame)
     {
-        meleeAnimation.Load(textureMapName, firstFrameIndex, framesCount, framesPerSecond);
+        meleeAnimation.Load(textureMapName, firstFrameIndex, framesCount, secondsPerFrame);
     }
 
     void SpriteMovementAnimationComponent::SetHeavyAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, const float* frameSeconds,
@@ -114,7 +114,7 @@ namespace XYZEngine
     {
         assert(frameSeconds != nullptr);
 
-        heavyAnimation.Load(textureMapName, firstFrameIndex, framesCount, 1.f);
+        heavyAnimation.Load(textureMapName, firstFrameIndex, framesCount, DEFAULT_FRAME_SECONDS);
         heavyAnimation.SetFrameSeconds(frameSeconds);
         heavyLoops = loops;
     }
@@ -123,22 +123,22 @@ namespace XYZEngine
     {
         assert(frameSeconds != nullptr);
 
-        swapAnimation.Load(textureMapName, firstFrameIndex, framesCount, 1.f);
+        swapAnimation.Load(textureMapName, firstFrameIndex, framesCount, DEFAULT_FRAME_SECONDS);
         swapAnimation.SetFrameSeconds(frameSeconds);
     }
 
-    void SpriteMovementAnimationComponent::SetHurtAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float framesPerSecond)
+    void SpriteMovementAnimationComponent::SetHurtAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float secondsPerFrame)
     {
-        hurtAnimation.Load(textureMapName, firstFrameIndex, framesCount, framesPerSecond);
+        hurtAnimation.Load(textureMapName, firstFrameIndex, framesCount, secondsPerFrame);
     }
 
-    void SpriteMovementAnimationComponent::SetDeathAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float framesPerSecond)
+    void SpriteMovementAnimationComponent::SetDeathAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float secondsPerFrame)
     {
-        deathAnimation.Load(textureMapName, firstFrameIndex, framesCount, framesPerSecond);
+        deathAnimation.Load(textureMapName, firstFrameIndex, framesCount, secondsPerFrame);
     }
 
     void SpriteMovementAnimationComponent::SetRollAnimations(const std::string& textureMapName, const int* firstFrameIndices, int directionsCount,
-                                                             int framesCount, float framesPerSecond)
+                                                             int framesCount, float secondsPerFrame)
     {
         assert(firstFrameIndices != nullptr);
         assert(directionsCount > 0 && directionsCount <= MAX_ROLL_DIRECTIONS);
@@ -153,7 +153,7 @@ namespace XYZEngine
         rollDirectionsCount = std::min(std::max(directionsCount, 0), MAX_ROLL_DIRECTIONS);
         for (int direction = 0; direction < rollDirectionsCount; direction++)
         {
-            rollAnimations[direction].Load(textureMapName, firstFrameIndices[direction], framesCount, framesPerSecond);
+            rollAnimations[direction].Load(textureMapName, firstFrameIndices[direction], framesCount, secondsPerFrame);
         }
     }
 

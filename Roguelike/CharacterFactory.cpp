@@ -48,14 +48,14 @@ namespace RoguelikeGame
 
         const std::string& atlas = spec.textureMapName;
         parts.animation = parts.gameObject->AddComponent<XYZEngine::SpriteMovementAnimationComponent>();
-        parts.animation->SetIdleAnimation(atlas, AtlasFrameIndex(IDLE_ANIMATION.row, 0), IDLE_ANIMATION.frames, IDLE_ANIMATION.framesPerSecond);
-        parts.animation->SetWalkAnimation(atlas, AtlasFrameIndex(WALK_ANIMATION.row, 0), WALK_ANIMATION.frames, WALK_ANIMATION.framesPerSecond);
-        parts.animation->SetShootAnimation(atlas, AtlasFrameIndex(SHOOT_ANIMATION.row, 0), SHOOT_ANIMATION.frames, SHOOT_ANIMATION.framesPerSecond);
+        parts.animation->SetIdleAnimation(atlas, AtlasFrameIndex(IDLE_ANIMATION.row, 0), IDLE_ANIMATION.frames, IDLE_ANIMATION.secondsPerFrame);
+        parts.animation->SetWalkAnimation(atlas, AtlasFrameIndex(WALK_ANIMATION.row, 0), WALK_ANIMATION.frames, WALK_ANIMATION.secondsPerFrame);
+        parts.animation->SetShootAnimation(atlas, AtlasFrameIndex(SHOOT_ANIMATION.row, 0), SHOOT_ANIMATION.frames, SHOOT_ANIMATION.secondsPerFrame);
         parts.animation->SetReloadAnimation(atlas, AtlasFrameIndex(RELOAD_ANIMATION.row, 0), RELOAD_ANIMATION.frames,
-                                            ReloadFramesPerSecond(GetWeapon(spec.weapon).reloadTime));
-        parts.animation->SetMeleeAnimation(atlas, AtlasFrameIndex(MELEE_ANIMATION.row, 0), MELEE_ANIMATION.frames, MELEE_ANIMATION.framesPerSecond);
-        parts.animation->SetHurtAnimation(atlas, AtlasFrameIndex(HURT_ANIMATION.row, 0), HURT_ANIMATION.frames, HURT_ANIMATION.framesPerSecond);
-        parts.animation->SetDeathAnimation(atlas, AtlasFrameIndex(DEATH_ANIMATION.row, 0), DEATH_ANIMATION.frames, DEATH_ANIMATION.framesPerSecond);
+                                            ReloadFrameSeconds(GetWeapon(spec.weapon).reloadTime));
+        parts.animation->SetMeleeAnimation(atlas, AtlasFrameIndex(MELEE_ANIMATION.row, 0), MELEE_ANIMATION.frames, MELEE_ANIMATION.secondsPerFrame);
+        parts.animation->SetHurtAnimation(atlas, AtlasFrameIndex(HURT_ANIMATION.row, 0), HURT_ANIMATION.frames, HURT_ANIMATION.secondsPerFrame);
+        parts.animation->SetDeathAnimation(atlas, AtlasFrameIndex(DEATH_ANIMATION.row, 0), DEATH_ANIMATION.frames, DEATH_ANIMATION.secondsPerFrame);
 
         parts.health = parts.gameObject->AddComponent<HealthComponent>();
         parts.health->SetMaxHealth(spec.maxHealth);

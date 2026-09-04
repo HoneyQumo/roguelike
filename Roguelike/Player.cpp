@@ -88,7 +88,7 @@ namespace RoguelikeGame
         heavyLoops.chargedLastFrame = HEAVY_CHARGED_LOOP_LAST;
         heavyLoops.releaseFrame = HEAVY_RELEASE_FRAME;
 
-        animation->SetRunAnimation(PLAYER_TEXTURE, AtlasFrameIndex(RUN_ANIMATION.row, 0), RUN_ANIMATION.frames, RUN_ANIMATION.framesPerSecond);
+        animation->SetRunAnimation(PLAYER_TEXTURE, AtlasFrameIndex(RUN_ANIMATION.row, 0), RUN_ANIMATION.frames, RUN_ANIMATION.secondsPerFrame);
         animation->SetHeavyAnimation(PLAYER_TEXTURE, AtlasFrameIndex(HEAVY_ANIMATION_ROW, 0), HEAVY_ANIMATION_FRAMES, HEAVY_FRAME_SECONDS, heavyLoops);
         animation->SetSwapAnimation(PLAYER_TEXTURE, AtlasFrameIndex(SWAP_ANIMATION_ROW, 0), SWAP_ANIMATION_FRAMES, SWAP_FRAME_SECONDS);
 
@@ -97,7 +97,7 @@ namespace RoguelikeGame
         {
             rollFirstFrames[direction] = RollFirstFrame(direction);
         }
-        animation->SetRollAnimations(PLAYER_TEXTURE, rollFirstFrames, ROLL_DIRECTIONS, ROLL_ANIMATION_FRAMES, ROLL_FRAMES_PER_SECOND);
+        animation->SetRollAnimations(PLAYER_TEXTURE, rollFirstFrames, ROLL_DIRECTIONS, ROLL_ANIMATION_FRAMES, ROLL_FRAME_SECONDS);
 
         auto dodgeRoll = gameObject->AddComponent<DodgeRollComponent>();
         dodgeRoll->SetSpeeds(ROLL_MOVE_SPEED, ROLL_ANIMATION_FRAMES, PLAYER_ROLL_SPEED);

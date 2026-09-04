@@ -21,7 +21,7 @@ namespace RoguelikeGame
         attack.arcDegrees = profile.arcDegrees;
         attack.recovery = recovery;
         attack.hitFrame = MELEE_HIT_FRAME;
-        attack.windup = MELEE_HIT_FRAME / MELEE_ANIMATION.framesPerSecond;
+        attack.windup = MELEE_HIT_FRAME * MELEE_ANIMATION.secondsPerFrame;
         return attack;
     }
 

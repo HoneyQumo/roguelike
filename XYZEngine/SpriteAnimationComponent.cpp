@@ -72,12 +72,12 @@ namespace XYZEngine
 
 	}
 
-	void SpriteAnimationComponent::SetFrames(const std::string& textureMapName, int firstFrameIndex, int framesCount, float framesPerSecond)
+	void SpriteAnimationComponent::SetFrames(const std::string& textureMapName, int firstFrameIndex, int framesCount, float secondsPerFrame)
 	{
 		assert(framesCount > 0);
-		assert(framesPerSecond > 0.f);
+		assert(secondsPerFrame > 0.f);
 
-		clip.Load(textureMapName, firstFrameIndex, framesCount, framesPerSecond);
+		clip.Load(textureMapName, firstFrameIndex, framesCount, secondsPerFrame);
 	}
 	void SpriteAnimationComponent::SetLooped(bool newIsLooped)
 	{

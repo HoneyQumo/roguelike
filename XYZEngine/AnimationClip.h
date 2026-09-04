@@ -9,7 +9,7 @@ namespace XYZEngine
 	class AnimationClip
 	{
 	public:
-		bool Load(const std::string& textureMapName, int firstFrameIndex, int framesCount, float framesPerSecond);
+		bool Load(const std::string& textureMapName, int firstFrameIndex, int framesCount, float newSecondsPerFrame);
 		void SetFrameSeconds(const float* newFrameSeconds);
 
 		bool IsEmpty() const;

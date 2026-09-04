@@ -6,13 +6,13 @@
 
 namespace XYZEngine
 {
-	bool AnimationClip::Load(const std::string& textureMapName, int firstFrameIndex, int framesCount, float framesPerSecond)
+	bool AnimationClip::Load(const std::string& textureMapName, int firstFrameIndex, int framesCount, float newSecondsPerFrame)
 	{
 		frames.clear();
 
-		if (framesPerSecond <= 0.f)
+		if (newSecondsPerFrame <= 0.f)
 		{
-			LOG_ERROR("Framerate must be positive for texture map: " + textureMapName);
+			LOG_ERROR("Frame length must be positive for texture map: " + textureMapName);
 			return false;
 		}
 
@@ -29,7 +29,7 @@ namespace XYZEngine
 			frames.push_back(ResourceSystem::Instance()->GetTextureMapElementShared(textureMapName, i));
 		}
 
-		secondsPerFrame = 1.f / framesPerSecond;
+		secondsPerFrame = newSecondsPerFrame;
 		return true;
 	}
 

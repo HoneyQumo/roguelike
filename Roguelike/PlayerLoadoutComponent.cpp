@@ -204,7 +204,7 @@ namespace RoguelikeGame
         if (animation != nullptr)
         {
             animation->SetReloadAnimation(PLAYER_TEXTURE, AtlasFrameIndex(RELOAD_ANIMATION.row, 0), RELOAD_ANIMATION.frames,
-                                          ReloadFramesPerSecond(definition.reloadTime));
+                                          ReloadFrameSeconds(definition.reloadTime));
         }
     }
 

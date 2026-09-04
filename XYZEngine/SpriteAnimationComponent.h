@@ -26,7 +26,7 @@ namespace XYZEngine
         void Update(float deltaTime) override;
         void Render() override;
 
-        void SetFrames(const std::string& textureMapName, int firstFrameIndex, int framesCount, float framesPerSecond);
+        void SetFrames(const std::string& textureMapName, int firstFrameIndex, int framesCount, float secondsPerFrame);
         void SetLooped(bool newIsLooped);
         void SetEndBehaviour(SpriteAnimationEnd newEndBehaviour);
         void SetStartDelay(float newStartDelay);

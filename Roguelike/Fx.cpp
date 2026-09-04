@@ -57,7 +57,7 @@ namespace RoguelikeGame
                                                           const FxStrip& strip)
     {
         auto animation = gameObject->AddComponent<XYZEngine::SpriteAnimationComponent>();
-        animation->SetFrames(textureMapName, 0, strip.frames, FramesPerSecond(strip.millisecondsPerFrame));
+        animation->SetFrames(textureMapName, 0, strip.frames, strip.secondsPerFrame);
 
         return animation;
     }

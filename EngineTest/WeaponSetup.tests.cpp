@@ -18,7 +18,7 @@ TEST(WeaponSetupTests, QuickAttackScalesDamageAndTakesRecoveryFromCaller)
 	EXPECT_FLOAT_EQ(attack.arcDegrees, 90.f);
 	EXPECT_FLOAT_EQ(attack.recovery, 0.7f);
 	EXPECT_EQ(attack.hitFrame, MELEE_HIT_FRAME);
-	EXPECT_FLOAT_EQ(attack.windup, MELEE_HIT_FRAME / MELEE_ANIMATION.framesPerSecond);
+	EXPECT_FLOAT_EQ(attack.windup, MELEE_HIT_FRAME * MELEE_ANIMATION.secondsPerFrame);
 }
 
 TEST(WeaponSetupTests, HeavyAttackUsesChargedScaleAndProfileRecovery)

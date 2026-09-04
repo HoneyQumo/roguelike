@@ -53,9 +53,9 @@ namespace RoguelikeGame
         {AmmoKind::Rocket, 6}
     };
 
-    constexpr float ReloadFramesPerSecond(float reloadTime)
+    constexpr float ReloadFrameSeconds(float reloadTime)
     {
-        return reloadTime > 0.f ? RELOAD_ANIMATION.frames / reloadTime : RELOAD_ANIMATION.framesPerSecond;
+        return reloadTime > 0.f ? reloadTime / RELOAD_ANIMATION.frames : RELOAD_ANIMATION.secondsPerFrame;
     }
 
     constexpr float PROJECTILE_COLLIDER_SIZE = 8.f;
@@ -113,8 +113,8 @@ namespace RoguelikeGame
     constexpr float HIT_FLASH_DURATION = 0.12f;
     constexpr auto HIT_FLASH_UNIFORM = "amount";
 
-    // Лужа кров начинается с 3го кадра анимации смерти
-    constexpr float BLOOD_POOL_DELAY = 3.f * 110.f / 1000.f;
+    // Лужа крови начинается с 3го кадра анимации смерти
+    constexpr float BLOOD_POOL_DELAY = 3.f * DEATH_ANIMATION.secondsPerFrame;
 
     constexpr float MUSIC_VOLUME = 15.f;
     constexpr float SHOT_VOLUME = 20.f;

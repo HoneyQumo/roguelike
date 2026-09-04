@@ -48,19 +48,19 @@ namespace XYZEngine
         void Update(float deltaTime) override;
         void Render() override;
 
-        void SetWalkAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float framesPerSecond);
-        void SetRunAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float framesPerSecond);
-        void SetIdleAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float framesPerSecond);
-        void SetShootAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float framesPerSecond);
-        void SetReloadAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float framesPerSecond);
-        void SetMeleeAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float framesPerSecond);
+        void SetWalkAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float secondsPerFrame);
+        void SetRunAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float secondsPerFrame);
+        void SetIdleAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float secondsPerFrame);
+        void SetShootAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float secondsPerFrame);
+        void SetReloadAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float secondsPerFrame);
+        void SetMeleeAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float secondsPerFrame);
         void SetHeavyAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, const float* frameSeconds,
                                const ChargedAnimationLoops& loops);
         void SetSwapAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, const float* frameSeconds);
-        void SetHurtAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float framesPerSecond);
-        void SetDeathAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float framesPerSecond);
+        void SetHurtAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float secondsPerFrame);
+        void SetDeathAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float secondsPerFrame);
         void SetRollAnimations(const std::string& textureMapName, const int* firstFrameIndices, int directionsCount, int framesCount,
-                               float framesPerSecond);
+                               float secondsPerFrame);
 
         void PlayShoot();
         void PlayReload();

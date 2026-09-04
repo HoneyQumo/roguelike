@@ -67,17 +67,6 @@ namespace XYZEngine
         return texturePair->second;
     }
 
-    sf::Texture* ResourceSystem::GetTextureCopy(const std::string& name) const
-    {
-        const sf::Texture* texture = GetTextureShared(name);
-        if (texture == nullptr)
-        {
-            return nullptr;
-        }
-
-        return new sf::Texture(*texture);
-    }
-
     void ResourceSystem::DeleteSharedTexture(const std::string& name)
     {
         auto texturePair = textures.find(name);
@@ -174,17 +163,6 @@ namespace XYZEngine
         }
 
         return elements[elementIndex];
-    }
-
-    sf::Texture* ResourceSystem::GetTextureMapElementCopy(const std::string& name, int elementIndex) const
-    {
-        const sf::Texture* element = GetTextureMapElementShared(name, elementIndex);
-        if (element == nullptr)
-        {
-            return nullptr;
-        }
-
-        return new sf::Texture(*element);
     }
 
     int ResourceSystem::GetTextureMapElementsCount(const std::string& name) const

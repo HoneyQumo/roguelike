@@ -15,13 +15,11 @@ namespace XYZEngine
 		void LoadTexture(const std::string& name, std::string sourcePath, bool isSmooth = true);
 		void LoadTexturePart(const std::string& name, std::string sourcePath, sf::IntRect area, bool isSmooth = true);
 		const sf::Texture* GetTextureShared(const std::string& name) const;
-		sf::Texture* GetTextureCopy(const std::string& name) const;
 		void DeleteSharedTexture(const std::string& name);
 
 		void LoadTextureMap(const std::string& name, std::string sourcePath, sf::Vector2u elementPixelSize, int totalElements, bool isSmooth = true);
 		void LoadTextureStrip(const std::string& name, std::string sourcePath, sf::IntRect firstElementArea, int totalElements, bool isSmooth = true);
 		const sf::Texture* GetTextureMapElementShared(const std::string& name, int elementIndex) const;
-		sf::Texture* GetTextureMapElementCopy(const std::string& name, int elementIndex) const;
 		int GetTextureMapElementsCount(const std::string& name) const;
 		void DeleteSharedTextureMap(const std::string& name);
 

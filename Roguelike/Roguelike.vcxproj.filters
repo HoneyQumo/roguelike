@@ -52,6 +52,9 @@
     <ClCompile Include="AmmoHudComponent.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
+    <ClCompile Include="AreaDamage.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
     <ClCompile Include="ChaseComponent.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
@@ -126,6 +129,7 @@
     <ClInclude Include="ReloadIndicatorComponent.h" />
     <ClInclude Include="AmmoHud.h" />
     <ClInclude Include="AmmoHudComponent.h" />
+    <ClInclude Include="AreaDamage.h" />
     <ClInclude Include="ChaseComponent.h" />
     <ClInclude Include="AmmoPouchComponent.h" />
     <ClInclude Include="HealthBarComponent.h" />

@@ -1,4 +1,5 @@
 #include "ExplosiveComponent.h"
+#include "AreaDamage.h"
 #include "GameSettings.h"
 #include <DebugDraw.h>
 #include <GameObject.h>
@@ -97,72 +98,19 @@ namespace RoguelikeGame
 
         hasExploded = true;
 
-        sf::FloatRect area(position.x - radius, position.y - radius, 2.f * radius, 2.f * radius);
-
-        std::vector<ColliderComponent*> found = PhysicsSystem::Instance()->Overlap(area);
-
-        std::vector<sf::FloatRect> obstacles;
-        std::vector<GameObject*> targets;
-
-        for (auto collider : found)
-        {
-            GameObject* candidate = collider->GetGameObject();
-            if (candidate == nullptr || candidate == gameObject)
-            {
-                continue;
-            }
-
-            auto health = candidate->GetComponent<HealthComponent>();
-            if (health == nullptr)
-            {
-                if (!collider->IsTrigger())
-                {
-                    obstacles.push_back(collider->GetBounds());
-                }
-                continue;
-            }
-
-            if (!health->IsAlive() || health->IsInvulnerable())
-            {
-                continue;
-            }
-
-            if (std::find(targets.begin(), targets.end(), candidate) == targets.end())
-            {
-                targets.push_back(candidate);
-            }
-        }
+        AreaQuery query = QueryDamageArea(position, radius, gameObject);
 
         int hits = 0;
 
-        for (auto target : targets)
+        for (const AreaTarget& target : query.targets)
         {
-            auto targetTransform = target->GetTransform();
-            if (targetTransform == nullptr)
+            if (target.distance > coreRadius && IsBlocked(position, target.position, query.obstacles))
             {
                 continue;
             }
 
-            Vector2Df targetPosition = targetTransform->GetWorldPosition();
-            float distance = (targetPosition - position).GetLength();
-            if (distance > radius)
-            {
-                continue;
-            }
-
-            if (distance > coreRadius && IsBlocked(position, targetPosition, obstacles))
-            {
-                continue;
-            }
-
-            auto health = target->GetComponent<HealthComponent>();
-            if (health == nullptr || !health->IsAlive() || health->IsInvulnerable())
-            {
-                continue;
-            }
-
-            float damage = DamageAt(distance);
-            if (!ownerName.empty() && target->GetName() == ownerName)
+            float damage = DamageAt(target.distance);
+            if (!ownerName.empty() && target.gameObject->GetName() == ownerName)
             {
                 damage *= selfDamagePart;
             }
@@ -172,10 +120,10 @@ namespace RoguelikeGame
                 continue;
             }
 
-            health->TakeDamage(damage);
+            target.health->TakeDamage(damage);
             hits++;
 
-            hitEvent.Invoke(targetPosition, (targetPosition - position).Normalized());
+            hitEvent.Invoke(target.position, target.direction);
         }
 
         explodeEvent.Invoke(position);

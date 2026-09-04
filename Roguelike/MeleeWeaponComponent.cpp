@@ -1,4 +1,5 @@
 #include "MeleeWeaponComponent.h"
+#include "AreaDamage.h"
 #include <MathUtils.h>
 #include <GameObject.h>
 #include "HealthComponent.h"
@@ -276,56 +277,28 @@ namespace RoguelikeGame
         Vector2Df forward = GetForward();
         float arcLimit = std::cos(ToRadians(0.5f * attack.arcDegrees));
 
-        sf::FloatRect area(origin.x - attack.range, origin.y - attack.range, 2.f * attack.range, 2.f * attack.range);
-
         int hits = 0;
-        for (auto collider : PhysicsSystem::Instance()->Overlap(area))
+        for (const AreaTarget& target : QueryDamageArea(origin, attack.range, gameObject).targets)
         {
-            GameObject* target = collider->GetGameObject();
-            if (target == nullptr || target == gameObject)
-            {
-                continue;
-            }
-
-            if (!targetName.empty() && target->GetName() != targetName)
-            {
-                continue;
-            }
-
-            auto health = target->GetComponent<HealthComponent>();
-            if (health == nullptr || !health->IsAlive() || health->IsInvulnerable())
-            {
-                continue;
-            }
-
-            auto targetTransform = target->GetTransform();
-            if (targetTransform == nullptr)
-            {
-                continue;
-            }
-
-            Vector2Df targetPosition = targetTransform->GetWorldPosition();
-            Vector2Df toTarget = targetPosition - origin;
-            float distance = toTarget.GetLength();
-            if (distance > attack.range)
+            if (!targetName.empty() && target.gameObject->GetName() != targetName)
             {
                 continue;
             }
 
             Vector2Df hitDirection = forward;
-            if (distance > 0.f)
+            if (target.distance > 0.f)
             {
-                hitDirection = (1.f / distance) * toTarget;
+                hitDirection = target.direction;
                 if (forward.DotProduct(hitDirection) < arcLimit)
                 {
                     continue;
                 }
             }
 
-            health->TakeDamage(damage);
+            target.health->TakeDamage(damage);
             hits++;
 
-            hitEvent.Invoke(currentKind, targetPosition, hitDirection);
+            hitEvent.Invoke(currentKind, target.position, hitDirection);
         }
 
         strikeEvent.Invoke(currentKind, hits);

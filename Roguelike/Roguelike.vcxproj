@@ -160,6 +160,7 @@
     <ItemGroup>
         <ClCompile Include="AmmoHud.cpp"/>
         <ClCompile Include="AmmoHudComponent.cpp"/>
+        <ClCompile Include="AreaDamage.cpp"/>
         <ClCompile Include="ChaseComponent.cpp"/>
         <ClCompile Include="AmmoPouchComponent.cpp"/>
         <ClCompile Include="HealthBarComponent.cpp"/>
@@ -200,6 +201,7 @@
     <ItemGroup>
         <ClInclude Include="AmmoHud.h"/>
         <ClInclude Include="AmmoHudComponent.h"/>
+        <ClInclude Include="AreaDamage.h"/>
         <ClInclude Include="ChaseComponent.h"/>
         <ClInclude Include="AmmoPouchComponent.h"/>
         <ClInclude Include="HealthBarComponent.h"/>

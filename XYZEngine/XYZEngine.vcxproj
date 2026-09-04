@@ -181,10 +181,12 @@
     <ClInclude Include="randomizer.h" />
     <ClInclude Include="RectangleRendererComponent.h" />
     <ClInclude Include="RenderSystem.h" />
+    <ClInclude Include="ResourceMap.h" />
     <ClInclude Include="ResourceSystem.h" />
     <ClInclude Include="RigidbodyComponent.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="AimRotationComponent.h" />
+    <ClInclude Include="SoundSourceComponent.h" />
     <ClInclude Include="SpriteAnimationComponent.h" />
     <ClInclude Include="SpriteDirectionComponent.h" />
     <ClInclude Include="SpriteMovementAnimationComponent.h" />

@@ -120,6 +120,7 @@
     <ClCompile Include="FrameClock.tests.cpp" />
     <ClCompile Include="DebugDraw.tests.cpp" />
     <ClCompile Include="EventList.tests.cpp" />
+    <ClCompile Include="ResourceMap.tests.cpp" />
     <ClCompile Include="..\Roguelike\LevelLoader.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>

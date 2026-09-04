@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <SFML/Graphics.hpp>
+#include "AnimationClip.h"
 #include "Component.h"
 #include "SpriteRendererComponent.h"
 #include "Cooldown.h"
@@ -37,8 +38,7 @@ namespace XYZEngine
     private:
         SpriteRendererComponent* renderer = nullptr;
 
-        std::vector<const sf::Texture*> frames;
-        float secondsPerFrame = 0.1f;
+        AnimationClip clip;
         SpriteAnimationEnd endBehaviour = SpriteAnimationEnd::HoldLastFrame;
 
         bool isLooped = false;

@@ -9,6 +9,7 @@
 namespace XYZEngine
 {
     constexpr float MIN_MOVEMENT = 0.5f;
+    constexpr float DEFAULT_FRAME_SECONDS = 0.125f;
     constexpr float STILL_DELAY = 0.15f;
 
     SpriteMovementAnimationComponent::SpriteMovementAnimationComponent(GameObject* gameObject) : Component(gameObject)
@@ -56,7 +57,7 @@ namespace XYZEngine
             stillTimer += deltaTime;
         }
 
-        bool isRunning = movement != nullptr && movement->IsRunning() && !runAnimation.frames.empty();
+        bool isRunning = movement != nullptr && movement->IsRunning() && !runAnimation.IsEmpty();
 
         if (stillTimer > STILL_DELAY)
         {
@@ -80,32 +81,32 @@ namespace XYZEngine
 
     void SpriteMovementAnimationComponent::SetWalkAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float framesPerSecond)
     {
-        Fill(walkAnimation, textureMapName, firstFrameIndex, framesCount, framesPerSecond);
+        walkAnimation.Load(textureMapName, firstFrameIndex, framesCount, framesPerSecond);
     }
 
     void SpriteMovementAnimationComponent::SetIdleAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float framesPerSecond)
     {
-        Fill(idleAnimation, textureMapName, firstFrameIndex, framesCount, framesPerSecond);
+        idleAnimation.Load(textureMapName, firstFrameIndex, framesCount, framesPerSecond);
     }
 
     void SpriteMovementAnimationComponent::SetRunAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float framesPerSecond)
     {
-        Fill(runAnimation, textureMapName, firstFrameIndex, framesCount, framesPerSecond);
+        runAnimation.Load(textureMapName, firstFrameIndex, framesCount, framesPerSecond);
     }
 
     void SpriteMovementAnimationComponent::SetShootAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float framesPerSecond)
     {
-        Fill(shootAnimation, textureMapName, firstFrameIndex, framesCount, framesPerSecond);
+        shootAnimation.Load(textureMapName, firstFrameIndex, framesCount, framesPerSecond);
     }
 
     void SpriteMovementAnimationComponent::SetReloadAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float framesPerSecond)
     {
-        Fill(reloadAnimation, textureMapName, firstFrameIndex, framesCount, framesPerSecond);
+        reloadAnimation.Load(textureMapName, firstFrameIndex, framesCount, framesPerSecond);
     }
 
     void SpriteMovementAnimationComponent::SetMeleeAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float framesPerSecond)
     {
-        Fill(meleeAnimation, textureMapName, firstFrameIndex, framesCount, framesPerSecond);
+        meleeAnimation.Load(textureMapName, firstFrameIndex, framesCount, framesPerSecond);
     }
 
     void SpriteMovementAnimationComponent::SetHeavyAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, const float* frameSeconds,
@@ -113,8 +114,8 @@ namespace XYZEngine
     {
         assert(frameSeconds != nullptr);
 
-        Fill(heavyAnimation, textureMapName, firstFrameIndex, framesCount, 1.f);
-        heavyAnimation.frameSeconds = frameSeconds;
+        heavyAnimation.Load(textureMapName, firstFrameIndex, framesCount, 1.f);
+        heavyAnimation.SetFrameSeconds(frameSeconds);
         heavyLoops = loops;
     }
 
@@ -122,18 +123,18 @@ namespace XYZEngine
     {
         assert(frameSeconds != nullptr);
 
-        Fill(swapAnimation, textureMapName, firstFrameIndex, framesCount, 1.f);
-        swapAnimation.frameSeconds = frameSeconds;
+        swapAnimation.Load(textureMapName, firstFrameIndex, framesCount, 1.f);
+        swapAnimation.SetFrameSeconds(frameSeconds);
     }
 
     void SpriteMovementAnimationComponent::SetHurtAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float framesPerSecond)
     {
-        Fill(hurtAnimation, textureMapName, firstFrameIndex, framesCount, framesPerSecond);
+        hurtAnimation.Load(textureMapName, firstFrameIndex, framesCount, framesPerSecond);
     }
 
     void SpriteMovementAnimationComponent::SetDeathAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float framesPerSecond)
     {
-        Fill(deathAnimation, textureMapName, firstFrameIndex, framesCount, framesPerSecond);
+        deathAnimation.Load(textureMapName, firstFrameIndex, framesCount, framesPerSecond);
     }
 
     void SpriteMovementAnimationComponent::SetRollAnimations(const std::string& textureMapName, const int* firstFrameIndices, int directionsCount,
@@ -152,13 +153,13 @@ namespace XYZEngine
         rollDirectionsCount = std::min(std::max(directionsCount, 0), MAX_ROLL_DIRECTIONS);
         for (int direction = 0; direction < rollDirectionsCount; direction++)
         {
-            Fill(rollAnimations[direction], textureMapName, firstFrameIndices[direction], framesCount, framesPerSecond);
+            rollAnimations[direction].Load(textureMapName, firstFrameIndices[direction], framesCount, framesPerSecond);
         }
     }
 
     void SpriteMovementAnimationComponent::PlayShoot()
     {
-        if (isDead || shootAnimation.frames.empty() || IsRollPlaying())
+        if (isDead || shootAnimation.IsEmpty() || IsRollPlaying())
         {
             return;
         }
@@ -174,7 +175,7 @@ namespace XYZEngine
 
     void SpriteMovementAnimationComponent::PlayReload()
     {
-        if (isDead || reloadAnimation.frames.empty() || IsRollPlaying())
+        if (isDead || reloadAnimation.IsEmpty() || IsRollPlaying())
         {
             return;
         }
@@ -197,7 +198,7 @@ namespace XYZEngine
 
     void SpriteMovementAnimationComponent::PlayMelee()
     {
-        if (isDead || meleeAnimation.frames.empty() || IsRollPlaying())
+        if (isDead || meleeAnimation.IsEmpty() || IsRollPlaying())
         {
             return;
         }
@@ -209,7 +210,7 @@ namespace XYZEngine
 
     void SpriteMovementAnimationComponent::PlayHeavy()
     {
-        if (isDead || heavyAnimation.frames.empty() || IsRollPlaying())
+        if (isDead || heavyAnimation.IsEmpty() || IsRollPlaying())
         {
             return;
         }
@@ -237,7 +238,7 @@ namespace XYZEngine
 
     void SpriteMovementAnimationComponent::PlaySwap()
     {
-        if (isDead || swapAnimation.frames.empty() || IsRollPlaying())
+        if (isDead || swapAnimation.IsEmpty() || IsRollPlaying())
         {
             return;
         }
@@ -249,7 +250,7 @@ namespace XYZEngine
 
     void SpriteMovementAnimationComponent::PlayHurt()
     {
-        if (isDead || hurtAnimation.frames.empty() || IsRollPlaying())
+        if (isDead || hurtAnimation.IsEmpty() || IsRollPlaying())
         {
             return;
         }
@@ -265,7 +266,7 @@ namespace XYZEngine
 
     void SpriteMovementAnimationComponent::PlayDeath()
     {
-        if (deathAnimation.frames.empty())
+        if (deathAnimation.IsEmpty())
         {
             LOG_WARN("No death animation on " + gameObject->GetName());
             return;
@@ -278,7 +279,7 @@ namespace XYZEngine
 
     void SpriteMovementAnimationComponent::PlayRoll(int direction)
     {
-        if (isDead || direction < 0 || direction >= rollDirectionsCount || rollAnimations[direction].frames.empty())
+        if (isDead || direction < 0 || direction >= rollDirectionsCount || rollAnimations[direction].IsEmpty())
         {
             return;
         }
@@ -322,17 +323,7 @@ namespace XYZEngine
 
     float SpriteMovementAnimationComponent::GetFrameSeconds(int frame) const
     {
-        if (currentAnimation == nullptr)
-        {
-            return 0.125f;
-        }
-
-        if (currentAnimation->frameSeconds == nullptr)
-        {
-            return currentAnimation->secondsPerFrame;
-        }
-
-        return currentAnimation->frameSeconds[std::min(std::max(frame, 0), static_cast<int>(currentAnimation->frames.size()) - 1)];
+        return currentAnimation == nullptr ? DEFAULT_FRAME_SECONDS : currentAnimation->GetFrameSeconds(frame);
     }
 
     bool SpriteMovementAnimationComponent::AdvanceHeavyFrame()
@@ -369,35 +360,7 @@ namespace XYZEngine
         return true;
     }
 
-    void SpriteMovementAnimationComponent::Fill(Animation& animation, const std::string& textureMapName, int firstFrameIndex, int framesCount, float framesPerSecond)
-    {
-        assert(framesCount > 0);
-        assert(framesPerSecond > 0.f);
-
-        animation.frames.clear();
-
-        int totalFrames = ResourceSystem::Instance()->GetTextureMapElementsCount(textureMapName);
-        if (firstFrameIndex < 0 || framesCount <= 0 || firstFrameIndex + framesCount > totalFrames)
-        {
-            LOG_ERROR("Wrong animation frames range for texture map: " + textureMapName);
-            return;
-        }
-
-        if (framesPerSecond <= 0.f)
-        {
-            LOG_WARN("Framerate must be positive for texture map: " + textureMapName);
-            return;
-        }
-
-        for (int i = firstFrameIndex; i < firstFrameIndex + framesCount; i++)
-        {
-            animation.frames.push_back(ResourceSystem::Instance()->GetTextureMapElementShared(textureMapName, i));
-        }
-
-        animation.secondsPerFrame = 1.f / framesPerSecond;
-    }
-
-    void SpriteMovementAnimationComponent::Play(Animation& animation, MovementAnimation kind, bool looped)
+    void SpriteMovementAnimationComponent::Play(AnimationClip& animation, MovementAnimation kind, bool looped)
     {
         if (currentAnimation == &animation)
         {
@@ -414,7 +377,7 @@ namespace XYZEngine
 
     void SpriteMovementAnimationComponent::AdvanceFrames(float deltaTime)
     {
-        if (currentAnimation == nullptr || currentAnimation->frames.empty())
+        if (currentAnimation == nullptr || currentAnimation->IsEmpty())
         {
             return;
         }
@@ -433,7 +396,7 @@ namespace XYZEngine
 
                 currentFrame++;
 
-                if (currentFrame >= static_cast<int>(currentAnimation->frames.size()))
+                if (currentFrame >= currentAnimation->GetFramesCount())
                 {
                     if (isLooped)
                     {
@@ -441,13 +404,13 @@ namespace XYZEngine
                     }
                     else
                     {
-                        currentFrame = static_cast<int>(currentAnimation->frames.size()) - 1;
+                        currentFrame = currentAnimation->GetFramesCount() - 1;
                         isFinished = true;
                     }
                 }
             }
         }
 
-        renderer->SetTexture(*currentAnimation->frames[currentFrame]);
+        renderer->SetTexture(*currentAnimation->GetFrame(currentFrame));
     }
 }

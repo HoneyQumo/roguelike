@@ -2,7 +2,6 @@
 #include "SpriteAnimationComponent.h"
 #include "GameObject.h"
 #include "GameWorld.h"
-#include "ResourceSystem.h"
 #include "LoggerRegistry.h"
 #include <cassert>
 
@@ -28,7 +27,7 @@ namespace XYZEngine
 			return;
 		}
 
-		if (!isPlaying || frames.empty())
+		if (!isPlaying || clip.IsEmpty())
 		{
 			return;
 		}
@@ -45,12 +44,12 @@ namespace XYZEngine
 		}
 
 		frameTimer += deltaTime;
-		while (frameTimer >= secondsPerFrame)
+		while (frameTimer >= clip.GetFrameSeconds(currentFrame))
 		{
-			frameTimer -= secondsPerFrame;
+			frameTimer -= clip.GetFrameSeconds(currentFrame);
 			currentFrame++;
 
-			if (currentFrame < (int)frames.size())
+			if (currentFrame < clip.GetFramesCount())
 			{
 				continue;
 			}
@@ -61,12 +60,12 @@ namespace XYZEngine
 				continue;
 			}
 
-			currentFrame = (int)frames.size() - 1;
+			currentFrame = clip.GetFramesCount() - 1;
 			Finish();
 			break;
 		}
 
-		renderer->SetTexture(*frames[currentFrame]);
+		renderer->SetTexture(*clip.GetFrame(currentFrame));
 	}
 	void SpriteAnimationComponent::Render()
 	{
@@ -78,21 +77,7 @@ namespace XYZEngine
 		assert(framesCount > 0);
 		assert(framesPerSecond > 0.f);
 
-		frames.clear();
-
-		int totalFrames = ResourceSystem::Instance()->GetTextureMapElementsCount(textureMapName);
-		if (firstFrameIndex < 0 || framesCount <= 0 || firstFrameIndex + framesCount > totalFrames)
-		{
-			LOG_ERROR("Wrong animation frames range for texture map: " + textureMapName);
-			return;
-		}
-
-		for (int i = firstFrameIndex; i < firstFrameIndex + framesCount; i++)
-		{
-			frames.push_back(ResourceSystem::Instance()->GetTextureMapElementShared(textureMapName, i));
-		}
-
-		secondsPerFrame = 1.f / framesPerSecond;
+		clip.Load(textureMapName, firstFrameIndex, framesCount, framesPerSecond);
 	}
 	void SpriteAnimationComponent::SetLooped(bool newIsLooped)
 	{
@@ -109,7 +94,7 @@ namespace XYZEngine
 
 	void SpriteAnimationComponent::Play()
 	{
-		if (frames.empty())
+		if (clip.IsEmpty())
 		{
 			return;
 		}
@@ -140,7 +125,7 @@ namespace XYZEngine
 			return;
 		}
 
-		renderer->SetTexture(*frames[0]);
+		renderer->SetTexture(*clip.GetFrame(0));
 		renderer->SetVisible(true);
 	}
 

@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <SFML/Graphics.hpp>
+#include "AnimationClip.h"
 #include "Component.h"
 #include "TransformComponent.h"
 #include "SpriteRendererComponent.h"
@@ -80,30 +81,23 @@ namespace XYZEngine
         int GetRollDirectionsCount() const;
 
     private:
-        struct Animation
-        {
-            std::vector<const sf::Texture*> frames;
-            float secondsPerFrame = 0.125f;
-            const float* frameSeconds = nullptr;
-        };
-
         TransformComponent* transform = nullptr;
         SpriteRendererComponent* renderer = nullptr;
         MovementComponent* movement = nullptr;
 
-        Animation walkAnimation;
-        Animation runAnimation;
-        Animation idleAnimation;
-        Animation shootAnimation;
-        Animation reloadAnimation;
-        Animation meleeAnimation;
-        Animation heavyAnimation;
-        Animation swapAnimation;
-        Animation hurtAnimation;
-        Animation deathAnimation;
-        Animation rollAnimations[MAX_ROLL_DIRECTIONS];
+        AnimationClip walkAnimation;
+        AnimationClip runAnimation;
+        AnimationClip idleAnimation;
+        AnimationClip shootAnimation;
+        AnimationClip reloadAnimation;
+        AnimationClip meleeAnimation;
+        AnimationClip heavyAnimation;
+        AnimationClip swapAnimation;
+        AnimationClip hurtAnimation;
+        AnimationClip deathAnimation;
+        AnimationClip rollAnimations[MAX_ROLL_DIRECTIONS];
         int rollDirectionsCount = 0;
-        Animation* currentAnimation = nullptr;
+        AnimationClip* currentAnimation = nullptr;
         MovementAnimation currentAnimationKind = MovementAnimation::None;
 
         bool isLooped = true;
@@ -122,8 +116,7 @@ namespace XYZEngine
 
         bool IsInterruptingAnimation() const;
         bool IsRollPlaying() const;
-        void Fill(Animation& animation, const std::string& textureMapName, int firstFrameIndex, int framesCount, float framesPerSecond);
-        void Play(Animation& animation, MovementAnimation kind, bool looped);
+        void Play(AnimationClip& animation, MovementAnimation kind, bool looped);
         void AdvanceFrames(float deltaTime);
         float GetFrameSeconds(int frame) const;
         bool AdvanceHeavyFrame();

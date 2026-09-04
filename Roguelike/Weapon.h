@@ -11,5 +11,7 @@ namespace RoguelikeGame
     *	Дульная вспышка висит на оружии, следует за отдачей оружия.
     *	Дочерний объект живёт и умирает вместе с владельцем.
     */
+    XYZEngine::SpriteRendererComponent* AddWeaponSprite(XYZEngine::GameObject* gameObject, WeaponId id, int variant);
+
     WeaponLayerComponent* CreateWeapon(XYZEngine::GameObject* owner, WeaponId id, XYZEngine::SpriteMovementAnimationComponent* ownerAnimation);
 }

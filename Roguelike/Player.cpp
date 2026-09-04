@@ -25,23 +25,14 @@ namespace RoguelikeGame
         StowedWeaponComponent* CreateStowedWeapon(XYZEngine::GameObject* owner, WeaponId startWeapon,
                                                   XYZEngine::SpriteMovementAnimationComponent* animation)
         {
-            auto texture = XYZEngine::ResourceSystem::Instance()->GetTextureMapElementShared(WEAPONS_TEXTURE,
-                                                                                             WeaponFrameIndex(startWeapon, WEAPON_STOWED_VARIANT));
-            if (texture == nullptr)
+            auto stowedObject = XYZEngine::GameWorld::Instance()->CreateGameObject("StowedWeapon", owner);
+
+            auto stowedRenderer = AddWeaponSprite(stowedObject, startWeapon, WEAPON_STOWED_VARIANT);
+            if (stowedRenderer == nullptr)
             {
-                LOG_ERROR("Stowed weapon texture is not loaded");
+                XYZEngine::GameWorld::Instance()->DestroyGameObject(stowedObject);
                 return nullptr;
             }
-
-            auto stowedObject = XYZEngine::GameWorld::Instance()->CreateGameObject("StowedWeapon");
-
-            auto stowedTransform = stowedObject->GetComponent<XYZEngine::TransformComponent>();
-            stowedTransform->SetParent(owner->GetComponent<XYZEngine::TransformComponent>());
-            stowedTransform->SetLocalPosition(0.f, 0.f);
-
-            auto stowedRenderer = stowedObject->AddComponent<XYZEngine::SpriteRendererComponent>();
-            stowedRenderer->SetTexture(*texture);
-            stowedRenderer->SetPixelSize(WEAPON_FRAME_WIDTH, WEAPON_FRAME_HEIGHT);
             stowedRenderer->SetVisible(false);
 
             auto stowedWeapon = stowedObject->AddComponent<StowedWeaponComponent>();

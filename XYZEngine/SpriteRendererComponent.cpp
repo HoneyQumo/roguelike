@@ -8,18 +8,9 @@ namespace XYZEngine
 {
     SpriteRendererComponent::SpriteRendererComponent(GameObject* gameObject) : Component(gameObject)
     {
-        sprite = new sf::Sprite();
         scale = {1, -1};
-        sprite->setScale({1, -1});
+        sprite.setScale({1, -1});
         transform = gameObject->GetComponent<TransformComponent>();
-    }
-
-    SpriteRendererComponent::~SpriteRendererComponent()
-    {
-        if (sprite != nullptr)
-        {
-            delete sprite;
-        }
     }
 
     void SpriteRendererComponent::Update(float deltaTime)
@@ -28,16 +19,16 @@ namespace XYZEngine
 
     void SpriteRendererComponent::Render()
     {
-        if (sprite == nullptr || !isVisible)
+        if (!isVisible)
         {
             return;
         }
 
-        sprite->setPosition(Convert<sf::Vector2f, Vector2Df>(transform->GetWorldPosition()));
-        sprite->setRotation(transform->GetWorldRotation());
+        sprite.setPosition(Convert<sf::Vector2f, Vector2Df>(transform->GetWorldPosition()));
+        sprite.setRotation(transform->GetWorldRotation());
 
         auto transformScale = Convert<sf::Vector2f, Vector2Df>(transform->GetWorldScale());
-        sprite->setScale({scale.x * transformScale.x, scale.y * transformScale.y});
+        sprite.setScale({scale.x * transformScale.x, scale.y * transformScale.y});
 
         sf::RenderStates states(isAdditiveBlending ? sf::BlendAdd : sf::BlendAlpha);
 
@@ -51,29 +42,29 @@ namespace XYZEngine
             states.shader = shader;
         }
 
-        RenderSystem::Instance()->Render(*sprite, states);
+        RenderSystem::Instance()->Render(sprite, states);
     }
 
     const sf::Sprite* SpriteRendererComponent::GetSprite() const
     {
-        return sprite;
+        return &sprite;
     }
 
     void SpriteRendererComponent::SetTexture(const sf::Texture& newTexture)
     {
-        sprite->setTexture(newTexture, true);
+        sprite.setTexture(newTexture, true);
         ApplyPivot();
     }
 
     void SpriteRendererComponent::SetPixelSize(int newWidth, int newHeight)
     {
-        auto originalSize = sprite->getTexture()->getSize();
+        auto originalSize = sprite.getTexture()->getSize();
         scale = {static_cast<float>(newWidth) / static_cast<float>(originalSize.x), -static_cast<float>(newHeight) / static_cast<float>(originalSize.y)};
     }
 
     void SpriteRendererComponent::SetColor(const sf::Color& newColor)
     {
-        sprite->setColor(newColor);
+        sprite.setColor(newColor);
     }
 
     void SpriteRendererComponent::SetAdditiveBlending(bool isAdditive)
@@ -127,12 +118,12 @@ namespace XYZEngine
 
     void SpriteRendererComponent::ApplyPivot()
     {
-        if (sprite->getTexture() == nullptr)
+        if (sprite.getTexture() == nullptr)
         {
             return;
         }
 
-        auto textureSize = sprite->getTexture()->getSize();
-        sprite->setOrigin({pivot.x * textureSize.x, pivot.y * textureSize.y});
+        auto textureSize = sprite.getTexture()->getSize();
+        sprite.setOrigin({pivot.x * textureSize.x, pivot.y * textureSize.y});
     }
 }

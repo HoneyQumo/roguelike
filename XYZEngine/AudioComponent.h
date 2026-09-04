@@ -9,7 +9,6 @@ namespace XYZEngine
 	{
 	public:
 		AudioComponent(GameObject* gameObject);
-		~AudioComponent();
 
 		void Update(float deltaTime) override;
 		void Render() override;
@@ -25,6 +24,6 @@ namespace XYZEngine
 
 		bool IsPlaying() const;
 	private:
-		sf::Sound* sound = nullptr;
+		sf::Sound sound;
 	};
 }

@@ -6,12 +6,6 @@ namespace XYZEngine
 {
 	AudioComponent::AudioComponent(GameObject* gameObject) : Component(gameObject)
 	{
-		sound = new sf::Sound();
-	}
-	AudioComponent::~AudioComponent()
-	{
-		sound->stop();
-		delete sound;
 	}
 
 	void AudioComponent::Update(float deltaTime)
@@ -31,45 +25,45 @@ namespace XYZEngine
 			return;
 		}
 
-		sound->setBuffer(*newSound);
+		sound.setBuffer(*newSound);
 	}
 	void AudioComponent::SetLoop(bool isLooped)
 	{
-		sound->setLoop(isLooped);
+		sound.setLoop(isLooped);
 	}
 	void AudioComponent::SetVolume(float newVolume)
 	{
-		sound->setVolume(newVolume);
+		sound.setVolume(newVolume);
 	}
 
 	void AudioComponent::Play()
 	{
-		if (sound->getBuffer() == nullptr)
+		if (sound.getBuffer() == nullptr)
 		{
 			LOG_WARN("Can't play sound without buffer.");
 			return;
 		}
 
-		sound->play();
+		sound.play();
 	}
 	void AudioComponent::Pause()
 	{
-		sound->pause();
+		sound.pause();
 	}
 	void AudioComponent::Resume()
 	{
-		if (sound->getStatus() == sf::SoundSource::Paused)
+		if (sound.getStatus() == sf::SoundSource::Paused)
 		{
-			sound->play();
+			sound.play();
 		}
 	}
 	void AudioComponent::Stop()
 	{
-		sound->stop();
+		sound.stop();
 	}
 
 	bool AudioComponent::IsPlaying() const
 	{
-		return sound->getStatus() == sf::SoundSource::Playing;
+		return sound.getStatus() == sf::SoundSource::Playing;
 	}
 }

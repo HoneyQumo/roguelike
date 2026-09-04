@@ -12,7 +12,6 @@ namespace RoguelikeGame
 	{
 	public:
 		HealthBarComponent(XYZEngine::GameObject* gameObject);
-		~HealthBarComponent();
 
 		void Start() override;
 		void Update(float deltaTime) override;
@@ -25,8 +24,8 @@ namespace RoguelikeGame
 		XYZEngine::TransformComponent* transform = nullptr;
 		HealthComponent* health = nullptr;
 
-		sf::RectangleShape* background = nullptr;
-		sf::RectangleShape* fill = nullptr;
+		sf::RectangleShape background;
+		sf::RectangleShape fill;
 
 		XYZEngine::Vector2Df size = { 48.f, 6.f };
 		XYZEngine::Vector2Df offset = { 0.f, 40.f };

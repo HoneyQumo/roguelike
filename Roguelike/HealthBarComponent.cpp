@@ -11,16 +11,8 @@ namespace RoguelikeGame
 	{
 		transform = gameObject->GetComponent<TransformComponent>();
 
-		background = new sf::RectangleShape();
-		background->setFillColor({ 20, 20, 20, 200 });
-
-		fill = new sf::RectangleShape();
-		fill->setFillColor({ 200, 60, 60 });
-	}
-	HealthBarComponent::~HealthBarComponent()
-	{
-		delete background;
-		delete fill;
+		background.setFillColor({ 20, 20, 20, 200 });
+		fill.setFillColor({ 200, 60, 60 });
 	}
 
 	void HealthBarComponent::Start()
@@ -46,14 +38,14 @@ namespace RoguelikeGame
 		auto position = transform->GetWorldPosition();
 		sf::Vector2f barPosition = { position.x - 0.5f * size.x, position.y + offset.y };
 
-		background->setSize({ size.x, size.y });
-		background->setPosition(barPosition);
+		background.setSize({ size.x, size.y });
+		background.setPosition(barPosition);
 
-		fill->setSize({ size.x * health->GetHealthPercent(), size.y });
-		fill->setPosition(barPosition);
+		fill.setSize({ size.x * health->GetHealthPercent(), size.y });
+		fill.setPosition(barPosition);
 
-		RenderSystem::Instance()->Render(*background);
-		RenderSystem::Instance()->Render(*fill);
+		RenderSystem::Instance()->Render(background);
+		RenderSystem::Instance()->Render(fill);
 	}
 
 	void HealthBarComponent::SetSize(float newWidth, float newHeight)
@@ -66,7 +58,7 @@ namespace RoguelikeGame
 	}
 	void HealthBarComponent::SetColors(const sf::Color& newFillColor, const sf::Color& newBackgroundColor)
 	{
-		fill->setFillColor(newFillColor);
-		background->setFillColor(newBackgroundColor);
+		fill.setFillColor(newFillColor);
+		background.setFillColor(newBackgroundColor);
 	}
 }

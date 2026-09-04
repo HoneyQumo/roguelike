@@ -34,14 +34,19 @@ TEST(WeaponSetupTests, HeavyAttackUsesChargedScaleAndProfileRecovery)
 
 TEST(WeaponSetupTests, CatalogMeleeProfilesProduceSaneAttacks)
 {
-	for (const MeleeDefinition& melee : MELEE_WEAPONS)
+	for (const WeaponDefinition& weapon : WEAPONS)
 	{
-		RoguelikeGame::MeleeAttack quick = MakeQuickAttack(melee.quick, PLAYER_MELEE_DAMAGE, melee.quick.recovery);
-		RoguelikeGame::MeleeAttack heavy = MakeHeavyAttack(melee.heavy, PLAYER_MELEE_DAMAGE);
+		if (weapon.melee == nullptr)
+		{
+			continue;
+		}
 
-		EXPECT_GT(quick.damage, 0.f) << GetWeapon(melee.weapon).id;
-		EXPECT_GT(quick.range, 0.f) << GetWeapon(melee.weapon).id;
-		EXPECT_GT(quick.windup, 0.f) << GetWeapon(melee.weapon).id;
-		EXPECT_GE(heavy.chargedDamage, heavy.damage) << GetWeapon(melee.weapon).id;
+		RoguelikeGame::MeleeAttack quick = MakeQuickAttack(weapon.melee->quick, PLAYER_MELEE_DAMAGE, weapon.melee->quick.recovery);
+		RoguelikeGame::MeleeAttack heavy = MakeHeavyAttack(weapon.melee->heavy, PLAYER_MELEE_DAMAGE);
+
+		EXPECT_GT(quick.damage, 0.f) << weapon.id;
+		EXPECT_GT(quick.range, 0.f) << weapon.id;
+		EXPECT_GT(quick.windup, 0.f) << weapon.id;
+		EXPECT_GE(heavy.chargedDamage, heavy.damage) << weapon.id;
 	}
 }

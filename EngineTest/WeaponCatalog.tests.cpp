@@ -15,11 +15,11 @@ namespace
 static_assert(std::size(ALL_WEAPONS) == WEAPON_COUNT, "ALL_WEAPONS must list every WeaponId");
 static_assert(std::size(WEAPONS) == WEAPON_COUNT, "WEAPONS size must match WEAPON_COUNT");
 
-TEST(WeaponCatalogTests, RowMatchesWeaponIdForEveryWeapon)
+TEST(WeaponCatalogTests, FrameIndexFollowsWeaponIdOrder)
 {
 	for (WeaponId id : ALL_WEAPONS)
 	{
-		EXPECT_EQ(GetWeapon(id).row, static_cast<int>(id)) << "weapon " << GetWeapon(id).id;
+		EXPECT_EQ(WeaponFrameIndex(id, 0), static_cast<int>(id) * WEAPON_VARIANTS) << "weapon " << GetWeapon(id).id;
 	}
 }
 
@@ -73,20 +73,17 @@ TEST(WeaponCatalogTests, MeleeWeaponsHaveNoAmmoButHaveHitSound)
 	}
 }
 
-TEST(WeaponCatalogTests, SideTablesPointAtExistingWeapons)
+TEST(WeaponCatalogTests, ExtraPropertiesBelongToTheirWeapon)
 {
-	for (const MeleeDefinition& melee : MELEE_WEAPONS)
-	{
-		EXPECT_EQ(FindMelee(melee.weapon), &melee);
-	}
-	for (const SpreadDefinition& spread : SPREAD_WEAPONS)
-	{
-		EXPECT_EQ(FindSpread(spread.weapon), &spread);
-	}
-	for (const ExplosiveDefinition& explosive : EXPLOSIVE_WEAPONS)
-	{
-		EXPECT_EQ(FindExplosive(explosive.weapon), &explosive);
-	}
+	EXPECT_EQ(FindMelee(WeaponId::Knife), &KNIFE_MELEE);
+	EXPECT_EQ(FindMelee(WeaponId::Bat), &BAT_MELEE);
+	EXPECT_EQ(FindSpread(WeaponId::ShotgunDouble), &SHOTGUN_DOUBLE_SPREAD);
+	EXPECT_EQ(FindSpread(WeaponId::ShotgunPump), &SHOTGUN_PUMP_SPREAD);
+	EXPECT_EQ(FindExplosive(WeaponId::Rpg), &RPG_EXPLOSIVE);
+
+	EXPECT_EQ(FindMelee(WeaponId::Ak47), nullptr);
+	EXPECT_EQ(FindSpread(WeaponId::Ak47), nullptr);
+	EXPECT_EQ(FindExplosive(WeaponId::Ak47), nullptr);
 }
 
 TEST(WeaponCatalogTests, MeleeAndExplosiveAreDisjoint)

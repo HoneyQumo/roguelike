@@ -82,14 +82,6 @@ namespace RoguelikeGame
 
     void GameResources::LoadWeaponSounds()
     {
-        for (const MeleeDefinition& melee : MELEE_WEAPONS)
-        {
-            for (int variant = 1; variant <= melee.hitSoundVariants; variant++)
-            {
-                LoadWeaponSound(MeleeHitSoundKey(melee, variant));
-            }
-        }
-
         for (const WeaponDefinition& weapon : WEAPONS)
         {
             if (weapon.shotSound != nullptr)
@@ -100,6 +92,16 @@ namespace RoguelikeGame
             if (weapon.reloadSound != nullptr)
             {
                 LoadWeaponSound(weapon.reloadSound);
+            }
+
+            if (weapon.melee == nullptr)
+            {
+                continue;
+            }
+
+            for (int variant = 1; variant <= weapon.melee->hitSoundVariants; variant++)
+            {
+                LoadWeaponSound(MeleeHitSoundKey(*weapon.melee, variant));
             }
         }
     }

@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include <iterator>
 #include "SpriteAtlas.h"
 
 namespace RoguelikeGame
@@ -11,8 +12,6 @@ namespace RoguelikeGame
     constexpr int WEAPON_FRAME_WIDTH = 160;
     constexpr int WEAPON_FRAME_HEIGHT = 64;
     constexpr int WEAPON_VARIANTS = 4;
-    constexpr int WEAPON_COUNT = 11;
-    constexpr int WEAPON_ATLAS_FRAMES = WEAPON_VARIANTS * WEAPON_COUNT;
 
     /**
      * 0 — обычный хват
@@ -58,50 +57,6 @@ namespace RoguelikeGame
         Rpg
     };
 
-    struct WeaponDefinition
-    {
-        const char* id;
-        const char* name;
-        int row;
-        // Смещение дульного среза от пивота тела, в пикселях кадра с осью Y вниз.
-        float muzzleX;
-        float muzzleY;
-        float recoil;
-        float flashScale;
-        BulletKind bullet;
-        AmmoKind ammo;
-        int magazineSize;
-        float reloadTime;
-        const char* shotSound;
-        const char* reloadSound;
-    };
-
-    constexpr WeaponDefinition WEAPONS[WEAPON_COUNT] = {
-        {"ak47", u8"АК-47", 0, 58.56f, 12.16f, 1.00f, 1.00f, BulletKind::Rifle, AmmoKind::Rifle, 30, 1.60f, "ak47_shot", "ak47_reload"},
-        {"m16", u8"М16", 1, 60.80f, 12.16f, 0.85f, 0.90f, BulletKind::Rifle, AmmoKind::Rifle, 30, 1.50f, "m16_shot", "m16_reload"},
-        {
-            "shotgun_double", u8"Дробовик двуствольный", 2, 53.60f, 12.16f, 1.50f, 1.35f, BulletKind::Pellet, AmmoKind::Shell, 2, 1.30f, "shotgun_double_shot",
-            "shotgun_double_reload"
-        },
-        {
-            "shotgun_pump", u8"Дробовик помповый", 3, 55.20f, 11.52f, 1.35f, 1.25f, BulletKind::Pellet, AmmoKind::Shell, 6, 1.90f, "shotgun_pump_shot",
-            "shotgun_pump_reload"
-        },
-        {
-            "smg_suppressed", u8"ПП с глушителем", 4, 57.60f, 12.16f, 0.60f, 0.35f, BulletKind::Pistol, AmmoKind::Smg, 25, 1.30f, "smg_silenced_shot",
-            "smg_silenced_reload"
-        },
-        {"glock", u8"Глок", 5, 32.00f, 11.68f, 0.55f, 0.65f, BulletKind::Pistol, AmmoKind::Pistol, 17, 1.10f, "glock_shot", "glock_reload"},
-        {"deagle", u8"Дигл", 6, 38.88f, 12.00f, 1.40f, 1.20f, BulletKind::Pistol, AmmoKind::Pistol, 7, 1.40f, "deagle_shot", "deagle_reload"},
-        {
-            "pistol_suppressed", u8"Пистолет с глушителем", 7, 56.00f, 12.16f, 0.50f, 0.30f, BulletKind::Pistol, AmmoKind::Pistol, 12, 1.20f, "pistol_silenced_shot",
-            "pistol_silenced_reload"
-        },
-        {"knife", u8"Нож", 8, 42.40f, 15.36f, 0.00f, 0.00f, BulletKind::Pistol, AmmoKind::None, 0, 0.00f, nullptr, nullptr},
-        {"bat", u8"Бита", 9, 55.20f, 12.32f, 0.00f, 0.00f, BulletKind::Pistol, AmmoKind::None, 0, 0.00f, nullptr, nullptr},
-        {"rpg", u8"РПГ", 10, 76.00f, 12.16f, 1.80f, 1.60f, BulletKind::Rocket, AmmoKind::Rocket, 1, 2.60f, "rpg_shot", "rpg_reload"}
-    };
-
     struct MeleeAttackProfile
     {
         float damageScale;
@@ -113,33 +68,14 @@ namespace RoguelikeGame
 
     struct MeleeDefinition
     {
-        WeaponId weapon;
         MeleeAttackProfile quick;
         MeleeAttackProfile heavy;
         const char* hitSound;
         int hitSoundVariants;
     };
 
-    constexpr int MELEE_WEAPON_COUNT = 2;
-
-    constexpr MeleeDefinition MELEE_WEAPONS[MELEE_WEAPON_COUNT] = {
-        {
-            WeaponId::Knife,
-            {1.00f, 1.00f, 52.f, 70.f, 0.12f},
-            {2.00f, 3.60f, 60.f, 110.f, 0.25f},
-            "knife_hit", 3
-        },
-        {
-            WeaponId::Bat,
-            {1.40f, 1.40f, 68.f, 80.f, 0.18f},
-            {2.80f, 5.20f, 78.f, 140.f, 0.35f},
-            "bat_hit", 5
-        }
-    };
-
     struct SpreadDefinition
     {
-        WeaponId weapon;
         int pellets;
         float coneDegrees;
         float damageScale;
@@ -147,16 +83,8 @@ namespace RoguelikeGame
         float cooldownScale;
     };
 
-    constexpr int SPREAD_WEAPON_COUNT = 2;
-
-    constexpr SpreadDefinition SPREAD_WEAPONS[SPREAD_WEAPON_COUNT] = {
-        {WeaponId::ShotgunDouble, 6, 32.f, 1.08f, 0.85f, 1.20f},
-        {WeaponId::ShotgunPump, 5, 22.f, 1.12f, 0.85f, 2.20f}
-    };
-
     struct ExplosiveDefinition
     {
-        WeaponId weapon;
         float radius;
         float edgeDamagePart;
         float selfDamagePart;
@@ -167,11 +95,66 @@ namespace RoguelikeGame
         float colliderSize;
     };
 
-    constexpr int EXPLOSIVE_WEAPON_COUNT = 1;
+    constexpr MeleeDefinition KNIFE_MELEE = {{1.00f, 1.00f, 52.f, 70.f, 0.12f}, {2.00f, 3.60f, 60.f, 110.f, 0.25f}, "knife_hit", 3};
+    constexpr MeleeDefinition BAT_MELEE = {{1.40f, 1.40f, 68.f, 80.f, 0.18f}, {2.80f, 5.20f, 78.f, 140.f, 0.35f}, "bat_hit", 5};
 
-    constexpr ExplosiveDefinition EXPLOSIVE_WEAPONS[EXPLOSIVE_WEAPON_COUNT] = {
-        {WeaponId::Rpg, 96.f, 0.30f, 0.45f, 4.80f, 0.55f, 1.00f, 2.40f, 22.f}
+    constexpr SpreadDefinition SHOTGUN_DOUBLE_SPREAD = {6, 32.f, 1.08f, 0.85f, 1.20f};
+    constexpr SpreadDefinition SHOTGUN_PUMP_SPREAD = {5, 22.f, 1.12f, 0.85f, 2.20f};
+
+    constexpr ExplosiveDefinition RPG_EXPLOSIVE = {96.f, 0.30f, 0.45f, 4.80f, 0.55f, 1.00f, 2.40f, 22.f};
+
+    struct WeaponDefinition
+    {
+        const char* id;
+        const char* name;
+        // Смещение дульного среза от пивота тела, в пикселях кадра с осью Y вниз.
+        float muzzleX;
+        float muzzleY;
+        float recoil;
+        float flashScale;
+        BulletKind bullet;
+        AmmoKind ammo;
+        int magazineSize;
+        float reloadTime;
+        const char* shotSound;
+        const char* reloadSound;
+
+        // Свойства, которые есть не у каждого ствола.
+        const MeleeDefinition* melee = nullptr;
+        const SpreadDefinition* spread = nullptr;
+        const ExplosiveDefinition* explosive = nullptr;
     };
+
+    constexpr WeaponDefinition WEAPONS[] = {
+        {"ak47", u8"АК-47", 58.56f, 12.16f, 1.00f, 1.00f, BulletKind::Rifle, AmmoKind::Rifle, 30, 1.60f, "ak47_shot", "ak47_reload"},
+        {"m16", u8"М16", 60.80f, 12.16f, 0.85f, 0.90f, BulletKind::Rifle, AmmoKind::Rifle, 30, 1.50f, "m16_shot", "m16_reload"},
+        {
+            "shotgun_double", u8"Дробовик двуствольный", 53.60f, 12.16f, 1.50f, 1.35f, BulletKind::Pellet, AmmoKind::Shell, 2, 1.30f, "shotgun_double_shot",
+            "shotgun_double_reload", nullptr, &SHOTGUN_DOUBLE_SPREAD
+        },
+        {
+            "shotgun_pump", u8"Дробовик помповый", 55.20f, 11.52f, 1.35f, 1.25f, BulletKind::Pellet, AmmoKind::Shell, 6, 1.90f, "shotgun_pump_shot",
+            "shotgun_pump_reload", nullptr, &SHOTGUN_PUMP_SPREAD
+        },
+        {
+            "smg_suppressed", u8"ПП с глушителем", 57.60f, 12.16f, 0.60f, 0.35f, BulletKind::Pistol, AmmoKind::Smg, 25, 1.30f, "smg_silenced_shot",
+            "smg_silenced_reload"
+        },
+        {"glock", u8"Глок", 32.00f, 11.68f, 0.55f, 0.65f, BulletKind::Pistol, AmmoKind::Pistol, 17, 1.10f, "glock_shot", "glock_reload"},
+        {"deagle", u8"Дигл", 38.88f, 12.00f, 1.40f, 1.20f, BulletKind::Pistol, AmmoKind::Pistol, 7, 1.40f, "deagle_shot", "deagle_reload"},
+        {
+            "pistol_suppressed", u8"Пистолет с глушителем", 56.00f, 12.16f, 0.50f, 0.30f, BulletKind::Pistol, AmmoKind::Pistol, 12, 1.20f, "pistol_silenced_shot",
+            "pistol_silenced_reload"
+        },
+        {"knife", u8"Нож", 42.40f, 15.36f, 0.00f, 0.00f, BulletKind::Pistol, AmmoKind::None, 0, 0.00f, nullptr, nullptr, &KNIFE_MELEE},
+        {"bat", u8"Бита", 55.20f, 12.32f, 0.00f, 0.00f, BulletKind::Pistol, AmmoKind::None, 0, 0.00f, nullptr, nullptr, &BAT_MELEE},
+        {"rpg", u8"РПГ", 76.00f, 12.16f, 1.80f, 1.60f, BulletKind::Rocket, AmmoKind::Rocket, 1, 2.60f, "rpg_shot", "rpg_reload", nullptr, nullptr, &RPG_EXPLOSIVE}
+    };
+
+    constexpr int WEAPON_COUNT = static_cast<int>(std::size(WEAPONS));
+    constexpr int WEAPON_ATLAS_FRAMES = WEAPON_VARIANTS * WEAPON_COUNT;
+
+    static_assert(WEAPON_COUNT == static_cast<int>(WeaponId::Rpg) + 1, "WEAPONS must have a row for every WeaponId");
 
     struct ShotProfile
     {
@@ -189,15 +172,7 @@ namespace RoguelikeGame
 
     constexpr const MeleeDefinition* FindMelee(WeaponId id)
     {
-        for (const MeleeDefinition& melee : MELEE_WEAPONS)
-        {
-            if (melee.weapon == id)
-            {
-                return &melee;
-            }
-        }
-
-        return nullptr;
+        return GetWeapon(id).melee;
     }
 
     constexpr bool IsMelee(WeaponId id)
@@ -207,28 +182,12 @@ namespace RoguelikeGame
 
     constexpr const SpreadDefinition* FindSpread(WeaponId id)
     {
-        for (const SpreadDefinition& spread : SPREAD_WEAPONS)
-        {
-            if (spread.weapon == id)
-            {
-                return &spread;
-            }
-        }
-
-        return nullptr;
+        return GetWeapon(id).spread;
     }
 
     constexpr const ExplosiveDefinition* FindExplosive(WeaponId id)
     {
-        for (const ExplosiveDefinition& explosive : EXPLOSIVE_WEAPONS)
-        {
-            if (explosive.weapon == id)
-            {
-                return &explosive;
-            }
-        }
-
-        return nullptr;
+        return GetWeapon(id).explosive;
     }
 
     constexpr bool IsExplosive(WeaponId id)
@@ -255,7 +214,7 @@ namespace RoguelikeGame
 
     constexpr int WeaponFrameIndex(WeaponId id, int variant)
     {
-        return GetWeapon(id).row * WEAPON_VARIANTS + variant;
+        return static_cast<int>(id) * WEAPON_VARIANTS + variant;
     }
 
     constexpr int AmmoKindKey(AmmoKind ammo)

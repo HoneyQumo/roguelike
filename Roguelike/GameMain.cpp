@@ -8,6 +8,7 @@
 #include "LoggerRegistry.h"
 #include "ConsoleSink.h"
 #include "FileSink.h"
+#include "DebugOutputSink.h"
 
 using namespace RoguelikeGame;
 using namespace XYZEngine;
@@ -21,6 +22,10 @@ void SetupLogger()
     auto logger = std::make_shared<Logger>();
     logger->AddSink(std::make_shared<ConsoleSink>());
     logger->AddSink(std::make_shared<FileSink>(LOG_FILE_PATH));
+#ifdef _DEBUG
+    logger->AddSink(std::make_shared<DebugOutputSink>());
+    logger->SetMinLevel(LogLevel::Debug);
+#endif
 
     LoggerRegistry::Instance()->RegisterLogger("global", logger);
     LoggerRegistry::Instance()->SetDefaultLogger(logger);

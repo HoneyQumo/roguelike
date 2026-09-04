@@ -43,6 +43,7 @@ namespace XYZEngine
 		} \
 	} while (false)
 
+#define LOG_DEBUG(message) XYZ_LOG_AT(XYZEngine::LogLevel::Debug, message)
 #define LOG_INFO(message) XYZ_LOG_AT(XYZEngine::LogLevel::Info, message)
 #define LOG_WARN(message) XYZ_LOG_AT(XYZEngine::LogLevel::Warning, message)
 #define LOG_ERROR(message) XYZ_LOG_AT(XYZEngine::LogLevel::Error, message)

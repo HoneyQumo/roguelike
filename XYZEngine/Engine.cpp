@@ -4,6 +4,7 @@
 #include "GameWorld.h"
 #include "RenderSystem.h"
 #include "InputSystem.h"
+#include "FrameClock.h"
 #include "LoggerRegistry.h"
 
 namespace XYZEngine
@@ -35,6 +36,7 @@ namespace XYZEngine
 		{
 			sf::Time dt = gameClock.restart();
 			float deltaTime = std::min(dt.asSeconds(), MAX_FRAME_TIME);
+			FrameClock::Instance()->Advance(deltaTime);
 
 			InputSystem::Instance()->BeginFrame();
 			while (RenderSystem::Instance()->GetMainWindow().pollEvent(event))

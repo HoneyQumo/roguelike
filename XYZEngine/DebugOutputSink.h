@@ -4,7 +4,7 @@
 
 namespace XYZEngine
 {
-	class ConsoleSink : public LogSink
+	class DebugOutputSink : public LogSink
 	{
 	public:
 		void Log(const LogEntry& entry) override;

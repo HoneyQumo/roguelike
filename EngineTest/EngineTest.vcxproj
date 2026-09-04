@@ -117,6 +117,7 @@
     <ClCompile Include="EnemyCatalog.tests.cpp" />
     <ClCompile Include="InputSystem.tests.cpp" />
     <ClCompile Include="Projectile.tests.cpp" />
+    <ClCompile Include="FrameClock.tests.cpp" />
     <ClCompile Include="..\Roguelike\LevelLoader.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>

@@ -3,8 +3,10 @@
 #include "LoggerRegistry.h"
 #include "FileSink.h"
 #include "ConsoleSink.h"
+#include "FrameClock.h"
 #include <chrono>
 #include <cstdio>
+#include <regex>
 
 using namespace XYZEngine;
 
@@ -13,11 +15,11 @@ namespace
 	class CaptureSink : public LogSink
 	{
 	public:
-		std::vector<std::pair<LogLevel, std::string>> entries;
+		std::vector<LogEntry> entries;
 
-		void Log(LogLevel level, const std::string& message) override
+		void Log(const LogEntry& entry) override
 		{
-			entries.emplace_back(level, message);
+			entries.push_back(entry);
 		}
 	};
 
@@ -51,10 +53,10 @@ TEST(LoggerTests, MessagesReachEverySink)
 
 	ASSERT_EQ(first->entries.size(), 2u);
 	ASSERT_EQ(second->entries.size(), 2u);
-	EXPECT_EQ(first->entries[0].first, LogLevel::Info);
-	EXPECT_EQ(first->entries[0].second, "hello");
-	EXPECT_EQ(second->entries[1].first, LogLevel::Error);
-	EXPECT_EQ(second->entries[1].second, "oops");
+	EXPECT_EQ(first->entries[0].level, LogLevel::Info);
+	EXPECT_EQ(first->entries[0].message, "hello");
+	EXPECT_EQ(second->entries[1].level, LogLevel::Error);
+	EXPECT_EQ(second->entries[1].message, "oops");
 }
 
 TEST(LoggerTests, MacroUsesRegisteredGlobalLogger)
@@ -67,8 +69,8 @@ TEST(LoggerTests, MacroUsesRegisteredGlobalLogger)
 	LOG_WARN("via macro");
 
 	ASSERT_EQ(sink->entries.size(), 1u);
-	EXPECT_EQ(sink->entries[0].first, LogLevel::Warning);
-	EXPECT_EQ(sink->entries[0].second, "via macro");
+	EXPECT_EQ(sink->entries[0].level, LogLevel::Warning);
+	EXPECT_EQ(sink->entries[0].message, "via macro");
 }
 
 TEST(LoggerTests, MinLevelDropsMessagesBelowIt)
@@ -83,8 +85,8 @@ TEST(LoggerTests, MinLevelDropsMessagesBelowIt)
 	logger->Error("kept too");
 
 	ASSERT_EQ(sink->entries.size(), 2u);
-	EXPECT_EQ(sink->entries[0].first, LogLevel::Warning);
-	EXPECT_EQ(sink->entries[1].first, LogLevel::Error);
+	EXPECT_EQ(sink->entries[0].level, LogLevel::Warning);
+	EXPECT_EQ(sink->entries[1].level, LogLevel::Error);
 }
 
 TEST(LoggerTests, DefaultMinLevelIsInfo)
@@ -94,6 +96,45 @@ TEST(LoggerTests, DefaultMinLevelIsInfo)
 	EXPECT_EQ(logger.GetMinLevel(), LogLevel::Info);
 	EXPECT_TRUE(logger.IsEnabled(LogLevel::Info));
 	EXPECT_TRUE(logger.IsEnabled(LogLevel::Error));
+}
+
+TEST(LoggerTests, DebugLevelIsOffByDefaultAndCanBeEnabled)
+{
+	Logger logger;
+
+	EXPECT_FALSE(logger.IsEnabled(LogLevel::Debug));
+
+	logger.SetMinLevel(LogLevel::Debug);
+
+	EXPECT_TRUE(logger.IsEnabled(LogLevel::Debug));
+	EXPECT_EQ(LogLevelToString(LogLevel::Debug), "[DEBUG]");
+}
+
+TEST(LoggerTests, LogLineCarriesTimeFrameAndLevel)
+{
+	LogEntry entry = {LogLevel::Warning, "hello", "12:34:56.789", 42u};
+
+	EXPECT_EQ(FormatLogLine(entry), "12:34:56.789 #42 [WARNING] hello");
+}
+
+TEST(LoggerTests, EverySinkGetsTheSameStamp)
+{
+	FrameClock::Instance()->Reset();
+	FrameClock::Instance()->Advance(0.016f);
+
+	auto logger = std::make_shared<Logger>();
+	auto first = std::make_shared<CaptureSink>();
+	auto second = std::make_shared<CaptureSink>();
+	logger->AddSink(first);
+	logger->AddSink(second);
+
+	logger->Info("stamped");
+
+	ASSERT_EQ(first->entries.size(), 1u);
+	ASSERT_EQ(second->entries.size(), 1u);
+	EXPECT_EQ(first->entries[0].frame, 1u);
+	EXPECT_EQ(first->entries[0].time, second->entries[0].time);
+	EXPECT_TRUE(std::regex_match(first->entries[0].time, std::regex(R"(\d{2}:\d{2}:\d{2}\.\d{3})"))) << first->entries[0].time;
 }
 
 TEST(LoggerTests, MacroDoesNotBuildMessageWhenLevelIsDisabled)

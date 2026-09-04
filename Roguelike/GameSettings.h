@@ -125,6 +125,8 @@ namespace RoguelikeGame
     constexpr float HEAVY_CHARGED_GLOW = 0.22f;
     constexpr float HEAVY_CHARGED_GLOW_PERIOD = 0.18f;
 
+    constexpr auto PLAYER_OBJECT_NAME = "Player";
+
     constexpr auto PLAYER_TEXTURE = "player";
     constexpr auto WEAPONS_TEXTURE = "weapons";
     constexpr auto CROSSHAIR_TEXTURE = "crosshair";

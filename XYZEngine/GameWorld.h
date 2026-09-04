@@ -22,6 +22,14 @@ namespace XYZEngine
 		GameObject* CreateGameObject(std::string name);
 		GameObject* CreateGameObject(std::string name, GameObject* parent);
 		GameObject* FindGameObject(const std::string& name) const;
+
+		template <typename T>
+		T* FindComponent(const std::string& name) const
+		{
+			GameObject* found = FindGameObject(name);
+			return found == nullptr ? nullptr : found->GetComponent<T>();
+		}
+
 		std::size_t GetObjectsCount() const;
 		void DestroyGameObject(GameObject* gameObject);
 		void Clear();

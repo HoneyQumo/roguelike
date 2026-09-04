@@ -30,7 +30,7 @@ namespace RoguelikeGame
         gameObject->AddComponent<XYZEngine::CursorFollowComponent>();
 
         auto reloadIndicator = gameObject->AddComponent<ReloadIndicatorComponent>();
-        reloadIndicator->SetTargetName("Player");
+        reloadIndicator->SetTargetName(PLAYER_OBJECT_NAME);
 
         LOG_INFO("Crosshair created");
         return gameObject;

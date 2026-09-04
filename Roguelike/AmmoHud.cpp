@@ -12,7 +12,7 @@ namespace RoguelikeGame
         gameObject->SetRenderLayer(UI_RENDER_LAYER);
 
         auto hud = gameObject->AddComponent<AmmoHudComponent>();
-        hud->SetTargetName("Player");
+        hud->SetTargetName(PLAYER_OBJECT_NAME);
 
         LOG_INFO("Ammo hud created");
         return gameObject;

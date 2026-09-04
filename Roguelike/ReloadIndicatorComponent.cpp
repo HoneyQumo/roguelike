@@ -68,13 +68,7 @@ namespace RoguelikeGame
             return;
         }
 
-        XYZEngine::GameObject* target = XYZEngine::GameWorld::Instance()->FindGameObject(targetName);
-        if (target == nullptr)
-        {
-            return;
-        }
-
-        weapon = target->GetComponent<WeaponComponent>();
+        weapon = XYZEngine::GameWorld::Instance()->FindComponent<WeaponComponent>(targetName);
     }
 
     void ReloadIndicatorComponent::ShowMagazineFrame(int frame)

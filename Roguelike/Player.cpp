@@ -48,7 +48,7 @@ namespace RoguelikeGame
         WeaponId startWeapon = PLAYER_LOADOUT[PLAYER_START_WEAPON_SLOT];
 
         CharacterSpec spec;
-        spec.objectName = "Player";
+        spec.objectName = PLAYER_OBJECT_NAME;
         spec.textureMapName = PLAYER_TEXTURE;
         spec.position = position;
         spec.collisionLayer = PLAYER_COLLISION_LAYER;

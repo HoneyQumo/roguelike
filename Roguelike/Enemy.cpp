@@ -30,7 +30,7 @@ namespace RoguelikeGame
         CharacterParts parts = CreateCharacter(spec, [&chase, &config](XYZEngine::GameObject* object)
         {
             chase = object->AddComponent<ChaseComponent>();
-            chase->SetTargetName("Player");
+            chase->SetTargetName(PLAYER_OBJECT_NAME);
             chase->SetDetectionRadius(config.detectionRadius);
             chase->SetStopDistance(config.stopDistance);
         });
@@ -46,7 +46,7 @@ namespace RoguelikeGame
         auto hurtAudio = parts.hurtAudio;
         auto hitFlash = parts.hitFlash;
 
-        aim->AimAtGameObject("Player");
+        aim->AimAtGameObject(PLAYER_OBJECT_NAME);
         aim->SetMaxDistance(config.detectionRadius);
 
         if (config.attackRange <= 0.f)
@@ -62,11 +62,11 @@ namespace RoguelikeGame
 
             auto meleeWeapon = gameObject->AddComponent<MeleeWeaponComponent>();
             meleeWeapon->SetQuickAttack(MakeQuickAttack(melee->quick, config.attackDamage, config.attackCooldown));
-            meleeWeapon->SetTargetName("Player");
+            meleeWeapon->SetTargetName(PLAYER_OBJECT_NAME);
             PlayEffectsOnMeleeHit(meleeWeapon, meleeAudio, melee);
 
             auto attack = gameObject->AddComponent<EnemyAttackComponent>();
-            attack->SetTargetName("Player");
+            attack->SetTargetName(PLAYER_OBJECT_NAME);
             attack->SetAttackRange(config.attackRange);
         }
         else
@@ -90,7 +90,7 @@ namespace RoguelikeGame
             SpawnProjectilesOnShot(weaponComponent, config.objectName, config.weapon);
 
             auto attack = gameObject->AddComponent<EnemyAttackComponent>();
-            attack->SetTargetName("Player");
+            attack->SetTargetName(PLAYER_OBJECT_NAME);
             attack->SetAttackRange(config.attackRange);
         }
 

@@ -4,17 +4,8 @@
 
 namespace XYZEngine
 {
-	AudioComponent::AudioComponent(GameObject* gameObject) : Component(gameObject)
+	AudioComponent::AudioComponent(GameObject* gameObject) : SoundSourceComponent(gameObject)
 	{
-	}
-
-	void AudioComponent::Update(float deltaTime)
-	{
-
-	}
-	void AudioComponent::Render()
-	{
-
 	}
 
 	void AudioComponent::SetSound(const sf::SoundBuffer* newSound)
@@ -27,14 +18,6 @@ namespace XYZEngine
 
 		sound.setBuffer(*newSound);
 	}
-	void AudioComponent::SetLoop(bool isLooped)
-	{
-		sound.setLoop(isLooped);
-	}
-	void AudioComponent::SetVolume(float newVolume)
-	{
-		sound.setVolume(newVolume);
-	}
 
 	void AudioComponent::Play()
 	{
@@ -44,26 +27,15 @@ namespace XYZEngine
 			return;
 		}
 
-		sound.play();
-	}
-	void AudioComponent::Pause()
-	{
-		sound.pause();
-	}
-	void AudioComponent::Resume()
-	{
-		if (sound.getStatus() == sf::SoundSource::Paused)
-		{
-			sound.play();
-		}
-	}
-	void AudioComponent::Stop()
-	{
-		sound.stop();
+		SoundSourceComponent::Play();
 	}
 
-	bool AudioComponent::IsPlaying() const
+	sf::Sound* AudioComponent::GetSource()
 	{
-		return sound.getStatus() == sf::SoundSource::Playing;
+		return &sound;
+	}
+	const sf::Sound* AudioComponent::GetSource() const
+	{
+		return &sound;
 	}
 }

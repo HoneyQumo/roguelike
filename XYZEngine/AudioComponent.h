@@ -1,28 +1,22 @@
 #pragma once
 
 #include <SFML/Audio.hpp>
-#include "Component.h"
+#include "SoundSourceComponent.h"
 
 namespace XYZEngine
 {
-	class AudioComponent : public Component
+	class AudioComponent : public SoundSourceComponent<sf::Sound>
 	{
 	public:
 		AudioComponent(GameObject* gameObject);
 
-		void Update(float deltaTime) override;
-		void Render() override;
-
 		void SetSound(const sf::SoundBuffer* newSound);
-		void SetLoop(bool isLooped);
-		void SetVolume(float newVolume);
+		void Play() override;
 
-		void Play();
-		void Pause();
-		void Resume();
-		void Stop();
+	protected:
+		sf::Sound* GetSource() override;
+		const sf::Sound* GetSource() const override;
 
-		bool IsPlaying() const;
 	private:
 		sf::Sound sound;
 	};

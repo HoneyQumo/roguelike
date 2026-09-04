@@ -122,6 +122,7 @@
     <ClCompile Include="EventList.tests.cpp" />
     <ClCompile Include="ResourceMap.tests.cpp" />
     <ClCompile Include="AnimationClip.tests.cpp" />
+    <ClCompile Include="Physics.tests.cpp" />
     <ClCompile Include="..\Roguelike\LevelLoader.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>

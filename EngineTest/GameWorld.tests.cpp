@@ -107,3 +107,18 @@ TEST_F(GameWorldTest, DestroyingChildAndParentInOneFrameIsSafe)
 	EXPECT_EQ(GameWorld::Instance()->FindGameObject("Child"), nullptr);
 	EXPECT_EQ(GameWorld::Instance()->GetObjectsCount(), 0u);
 }
+
+TEST_F(GameWorldTest, ChildObjectStartsAtTheParentOrigin)
+{
+	GameObject* parent = GameWorld::Instance()->CreateGameObject("Parent");
+	parent->GetComponent<XYZEngine::TransformComponent>()->SetWorldPosition({100.f, 50.f});
+
+	GameObject* child = GameWorld::Instance()->CreateGameObject("Child", parent);
+
+	auto childTransform = child->GetComponent<XYZEngine::TransformComponent>();
+	EXPECT_EQ(childTransform->GetParent(), parent->GetComponent<XYZEngine::TransformComponent>());
+	EXPECT_FLOAT_EQ(childTransform->GetLocalPosition().x, 0.f);
+	EXPECT_FLOAT_EQ(childTransform->GetLocalPosition().y, 0.f);
+	EXPECT_FLOAT_EQ(childTransform->GetWorldPosition().x, 100.f);
+	EXPECT_FLOAT_EQ(childTransform->GetWorldPosition().y, 50.f);
+}

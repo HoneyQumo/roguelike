@@ -68,6 +68,22 @@ namespace XYZEngine
 		RegisterGameObject(newGameObject);
 		return newGameObject;
 	}
+	// Дочерний объект начинает в начале координат родителя: SetParent сохраняет мировую позицию.
+	GameObject* GameWorld::CreateGameObject(std::string name, GameObject* parent)
+	{
+		GameObject* child = CreateGameObject(std::move(name));
+		if (parent == nullptr)
+		{
+			LOG_WARN("Child object " + child->GetName() + " has no parent");
+			return child;
+		}
+
+		auto childTransform = child->GetComponent<TransformComponent>();
+		childTransform->SetParent(parent->GetComponent<TransformComponent>());
+		childTransform->SetLocalPosition(0.f, 0.f);
+
+		return child;
+	}
 	GameObject* GameWorld::FindGameObject(const std::string& name) const
 	{
 		auto found = gameObjectsByName.find(name);

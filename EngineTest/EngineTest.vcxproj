@@ -121,6 +121,7 @@
     <ClCompile Include="DebugDraw.tests.cpp" />
     <ClCompile Include="EventList.tests.cpp" />
     <ClCompile Include="ResourceMap.tests.cpp" />
+    <ClCompile Include="AnimationClip.tests.cpp" />
     <ClCompile Include="..\Roguelike\LevelLoader.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
@@ -146,6 +147,12 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ItemGroup>
+    <TestRuntimeFiles Include="$(SolutionDir)Roguelike\openal32.dll" />
+  </ItemGroup>
+  <Target Name="CopyTestRuntimeFiles" AfterTargets="Build">
+    <Copy SourceFiles="@(TestRuntimeFiles)" DestinationFolder="$(OutDir)" SkipUnchangedFiles="true" />
+  </Target>
   <ImportGroup Label="ExtensionTargets">
     <Import Project="..\packages\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.1.8.1.7\build\native\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.targets" Condition="Exists('..\packages\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.1.8.1.7\build\native\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.targets')" />
   </ImportGroup>

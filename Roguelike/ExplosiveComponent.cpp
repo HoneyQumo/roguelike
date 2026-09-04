@@ -68,14 +68,14 @@ namespace RoguelikeGame
         ownerName = newOwnerName;
     }
 
-    void ExplosiveComponent::SetExplodeAction(std::function<void(const Vector2Df&)> newExplodeAction)
+    SubscriptionId ExplosiveComponent::SubscribeExplode(std::function<void(const Vector2Df&)> onExplode)
     {
-        explodeAction = newExplodeAction;
+        return explodeEvent.Subscribe(std::move(onExplode));
     }
 
-    void ExplosiveComponent::SetHitAction(std::function<void(const Vector2Df&, const Vector2Df&)> newHitAction)
+    SubscriptionId ExplosiveComponent::SubscribeHit(std::function<void(const Vector2Df&, const Vector2Df&)> onHit)
     {
-        hitAction = newHitAction;
+        return hitEvent.Subscribe(std::move(onHit));
     }
 
     float ExplosiveComponent::GetRadius() const
@@ -175,17 +175,10 @@ namespace RoguelikeGame
             health->TakeDamage(damage);
             hits++;
 
-            if (hitAction != nullptr)
-            {
-                Vector2Df hitDirection = (targetPosition - position).Normalized();
-                hitAction(targetPosition, hitDirection);
-            }
+            hitEvent.Invoke(targetPosition, (targetPosition - position).Normalized());
         }
 
-        if (explodeAction != nullptr)
-        {
-            explodeAction(position);
-        }
+        explodeEvent.Invoke(position);
 
         LOG_INFO(gameObject->GetName() + " explodes for " + std::to_string(static_cast<int>(centerDamage))
                  + " damage in radius " + std::to_string(static_cast<int>(radius)) + ", targets hit: " + std::to_string(hits));

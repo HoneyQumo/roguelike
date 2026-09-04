@@ -1,8 +1,8 @@
 #pragma once
 
 #include <functional>
-#include <vector>
 #include <Component.h>
+#include <EventList.h>
 
 namespace RoguelikeGame
 {
@@ -30,8 +30,11 @@ namespace RoguelikeGame
 
         bool IsAlive() const;
 
-        void SubscribeDamage(std::function<void(float)> onDamageAction);
-        void SubscribeDeath(std::function<void()> onDeathAction);
+        XYZEngine::SubscriptionId SubscribeDamage(std::function<void(float)> onDamage);
+        void UnsubscribeDamage(XYZEngine::SubscriptionId subscription);
+
+        XYZEngine::SubscriptionId SubscribeDeath(std::function<void()> onDeath);
+        void UnsubscribeDeath(XYZEngine::SubscriptionId subscription);
 
     private:
         float maxHealth = 100.f;
@@ -39,8 +42,8 @@ namespace RoguelikeGame
         float armor = 0.f;
         bool isInvulnerable = false;
 
-        std::vector<std::function<void(float)>> onDamageActions;
-        std::vector<std::function<void()>> onDeathActions;
+        XYZEngine::EventList<float> damageEvent;
+        XYZEngine::EventList<> deathEvent;
 
         float CalculateDamage(float damage) const;
     };

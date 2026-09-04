@@ -105,19 +105,13 @@ namespace RoguelikeGame
         LOG_INFO(gameObject->GetName() + " takes " + std::to_string(static_cast<int>(takenDamage))
             + " damage, health " + std::to_string(static_cast<int>(health)) + "/" + std::to_string(static_cast<int>(maxHealth)));
 
-        for (auto& onDamageAction : onDamageActions)
-        {
-            onDamageAction(takenDamage);
-        }
+        damageEvent.Invoke(takenDamage);
 
         if (!IsAlive())
         {
             LOG_WARN(gameObject->GetName() + " is dead");
 
-            for (auto& onDeathAction : onDeathActions)
-            {
-                onDeathAction();
-            }
+            deathEvent.Invoke();
             return;
         }
 
@@ -150,14 +144,22 @@ namespace RoguelikeGame
         return health > 0.f;
     }
 
-    void HealthComponent::SubscribeDamage(std::function<void(float)> onDamageAction)
+    XYZEngine::SubscriptionId HealthComponent::SubscribeDamage(std::function<void(float)> onDamage)
     {
-        onDamageActions.push_back(onDamageAction);
+        return damageEvent.Subscribe(std::move(onDamage));
+    }
+    void HealthComponent::UnsubscribeDamage(XYZEngine::SubscriptionId subscription)
+    {
+        damageEvent.Unsubscribe(subscription);
     }
 
-    void HealthComponent::SubscribeDeath(std::function<void()> onDeathAction)
+    XYZEngine::SubscriptionId HealthComponent::SubscribeDeath(std::function<void()> onDeath)
     {
-        onDeathActions.push_back(onDeathAction);
+        return deathEvent.Subscribe(std::move(onDeath));
+    }
+    void HealthComponent::UnsubscribeDeath(XYZEngine::SubscriptionId subscription)
+    {
+        deathEvent.Unsubscribe(subscription);
     }
 
     float HealthComponent::CalculateDamage(float damage) const

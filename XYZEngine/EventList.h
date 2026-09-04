@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cstddef>
 #include <functional>
+#include <utility>
 #include <vector>
 
 namespace XYZEngine
@@ -10,11 +11,11 @@ namespace XYZEngine
 	using SubscriptionId = std::size_t;
 	constexpr SubscriptionId NO_SUBSCRIPTION = 0;
 
-	template <typename TEvent>
+	template <typename... TArgs>
 	class EventList
 	{
 	public:
-		SubscriptionId Subscribe(std::function<void(const TEvent&)> handler)
+		SubscriptionId Subscribe(std::function<void(TArgs...)> handler)
 		{
 			if (handler == nullptr)
 			{
@@ -36,11 +37,11 @@ namespace XYZEngine
 				[id](const Subscription& subscription) { return subscription.id == id; }), subscriptions.end());
 		}
 
-		void Invoke(const TEvent& event) const
+		void Invoke(TArgs... args) const
 		{
 			for (std::size_t i = 0; i < subscriptions.size(); i++)
 			{
-				subscriptions[i].handler(event);
+				subscriptions[i].handler(args...);
 			}
 		}
 
@@ -58,7 +59,7 @@ namespace XYZEngine
 		struct Subscription
 		{
 			SubscriptionId id;
-			std::function<void(const TEvent&)> handler;
+			std::function<void(TArgs...)> handler;
 		};
 
 		std::vector<Subscription> subscriptions;

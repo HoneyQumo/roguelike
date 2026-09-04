@@ -37,7 +37,7 @@ namespace
 			component->SetDirection({1.f, 0.f});
 			component->SetSpeed(speed);
 			component->SetShooterName("Player");
-			component->SetHitAction([&hits](const Vector2Df&, const Vector2Df&, bool) { hits++; });
+			component->SubscribeHit([&hits](const Vector2Df&, const Vector2Df&, bool) { hits++; });
 
 			return projectile;
 		}

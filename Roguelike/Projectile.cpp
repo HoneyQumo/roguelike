@@ -72,7 +72,7 @@ namespace RoguelikeGame
         {
             projectile->SetDamage(damage);
             projectile->SetLifetime(PROJECTILE_LIFETIME);
-            projectile->SetHitAction([](const XYZEngine::Vector2Df& hitPosition, const XYZEngine::Vector2Df& hitDirection, bool isCharacterHit)
+            projectile->SubscribeHit([](const XYZEngine::Vector2Df& hitPosition, const XYZEngine::Vector2Df& hitDirection, bool isCharacterHit)
             {
                 if (isCharacterHit)
                 {
@@ -99,21 +99,21 @@ namespace RoguelikeGame
         blast->SetEdgeDamagePart(explosive->edgeDamagePart);
         blast->SetSelfDamagePart(explosive->selfDamagePart);
         blast->SetOwnerName(shooterName);
-        blast->SetExplodeAction([blastRadius](const XYZEngine::Vector2Df& blastPosition)
+        blast->SubscribeExplode([blastRadius](const XYZEngine::Vector2Df& blastPosition)
         {
             Fx::SpawnExplosion(blastPosition, blastRadius);
         });
-        blast->SetHitAction([](const XYZEngine::Vector2Df& targetPosition, const XYZEngine::Vector2Df& hitDirection)
+        blast->SubscribeHit([](const XYZEngine::Vector2Df& targetPosition, const XYZEngine::Vector2Df& hitDirection)
         {
             Fx::SpawnBloodHit(targetPosition, hitDirection);
         });
 
-        projectile->SetHitAction([blast, bodyOffset](const XYZEngine::Vector2Df& hitPosition, const XYZEngine::Vector2Df& hitDirection, bool isCharacterHit)
+        projectile->SubscribeHit([blast, bodyOffset](const XYZEngine::Vector2Df& hitPosition, const XYZEngine::Vector2Df& hitDirection, bool isCharacterHit)
         {
             blast->Explode(hitPosition + bodyOffset);
         });
 
-        projectile->SetExpireAction([blast, bodyOffset](const XYZEngine::Vector2Df& expirePosition)
+        projectile->SubscribeExpire([blast, bodyOffset](const XYZEngine::Vector2Df& expirePosition)
         {
             blast->Explode(expirePosition + bodyOffset);
         });

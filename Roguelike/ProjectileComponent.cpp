@@ -45,10 +45,7 @@ namespace RoguelikeGame
 		lifetime.Tick(deltaTime);
 		if (lifetime.IsReady())
 		{
-			if (expireAction != nullptr)
-			{
-				expireAction(transform->GetWorldPosition());
-			}
+			expireEvent.Invoke(transform->GetWorldPosition());
 
 			Destroy();
 			return;
@@ -106,13 +103,13 @@ namespace RoguelikeGame
 	{
 		shooterName = newShooterName;
 	}
-	void ProjectileComponent::SetHitAction(std::function<void(const Vector2Df&, const Vector2Df&, bool)> newHitAction)
+	SubscriptionId ProjectileComponent::SubscribeHit(std::function<void(const Vector2Df&, const Vector2Df&, bool)> onHit)
 	{
-		hitAction = newHitAction;
+		return hitEvent.Subscribe(std::move(onHit));
 	}
-	void ProjectileComponent::SetExpireAction(std::function<void(const Vector2Df&)> newExpireAction)
+	SubscriptionId ProjectileComponent::SubscribeExpire(std::function<void(const Vector2Df&)> onExpire)
 	{
-		expireAction = newExpireAction;
+		return expireEvent.Subscribe(std::move(onExpire));
 	}
 
 	void ProjectileComponent::OnTrigger(const Trigger& trigger)
@@ -177,10 +174,7 @@ namespace RoguelikeGame
 			health->TakeDamage(damage);
 		}
 
-		if (hitAction != nullptr)
-		{
-			hitAction(transform->GetWorldPosition(), direction.Normalized(), isCharacterHit);
-		}
+		hitEvent.Invoke(transform->GetWorldPosition(), direction.Normalized(), isCharacterHit);
 
 		Destroy();
 	}

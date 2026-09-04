@@ -3,6 +3,7 @@
 #include <functional>
 #include <string>
 #include <Component.h>
+#include <EventList.h>
 #include <TransformComponent.h>
 #include <ColliderComponent.h>
 #include <Vector.h>
@@ -24,8 +25,8 @@ namespace RoguelikeGame
         void SetDamage(float newDamage);
         void SetLifetime(float newLifetime);
         void SetShooterName(const std::string& newShooterName);
-        void SetHitAction(std::function<void(const XYZEngine::Vector2Df&, const XYZEngine::Vector2Df&, bool)> newHitAction);
-        void SetExpireAction(std::function<void(const XYZEngine::Vector2Df&)> newExpireAction);
+        XYZEngine::SubscriptionId SubscribeHit(std::function<void(const XYZEngine::Vector2Df&, const XYZEngine::Vector2Df&, bool)> onHit);
+        XYZEngine::SubscriptionId SubscribeExpire(std::function<void(const XYZEngine::Vector2Df&)> onExpire);
 
     private:
         XYZEngine::TransformComponent* transform = nullptr;
@@ -36,8 +37,8 @@ namespace RoguelikeGame
         float damage = 10.f;
         XYZEngine::Cooldown lifetime = XYZEngine::Cooldown::Started(3.f);
         std::string shooterName;
-        std::function<void(const XYZEngine::Vector2Df&, const XYZEngine::Vector2Df&, bool)> hitAction;
-        std::function<void(const XYZEngine::Vector2Df&)> expireAction;
+        XYZEngine::EventList<const XYZEngine::Vector2Df&, const XYZEngine::Vector2Df&, bool> hitEvent;
+        XYZEngine::EventList<const XYZEngine::Vector2Df&> expireEvent;
 
         bool isHandled = false;
 

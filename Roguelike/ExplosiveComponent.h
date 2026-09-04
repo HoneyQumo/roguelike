@@ -5,6 +5,7 @@
 #include <vector>
 #include <SFML/Graphics/Rect.hpp>
 #include <Component.h>
+#include <EventList.h>
 #include <TransformComponent.h>
 #include <Vector.h>
 
@@ -24,8 +25,8 @@ namespace RoguelikeGame
         void SetEdgeDamagePart(float newEdgeDamagePart);
         void SetSelfDamagePart(float newSelfDamagePart);
         void SetOwnerName(const std::string& newOwnerName);
-        void SetExplodeAction(std::function<void(const XYZEngine::Vector2Df&)> newExplodeAction);
-        void SetHitAction(std::function<void(const XYZEngine::Vector2Df&, const XYZEngine::Vector2Df&)> newHitAction);
+        XYZEngine::SubscriptionId SubscribeExplode(std::function<void(const XYZEngine::Vector2Df&)> onExplode);
+        XYZEngine::SubscriptionId SubscribeHit(std::function<void(const XYZEngine::Vector2Df&, const XYZEngine::Vector2Df&)> onHit);
 
         float GetRadius() const;
         bool HasExploded() const;
@@ -43,8 +44,8 @@ namespace RoguelikeGame
         std::string ownerName;
         bool hasExploded = false;
 
-        std::function<void(const XYZEngine::Vector2Df&)> explodeAction;
-        std::function<void(const XYZEngine::Vector2Df&, const XYZEngine::Vector2Df&)> hitAction;
+        XYZEngine::EventList<const XYZEngine::Vector2Df&> explodeEvent;
+        XYZEngine::EventList<const XYZEngine::Vector2Df&, const XYZEngine::Vector2Df&> hitEvent;
 
         float DamageAt(float distance) const;
         static bool IsBlocked(const XYZEngine::Vector2Df& origin, const XYZEngine::Vector2Df& target, const std::vector<sf::FloatRect>& obstacles);

@@ -59,8 +59,8 @@ namespace XYZEngine
 		void OnTriggerEnter(const Trigger& trigger);
 		void OnTriggerExit(const Trigger& trigger);
 
-		EventList<Collision> collisionEvent;
-		EventList<Trigger> triggerEnterEvent;
-		EventList<Trigger> triggerExitEvent;
+		EventList<const Collision&> collisionEvent;
+		EventList<const Trigger&> triggerEnterEvent;
+		EventList<const Trigger&> triggerExitEvent;
 	};
 }

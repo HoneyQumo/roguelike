@@ -24,6 +24,9 @@
     <ClInclude Include="Engine.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
+    <ClInclude Include="EventList.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
     <ClInclude Include="AudioComponent.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>

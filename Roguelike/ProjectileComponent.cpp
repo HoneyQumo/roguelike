@@ -27,7 +27,7 @@ namespace RoguelikeGame
 			return;
 		}
 
-		collider->SubscribeTriggerEnter([this](Trigger trigger) { OnTrigger(trigger); });
+		collider->SubscribeTriggerEnter([this](const Trigger& trigger) { OnTrigger(trigger); });
 	}
 
 	void ProjectileComponent::Update(float deltaTime)

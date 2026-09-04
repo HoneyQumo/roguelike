@@ -5,6 +5,7 @@
 #include <functional>
 #include "Component.h"
 #include "Collision.h"
+#include "EventList.h"
 #include "Trigger.h"
 #include "PhysicsSystem.h"
 
@@ -31,14 +32,14 @@ namespace XYZEngine
 		void SetIgnoredLayers(unsigned int newIgnoredLayers);
 		unsigned int GetIgnoredLayers() const;
 
-		void SubscribeCollision(std::function<void(Collision)> onCollisionAction);
-		void UnsubscribeCollision(std::function<void(Collision)> onCollisionAction);
+		SubscriptionId SubscribeCollision(std::function<void(const Collision&)> onCollisionAction);
+		void UnsubscribeCollision(SubscriptionId subscription);
 
-		void SubscribeTriggerEnter(std::function<void(Trigger)> onTriggerEnterAction);
-		void UnsubscribeTriggerEnter(std::function<void(Trigger)> onTriggerEnterAction);
+		SubscriptionId SubscribeTriggerEnter(std::function<void(const Trigger&)> onTriggerEnterAction);
+		void UnsubscribeTriggerEnter(SubscriptionId subscription);
 
-		void SubscribeTriggerExit(std::function<void(Trigger)> onTriggerExitAction);
-		void UnsubscribeTriggerExit(std::function<void(Trigger)> onTriggerExitAction);
+		SubscriptionId SubscribeTriggerExit(std::function<void(const Trigger&)> onTriggerExitAction);
+		void UnsubscribeTriggerExit(SubscriptionId subscription);
 
 		friend class PhysicsSystem;
 
@@ -48,12 +49,12 @@ namespace XYZEngine
 		unsigned int collisionLayer = DEFAULT_COLLISION_LAYER;
 		unsigned int ignoredLayers = 0u;
 
-		void OnCollision(Collision collision);
-		void OnTriggerEnter(Trigger trigger);
-		void OnTriggerExit(Trigger trigger);
+		void OnCollision(const Collision& collision);
+		void OnTriggerEnter(const Trigger& trigger);
+		void OnTriggerExit(const Trigger& trigger);
 
-		std::vector<std::function<void(Collision)>> onCollisionActions;
-		std::vector<std::function<void(Trigger)>> onTriggerEnterActions;
-		std::vector<std::function<void(Trigger)>> onTriggerExitActions;
+		EventList<Collision> collisionEvent;
+		EventList<Trigger> triggerEnterEvent;
+		EventList<Trigger> triggerExitEvent;
 	};
 }

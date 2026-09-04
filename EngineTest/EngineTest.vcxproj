@@ -119,6 +119,7 @@
     <ClCompile Include="Projectile.tests.cpp" />
     <ClCompile Include="FrameClock.tests.cpp" />
     <ClCompile Include="DebugDraw.tests.cpp" />
+    <ClCompile Include="EventList.tests.cpp" />
     <ClCompile Include="..\Roguelike\LevelLoader.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>

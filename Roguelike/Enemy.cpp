@@ -63,7 +63,8 @@ namespace RoguelikeGame
             auto meleeWeapon = gameObject->AddComponent<MeleeWeaponComponent>();
             meleeWeapon->SetQuickAttack(MakeQuickAttack(melee->quick, config.attackDamage, config.attackCooldown));
             meleeWeapon->SetTargetName(PLAYER_OBJECT_NAME);
-            PlayEffectsOnMeleeHit(meleeWeapon, meleeAudio, melee);
+            meleeWeapon->SetDefinition(melee);
+            PlayEffectsOnMeleeHit(meleeWeapon, meleeAudio);
 
             auto attack = gameObject->AddComponent<EnemyAttackComponent>();
             attack->SetTargetName(PLAYER_OBJECT_NAME);
@@ -87,7 +88,7 @@ namespace RoguelikeGame
             ApplyWeaponDefinition(weaponComponent, config.weapon, shot);
             PlayEffectsOnReload(weaponComponent, animation, reloadAudio);
             PlayEffectsOnShot(weaponComponent, shotAudio, animation, weaponLayer);
-            SpawnProjectilesOnShot(weaponComponent, config.objectName, config.weapon);
+            SpawnProjectilesOnShot(weaponComponent, config.objectName);
 
             auto attack = gameObject->AddComponent<EnemyAttackComponent>();
             attack->SetTargetName(PLAYER_OBJECT_NAME);

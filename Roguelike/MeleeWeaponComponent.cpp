@@ -118,19 +118,28 @@ namespace RoguelikeGame
         lungePeakSpeed = peakSpeed;
     }
 
-    void MeleeWeaponComponent::SetSwingAction(std::function<void(MeleeAttackKind)> newSwingAction)
+    void MeleeWeaponComponent::SetDefinition(const MeleeDefinition* newDefinition)
     {
-        swingAction = newSwingAction;
+        definition = newDefinition;
+    }
+    const MeleeDefinition* MeleeWeaponComponent::GetDefinition() const
+    {
+        return definition;
     }
 
-    void MeleeWeaponComponent::SetStrikeAction(std::function<void(MeleeAttackKind, int)> newStrikeAction)
+    XYZEngine::SubscriptionId MeleeWeaponComponent::SubscribeSwing(std::function<void(MeleeAttackKind)> onSwing)
     {
-        strikeAction = newStrikeAction;
+        return swingEvent.Subscribe(std::move(onSwing));
     }
 
-    void MeleeWeaponComponent::SetHitAction(std::function<void(MeleeAttackKind, const Vector2Df&, const Vector2Df&)> newHitAction)
+    XYZEngine::SubscriptionId MeleeWeaponComponent::SubscribeStrike(std::function<void(MeleeAttackKind, int)> onStrike)
     {
-        hitAction = newHitAction;
+        return strikeEvent.Subscribe(std::move(onStrike));
+    }
+
+    XYZEngine::SubscriptionId MeleeWeaponComponent::SubscribeHit(std::function<void(MeleeAttackKind, const Vector2Df&, const Vector2Df&)> onHit)
+    {
+        return hitEvent.Subscribe(std::move(onHit));
     }
 
     bool MeleeWeaponComponent::IsReady() const
@@ -249,10 +258,7 @@ namespace RoguelikeGame
         chargeTimer = 0.f;
         attackTimer = 0.f;
 
-        if (swingAction != nullptr)
-        {
-            swingAction(kind);
-        }
+        swingEvent.Invoke(kind);
     }
 
     void MeleeWeaponComponent::Strike()
@@ -319,16 +325,10 @@ namespace RoguelikeGame
             health->TakeDamage(damage);
             hits++;
 
-            if (hitAction != nullptr)
-            {
-                hitAction(currentKind, targetPosition, hitDirection);
-            }
+            hitEvent.Invoke(currentKind, targetPosition, hitDirection);
         }
 
-        if (strikeAction != nullptr)
-        {
-            strikeAction(currentKind, hits);
-        }
+        strikeEvent.Invoke(currentKind, hits);
 
         LOG_INFO(gameObject->GetName() + (currentKind == MeleeAttackKind::Quick ? " quick melee " : " heavy melee ")
                  + std::to_string(static_cast<int>(damage)) + " damage, targets hit: " + std::to_string(hits));

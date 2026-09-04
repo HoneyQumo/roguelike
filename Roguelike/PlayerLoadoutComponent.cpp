@@ -234,8 +234,6 @@ namespace RoguelikeGame
             reloadAudio->SetSound(GameResources::GetWeaponSound(definition.reloadSound));
         }
 
-        PlayEffectsOnShot(rangedWeapon, shotAudio, animation, weapon);
-        SpawnProjectilesOnShot(rangedWeapon, gameObject->GetName(), id);
     }
 
     void PlayerLoadoutComponent::ApplyMeleeWeapon(const MeleeDefinition* melee)
@@ -246,6 +244,7 @@ namespace RoguelikeGame
         }
 
         meleeWeapon->CancelAttack();
+        meleeWeapon->SetDefinition(melee);
 
         if (melee == nullptr)
         {
@@ -256,6 +255,5 @@ namespace RoguelikeGame
         meleeWeapon->SetHeavyAttack(MakeHeavyAttack(melee->heavy, PLAYER_MELEE_DAMAGE));
         meleeWeapon->SetChargeTime(HEAVY_CHARGE_TIME);
         meleeWeapon->SetLunge(HEAVY_MOVE_SPEED, HEAVY_ANIMATION_FRAMES, PLAYER_HEAVY_LUNGE_SPEED);
-        PlayEffectsOnMeleeHit(meleeWeapon, meleeAudio, melee);
     }
 }

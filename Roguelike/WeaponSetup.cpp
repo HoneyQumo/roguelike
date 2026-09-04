@@ -16,23 +16,25 @@ namespace RoguelikeGame
         weapon->SetPellets(shot.pellets);
         weapon->SetConeDegrees(shot.coneDegrees);
         weapon->SetMuzzleOffset(ShotOffset(definition));
+        weapon->SetWeaponId(id);
         weapon->SetMagazine(definition.magazineSize, AmmoKindKey(definition.ammo));
         weapon->SetReloadTime(definition.reloadTime);
     }
 
-    void SpawnProjectilesOnShot(WeaponComponent* weapon, const std::string& shooterName, WeaponId id)
+    // Ствол меняется на ходу, поэтому идентификатор берётся у компонента, а не запоминается подпиской.
+    void SpawnProjectilesOnShot(WeaponComponent* weapon, const std::string& shooterName)
     {
-        weapon->SetShotAction([shooterName, id](const XYZEngine::Vector2Df& shotPosition, const XYZEngine::Vector2Df& shotDirection,
-                                                float damage, float speed)
+        weapon->SubscribeShot([weapon, shooterName](const XYZEngine::Vector2Df& shotPosition, const XYZEngine::Vector2Df& shotDirection,
+                                                    float damage, float speed)
         {
-            Projectile::Spawn(shotPosition, shotDirection, damage, speed, shooterName, id);
+            Projectile::Spawn(shotPosition, shotDirection, damage, speed, shooterName, weapon->GetWeaponId());
         });
     }
 
     void PlayEffectsOnShot(WeaponComponent* weapon, XYZEngine::AudioComponent* shotAudio,
                           XYZEngine::SpriteMovementAnimationComponent* animation, WeaponLayerComponent* weaponLayer)
     {
-        weapon->SetShotStartAction([shotAudio, animation, weaponLayer]()
+        weapon->SubscribeShotStart([shotAudio, animation, weaponLayer]()
         {
             if (shotAudio != nullptr)
             {
@@ -54,7 +56,7 @@ namespace RoguelikeGame
     void PlayEffectsOnReload(WeaponComponent* weapon, XYZEngine::SpriteMovementAnimationComponent* animation,
                             XYZEngine::AudioComponent* reloadAudio)
     {
-        weapon->SetReloadStartAction([animation, reloadAudio]()
+        weapon->SubscribeReloadStart([animation, reloadAudio]()
         {
             if (animation != nullptr)
             {
@@ -68,11 +70,11 @@ namespace RoguelikeGame
         });
     }
 
-    void PlayEffectsOnMeleeHit(MeleeWeaponComponent* melee, XYZEngine::AudioComponent* meleeAudio,
-                           const MeleeDefinition* definition)
+    void PlayEffectsOnMeleeHit(MeleeWeaponComponent* melee, XYZEngine::AudioComponent* meleeAudio)
     {
-        melee->SetStrikeAction([meleeAudio, definition](MeleeAttackKind kind, int hits)
+        melee->SubscribeStrike([melee, meleeAudio](MeleeAttackKind kind, int hits)
         {
+            const MeleeDefinition* definition = melee->GetDefinition();
             if (hits <= 0 || meleeAudio == nullptr || definition == nullptr)
             {
                 return;
@@ -82,7 +84,7 @@ namespace RoguelikeGame
             meleeAudio->Play();
         });
 
-        melee->SetHitAction([](MeleeAttackKind kind, const XYZEngine::Vector2Df& position, const XYZEngine::Vector2Df& direction)
+        melee->SubscribeHit([](MeleeAttackKind kind, const XYZEngine::Vector2Df& position, const XYZEngine::Vector2Df& direction)
         {
             Fx::SpawnBloodHit(position, direction);
         });

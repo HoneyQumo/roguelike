@@ -125,8 +125,11 @@ namespace RoguelikeGame
 
         auto weaponComponent = gameObject->AddComponent<WeaponComponent>();
         PlayEffectsOnReload(weaponComponent, animation, reloadAudio);
+        PlayEffectsOnShot(weaponComponent, shotAudio, animation, parts.weapon);
+        SpawnProjectilesOnShot(weaponComponent, gameObject->GetName());
 
         auto meleeWeapon = gameObject->AddComponent<MeleeWeaponComponent>();
+        PlayEffectsOnMeleeHit(meleeWeapon, meleeAudio);
 
         auto loadout = gameObject->AddComponent<PlayerLoadoutComponent>();
         loadout->SetWeapon(parts.weapon);

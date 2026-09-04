@@ -3,6 +3,8 @@
 #include <functional>
 #include <string>
 #include <Component.h>
+#include <EventList.h>
+#include "WeaponCatalog.h"
 #include <TransformComponent.h>
 #include <MovementComponent.h>
 #include <SpriteMovementAnimationComponent.h>
@@ -43,9 +45,12 @@ namespace RoguelikeGame
         void SetTargetName(const std::string& newTargetName);
         void SetLunge(const float* frameSpeeds, int framesCount, float peakSpeed);
 
-        void SetSwingAction(std::function<void(MeleeAttackKind)> newSwingAction);
-        void SetStrikeAction(std::function<void(MeleeAttackKind, int)> newStrikeAction);
-        void SetHitAction(std::function<void(MeleeAttackKind, const XYZEngine::Vector2Df&, const XYZEngine::Vector2Df&)> newHitAction);
+        void SetDefinition(const MeleeDefinition* newDefinition);
+        const MeleeDefinition* GetDefinition() const;
+
+        XYZEngine::SubscriptionId SubscribeSwing(std::function<void(MeleeAttackKind)> onSwing);
+        XYZEngine::SubscriptionId SubscribeStrike(std::function<void(MeleeAttackKind, int)> onStrike);
+        XYZEngine::SubscriptionId SubscribeHit(std::function<void(MeleeAttackKind, const XYZEngine::Vector2Df&, const XYZEngine::Vector2Df&)> onHit);
 
         bool IsReady() const;
         bool IsAttacking() const;
@@ -80,9 +85,11 @@ namespace RoguelikeGame
         float attackTimer = 0.f;
         XYZEngine::Cooldown cooldown;
 
-        std::function<void(MeleeAttackKind)> swingAction;
-        std::function<void(MeleeAttackKind, int)> strikeAction;
-        std::function<void(MeleeAttackKind, const XYZEngine::Vector2Df&, const XYZEngine::Vector2Df&)> hitAction;
+        const MeleeDefinition* definition = nullptr;
+
+        XYZEngine::EventList<MeleeAttackKind> swingEvent;
+        XYZEngine::EventList<MeleeAttackKind, int> strikeEvent;
+        XYZEngine::EventList<MeleeAttackKind, const XYZEngine::Vector2Df&, const XYZEngine::Vector2Df&> hitEvent;
 
         const MeleeAttack& GetAttack() const;
         XYZEngine::Vector2Df GetForward() const;

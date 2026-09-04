@@ -2,6 +2,8 @@
 
 #include <functional>
 #include <Component.h>
+#include <EventList.h>
+#include "WeaponCatalog.h"
 #include <TransformComponent.h>
 #include "AmmoPouchComponent.h"
 #include <Vector.h>
@@ -26,8 +28,11 @@ namespace RoguelikeGame
         void SetMuzzleOffset(const XYZEngine::Vector2Df& newMuzzleOffset);
         void SetPellets(int newPellets);
         void SetConeDegrees(float newConeDegrees);
-        void SetShotStartAction(std::function<void()> newShotStartAction);
-        void SetShotAction(std::function<void(const XYZEngine::Vector2Df&, const XYZEngine::Vector2Df&, float, float)> newShotAction);
+        void SetWeaponId(WeaponId newWeaponId);
+        WeaponId GetWeaponId() const;
+
+        XYZEngine::SubscriptionId SubscribeShotStart(std::function<void()> onShotStart);
+        XYZEngine::SubscriptionId SubscribeShot(std::function<void(const XYZEngine::Vector2Df&, const XYZEngine::Vector2Df&, float, float)> onShot);
 
         int GetPellets() const;
         float GetConeDegrees() const;
@@ -35,8 +40,8 @@ namespace RoguelikeGame
         void SetMagazine(int newMagazineSize, int newAmmoKind);
         void SetAmmoInMagazine(int newAmmoInMagazine);
         void SetReloadTime(float newReloadTime);
-        void SetReloadStartAction(std::function<void()> newReloadStartAction);
-        void SetReloadFinishAction(std::function<void()> newReloadFinishAction);
+        XYZEngine::SubscriptionId SubscribeReloadStart(std::function<void()> onReloadStart);
+        XYZEngine::SubscriptionId SubscribeReloadFinish(std::function<void()> onReloadFinish);
 
         bool HasMagazine() const;
         int GetMagazineSize() const;
@@ -73,10 +78,12 @@ namespace RoguelikeGame
         XYZEngine::Cooldown reload;
         bool isReloading = false;
 
-        std::function<void()> shotStartAction;
-        std::function<void(const XYZEngine::Vector2Df&, const XYZEngine::Vector2Df&, float, float)> shotAction;
-        std::function<void()> reloadStartAction;
-        std::function<void()> reloadFinishAction;
+        WeaponId weaponId = WeaponId::Ak47;
+
+        XYZEngine::EventList<> shotStartEvent;
+        XYZEngine::EventList<const XYZEngine::Vector2Df&, const XYZEngine::Vector2Df&, float, float> shotEvent;
+        XYZEngine::EventList<> reloadStartEvent;
+        XYZEngine::EventList<> reloadFinishEvent;
 
         float PelletAngle(int index) const;
         static XYZEngine::Vector2Df RotateDirection(const XYZEngine::Vector2Df& direction, float degrees);

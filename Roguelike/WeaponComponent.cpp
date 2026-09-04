@@ -76,14 +76,23 @@ namespace RoguelikeGame
         coneDegrees = std::max(newConeDegrees, 0.f);
     }
 
-    void WeaponComponent::SetShotStartAction(std::function<void()> newShotStartAction)
+    void WeaponComponent::SetWeaponId(WeaponId newWeaponId)
     {
-        shotStartAction = newShotStartAction;
+        weaponId = newWeaponId;
+    }
+    WeaponId WeaponComponent::GetWeaponId() const
+    {
+        return weaponId;
     }
 
-    void WeaponComponent::SetShotAction(std::function<void(const Vector2Df&, const Vector2Df&, float, float)> newShotAction)
+    XYZEngine::SubscriptionId WeaponComponent::SubscribeShotStart(std::function<void()> onShotStart)
     {
-        shotAction = newShotAction;
+        return shotStartEvent.Subscribe(std::move(onShotStart));
+    }
+
+    XYZEngine::SubscriptionId WeaponComponent::SubscribeShot(std::function<void(const Vector2Df&, const Vector2Df&, float, float)> onShot)
+    {
+        return shotEvent.Subscribe(std::move(onShot));
     }
 
     int WeaponComponent::GetPellets() const
@@ -118,14 +127,14 @@ namespace RoguelikeGame
         reload.SetDuration(newReloadTime);
     }
 
-    void WeaponComponent::SetReloadStartAction(std::function<void()> newReloadStartAction)
+    XYZEngine::SubscriptionId WeaponComponent::SubscribeReloadStart(std::function<void()> onReloadStart)
     {
-        reloadStartAction = newReloadStartAction;
+        return reloadStartEvent.Subscribe(std::move(onReloadStart));
     }
 
-    void WeaponComponent::SetReloadFinishAction(std::function<void()> newReloadFinishAction)
+    XYZEngine::SubscriptionId WeaponComponent::SubscribeReloadFinish(std::function<void()> onReloadFinish)
     {
-        reloadFinishAction = newReloadFinishAction;
+        return reloadFinishEvent.Subscribe(std::move(onReloadFinish));
     }
 
     bool WeaponComponent::HasMagazine() const
@@ -188,10 +197,7 @@ namespace RoguelikeGame
         isReloading = true;
         reload.Restart();
 
-        if (reloadStartAction != nullptr)
-        {
-            reloadStartAction();
-        }
+        reloadStartEvent.Invoke();
 
         LOG_INFO(gameObject->GetName() + " reloads");
 
@@ -237,9 +243,9 @@ namespace RoguelikeGame
             return false;
         }
 
-        if (shotAction == nullptr)
+        if (shotEvent.GetCount() == 0)
         {
-            LOG_ERROR("Weapon has no shot action on " + gameObject->GetName());
+            LOG_ERROR("Weapon has no shot subscriber on " + gameObject->GetName());
             return false;
         }
 
@@ -267,14 +273,11 @@ namespace RoguelikeGame
             }
         }
 
-        if (shotStartAction != nullptr)
-        {
-            shotStartAction();
-        }
+        shotStartEvent.Invoke();
 
         for (int pellet = 0; pellet < pellets; pellet++)
         {
-            shotAction(shotPosition, RotateDirection(shotDirection, PelletAngle(pellet)), damage, projectileSpeed);
+            shotEvent.Invoke(shotPosition, RotateDirection(shotDirection, PelletAngle(pellet)), damage, projectileSpeed);
         }
 
         shotCooldown.Restart();
@@ -315,10 +318,7 @@ namespace RoguelikeGame
         int loaded = pouch == nullptr ? missing : pouch->TakeAmmo(ammoKind, missing);
         ammoInMagazine += loaded;
 
-        if (reloadFinishAction != nullptr)
-        {
-            reloadFinishAction();
-        }
+        reloadFinishEvent.Invoke();
 
         LOG_INFO(gameObject->GetName() + " loaded " + std::to_string(loaded) + " rounds");
     }

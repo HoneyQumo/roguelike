@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "AudioComponent.h"
-#include <iostream>
+#include "LoggerRegistry.h"
 
 namespace XYZEngine
 {
@@ -27,7 +27,7 @@ namespace XYZEngine
 	{
 		if (newSound == nullptr)
 		{
-			std::cout << "Can't set empty sound." << std::endl;
+			LOG_WARN("Can't set empty sound.");
 			return;
 		}
 
@@ -46,7 +46,7 @@ namespace XYZEngine
 	{
 		if (sound->getBuffer() == nullptr)
 		{
-			std::cout << "Can't play sound without buffer." << std::endl;
+			LOG_WARN("Can't play sound without buffer.");
 			return;
 		}
 

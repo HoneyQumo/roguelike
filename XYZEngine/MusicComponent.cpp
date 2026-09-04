@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "MusicComponent.h"
-#include <iostream>
+#include "LoggerRegistry.h"
 
 namespace XYZEngine
 {
@@ -25,7 +25,7 @@ namespace XYZEngine
 	{
 		if (newMusic == nullptr)
 		{
-			std::cout << "Can't set empty music." << std::endl;
+			LOG_WARN("Can't set empty music.");
 			return;
 		}
 
@@ -55,7 +55,7 @@ namespace XYZEngine
 	{
 		if (music == nullptr)
 		{
-			std::cout << "Can't play empty music." << std::endl;
+			LOG_WARN("Can't play empty music.");
 			return;
 		}
 

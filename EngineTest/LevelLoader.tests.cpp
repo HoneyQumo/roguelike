@@ -12,23 +12,6 @@ namespace
 		std::istringstream input(text);
 		return LevelLoader::Parse(input, "test");
 	}
-
-	int CountTiles(const LevelData& level, TileType type)
-	{
-		int count = 0;
-		for (const auto& row : level.tiles)
-		{
-			for (TileType tile : row)
-			{
-				if (tile == type)
-				{
-					count++;
-				}
-			}
-		}
-
-		return count;
-	}
 }
 
 TEST(LevelLoaderTests, ParsesDefaultLegendWithoutLegendSection)
@@ -91,13 +74,19 @@ TEST(LevelLoaderTests, EveryEnemySpawnSymbolIsRecognised)
 	EXPECT_EQ(CountTiles(level, TileType::BossSpawn), 1);
 }
 
-// Фиксирует нынешнее поведение: второй '@' принимается молча и даст второго игрока.
-// Когда в LevelBuilder появится проверка (пункт E6), этот тест надо будет обновить.
-TEST(LevelLoaderTests, SecondPlayerSpawnIsCurrentlyAccepted)
+TEST(LevelLoaderTests, SecondPlayerSpawnStaysInTheData)
 {
 	LevelData level = ParseLevel("[map]\n@.@\n");
 
 	EXPECT_EQ(CountTiles(level, TileType::PlayerSpawn), 2);
+}
+
+TEST(LevelLoaderTests, LevelWithoutPlayerSpawnHasNoSpawnTiles)
+{
+	LevelData level = ParseLevel("[map]\n###\n...\n");
+
+	EXPECT_EQ(CountTiles(level, TileType::PlayerSpawn), 0);
+	EXPECT_EQ(CountTiles(level, TileType::Wall), 3);
 }
 
 TEST(LevelLoaderTests, MissingFileThrows)

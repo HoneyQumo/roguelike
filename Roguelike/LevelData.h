@@ -37,4 +37,21 @@ namespace RoguelikeGame
         int height = 0;
         std::vector<std::vector<TileType>> tiles;
     };
+
+    inline int CountTiles(const LevelData& levelData, TileType tileType)
+    {
+        int count = 0;
+        for (const auto& row : levelData.tiles)
+        {
+            for (TileType tile : row)
+            {
+                if (tile == tileType)
+                {
+                    count++;
+                }
+            }
+        }
+
+        return count;
+    }
 }

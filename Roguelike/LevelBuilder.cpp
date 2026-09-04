@@ -13,6 +13,13 @@ namespace RoguelikeGame
     Level LevelBuilder::Build(const LevelData& levelData)
     {
         Level level;
+
+        if (CountTiles(levelData, TileType::PlayerSpawn) == 0)
+        {
+            LOG_ERROR("Level has no player spawn point, nothing is built");
+            return level;
+        }
+
         int tilesCount = BuildTiles(levelData, level);
         int wallsCount = 0;
         int enemiesCount = 0;

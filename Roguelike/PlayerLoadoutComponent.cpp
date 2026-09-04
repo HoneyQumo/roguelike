@@ -72,12 +72,10 @@ namespace RoguelikeGame
         stowedWeapon = newStowedWeapon;
     }
 
-    void PlayerLoadoutComponent::SetAudio(XYZEngine::AudioComponent* newShotAudio, XYZEngine::AudioComponent* newReloadAudio,
-                                          XYZEngine::AudioComponent* newMeleeAudio)
+    void PlayerLoadoutComponent::SetAudio(XYZEngine::AudioComponent* newShotAudio, XYZEngine::AudioComponent* newReloadAudio)
     {
         shotAudio = newShotAudio;
         reloadAudio = newReloadAudio;
-        meleeAudio = newMeleeAudio;
     }
 
     void PlayerLoadoutComponent::SetSlots(const WeaponId* newSlots, int newSlotsCount, int startSlot)
@@ -233,7 +231,6 @@ namespace RoguelikeGame
             reloadAudio->Stop();
             reloadAudio->SetSound(GameResources::GetWeaponSound(definition.reloadSound));
         }
-
     }
 
     void PlayerLoadoutComponent::ApplyMeleeWeapon(const MeleeDefinition* melee)

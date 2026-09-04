@@ -134,7 +134,7 @@ namespace RoguelikeGame
         auto loadout = gameObject->AddComponent<PlayerLoadoutComponent>();
         loadout->SetWeapon(parts.weapon);
         loadout->SetStowedWeapon(stowedWeapon);
-        loadout->SetAudio(shotAudio, reloadAudio, meleeAudio);
+        loadout->SetAudio(shotAudio, reloadAudio);
         loadout->SetSlots(PLAYER_LOADOUT, PLAYER_WEAPON_SLOTS, PLAYER_START_WEAPON_SLOT);
 
         gameObject->AddComponent<PlayerAttackComponent>();

@@ -9,7 +9,7 @@ namespace RoguelikeGame
 {
     EnemyAttackComponent::EnemyAttackComponent(XYZEngine::GameObject* gameObject) : Component(gameObject)
     {
-        transform = gameObject->GetComponent<XYZEngine::TransformComponent>();
+        transform = gameObject->GetTransform();
     }
 
     void EnemyAttackComponent::Start()
@@ -50,7 +50,7 @@ namespace RoguelikeGame
             return;
         }
 
-        XYZEngine::Vector2Df targetPosition = target->GetComponent<XYZEngine::TransformComponent>()->GetWorldPosition();
+        XYZEngine::Vector2Df targetPosition = target->GetTransform()->GetWorldPosition();
         if ((targetPosition - transform->GetWorldPosition()).GetLength() > attackRange)
         {
             return;

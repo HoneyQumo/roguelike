@@ -6,7 +6,7 @@ namespace XYZEngine
 {
 	RigidbodyComponent::RigidbodyComponent(GameObject* gameObject) : Component(gameObject)
 	{
-		transform = gameObject->GetComponent<TransformComponent>();
+		transform = gameObject->GetTransform();
 	}
 
 	void RigidbodyComponent::Update(float deltaTime)

@@ -17,6 +17,7 @@ namespace XYZEngine
 		~GameObject();
 
 		const std::string& GetName() const;
+		TransformComponent* GetTransform() const;
 		void Print(int depth = 0) const;
 
 		void SetRenderLayer(int newRenderLayer);
@@ -36,7 +37,7 @@ namespace XYZEngine
 
 			if constexpr (std::is_same<T, TransformComponent>::value)
 			{
-				if (GetComponent<TransformComponent>() != nullptr)
+				if (transform != nullptr)
 				{
 					LOG_WARN("Can't add second Transform to " + name);
 					return nullptr;
@@ -126,6 +127,7 @@ namespace XYZEngine
 	private:
 		std::string name;
 		int renderLayer = 0;
+		TransformComponent* transform = nullptr;
 
 		std::vector<GameObject*> children = {};
 		std::vector<Component*> components = {};

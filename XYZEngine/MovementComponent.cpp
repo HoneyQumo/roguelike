@@ -6,7 +6,7 @@ namespace XYZEngine
 {
 	MovementComponent::MovementComponent(GameObject* gameObject) : Component(gameObject)
 	{
-		transform = gameObject->GetComponent<TransformComponent>();
+		transform = gameObject->GetTransform();
 	}
 
 	void MovementComponent::Start()

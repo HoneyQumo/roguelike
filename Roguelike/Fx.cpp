@@ -73,7 +73,7 @@ namespace RoguelikeGame
             return;
         }
 
-        auto transform = gameObject->GetComponent<XYZEngine::TransformComponent>();
+        auto transform = gameObject->GetTransform();
         transform->SetWorldPosition(position);
         transform->SetWorldRotation(angle);
 

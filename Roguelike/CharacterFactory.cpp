@@ -14,7 +14,7 @@ namespace RoguelikeGame
         CharacterParts parts;
         parts.gameObject = XYZEngine::GameWorld::Instance()->CreateGameObject(spec.objectName);
 
-        parts.transform = parts.gameObject->GetComponent<XYZEngine::TransformComponent>();
+        parts.transform = parts.gameObject->GetTransform();
         parts.transform->SetWorldPosition(spec.position);
 
         auto texture = XYZEngine::ResourceSystem::Instance()->GetTextureMapElementShared(spec.textureMapName,

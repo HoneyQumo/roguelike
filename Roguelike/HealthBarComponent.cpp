@@ -9,7 +9,7 @@ namespace RoguelikeGame
 {
 	HealthBarComponent::HealthBarComponent(GameObject* gameObject) : Component(gameObject)
 	{
-		transform = gameObject->GetComponent<TransformComponent>();
+		transform = gameObject->GetTransform();
 
 		background.setFillColor({ 20, 20, 20, 200 });
 		fill.setFillColor({ 200, 60, 60 });

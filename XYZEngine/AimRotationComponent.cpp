@@ -11,7 +11,7 @@ namespace XYZEngine
 
     AimRotationComponent::AimRotationComponent(GameObject* gameObject) : Component(gameObject)
     {
-        transform = gameObject->GetComponent<TransformComponent>();
+        transform = gameObject->GetTransform();
     }
 
     void AimRotationComponent::Start()
@@ -99,7 +99,7 @@ namespace XYZEngine
             return false;
         }
 
-        aimPosition = target->GetComponent<TransformComponent>()->GetWorldPosition();
+        aimPosition = target->GetTransform()->GetWorldPosition();
         return true;
     }
 }

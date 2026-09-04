@@ -30,7 +30,7 @@ namespace RoguelikeGame
         auto gameObject = XYZEngine::GameWorld::Instance()->CreateGameObject(isRocket ? "Rocket" : "Projectile");
         gameObject->SetRenderLayer(EFFECT_RENDER_LAYER);
 
-        auto transform = gameObject->GetComponent<XYZEngine::TransformComponent>();
+        auto transform = gameObject->GetTransform();
         transform->SetWorldPosition(position);
 
         float spriteScale = isRocket ? ROCKET_SPRITE_SCALE : 1.f;

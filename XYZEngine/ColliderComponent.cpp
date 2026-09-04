@@ -1,11 +1,30 @@
 #include "pch.h"
 #include "ColliderComponent.h"
+#include "GameObject.h"
+#include "RigidbodyComponent.h"
 
 namespace XYZEngine
 {
 	ColliderComponent::ColliderComponent(GameObject* gameObject) : Component(gameObject) 
 	{ 
 		
+	}
+
+	void ColliderComponent::Start()
+	{
+		GetBody();
+	}
+
+	// Тело ищется один раз: состав компонентов объекта после создания не меняется.
+	RigidbodyComponent* ColliderComponent::GetBody()
+	{
+		if (!isBodyFound)
+		{
+			body = gameObject->GetComponent<RigidbodyComponent>();
+			isBodyFound = true;
+		}
+
+		return body;
 	}
 
 	void ColliderComponent::SetTrigger(bool newIsTrigger)

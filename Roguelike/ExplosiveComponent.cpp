@@ -18,7 +18,7 @@ namespace RoguelikeGame
 
     ExplosiveComponent::ExplosiveComponent(GameObject* gameObject) : Component(gameObject)
     {
-        transform = gameObject->GetComponent<TransformComponent>();
+        transform = gameObject->GetTransform();
     }
 
     void ExplosiveComponent::Update(float deltaTime)
@@ -137,7 +137,7 @@ namespace RoguelikeGame
 
         for (auto target : targets)
         {
-            auto targetTransform = target->GetComponent<TransformComponent>();
+            auto targetTransform = target->GetTransform();
             if (targetTransform == nullptr)
             {
                 continue;

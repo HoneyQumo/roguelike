@@ -18,7 +18,7 @@ namespace RoguelikeGame
 
 	DodgeRollComponent::DodgeRollComponent(GameObject* gameObject) : Component(gameObject)
 	{
-		transform = gameObject->GetComponent<TransformComponent>();
+		transform = gameObject->GetTransform();
 	}
 
 	void DodgeRollComponent::Start()

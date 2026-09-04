@@ -15,7 +15,7 @@ namespace RoguelikeGame
 
     MeleeWeaponComponent::MeleeWeaponComponent(GameObject* gameObject) : Component(gameObject)
     {
-        transform = gameObject->GetComponent<TransformComponent>();
+        transform = gameObject->GetTransform();
     }
 
     void MeleeWeaponComponent::Start()
@@ -292,7 +292,7 @@ namespace RoguelikeGame
                 continue;
             }
 
-            auto targetTransform = target->GetComponent<TransformComponent>();
+            auto targetTransform = target->GetTransform();
             if (targetTransform == nullptr)
             {
                 continue;

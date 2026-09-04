@@ -17,7 +17,7 @@ namespace
 		GameObject* CreateObstacle(const std::string& name, float x, float size)
 		{
 			GameObject* obstacle = GameWorld::Instance()->CreateGameObject(name);
-			obstacle->GetComponent<TransformComponent>()->SetWorldPosition({x, 0.f});
+			obstacle->GetTransform()->SetWorldPosition({x, 0.f});
 
 			auto collider = obstacle->AddComponent<BoxColliderComponent>();
 			collider->SetSize(size, size);
@@ -68,5 +68,5 @@ TEST_F(ProjectileTest, ProjectileFliesThroughItsShooter)
 
 	EXPECT_EQ(hits, 0);
 	EXPECT_EQ(GameWorld::Instance()->FindGameObject("Projectile"), projectile);
-	EXPECT_GT(projectile->GetComponent<TransformComponent>()->GetWorldPosition().x, 100.f);
+	EXPECT_GT(projectile->GetTransform()->GetWorldPosition().x, 100.f);
 }

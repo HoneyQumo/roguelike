@@ -6,7 +6,7 @@ namespace XYZEngine
 {
 	BoxColliderComponent::BoxColliderComponent(GameObject* gameObject) : ColliderComponent(gameObject)
 	{
-		transform = gameObject->GetComponent<TransformComponent>();
+		transform = gameObject->GetTransform();
 		PhysicsSystem::Instance()->Subscribe(this);
 	}
 	BoxColliderComponent::~BoxColliderComponent()

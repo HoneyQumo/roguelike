@@ -11,7 +11,7 @@ namespace RoguelikeGame
 {
     WeaponLayerComponent::WeaponLayerComponent(XYZEngine::GameObject* gameObject) : Component(gameObject)
     {
-        transform = gameObject->GetComponent<XYZEngine::TransformComponent>();
+        transform = gameObject->GetTransform();
         CreateMuzzleFlash();
     }
 
@@ -121,7 +121,7 @@ namespace RoguelikeGame
         }
         muzzleFlashRenderer->SetVisible(false);
 
-        muzzleFlashTransform = flashObject->GetComponent<XYZEngine::TransformComponent>();
+        muzzleFlashTransform = flashObject->GetTransform();
 
         muzzleFlash = Fx::AddAnimation(flashObject, MUZZLE_FLASH_TEXTURE, FX_MUZZLE_FLASH);
         muzzleFlash->SetEndBehaviour(XYZEngine::SpriteAnimationEnd::Hide);

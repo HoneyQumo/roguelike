@@ -10,7 +10,7 @@ namespace RoguelikeGame
     {
         auto gameObject = XYZEngine::GameWorld::Instance()->CreateGameObject("Wall");
 
-        auto transform = gameObject->GetComponent<XYZEngine::TransformComponent>();
+        auto transform = gameObject->GetTransform();
         transform->SetWorldPosition(position);
 
         // Kinematic body keeps the wall in place when something bumps into it.

@@ -14,7 +14,7 @@ namespace XYZEngine
 
     SpriteMovementAnimationComponent::SpriteMovementAnimationComponent(GameObject* gameObject) : Component(gameObject)
     {
-        transform = gameObject->GetComponent<TransformComponent>();
+        transform = gameObject->GetTransform();
         previousPosition = transform->GetWorldPosition();
     }
 

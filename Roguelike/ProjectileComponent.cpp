@@ -14,7 +14,7 @@ namespace RoguelikeGame
 {
 	ProjectileComponent::ProjectileComponent(GameObject* gameObject) : Component(gameObject)
 	{
-		transform = gameObject->GetComponent<TransformComponent>();
+		transform = gameObject->GetTransform();
 	}
 
 	void ProjectileComponent::Start()

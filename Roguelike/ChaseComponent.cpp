@@ -10,7 +10,7 @@ namespace RoguelikeGame
 {
 	ChaseComponent::ChaseComponent(GameObject* gameObject) : Component(gameObject)
 	{
-		transform = gameObject->GetComponent<TransformComponent>();
+		transform = gameObject->GetTransform();
 	}
 
 	void ChaseComponent::Start()
@@ -40,7 +40,7 @@ namespace RoguelikeGame
 			return;
 		}
 
-		Vector2Df toTarget = target->GetComponent<TransformComponent>()->GetWorldPosition() - transform->GetWorldPosition();
+		Vector2Df toTarget = target->GetTransform()->GetWorldPosition() - transform->GetWorldPosition();
 		float distance = toTarget.GetLength();
 		if (distance > detectionRadius)
 		{

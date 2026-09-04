@@ -10,7 +10,7 @@ namespace XYZEngine
     {
         scale = {1, -1};
         sprite.setScale({1, -1});
-        transform = gameObject->GetComponent<TransformComponent>();
+        transform = gameObject->GetTransform();
     }
 
     void SpriteRendererComponent::Update(float deltaTime)

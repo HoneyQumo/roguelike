@@ -7,12 +7,12 @@ namespace XYZEngine
 	GameObject::GameObject()
 	{
 		name = "GameObject";
-		AddComponent<TransformComponent>();
+		transform = AddComponent<TransformComponent>();
 	}
 	GameObject::GameObject(std::string newName)
 	{
 		name = newName;
-		AddComponent<TransformComponent>();
+		transform = AddComponent<TransformComponent>();
 	}
 
 	GameObject::~GameObject()
@@ -57,6 +57,11 @@ namespace XYZEngine
 	const std::string& GameObject::GetName() const
 	{
 		return name;
+	}
+
+	TransformComponent* GameObject::GetTransform() const
+	{
+		return transform;
 	}
 
 	void GameObject::Print(int depth) const

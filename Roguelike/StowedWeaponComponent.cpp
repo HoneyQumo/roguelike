@@ -8,7 +8,7 @@ namespace RoguelikeGame
 {
     StowedWeaponComponent::StowedWeaponComponent(XYZEngine::GameObject* gameObject) : Component(gameObject)
     {
-        transform = gameObject->GetComponent<XYZEngine::TransformComponent>();
+        transform = gameObject->GetTransform();
     }
 
     void StowedWeaponComponent::Start()

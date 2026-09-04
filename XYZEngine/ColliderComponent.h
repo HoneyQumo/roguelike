@@ -11,6 +11,8 @@
 
 namespace XYZEngine
 {
+	class RigidbodyComponent;
+
 	constexpr unsigned int DEFAULT_COLLISION_LAYER = 1u;
 
 	class ColliderComponent : public Component
@@ -18,6 +20,7 @@ namespace XYZEngine
 	public:
 		ColliderComponent(GameObject* gameObject);
 
+		void Start() override;
 		virtual void Update(float deltaTime) = 0;
 		virtual void Render() = 0;
 
@@ -25,6 +28,7 @@ namespace XYZEngine
 		bool IsTrigger() const;
 
 		const sf::FloatRect& GetBounds() const;
+		RigidbodyComponent* GetBody();
 
 		void SetCollisionLayer(unsigned int newCollisionLayer);
 		unsigned int GetCollisionLayer() const;
@@ -45,6 +49,8 @@ namespace XYZEngine
 
 	protected:
 		sf::FloatRect bounds;
+		RigidbodyComponent* body = nullptr;
+		bool isBodyFound = false;
 		bool isTrigger = false;
 		unsigned int collisionLayer = DEFAULT_COLLISION_LAYER;
 		unsigned int ignoredLayers = 0u;

@@ -78,8 +78,8 @@ namespace XYZEngine
 			return child;
 		}
 
-		auto childTransform = child->GetComponent<TransformComponent>();
-		childTransform->SetParent(parent->GetComponent<TransformComponent>());
+		auto childTransform = child->GetTransform();
+		childTransform->SetParent(parent->GetTransform());
 		childTransform->SetLocalPosition(0.f, 0.f);
 
 		return child;
@@ -115,7 +115,7 @@ namespace XYZEngine
 				continue;
 			}
 
-			if (gameObjects[i]->GetComponent<TransformComponent>()->GetParent() == nullptr)
+			if (gameObjects[i]->GetTransform()->GetParent() == nullptr)
 			{
 				DestroyGameObjectImmediate(gameObjects[i]);
 			}
@@ -130,7 +130,7 @@ namespace XYZEngine
 			{
 				continue;
 			}
-			if (obj->GetComponent<TransformComponent>()->GetParent() == nullptr)
+			if (obj->GetTransform()->GetParent() == nullptr)
 			{
 				obj->Print();
 			}
@@ -139,7 +139,7 @@ namespace XYZEngine
 
 	void GameWorld::DestroyGameObjectImmediate(GameObject* gameObject)
 	{
-		auto parent = gameObject->GetComponent<TransformComponent>()->GetParent();
+		auto parent = gameObject->GetTransform()->GetParent();
 		if (parent != nullptr)
 		{
 			parent->GetGameObject()->RemoveChild(gameObject);

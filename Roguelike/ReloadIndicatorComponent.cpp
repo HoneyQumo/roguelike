@@ -48,7 +48,7 @@ namespace RoguelikeGame
 
         int lastFrame = static_cast<int>(magazineFrames.size()) - 1;
         int frame = static_cast<int>(weapon->GetReloadProgress() * (lastFrame + 1));
-        ShowMagazineFrame(std::min(std::max(frame, 0), lastFrame));
+        ShowMagazineFrame(std::clamp(frame, 0, lastFrame));
     }
 
     void ReloadIndicatorComponent::Render()

@@ -118,7 +118,7 @@ namespace RoguelikeGame
 
     void WeaponComponent::SetAmmoInMagazine(int newAmmoInMagazine)
     {
-        ammoInMagazine = std::min(std::max(newAmmoInMagazine, 0), magazineSize);
+        ammoInMagazine = std::clamp(newAmmoInMagazine, 0, magazineSize);
     }
 
     void WeaponComponent::SetReloadTime(float newReloadTime)

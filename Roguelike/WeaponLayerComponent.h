@@ -41,7 +41,6 @@ namespace RoguelikeGame
         int currentVariant = WEAPON_DEFAULT_VARIANT;
 
         void CreateMuzzleFlash();
-        static int ClampFrame(int frame, int framesCount);
         static FrameOffset GetFrameOffset(XYZEngine::MovementAnimation animation, int frame);
         static float GetFrameRotation(XYZEngine::MovementAnimation animation, int frame);
         static int GetFrameVariant(XYZEngine::MovementAnimation animation, int frame);

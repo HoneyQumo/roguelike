@@ -22,6 +22,11 @@ namespace RoguelikeGame
         float secondsPerFrame;
     };
 
+    constexpr int ClampFrame(int frame, int framesCount)
+    {
+        return frame < 0 ? 0 : (frame >= framesCount ? framesCount - 1 : frame);
+    }
+
     constexpr int AtlasFrameIndex(int row, int column)
     {
         return row * CHARACTER_ATLAS_COLUMNS + column;

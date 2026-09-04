@@ -127,11 +127,6 @@ namespace RoguelikeGame
         muzzleFlash->SetEndBehaviour(XYZEngine::SpriteAnimationEnd::Hide);
     }
 
-    int WeaponLayerComponent::ClampFrame(int frame, int framesCount)
-    {
-        return std::min(std::max(frame, 0), framesCount - 1);
-    }
-
 
     int WeaponLayerComponent::GetFrameVariant(XYZEngine::MovementAnimation animation, int frame)
     {

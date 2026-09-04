@@ -28,7 +28,7 @@ namespace RoguelikeGame
             return;
         }
 
-        int frame = std::min(std::max(ownerAnimation->GetCurrentFrame(), 0), SWAP_ANIMATION_FRAMES - 1);
+        int frame = ClampFrame(ownerAnimation->GetCurrentFrame(), SWAP_ANIMATION_FRAMES);
         bool isShown = texture != nullptr
             && ownerAnimation->GetCurrentAnimation() == XYZEngine::MovementAnimation::Swap
             && SWAP_WEAPON_HIDDEN[frame];

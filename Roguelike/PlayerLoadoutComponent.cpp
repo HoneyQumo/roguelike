@@ -88,7 +88,7 @@ namespace RoguelikeGame
         }
 
         FindComponents();
-        ApplyWeapon(std::min(std::max(startSlot, 0), slotsCount - 1));
+        ApplyWeapon(std::clamp(startSlot, 0, slotsCount - 1));
     }
 
     bool PlayerLoadoutComponent::TrySelectSlot(int slot)

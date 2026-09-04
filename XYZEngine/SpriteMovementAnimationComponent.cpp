@@ -150,7 +150,7 @@ namespace XYZEngine
             isFinished = true;
         }
 
-        rollDirectionsCount = std::min(std::max(directionsCount, 0), MAX_ROLL_DIRECTIONS);
+        rollDirectionsCount = std::clamp(directionsCount, 0, MAX_ROLL_DIRECTIONS);
         for (int direction = 0; direction < rollDirectionsCount; direction++)
         {
             rollAnimations[direction].Load(textureMapName, firstFrameIndices[direction], framesCount, secondsPerFrame);

@@ -71,6 +71,6 @@ namespace XYZEngine
 
 	int AnimationClip::ClampFrame(int frame) const
 	{
-		return std::min(std::max(frame, 0), GetFramesCount() - 1);
+		return std::clamp(frame, 0, GetFramesCount() - 1);
 	}
 }

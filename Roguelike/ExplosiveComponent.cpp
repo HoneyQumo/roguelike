@@ -55,7 +55,7 @@ namespace RoguelikeGame
     void ExplosiveComponent::SetEdgeDamagePart(float newEdgeDamagePart)
     {
         assert(newEdgeDamagePart >= 0.f && newEdgeDamagePart <= 1.f);
-        edgeDamagePart = std::min(std::max(newEdgeDamagePart, 0.f), 1.f);
+        edgeDamagePart = std::clamp(newEdgeDamagePart, 0.f, 1.f);
     }
 
     void ExplosiveComponent::SetSelfDamagePart(float newSelfDamagePart)
@@ -136,7 +136,7 @@ namespace RoguelikeGame
 
     float ExplosiveComponent::DamageAt(float distance) const
     {
-        float part = std::min(std::max(distance / radius, 0.f), 1.f);
+        float part = std::clamp(distance / radius, 0.f, 1.f);
         return centerDamage * (1.f - part * (1.f - edgeDamagePart));
     }
 

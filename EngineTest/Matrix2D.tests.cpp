@@ -87,6 +87,24 @@ TEST(Matrix2DTests, InversedOfDegenerateMatrixIsFinite)
 	}
 }
 
+TEST(Matrix2DTests, InversedUndoesTranslationAndRotationInBothOrders)
+{
+	Matrix2D transform({ -140.f, 96.f }, -123.f, { 1.5f, 3.f });
+
+	ExpectIdentity(transform.GetInversed() * transform);
+	ExpectIdentity(transform * transform.GetInversed());
+}
+
+TEST(Matrix2DTests, InversedKeepsTheAffineBottomRow)
+{
+	Matrix2D transform({ 12.f, -7.f }, 44.f, { 0.75f, 2.f });
+
+	const auto& m = transform.GetInversed().GetMatrix();
+	EXPECT_FLOAT_EQ(m[2][0], 0.f);
+	EXPECT_FLOAT_EQ(m[2][1], 0.f);
+	EXPECT_FLOAT_EQ(m[2][2], 1.f);
+}
+
 TEST(MathUtilsTests, DegreesAndRadiansRoundTrip)
 {
 	for (float degrees : { 0.f, 30.f, 90.f, 180.f, -45.f, 359.f })

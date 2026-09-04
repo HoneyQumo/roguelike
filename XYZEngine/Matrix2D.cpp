@@ -1,6 +1,7 @@
 ﻿#include "pch.h"
 #include "Matrix2D.h"
 #include "MathUtils.h"
+#include <cassert>
 
 
 namespace XYZEngine
@@ -68,77 +69,27 @@ namespace XYZEngine
         return m;
     }
 
+    // Матрица аффинная: нижняя строка всегда (0, 0, 1), поэтому обратная считается по формуле 2x2.
     Matrix2D Matrix2D::GetInversed() const
     {
-        Matrix2D result;
-        float determinant = m[0][0] * m[1][1] * m[2][2]
-            - m[0][0] * m[1][2] * m[2][1]
-            - m[0][1] * m[1][0] * m[2][2]
-            + m[0][1] * m[1][2] * m[2][0]
-            + m[0][2] * m[1][0] * m[2][1]
-            - m[0][2] * m[1][1] * m[2][0];
+        assert(m[2][0] == 0.f && m[2][1] == 0.f && m[2][2] == 1.f);
 
-        if (std::fabs(determinant) < 1e-6f)
+        float determinant = m[0][0] * m[1][1] - m[0][1] * m[1][0];
+        if (std::fabs(determinant) < MIN_DETERMINANT)
         {
             return Matrix2D();
         }
 
-        float inversedDeterminant = 1.0f / determinant;
+        float inversedDeterminant = 1.f / determinant;
 
-        Matrix2D minor(0.f, 0.f, 0.f,
-                       0.f, 0.f, 0.f,
-                       0.f, 0.f, 0.f);
+        float a00 = m[1][1] * inversedDeterminant;
+        float a01 = -m[0][1] * inversedDeterminant;
+        float a10 = -m[1][0] * inversedDeterminant;
+        float a11 = m[0][0] * inversedDeterminant;
 
-        std::vector<std::vector<float>> submatrix(2, std::vector<float>(2));
-        int submatrixRow = 0;
-        int submatrixCol = 0;
-
-        for (int row = 0; row < 3; row++)
-        {
-            for (int column = 0; column < 3; column++)
-            {
-                // for ever matrix element
-                submatrixRow = 0;
-                submatrixCol = 0;
-
-                for (int i = 0; i < 3; i++)
-                {
-                    for (int j = 0; j < 3; j++)
-                    {
-                        // search in ever matrix element
-                        if (i != row && j != column) // exclude i row and j column
-                        {
-                            // get submatrix 2x2 with excluded row and column
-                            submatrix[submatrixRow][submatrixCol] = m[i][j];
-                            submatrixCol++;
-                            if (submatrixCol == 2)
-                            {
-                                submatrixCol = 0;
-                                submatrixRow++;
-                            }
-                        }
-                    }
-                }
-
-                // M[i][j] = |submatrix|
-                minor.m[row][column] = submatrix[0][0] * submatrix[1][1] - submatrix[0][1] * submatrix[1][0];
-                if ((row + column) % 2 == 1)
-                {
-                    minor.m[row][column] = -minor.m[row][column]; // M[i][j] = -M[i][j] {i+j % 2 == 1}
-                }
-            }
-        }
-
-        // A^(-1) = inversedDeterminant * M^(T)
-        for (int i = 0; i < 3; i++)
-        {
-            for (int j = 0; j < 3; j++)
-            {
-                result.m[i][j] = inversedDeterminant * minor.m[j][i]; //[i][j] = [j][i]
-            }
-        }
-
-        return result;
+        return Matrix2D(a00, a01, -(a00 * m[0][2] + a01 * m[1][2]),
+                        a10, a11, -(a10 * m[0][2] + a11 * m[1][2]),
+                        0.f, 0.f, 1.f);
     }
 
     void Matrix2D::Print() const

@@ -33,25 +33,14 @@ namespace RoguelikeGame
         auto transform = gameObject->GetComponent<XYZEngine::TransformComponent>();
         transform->SetWorldPosition(position);
 
-        auto texture = XYZEngine::ResourceSystem::Instance()->GetTextureMapElementShared(textureName, frameIndex);
-        if (texture == nullptr)
-        {
-            LOG_ERROR(std::string("Projectile texture is not loaded: ") + textureName);
-        }
-        else
+        float spriteScale = isRocket ? ROCKET_SPRITE_SCALE : 1.f;
+        if (Fx::AddSprite(gameObject, textureName, strip, frameIndex, spriteScale) != nullptr)
         {
             transform->SetWorldRotation(XYZEngine::DegreesFromDirection(direction));
 
-            auto renderer = gameObject->AddComponent<XYZEngine::SpriteRendererComponent>();
-            renderer->SetTexture(*texture);
-            float spriteScale = isRocket ? ROCKET_SPRITE_SCALE : 1.f;
-            renderer->SetPixelSize(static_cast<int>(strip.width * spriteScale), static_cast<int>(strip.height * spriteScale));
-            renderer->SetPivot(strip.pivotX / strip.width, strip.pivotY / strip.height);
-
             if (isRocket)
             {
-                auto flight = gameObject->AddComponent<XYZEngine::SpriteAnimationComponent>();
-                flight->SetFrames(textureName, 0, strip.frames, FramesPerSecond(strip.millisecondsPerFrame));
+                auto flight = Fx::AddAnimation(gameObject, textureName, strip);
                 flight->SetLooped(true);
                 flight->Play();
             }

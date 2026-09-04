@@ -35,29 +35,49 @@ namespace RoguelikeGame
         Spawn(EXPLOSION_TEXTURE, FX_EXPLOSION, position, 0.f, 2.f * radius / static_cast<float>(FX_EXPLOSION.width));
     }
 
-    void Fx::Spawn(const std::string& textureMapName, const FxStrip& strip, const XYZEngine::Vector2Df& position, float angle, float scale)
+    XYZEngine::SpriteRendererComponent* Fx::AddSprite(XYZEngine::GameObject* gameObject, const std::string& textureMapName,
+                                                      const FxStrip& strip, int frameIndex, float scale)
     {
-        auto texture = XYZEngine::ResourceSystem::Instance()->GetTextureMapElementShared(textureMapName, 0);
+        auto texture = XYZEngine::ResourceSystem::Instance()->GetTextureMapElementShared(textureMapName, frameIndex);
         if (texture == nullptr)
         {
             LOG_ERROR("Effect texture is not loaded: " + textureMapName);
-            return;
+            return nullptr;
         }
-
-        auto gameObject = XYZEngine::GameWorld::Instance()->CreateGameObject("Fx");
-        gameObject->SetRenderLayer(EFFECT_RENDER_LAYER);
-
-        auto transform = gameObject->GetComponent<XYZEngine::TransformComponent>();
-        transform->SetWorldPosition(position);
-        transform->SetWorldRotation(angle);
 
         auto renderer = gameObject->AddComponent<XYZEngine::SpriteRendererComponent>();
         renderer->SetTexture(*texture);
         renderer->SetPixelSize(static_cast<int>(strip.width * scale), static_cast<int>(strip.height * scale));
         renderer->SetPivot(strip.pivotX / strip.width, strip.pivotY / strip.height);
 
+        return renderer;
+    }
+
+    XYZEngine::SpriteAnimationComponent* Fx::AddAnimation(XYZEngine::GameObject* gameObject, const std::string& textureMapName,
+                                                          const FxStrip& strip)
+    {
         auto animation = gameObject->AddComponent<XYZEngine::SpriteAnimationComponent>();
         animation->SetFrames(textureMapName, 0, strip.frames, FramesPerSecond(strip.millisecondsPerFrame));
+
+        return animation;
+    }
+
+    void Fx::Spawn(const std::string& textureMapName, const FxStrip& strip, const XYZEngine::Vector2Df& position, float angle, float scale)
+    {
+        auto gameObject = XYZEngine::GameWorld::Instance()->CreateGameObject("Fx");
+        gameObject->SetRenderLayer(EFFECT_RENDER_LAYER);
+
+        if (AddSprite(gameObject, textureMapName, strip, 0, scale) == nullptr)
+        {
+            XYZEngine::GameWorld::Instance()->DestroyGameObject(gameObject);
+            return;
+        }
+
+        auto transform = gameObject->GetComponent<XYZEngine::TransformComponent>();
+        transform->SetWorldPosition(position);
+        transform->SetWorldRotation(angle);
+
+        auto animation = AddAnimation(gameObject, textureMapName, strip);
         animation->SetEndBehaviour(XYZEngine::SpriteAnimationEnd::Destroy);
         animation->Play();
     }

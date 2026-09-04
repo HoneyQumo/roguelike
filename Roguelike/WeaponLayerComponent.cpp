@@ -1,4 +1,5 @@
 ﻿#include "WeaponLayerComponent.h"
+#include "Fx.h"
 #include "GameSettings.h"
 #include <GameObject.h>
 #include <GameWorld.h>
@@ -110,26 +111,19 @@ namespace RoguelikeGame
 
     void WeaponLayerComponent::CreateMuzzleFlash()
     {
-        auto texture = XYZEngine::ResourceSystem::Instance()->GetTextureMapElementShared(MUZZLE_FLASH_TEXTURE, 0);
-        if (texture == nullptr)
+        auto flashObject = XYZEngine::GameWorld::Instance()->CreateGameObject("MuzzleFlash", gameObject);
+
+        muzzleFlashRenderer = Fx::AddSprite(flashObject, MUZZLE_FLASH_TEXTURE, FX_MUZZLE_FLASH);
+        if (muzzleFlashRenderer == nullptr)
         {
-            LOG_ERROR("Muzzle flash texture is not loaded");
+            XYZEngine::GameWorld::Instance()->DestroyGameObject(flashObject);
             return;
         }
-
-        auto flashObject = XYZEngine::GameWorld::Instance()->CreateGameObject("MuzzleFlash");
-
-        muzzleFlashTransform = flashObject->GetComponent<XYZEngine::TransformComponent>();
-        muzzleFlashTransform->SetParent(transform);
-
-        muzzleFlashRenderer = flashObject->AddComponent<XYZEngine::SpriteRendererComponent>();
-        muzzleFlashRenderer->SetTexture(*texture);
-        muzzleFlashRenderer->SetPixelSize(FX_MUZZLE_FLASH.width, FX_MUZZLE_FLASH.height);
-        muzzleFlashRenderer->SetPivot(FX_MUZZLE_FLASH.pivotX / FX_MUZZLE_FLASH.width, FX_MUZZLE_FLASH.pivotY / FX_MUZZLE_FLASH.height);
         muzzleFlashRenderer->SetVisible(false);
 
-        muzzleFlash = flashObject->AddComponent<XYZEngine::SpriteAnimationComponent>();
-        muzzleFlash->SetFrames(MUZZLE_FLASH_TEXTURE, 0, FX_MUZZLE_FLASH.frames, FramesPerSecond(FX_MUZZLE_FLASH.millisecondsPerFrame));
+        muzzleFlashTransform = flashObject->GetComponent<XYZEngine::TransformComponent>();
+
+        muzzleFlash = Fx::AddAnimation(flashObject, MUZZLE_FLASH_TEXTURE, FX_MUZZLE_FLASH);
         muzzleFlash->SetEndBehaviour(XYZEngine::SpriteAnimationEnd::Hide);
     }
 

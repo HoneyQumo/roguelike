@@ -8,6 +8,14 @@
 
 namespace RoguelikeGame
 {
+    namespace
+    {
+        std::string MeleeHitSoundKey(const MeleeDefinition& melee, int variant)
+        {
+            return std::string(melee.hitSound) + "_" + std::to_string(variant);
+        }
+    }
+
     void GameResources::Load()
     {
         XYZEngine::ResourceSystem::Instance()->LoadTexture(CROSSHAIR_TEXTURE, CROSSHAIR_FILE, false);
@@ -64,7 +72,12 @@ namespace RoguelikeGame
         }
 
         int variant = random<int>(1, melee.hitSoundVariants);
-        return XYZEngine::ResourceSystem::Instance()->GetSound(std::string(melee.hitSound) + "_" + std::to_string(variant));
+        return XYZEngine::ResourceSystem::Instance()->GetSound(MeleeHitSoundKey(melee, variant));
+    }
+
+    void GameResources::LoadWeaponSound(const std::string& key)
+    {
+        XYZEngine::ResourceSystem::Instance()->LoadSound(key, WEAPONS_AUDIO_PATH + key + ".wav");
     }
 
     void GameResources::LoadWeaponSounds()
@@ -73,8 +86,7 @@ namespace RoguelikeGame
         {
             for (int variant = 1; variant <= melee.hitSoundVariants; variant++)
             {
-                std::string key = std::string(melee.hitSound) + "_" + std::to_string(variant);
-                XYZEngine::ResourceSystem::Instance()->LoadSound(key, WEAPONS_AUDIO_PATH + key + ".wav");
+                LoadWeaponSound(MeleeHitSoundKey(melee, variant));
             }
         }
 
@@ -82,12 +94,12 @@ namespace RoguelikeGame
         {
             if (weapon.shotSound != nullptr)
             {
-                XYZEngine::ResourceSystem::Instance()->LoadSound(weapon.shotSound, WEAPONS_AUDIO_PATH + weapon.shotSound + ".wav");
+                LoadWeaponSound(weapon.shotSound);
             }
 
             if (weapon.reloadSound != nullptr)
             {
-                XYZEngine::ResourceSystem::Instance()->LoadSound(weapon.reloadSound, WEAPONS_AUDIO_PATH + weapon.reloadSound + ".wav");
+                LoadWeaponSound(weapon.reloadSound);
             }
         }
     }

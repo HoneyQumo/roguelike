@@ -5,6 +5,7 @@
 #include <vector>
 #include <SFML/Graphics/Rect.hpp>
 #include <Component.h>
+#include <TransformComponent.h>
 #include <Vector.h>
 
 namespace RoguelikeGame
@@ -32,6 +33,8 @@ namespace RoguelikeGame
         int Explode(const XYZEngine::Vector2Df& position);
 
     private:
+        XYZEngine::TransformComponent* transform;
+
         float radius = 64.f;
         float coreRadius = 0.f;
         float centerDamage = 50.f;

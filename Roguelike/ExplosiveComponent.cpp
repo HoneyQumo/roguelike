@@ -1,4 +1,6 @@
 #include "ExplosiveComponent.h"
+#include "GameSettings.h"
+#include <DebugDraw.h>
 #include <GameObject.h>
 #include "HealthComponent.h"
 #include <TransformComponent.h>
@@ -16,6 +18,7 @@ namespace RoguelikeGame
 
     ExplosiveComponent::ExplosiveComponent(GameObject* gameObject) : Component(gameObject)
     {
+        transform = gameObject->GetComponent<TransformComponent>();
     }
 
     void ExplosiveComponent::Update(float deltaTime)
@@ -24,6 +27,10 @@ namespace RoguelikeGame
 
     void ExplosiveComponent::Render()
     {
+        if (DebugDraw::Instance()->IsEnabled() && !hasExploded)
+        {
+            DebugDraw::Instance()->DrawCircle(transform->GetWorldPosition(), radius, DEBUG_BLAST_COLOR);
+        }
     }
 
     void ExplosiveComponent::SetRadius(float newRadius)

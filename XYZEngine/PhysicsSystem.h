@@ -21,6 +21,7 @@ namespace XYZEngine
 		void Unsubscribe(ColliderComponent* collider);
 
 		std::vector<ColliderComponent*> Overlap(const sf::FloatRect& area) const;
+		const std::vector<ColliderComponent*>& GetColliders() const;
 	private:
 		PhysicsSystem() {}
 		~PhysicsSystem() {}

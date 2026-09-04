@@ -21,6 +21,7 @@ namespace XYZEngine
 		GameObject* CreateGameObject();
 		GameObject* CreateGameObject(std::string name);
 		GameObject* FindGameObject(const std::string& name) const;
+		std::size_t GetObjectsCount() const;
 		void DestroyGameObject(GameObject* gameObject);
 		void Clear();
 

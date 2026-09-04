@@ -159,6 +159,7 @@
     <ClInclude Include="Component.h" />
     <ClInclude Include="ConsoleSink.h" />
     <ClInclude Include="FrameClock.h" />
+    <ClInclude Include="DebugDraw.h" />
     <ClInclude Include="DebugOutputSink.h" />
     <ClInclude Include="CursorFollowComponent.h" />
     <ClInclude Include="FileSink.h" />
@@ -203,6 +204,7 @@
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="ConsoleSink.cpp" />
     <ClCompile Include="FrameClock.cpp" />
+    <ClCompile Include="DebugDraw.cpp" />
     <ClCompile Include="DebugOutputSink.cpp" />
     <ClCompile Include="CursorFollowComponent.cpp" />
     <ClCompile Include="FileSink.cpp" />

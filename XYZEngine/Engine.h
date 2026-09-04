@@ -7,6 +7,7 @@
 namespace XYZEngine
 {
 	constexpr float MAX_FRAME_TIME = 0.05f;
+	constexpr sf::Keyboard::Key DEBUG_DRAW_KEY = sf::Keyboard::F1;
 
 	class Engine
 	{

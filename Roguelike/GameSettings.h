@@ -171,4 +171,8 @@ namespace RoguelikeGame
     const sf::Color AMMO_HUD_OUTLINE_COLOR = {15, 13, 12, 220};
     const sf::Color RELOAD_INDICATOR_COLOR = {235, 190, 90};
     const sf::Color OVERLAY_BACKGROUND_COLOR = {0, 0, 0, 150};
+    const sf::Color DEBUG_DETECTION_COLOR = {240, 200, 60};
+    const sf::Color DEBUG_CHASING_COLOR = {240, 80, 60};
+    const sf::Color DEBUG_ATTACK_RANGE_COLOR = {255, 140, 40};
+    const sf::Color DEBUG_BLAST_COLOR = {230, 80, 230};
 }

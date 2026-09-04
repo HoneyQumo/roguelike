@@ -72,6 +72,10 @@ namespace XYZEngine
 
 		return found->second.front();
 	}
+	std::size_t GameWorld::GetObjectsCount() const
+	{
+		return gameObjects.size();
+	}
 	void GameWorld::DestroyGameObject(GameObject* gameObject)
 	{
 		markedToDestroyGameObjects.push_back(gameObject);

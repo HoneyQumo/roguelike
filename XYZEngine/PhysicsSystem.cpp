@@ -135,6 +135,11 @@ namespace XYZEngine
 		return found;
 	}
 
+	const std::vector<ColliderComponent*>& PhysicsSystem::GetColliders() const
+	{
+		return colliders;
+	}
+
 	void PhysicsSystem::Subscribe(ColliderComponent* collider)
 	{
 		assert(collider != nullptr);

@@ -1,4 +1,6 @@
 #include "EnemyAttackComponent.h"
+#include "GameSettings.h"
+#include <DebugDraw.h>
 #include <GameObject.h>
 #include <GameWorld.h>
 #include <LoggerRegistry.h>
@@ -65,6 +67,10 @@ namespace RoguelikeGame
 
     void EnemyAttackComponent::Render()
     {
+        if (XYZEngine::DebugDraw::Instance()->IsEnabled() && attackRange > 0.f)
+        {
+            XYZEngine::DebugDraw::Instance()->DrawCircle(transform->GetWorldPosition(), attackRange, DEBUG_ATTACK_RANGE_COLOR);
+        }
     }
 
     void EnemyAttackComponent::SetTargetName(const std::string& newTargetName)

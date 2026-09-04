@@ -9,6 +9,8 @@
 #include "ConsoleSink.h"
 #include "FileSink.h"
 #include "DebugOutputSink.h"
+#include "DebugDraw.h"
+#include "ResourceSystem.h"
 
 using namespace RoguelikeGame;
 using namespace XYZEngine;
@@ -42,6 +44,7 @@ int main()
     RenderSystem::Instance()->SetMainWindow(window);
 
     GameResources::Load();
+    DebugDraw::Instance()->SetFont(ResourceSystem::Instance()->GetFont(HUD_FONT));
 
     DeveloperLevel developerLevel;
     Engine::Instance()->Run(developerLevel);

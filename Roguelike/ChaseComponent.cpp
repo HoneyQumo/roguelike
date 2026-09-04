@@ -1,4 +1,6 @@
 #include "ChaseComponent.h"
+#include "GameSettings.h"
+#include <DebugDraw.h>
 #include <GameObject.h>
 #include <GameWorld.h>
 
@@ -54,7 +56,10 @@ namespace RoguelikeGame
 	}
 	void ChaseComponent::Render()
 	{
-
+		if (DebugDraw::Instance()->IsEnabled() && detectionRadius > 0.f)
+		{
+			DebugDraw::Instance()->DrawCircle(transform->GetWorldPosition(), detectionRadius, isChasing ? DEBUG_CHASING_COLOR : DEBUG_DETECTION_COLOR);
+		}
 	}
 
 	void ChaseComponent::SetTargetName(const std::string& newTargetName)

@@ -5,6 +5,7 @@
 #include "RenderSystem.h"
 #include "InputSystem.h"
 #include "FrameClock.h"
+#include "DebugDraw.h"
 #include "LoggerRegistry.h"
 
 namespace XYZEngine
@@ -54,6 +55,11 @@ namespace XYZEngine
 				break;
 			}
 
+			if (InputSystem::Instance()->WasKeyPressed(DEBUG_DRAW_KEY))
+			{
+				DebugDraw::Instance()->Toggle();
+			}
+
 			scene.Update(deltaTime);
 
 			RenderSystem::Instance()->GetMainWindow().clear();
@@ -64,6 +70,7 @@ namespace XYZEngine
 				GameWorld::Instance()->FixedUpdate(deltaTime);
 			}
 			GameWorld::Instance()->Render();
+			DebugDraw::Instance()->Render();
 			GameWorld::Instance()->LateUpdate();
 
 			RenderSystem::Instance()->GetMainWindow().display();

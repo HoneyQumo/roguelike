@@ -14,7 +14,7 @@ namespace XYZEngine
 		static GameWorld* Instance();
 
 		void Update(float deltaTime);
-		void FixedUpdate(float deltaTime);
+		void UpdatePhysics();
 		void Render();
 		void LateUpdate();
 

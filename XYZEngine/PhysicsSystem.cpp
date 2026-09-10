@@ -11,11 +11,6 @@ namespace XYZEngine
 		return &physicsSystem;
 	}
 
-	float PhysicsSystem::GetFixedDeltaTime() const
-	{
-		return fixedDeltaTime;
-	}
-
 	void PhysicsSystem::Update()
 	{
 		for (int i = 0; i < colliders.size(); i++)

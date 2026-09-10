@@ -17,7 +17,7 @@ namespace XYZEngine
 		}
 	}
 	// Collisions are resolved once per frame: with a rarer step objects get drawn while still pushed into a wall.
-	void GameWorld::FixedUpdate(float deltaTime)
+	void GameWorld::UpdatePhysics()
 	{
 		PhysicsSystem::Instance()->Update();
 	}

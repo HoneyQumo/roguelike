@@ -38,10 +38,10 @@ int main()
     SetupLogger();
     LOG_INFO("Game started");
 
-    auto window = new sf::RenderWindow(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "Roguelike by HoneyQumo");
-    window->setMouseCursorVisible(false);
-    window->setFramerateLimit(FRAME_RATE_LIMIT);
-    RenderSystem::Instance()->SetMainWindow(window);
+    sf::RenderWindow window(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "Roguelike by HoneyQumo");
+    window.setMouseCursorVisible(false);
+    window.setFramerateLimit(FRAME_RATE_LIMIT);
+    RenderSystem::Instance()->SetMainWindow(&window);
 
     GameResources::Load();
     DebugDraw::Instance()->SetFont(ResourceSystem::Instance()->GetFont(HUD_FONT));

@@ -67,7 +67,7 @@ namespace XYZEngine
 			if (!isPaused)
 			{
 				GameWorld::Instance()->Update(deltaTime);
-				GameWorld::Instance()->FixedUpdate(deltaTime);
+				GameWorld::Instance()->UpdatePhysics();
 			}
 			GameWorld::Instance()->Render();
 			DebugDraw::Instance()->Render();

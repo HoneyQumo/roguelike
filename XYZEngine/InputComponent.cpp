@@ -5,47 +5,41 @@
 
 namespace XYZEngine
 {
+	InputBindings GetDefaultBindings()
+	{
+		InputBindings bindings;
+		bindings[static_cast<int>(InputAction::MoveUp)].key = sf::Keyboard::W;
+		bindings[static_cast<int>(InputAction::MoveDown)].key = sf::Keyboard::S;
+		bindings[static_cast<int>(InputAction::MoveLeft)].key = sf::Keyboard::A;
+		bindings[static_cast<int>(InputAction::MoveRight)].key = sf::Keyboard::D;
+		bindings[static_cast<int>(InputAction::Attack)].button = sf::Mouse::Left;
+		bindings[static_cast<int>(InputAction::HeavyAttack)].button = sf::Mouse::Right;
+		bindings[static_cast<int>(InputAction::Run)].key = sf::Keyboard::LShift;
+		bindings[static_cast<int>(InputAction::Run)].alternativeKey = sf::Keyboard::RShift;
+		bindings[static_cast<int>(InputAction::Reload)].key = sf::Keyboard::R;
+		bindings[static_cast<int>(InputAction::Roll)].key = sf::Keyboard::Space;
+
+		return bindings;
+	}
+
 	InputComponent::InputComponent(GameObject* gameObject) : Component(gameObject) {}
 
 	void InputComponent::Update(float deltaTime)
 	{
 		auto input = InputSystem::Instance();
 
-		verticalAxis = 0.f;
-		horizontalAxis = 0.f;
+		for (int action = 0; action < INPUT_ACTIONS_COUNT; action++)
+		{
+			const InputBinding& binding = bindings[action];
 
-		if (input->IsKeyHeld(bindings.moveUp))
-		{
-			verticalAxis += 1.0f;
-		}
-		if (input->IsKeyHeld(bindings.moveDown))
-		{
-			verticalAxis -= 1.0f;
-		}
-		if (input->IsKeyHeld(bindings.moveRight))
-		{
-			horizontalAxis += 1.0f;
-		}
-		if (input->IsKeyHeld(bindings.moveLeft))
-		{
-			horizontalAxis -= 1.0f;
+			heldActions[action] = input->IsKeyHeld(binding.key) || input->IsKeyHeld(binding.alternativeKey)
+				|| input->IsButtonHeld(binding.button);
+			pressedActions[action] = input->WasKeyPressed(binding.key) || input->WasKeyPressed(binding.alternativeKey)
+				|| input->WasButtonPressed(binding.button);
 		}
 
-		isAttackPressed = input->IsButtonHeld(bindings.attack);
-		isHeavyAttackPressed = input->IsButtonHeld(bindings.heavyAttack);
-		isRunPressed = input->IsKeyHeld(bindings.run) || input->IsKeyHeld(bindings.runAlternative);
-		isReloadPressed = input->IsKeyHeld(bindings.reload);
-		isRollJustPressed = input->WasKeyPressed(bindings.roll);
-
-		selectedWeaponSlot = NO_WEAPON_SLOT;
-		for (int digit = 0; digit < DIGIT_KEYS_COUNT; digit++)
-		{
-			if (input->WasKeyPressed(bindings.digits[digit]))
-			{
-				selectedWeaponSlot = digit;
-				break;
-			}
-		}
+		horizontalAxis = AxisValue(IsActionHeld(InputAction::MoveRight), IsActionHeld(InputAction::MoveLeft));
+		verticalAxis = AxisValue(IsActionHeld(InputAction::MoveUp), IsActionHeld(InputAction::MoveDown));
 
 		auto& window = RenderSystem::Instance()->GetMainWindow();
 		auto worldPosition = window.mapPixelToCoords(sf::Mouse::getPosition(window));
@@ -55,13 +49,13 @@ namespace XYZEngine
 	{
 	}
 
-	void InputComponent::SetBindings(const InputBindings& newBindings)
+	void InputComponent::SetBinding(InputAction action, const InputBinding& binding)
 	{
-		bindings = newBindings;
+		bindings[static_cast<int>(action)] = binding;
 	}
-	const InputBindings& InputComponent::GetBindings() const
+	const InputBinding& InputComponent::GetBinding(InputAction action) const
 	{
-		return bindings;
+		return bindings[static_cast<int>(action)];
 	}
 
 	float InputComponent::GetHorizontalAxis() const
@@ -73,32 +67,22 @@ namespace XYZEngine
 		return verticalAxis;
 	}
 
-	bool InputComponent::IsAttackPressed() const
+	bool InputComponent::IsActionHeld(InputAction action) const
 	{
-		return isAttackPressed;
+		return heldActions[static_cast<int>(action)];
 	}
-	bool InputComponent::IsHeavyAttackPressed() const
+	bool InputComponent::WasActionPressed(InputAction action) const
 	{
-		return isHeavyAttackPressed;
+		return pressedActions[static_cast<int>(action)];
 	}
-	bool InputComponent::IsRunPressed() const
-	{
-		return isRunPressed;
-	}
-	bool InputComponent::IsReloadPressed() const
-	{
-		return isReloadPressed;
-	}
-	bool InputComponent::WasRollJustPressed() const
-	{
-		return isRollJustPressed;
-	}
-	int InputComponent::GetSelectedWeaponSlot() const
-	{
-		return selectedWeaponSlot;
-	}
+
 	Vector2Df InputComponent::GetMouseWorldPosition() const
 	{
 		return mouseWorldPosition;
+	}
+
+	float InputComponent::AxisValue(bool isPositiveHeld, bool isNegativeHeld)
+	{
+		return (isPositiveHeld ? 1.f : 0.f) - (isNegativeHeld ? 1.f : 0.f);
 	}
 }

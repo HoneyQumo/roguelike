@@ -25,7 +25,7 @@ namespace RoguelikeGame
 
     void PlayerRollComponent::Update(float deltaTime)
     {
-        if (!input->WasRollJustPressed() || !CanRoll())
+        if (!input->WasActionPressed(XYZEngine::InputAction::Roll) || !CanRoll())
         {
             return;
         }

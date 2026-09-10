@@ -55,10 +55,11 @@ namespace RoguelikeGame
         int magazineAmmo[PLAYER_WEAPON_SLOTS] = {};
         int slotsCount = 0;
         int currentSlot = 0;
-        int pendingSlot = XYZEngine::NO_WEAPON_SLOT;
-        int requestedSlot = XYZEngine::NO_WEAPON_SLOT;
+        int pendingSlot = NO_WEAPON_SLOT;
+        int requestedSlot = NO_WEAPON_SLOT;
         bool isSwapping = false;
 
+        int ReadSelectedSlot() const;
         void FindComponents();
         void ApplyWeapon(int slot);
         void ApplyRangedWeapon(WeaponId id, int ammoInMagazine);

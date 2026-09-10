@@ -63,7 +63,7 @@ namespace RoguelikeGame
 
     void PlayerAttackComponent::UpdateMelee(float deltaTime)
     {
-        if (input->IsHeavyAttackPressed())
+        if (input->IsActionHeld(XYZEngine::InputAction::HeavyAttack))
         {
             meleeWeapon->TryStartHeavyAttack();
         }
@@ -71,7 +71,7 @@ namespace RoguelikeGame
         {
             meleeWeapon->ReleaseHeavyAttack();
 
-            if (input->IsAttackPressed())
+            if (input->IsActionHeld(XYZEngine::InputAction::Attack))
             {
                 meleeWeapon->TryQuickAttack();
             }
@@ -80,12 +80,12 @@ namespace RoguelikeGame
 
     void PlayerAttackComponent::UpdateRanged()
     {
-        if (input->IsReloadPressed())
+        if (input->IsActionHeld(XYZEngine::InputAction::Reload))
         {
             weapon->TryReload();
         }
 
-        if (input->IsAttackPressed())
+        if (input->IsActionHeld(XYZEngine::InputAction::Attack))
         {
             weapon->TryShootAt(input->GetMouseWorldPosition());
         }

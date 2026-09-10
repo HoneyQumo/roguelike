@@ -39,6 +39,9 @@ namespace RoguelikeGame
     constexpr int PLAYER_START_WEAPON_SLOT = 0;
     constexpr WeaponId PLAYER_LOADOUT[PLAYER_WEAPON_SLOTS] = {WeaponId::Rpg, WeaponId::ShotgunPump, WeaponId::Bat};
 
+    constexpr int NO_WEAPON_SLOT = -1;
+    constexpr sf::Keyboard::Key WEAPON_SLOT_KEYS[PLAYER_WEAPON_SLOTS] = {sf::Keyboard::Num1, sf::Keyboard::Num2, sf::Keyboard::Num3};
+
     struct AmmoReserve
     {
         AmmoKind kind;

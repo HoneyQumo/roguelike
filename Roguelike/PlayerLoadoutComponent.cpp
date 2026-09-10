@@ -1,4 +1,5 @@
 ﻿#include "PlayerLoadoutComponent.h"
+#include <InputSystem.h>
 #include "WeaponSetup.h"
 #include "GameResources.h"
 #include "Projectile.h"
@@ -25,8 +26,8 @@ namespace RoguelikeGame
             return;
         }
 
-        int selectedSlot = input != nullptr ? input->GetSelectedWeaponSlot() : XYZEngine::NO_WEAPON_SLOT;
-        if (selectedSlot != XYZEngine::NO_WEAPON_SLOT)
+        int selectedSlot = ReadSelectedSlot();
+        if (selectedSlot != NO_WEAPON_SLOT)
         {
             requestedSlot = selectedSlot;
         }
@@ -35,10 +36,10 @@ namespace RoguelikeGame
         {
             bool isSwapPlaying = animation->GetCurrentAnimation() == XYZEngine::MovementAnimation::Swap;
 
-            if (pendingSlot != XYZEngine::NO_WEAPON_SLOT && (!isSwapPlaying || animation->GetCurrentFrame() >= SWAP_CHANGE_FRAME))
+            if (pendingSlot != NO_WEAPON_SLOT && (!isSwapPlaying || animation->GetCurrentFrame() >= SWAP_CHANGE_FRAME))
             {
                 ApplyWeapon(pendingSlot);
-                pendingSlot = XYZEngine::NO_WEAPON_SLOT;
+                pendingSlot = NO_WEAPON_SLOT;
             }
 
             if (!isSwapPlaying || animation->IsFinished())
@@ -55,7 +56,7 @@ namespace RoguelikeGame
         }
 
         TrySelectSlot(requestedSlot);
-        requestedSlot = XYZEngine::NO_WEAPON_SLOT;
+        requestedSlot = NO_WEAPON_SLOT;
     }
 
     void PlayerLoadoutComponent::Render()
@@ -93,7 +94,7 @@ namespace RoguelikeGame
 
     bool PlayerLoadoutComponent::TrySelectSlot(int slot)
     {
-        if (slot == XYZEngine::NO_WEAPON_SLOT || slot < 0 || slot >= slotsCount || slot == currentSlot || isSwapping)
+        if (slot == NO_WEAPON_SLOT || slot < 0 || slot >= slotsCount || slot == currentSlot || isSwapping)
         {
             return false;
         }
@@ -154,6 +155,20 @@ namespace RoguelikeGame
     WeaponId PlayerLoadoutComponent::GetCurrentWeapon() const
     {
         return slots[currentSlot];
+    }
+
+    int PlayerLoadoutComponent::ReadSelectedSlot() const
+    {
+        auto input = XYZEngine::InputSystem::Instance();
+        for (int slot = 0; slot < slotsCount; slot++)
+        {
+            if (input->WasKeyPressed(WEAPON_SLOT_KEYS[slot]))
+            {
+                return slot;
+            }
+        }
+
+        return NO_WEAPON_SLOT;
     }
 
     void PlayerLoadoutComponent::FindComponents()

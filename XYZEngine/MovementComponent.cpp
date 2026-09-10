@@ -35,7 +35,7 @@ namespace XYZEngine
 			return;
 		}
 
-		isRunning = input != nullptr && input->IsRunPressed();
+		isRunning = input != nullptr && input->IsActionHeld(InputAction::Run);
 		float currentSpeed = isRunning ? speed * runSpeedMultiplier : speed;
 
 		transform->MoveBy(currentSpeed * deltaTime * direction.Normalized());

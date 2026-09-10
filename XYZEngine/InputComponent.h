@@ -1,5 +1,6 @@
 #pragma once
 
+#include <array>
 #include "Component.h"
 #include "Vector.h"
 #include <SFML/Window/Keyboard.hpp>
@@ -7,27 +8,32 @@
 
 namespace XYZEngine
 {
-	constexpr int NO_WEAPON_SLOT = -1;
-	constexpr int DIGIT_KEYS_COUNT = 9;
-
-	struct InputBindings
+	enum class InputAction
 	{
-		sf::Keyboard::Key moveUp = sf::Keyboard::W;
-		sf::Keyboard::Key moveDown = sf::Keyboard::S;
-		sf::Keyboard::Key moveLeft = sf::Keyboard::A;
-		sf::Keyboard::Key moveRight = sf::Keyboard::D;
-		sf::Keyboard::Key run = sf::Keyboard::LShift;
-		sf::Keyboard::Key runAlternative = sf::Keyboard::RShift;
-		sf::Keyboard::Key reload = sf::Keyboard::R;
-		sf::Keyboard::Key roll = sf::Keyboard::Space;
-		sf::Mouse::Button attack = sf::Mouse::Left;
-		sf::Mouse::Button heavyAttack = sf::Mouse::Right;
-		sf::Keyboard::Key digits[DIGIT_KEYS_COUNT] = {
-			sf::Keyboard::Num1, sf::Keyboard::Num2, sf::Keyboard::Num3,
-			sf::Keyboard::Num4, sf::Keyboard::Num5, sf::Keyboard::Num6,
-			sf::Keyboard::Num7, sf::Keyboard::Num8, sf::Keyboard::Num9
-		};
+		MoveUp,
+		MoveDown,
+		MoveLeft,
+		MoveRight,
+		Attack,
+		HeavyAttack,
+		Run,
+		Reload,
+		Roll,
+		Count
 	};
+
+	constexpr int INPUT_ACTIONS_COUNT = static_cast<int>(InputAction::Count);
+
+	struct InputBinding
+	{
+		sf::Keyboard::Key key = sf::Keyboard::Unknown;
+		sf::Keyboard::Key alternativeKey = sf::Keyboard::Unknown;
+		sf::Mouse::Button button = sf::Mouse::ButtonCount;
+	};
+
+	using InputBindings = std::array<InputBinding, INPUT_ACTIONS_COUNT>;
+
+	InputBindings GetDefaultBindings();
 
 	class InputComponent : public Component
 	{
@@ -37,30 +43,27 @@ namespace XYZEngine
 		void Update(float deltaTime) override;
 		void Render() override;
 
-		void SetBindings(const InputBindings& newBindings);
-		const InputBindings& GetBindings() const;
+		void SetBinding(InputAction action, const InputBinding& binding);
+		const InputBinding& GetBinding(InputAction action) const;
 
 		float GetHorizontalAxis() const;
 		float GetVerticalAxis() const;
 
-		bool IsAttackPressed() const;
-		bool IsHeavyAttackPressed() const;
-		bool IsRunPressed() const;
-		bool IsReloadPressed() const;
-		bool WasRollJustPressed() const;
-		int GetSelectedWeaponSlot() const;
+		bool IsActionHeld(InputAction action) const;
+		bool WasActionPressed(InputAction action) const;
+
 		Vector2Df GetMouseWorldPosition() const;
+
 	private:
-		InputBindings bindings;
+		InputBindings bindings = GetDefaultBindings();
+
+		std::array<bool, INPUT_ACTIONS_COUNT> heldActions = {};
+		std::array<bool, INPUT_ACTIONS_COUNT> pressedActions = {};
 
 		float horizontalAxis = 0.f;
 		float verticalAxis = 0.f;
-		bool isAttackPressed = false;
-		bool isHeavyAttackPressed = false;
-		bool isRunPressed = false;
-		bool isReloadPressed = false;
-		bool isRollJustPressed = false;
-		int selectedWeaponSlot = NO_WEAPON_SLOT;
-		Vector2Df mouseWorldPosition = { 0.f, 0.f };
+		Vector2Df mouseWorldPosition = {0.f, 0.f};
+
+		static float AxisValue(bool isPositiveHeld, bool isNegativeHeld);
 	};
 }

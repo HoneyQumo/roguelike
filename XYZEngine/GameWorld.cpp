@@ -108,7 +108,7 @@ namespace XYZEngine
 	}
 	void GameWorld::Clear()
 	{
-		for (int i = gameObjects.size() - 1; i >= 0; i--)
+		for (int i = static_cast<int>(gameObjects.size()) - 1; i >= 0; i--)
 		{
 			if (gameObjects[i] == nullptr)
 			{

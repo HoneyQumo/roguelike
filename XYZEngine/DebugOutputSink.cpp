@@ -1,8 +1,5 @@
 #include "pch.h"
 #include "DebugOutputSink.h"
-#ifndef NOMINMAX
-#define NOMINMAX
-#endif
 #include <windows.h>
 
 namespace XYZEngine

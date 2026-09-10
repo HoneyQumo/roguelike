@@ -1,5 +1,4 @@
 #pragma once
-#define NOMINMAX
 
 #include "SFML/Graphics.hpp"
 #include "Scene.h"

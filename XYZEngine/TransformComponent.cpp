@@ -171,7 +171,7 @@ namespace XYZEngine
 		return localPosition;
 	}
 
-	const float TransformComponent::GetWorldRotation() const
+	float TransformComponent::GetWorldRotation() const
 	{
 		updateLocalTransform();
 		if (parent == nullptr)
@@ -183,7 +183,7 @@ namespace XYZEngine
 		return rotation;
 	}
 
-	const float TransformComponent::GetLocalRotation() const
+	float TransformComponent::GetLocalRotation() const
 	{
 		updateLocalTransform();
 		return localRotation;
@@ -240,7 +240,7 @@ namespace XYZEngine
 		return parent;
 	}
 
-	const Matrix2D TransformComponent::GetWorldTransform() const
+	Matrix2D TransformComponent::GetWorldTransform() const
 	{
 		updateLocalTransform();
 

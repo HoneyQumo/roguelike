@@ -14,7 +14,7 @@ namespace XYZEngine
 		virtual void Update(float deltaTime) = 0;
 		virtual void Render() = 0;
 
-		GameObject* GetGameObject();
+		GameObject* GetGameObject() const;
 
 		bool IsDestroyed() const;
 

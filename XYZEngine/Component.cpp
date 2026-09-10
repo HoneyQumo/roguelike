@@ -7,7 +7,7 @@ namespace XYZEngine
 	Component::~Component()
 	{
 	}
-	GameObject* Component::GetGameObject()
+	GameObject* Component::GetGameObject() const
 	{
 		return gameObject;
 	}

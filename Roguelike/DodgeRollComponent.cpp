@@ -23,7 +23,10 @@ namespace RoguelikeGame
 
 	void DodgeRollComponent::Start()
 	{
-		FindComponents();
+		movement = gameObject->GetComponent<MovementComponent>();
+		collider = gameObject->GetComponent<ColliderComponent>();
+		health = gameObject->GetComponent<HealthComponent>();
+		animation = gameObject->GetComponent<SpriteMovementAnimationComponent>();
 	}
 
 	void DodgeRollComponent::Update(float deltaTime)
@@ -119,8 +122,6 @@ namespace RoguelikeGame
 
 	bool DodgeRollComponent::TryRoll(const Vector2Df& direction)
 	{
-		FindComponents();
-
 		if (!IsReady())
 		{
 			return false;
@@ -157,20 +158,6 @@ namespace RoguelikeGame
 		{
 			Finish();
 		}
-	}
-
-	void DodgeRollComponent::FindComponents()
-	{
-		if (areComponentsSearched)
-		{
-			return;
-		}
-
-		movement = gameObject->GetComponent<MovementComponent>();
-		collider = gameObject->GetComponent<ColliderComponent>();
-		health = gameObject->GetComponent<HealthComponent>();
-		animation = gameObject->GetComponent<SpriteMovementAnimationComponent>();
-		areComponentsSearched = true;
 	}
 
 	Vector2Df DodgeRollComponent::GetForward() const

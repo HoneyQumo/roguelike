@@ -1,7 +1,6 @@
 ﻿#pragma once
 
 #include <Component.h>
-#include <InputComponent.h>
 #include <AudioComponent.h>
 #include "WeaponComponent.h"
 #include "MeleeWeaponComponent.h"
@@ -41,7 +40,6 @@ namespace RoguelikeGame
         WeaponLayerComponent* weapon = nullptr;
         StowedWeaponComponent* stowedWeapon = nullptr;
 
-        XYZEngine::InputComponent* input = nullptr;
         XYZEngine::SpriteMovementAnimationComponent* animation = nullptr;
         WeaponComponent* rangedWeapon = nullptr;
         MeleeWeaponComponent* meleeWeapon = nullptr;

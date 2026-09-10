@@ -173,30 +173,11 @@ namespace RoguelikeGame
 
     void PlayerLoadoutComponent::FindComponents()
     {
-        if (input == nullptr)
-        {
-            input = gameObject->GetComponent<XYZEngine::InputComponent>();
-        }
-        if (animation == nullptr)
-        {
-            animation = gameObject->GetComponent<XYZEngine::SpriteMovementAnimationComponent>();
-        }
-        if (rangedWeapon == nullptr)
-        {
-            rangedWeapon = gameObject->GetComponent<WeaponComponent>();
-        }
-        if (meleeWeapon == nullptr)
-        {
-            meleeWeapon = gameObject->GetComponent<MeleeWeaponComponent>();
-        }
-        if (dodgeRoll == nullptr)
-        {
-            dodgeRoll = gameObject->GetComponent<DodgeRollComponent>();
-        }
-        if (health == nullptr)
-        {
-            health = gameObject->GetComponent<HealthComponent>();
-        }
+        animation = gameObject->GetComponent<XYZEngine::SpriteMovementAnimationComponent>();
+        rangedWeapon = gameObject->GetComponent<WeaponComponent>();
+        meleeWeapon = gameObject->GetComponent<MeleeWeaponComponent>();
+        dodgeRoll = gameObject->GetComponent<DodgeRollComponent>();
+        health = gameObject->GetComponent<HealthComponent>();
     }
 
     void PlayerLoadoutComponent::ApplyWeapon(int slot)

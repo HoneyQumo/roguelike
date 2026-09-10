@@ -44,7 +44,6 @@ namespace RoguelikeGame
 		XYZEngine::ColliderComponent* collider = nullptr;
 		HealthComponent* health = nullptr;
 		XYZEngine::SpriteMovementAnimationComponent* animation = nullptr;
-		bool areComponentsSearched = false;
 
 		const float* frameSpeeds = nullptr;
 		int framesCount = 0;
@@ -60,7 +59,6 @@ namespace RoguelikeGame
 		XYZEngine::Cooldown cooldown;
 		XYZEngine::Vector2Df rollVector = { 1.f, 0.f };
 
-		void FindComponents();
 		XYZEngine::Vector2Df GetForward() const;
 		int GetDirectionIndex(const XYZEngine::Vector2Df& direction, int directionsCount) const;
 		void Finish();

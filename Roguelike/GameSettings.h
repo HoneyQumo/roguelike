@@ -144,37 +144,34 @@ namespace RoguelikeGame
     constexpr auto HURT_SOUND = "hurt";
     constexpr auto MAIN_THEME_MUSIC = "main_theme";
 
-    const std::string TEXTURES_PATH = "Resources/Textures/";
-    const std::string AUDIO_PATH = "Resources/Audio/";
-    const std::string SHADERS_PATH = "Resources/Shaders/";
-    const std::string LEVELS_PATH = "Resources/Levels/";
-    const std::string FONTS_PATH = "Resources/Fonts/";
-    const std::string WEAPONS_AUDIO_PATH = "Resources/Audio/Weapons/";
+    constexpr auto TEXTURES_PATH = "Resources/Textures/";
+    constexpr auto AUDIO_PATH = "Resources/Audio/";
+    constexpr auto WEAPONS_AUDIO_PATH = "Resources/Audio/Weapons/";
 
-    const std::string CROSSHAIR_FILE = TEXTURES_PATH + "crosshair.png";
-    const std::string WEAPONS_ATLAS_FILE = TEXTURES_PATH + "weapons.png";
-    const std::string RELOAD_MAG_FILE = TEXTURES_PATH + "reload_mag.png";
-    const std::string FX_ATLAS_FILE = TEXTURES_PATH + "fx.png";
-    const std::string HIT_FLASH_SHADER_FILE = SHADERS_PATH + "hit_flash.frag";
-    const std::string SHOT_SOUND_FILE = AUDIO_PATH + "shot.wav";
-    const std::string HURT_SOUND_FILE = AUDIO_PATH + "hurt.wav";
-    const std::string MAIN_THEME_FILE = AUDIO_PATH + "main_music_1.ogg";
-    const std::string TEST_LEVEL_FILE = LEVELS_PATH + "test_level.config";
-    const std::string HUD_FONT_FILE = FONTS_PATH + "Roboto-Medium.ttf";
+    constexpr auto CROSSHAIR_FILE = "Resources/Textures/crosshair.png";
+    constexpr auto WEAPONS_ATLAS_FILE = "Resources/Textures/weapons.png";
+    constexpr auto RELOAD_MAG_FILE = "Resources/Textures/reload_mag.png";
+    constexpr auto FX_ATLAS_FILE = "Resources/Textures/fx.png";
+    constexpr auto HIT_FLASH_SHADER_FILE = "Resources/Shaders/hit_flash.frag";
+    constexpr auto SHOT_SOUND_FILE = "Resources/Audio/shot.wav";
+    constexpr auto HURT_SOUND_FILE = "Resources/Audio/hurt.wav";
+    constexpr auto MAIN_THEME_FILE = "Resources/Audio/main_music_1.ogg";
+    constexpr auto TEST_LEVEL_FILE = "Resources/Levels/test_level.config";
+    constexpr auto HUD_FONT_FILE = "Resources/Fonts/Roboto-Medium.ttf";
 
     constexpr auto LOG_FILE_PATH = "log.txt";
 
-    const sf::Color WALL_COLOR = {92, 86, 80};
-    const sf::Color FLOOR_COLOR = {46, 42, 38};
-    const sf::Color CROSSHAIR_COLOR = {255, 255, 255};
-    const sf::Color AMMO_HUD_COLOR = {235, 230, 220};
-    const sf::Color AMMO_HUD_LOW_COLOR = {220, 90, 70};
-    const sf::Color AMMO_HUD_RELOADING_COLOR = {235, 190, 90};
-    const sf::Color AMMO_HUD_OUTLINE_COLOR = {15, 13, 12, 220};
-    const sf::Color RELOAD_INDICATOR_COLOR = {235, 190, 90};
-    const sf::Color OVERLAY_BACKGROUND_COLOR = {0, 0, 0, 150};
-    const sf::Color DEBUG_DETECTION_COLOR = {240, 200, 60};
-    const sf::Color DEBUG_CHASING_COLOR = {240, 80, 60};
-    const sf::Color DEBUG_ATTACK_RANGE_COLOR = {255, 140, 40};
-    const sf::Color DEBUG_BLAST_COLOR = {230, 80, 230};
+    inline const sf::Color WALL_COLOR = {92, 86, 80};
+    inline const sf::Color FLOOR_COLOR = {46, 42, 38};
+    inline const sf::Color CROSSHAIR_COLOR = {255, 255, 255};
+    inline const sf::Color AMMO_HUD_COLOR = {235, 230, 220};
+    inline const sf::Color AMMO_HUD_LOW_COLOR = {220, 90, 70};
+    inline const sf::Color AMMO_HUD_RELOADING_COLOR = {235, 190, 90};
+    inline const sf::Color AMMO_HUD_OUTLINE_COLOR = {15, 13, 12, 220};
+    inline const sf::Color RELOAD_INDICATOR_COLOR = {235, 190, 90};
+    inline const sf::Color OVERLAY_BACKGROUND_COLOR = {0, 0, 0, 150};
+    inline const sf::Color DEBUG_DETECTION_COLOR = {240, 200, 60};
+    inline const sf::Color DEBUG_CHASING_COLOR = {240, 80, 60};
+    inline const sf::Color DEBUG_ATTACK_RANGE_COLOR = {255, 140, 40};
+    inline const sf::Color DEBUG_BLAST_COLOR = {230, 80, 230};
 }

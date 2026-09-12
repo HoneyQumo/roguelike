@@ -8,6 +8,7 @@ namespace RoguelikeGame
 {
     const std::string LEGEND_SECTION = "legend";
     const std::string MAP_SECTION = "map";
+    const std::string ITEM_PREFIX = "Item:";
     constexpr char COMMENT_SYMBOL = ';';
     constexpr char EMPTY_SYMBOL = ' ';
     const std::string WHITESPACE = " \t";
@@ -103,6 +104,19 @@ namespace RoguelikeGame
 
         std::string name = Trim(line.substr(nameStart));
 
+        if (name.compare(0, ITEM_PREFIX.size(), ITEM_PREFIX) == 0)
+        {
+            std::string itemId = Trim(name.substr(ITEM_PREFIX.size()));
+            if (itemId.empty())
+            {
+                LOG_ERROR("Level legend line " + std::to_string(lineNumber) + " has no item id");
+                throw std::runtime_error("Level legend line has no item id");
+            }
+
+            legend[symbol] = {TileType::Floor, itemId};
+            return;
+        }
+
         TileType tileType;
         if (!TryGetTileType(name, tileType))
         {
@@ -110,7 +124,7 @@ namespace RoguelikeGame
             throw std::runtime_error("Unknown tile type in level legend: " + name);
         }
 
-        legend[symbol] = tileType;
+        legend[symbol] = {tileType, ""};
     }
 
     void LevelLoader::ReadMapLine(const std::string& line, const Legend& legend, LevelData& levelData)
@@ -127,7 +141,12 @@ namespace RoguelikeGame
             auto tile = legend.find(symbol);
             if (tile != legend.end())
             {
-                tiles.push_back(tile->second);
+                if (!tile->second.itemId.empty())
+                {
+                    levelData.items.push_back({column, row, tile->second.itemId});
+                }
+
+                tiles.push_back(tile->second.tile);
                 continue;
             }
 
@@ -175,14 +194,14 @@ namespace RoguelikeGame
         static const Legend defaultLegend = []()
         {
             Legend legend = {
-                {'#', TileType::Wall},
-                {'.', TileType::Floor},
-                {'@', TileType::PlayerSpawn}
+                {'#', {TileType::Wall, ""}},
+                {'.', {TileType::Floor, ""}},
+                {'@', {TileType::PlayerSpawn, ""}}
             };
 
             for (const EnemyDefinition& enemy : ENEMIES)
             {
-                legend[enemy.levelSymbol] = enemy.tile;
+                legend[enemy.levelSymbol] = {enemy.tile, ""};
             }
 
             return legend;

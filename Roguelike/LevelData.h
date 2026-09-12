@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include <string>
 #include <vector>
 
 namespace RoguelikeGame
@@ -31,11 +32,19 @@ namespace RoguelikeGame
         {"PlayerSpawn", TileType::PlayerSpawn}
     };
 
+    struct ItemPlacement
+    {
+        int column = 0;
+        int row = 0;
+        std::string itemId;
+    };
+
     struct LevelData
     {
         int width = 0;
         int height = 0;
         std::vector<std::vector<TileType>> tiles;
+        std::vector<ItemPlacement> items;
     };
 
     inline int CountTiles(const LevelData& levelData, TileType tileType)

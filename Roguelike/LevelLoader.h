@@ -14,7 +14,13 @@ namespace RoguelikeGame
         static LevelData Parse(std::istream& input, const std::string& sourceName);
 
     private:
-        using Legend = std::map<char, TileType>;
+        struct LegendEntry
+        {
+            TileType tile = TileType::Floor;
+            std::string itemId;
+        };
+
+        using Legend = std::map<char, LegendEntry>;
 
         static bool IsSection(const std::string& line, const std::string& sectionName);
         static void ReadLegendLine(const std::string& line, int lineNumber, Legend& legend);

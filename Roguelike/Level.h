@@ -18,7 +18,7 @@ namespace RoguelikeGame
         Level(Level&& other) noexcept;
         Level& operator=(Level&& other) noexcept;
 
-        void Add(XYZEngine::GameObject* gameObject);
+        bool Add(XYZEngine::GameObject* gameObject);
         void SetPlayerSpawn(const XYZEngine::Vector2Df& position);
 
         std::optional<XYZEngine::Vector2Df> GetPlayerSpawn() const;

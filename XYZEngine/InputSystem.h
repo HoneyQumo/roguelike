@@ -49,6 +49,7 @@ namespace XYZEngine
 
 		void BeginFrame();
 		void HandleEvent(const sf::Event& event);
+		void SyncWithDevice();
 		void Reset();
 
 		bool HasFocus() const;
@@ -88,8 +89,6 @@ namespace XYZEngine
 
 		InputSystem(InputSystem const&) = delete;
 		InputSystem& operator=(InputSystem const&) = delete;
-
-		void SyncHeldWithDevice();
 
 		static bool IsValid(sf::Keyboard::Key key);
 		static bool IsValid(sf::Mouse::Button button);

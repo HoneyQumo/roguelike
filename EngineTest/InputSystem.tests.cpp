@@ -36,7 +36,6 @@ namespace
 		void SetUp() override
 		{
 			input->Reset();
-			input->HandleEvent(FocusEvent(sf::Event::GainedFocus));
 			input->BeginFrame();
 		}
 	};
@@ -190,4 +189,29 @@ TEST_F(InputSystemTest, MousePositionFollowsMoveEvents)
 
 	EXPECT_EQ(input->GetMousePosition().x, 320);
 	EXPECT_EQ(input->GetMousePosition().y, 240);
+}
+
+TEST_F(InputSystemTest, ResetRestoresFocus)
+{
+	input->HandleEvent(FocusEvent(sf::Event::LostFocus));
+	EXPECT_FALSE(input->HasFocus());
+
+	input->Reset();
+
+	EXPECT_TRUE(input->HasFocus());
+}
+
+TEST_F(InputSystemTest, GainingFocusDoesNotReadTheDevice)
+{
+	input->HandleEvent(FocusEvent(sf::Event::GainedFocus));
+
+	for (int key = 0; key < sf::Keyboard::KeyCount; key++)
+	{
+		ASSERT_FALSE(input->IsKeyHeld(static_cast<sf::Keyboard::Key>(key))) << "key " << key;
+	}
+
+	for (int button = 0; button < sf::Mouse::ButtonCount; button++)
+	{
+		ASSERT_FALSE(input->IsButtonHeld(static_cast<sf::Mouse::Button>(button))) << "button " << button;
+	}
 }

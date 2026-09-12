@@ -1,5 +1,6 @@
 ﻿#include "pch.h"
 #include "AimRotationComponent.h"
+#include "MathUtils.h"
 #include "GameObject.h"
 #include "GameWorld.h"
 #include <cmath>
@@ -7,11 +8,15 @@
 namespace XYZEngine
 {
     constexpr float MIN_AIM_DISTANCE = 0.01f;
-    constexpr float DEGREES_IN_RADIAN = 57.29578f;
 
     AimRotationComponent::AimRotationComponent(GameObject* gameObject) : Component(gameObject)
     {
-        transform = gameObject->GetComponent<TransformComponent>();
+        transform = gameObject->GetTransform();
+    }
+
+    void AimRotationComponent::Start()
+    {
+        input = gameObject->GetComponent<InputComponent>();
     }
 
     void AimRotationComponent::Update(float deltaTime)
@@ -36,7 +41,7 @@ namespace XYZEngine
         }
 
         aimDirection = (1.f / distance) * toAim;
-        transform->SetWorldRotation(std::atan2(aimDirection.y, aimDirection.x) * DEGREES_IN_RADIAN);
+        transform->SetWorldRotation(DegreesFromDirection(aimDirection));
     }
 
     void AimRotationComponent::Render()
@@ -76,11 +81,6 @@ namespace XYZEngine
         {
             if (input == nullptr)
             {
-                input = gameObject->GetComponent<InputComponent>();
-            }
-
-            if (input == nullptr)
-            {
                 return false;
             }
 
@@ -99,7 +99,7 @@ namespace XYZEngine
             return false;
         }
 
-        aimPosition = target->GetComponent<TransformComponent>()->GetWorldPosition();
+        aimPosition = target->GetTransform()->GetWorldPosition();
         return true;
     }
 }

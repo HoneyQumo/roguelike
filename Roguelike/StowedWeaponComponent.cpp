@@ -8,18 +8,19 @@ namespace RoguelikeGame
 {
     StowedWeaponComponent::StowedWeaponComponent(XYZEngine::GameObject* gameObject) : Component(gameObject)
     {
-        transform = gameObject->GetComponent<XYZEngine::TransformComponent>();
+        transform = gameObject->GetTransform();
+    }
+
+    void StowedWeaponComponent::Start()
+    {
+        renderer = gameObject->GetComponent<XYZEngine::SpriteRendererComponent>();
     }
 
     void StowedWeaponComponent::Update(float deltaTime)
     {
         if (renderer == nullptr)
         {
-            renderer = gameObject->GetComponent<XYZEngine::SpriteRendererComponent>();
-            if (renderer == nullptr)
-            {
-                return;
-            }
+            return;
         }
 
         if (ownerAnimation == nullptr)
@@ -27,7 +28,7 @@ namespace RoguelikeGame
             return;
         }
 
-        int frame = std::min(std::max(ownerAnimation->GetCurrentFrame(), 0), SWAP_ANIMATION_FRAMES - 1);
+        int frame = ClampFrame(ownerAnimation->GetCurrentFrame(), SWAP_ANIMATION_FRAMES);
         bool isShown = texture != nullptr
             && ownerAnimation->GetCurrentAnimation() == XYZEngine::MovementAnimation::Swap
             && SWAP_WEAPON_HIDDEN[frame];

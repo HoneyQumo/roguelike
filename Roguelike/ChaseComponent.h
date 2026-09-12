@@ -1,0 +1,38 @@
+#pragma once
+
+#include <string>
+#include <Component.h>
+#include <TransformComponent.h>
+#include <MovementComponent.h>
+
+namespace RoguelikeGame
+{
+	class ChaseComponent : public XYZEngine::Component
+	{
+	public:
+		ChaseComponent(XYZEngine::GameObject* gameObject);
+
+		void Start() override;
+		void Update(float deltaTime) override;
+		void Render() override;
+
+		void SetTargetName(const std::string& newTargetName);
+		const std::string& GetTargetName() const;
+
+		void SetDetectionRadius(float newDetectionRadius);
+		float GetDetectionRadius() const;
+
+		void SetStopDistance(float newStopDistance);
+		float GetStopDistance() const;
+
+		bool IsChasing() const;
+	private:
+		XYZEngine::TransformComponent* transform = nullptr;
+		XYZEngine::MovementComponent* movement = nullptr;
+
+		std::string targetName;
+		float detectionRadius = 0.f;
+		float stopDistance = 0.f;
+		bool isChasing = false;
+	};
+}

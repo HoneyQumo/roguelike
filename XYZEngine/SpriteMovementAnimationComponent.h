@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <SFML/Graphics.hpp>
+#include "AnimationClip.h"
 #include "Component.h"
 #include "TransformComponent.h"
 #include "SpriteRendererComponent.h"
@@ -43,22 +44,23 @@ namespace XYZEngine
     public:
         SpriteMovementAnimationComponent(GameObject* gameObject);
 
+        void Start() override;
         void Update(float deltaTime) override;
         void Render() override;
 
-        void SetWalkAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float framesPerSecond);
-        void SetRunAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float framesPerSecond);
-        void SetIdleAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float framesPerSecond);
-        void SetShootAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float framesPerSecond);
-        void SetReloadAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float framesPerSecond);
-        void SetMeleeAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float framesPerSecond);
+        void SetWalkAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float secondsPerFrame);
+        void SetRunAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float secondsPerFrame);
+        void SetIdleAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float secondsPerFrame);
+        void SetShootAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float secondsPerFrame);
+        void SetReloadAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float secondsPerFrame);
+        void SetMeleeAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float secondsPerFrame);
         void SetHeavyAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, const float* frameSeconds,
                                const ChargedAnimationLoops& loops);
         void SetSwapAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, const float* frameSeconds);
-        void SetHurtAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float framesPerSecond);
-        void SetDeathAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float framesPerSecond);
+        void SetHurtAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float secondsPerFrame);
+        void SetDeathAnimation(const std::string& textureMapName, int firstFrameIndex, int framesCount, float secondsPerFrame);
         void SetRollAnimations(const std::string& textureMapName, const int* firstFrameIndices, int directionsCount, int framesCount,
-                               float framesPerSecond);
+                               float secondsPerFrame);
 
         void PlayShoot();
         void PlayReload();
@@ -79,30 +81,23 @@ namespace XYZEngine
         int GetRollDirectionsCount() const;
 
     private:
-        struct Animation
-        {
-            std::vector<const sf::Texture*> frames;
-            float secondsPerFrame = 0.125f;
-            const float* frameSeconds = nullptr;
-        };
-
-        TransformComponent* transform;
+        TransformComponent* transform = nullptr;
         SpriteRendererComponent* renderer = nullptr;
         MovementComponent* movement = nullptr;
 
-        Animation walkAnimation;
-        Animation runAnimation;
-        Animation idleAnimation;
-        Animation shootAnimation;
-        Animation reloadAnimation;
-        Animation meleeAnimation;
-        Animation heavyAnimation;
-        Animation swapAnimation;
-        Animation hurtAnimation;
-        Animation deathAnimation;
-        Animation rollAnimations[MAX_ROLL_DIRECTIONS];
+        AnimationClip walkAnimation;
+        AnimationClip runAnimation;
+        AnimationClip idleAnimation;
+        AnimationClip shootAnimation;
+        AnimationClip reloadAnimation;
+        AnimationClip meleeAnimation;
+        AnimationClip heavyAnimation;
+        AnimationClip swapAnimation;
+        AnimationClip hurtAnimation;
+        AnimationClip deathAnimation;
+        AnimationClip rollAnimations[MAX_ROLL_DIRECTIONS];
         int rollDirectionsCount = 0;
-        Animation* currentAnimation = nullptr;
+        AnimationClip* currentAnimation = nullptr;
         MovementAnimation currentAnimationKind = MovementAnimation::None;
 
         bool isLooped = true;
@@ -121,8 +116,7 @@ namespace XYZEngine
 
         bool IsInterruptingAnimation() const;
         bool IsRollPlaying() const;
-        void Fill(Animation& animation, const std::string& textureMapName, int firstFrameIndex, int framesCount, float framesPerSecond);
-        void Play(Animation& animation, MovementAnimation kind, bool looped);
+        void Play(AnimationClip& animation, MovementAnimation kind, bool looped);
         void AdvanceFrames(float deltaTime);
         float GetFrameSeconds(int frame) const;
         bool AdvanceHeavyFrame();

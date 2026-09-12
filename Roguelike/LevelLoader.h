@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include <istream>
 #include <map>
 #include <string>
 #include "LevelData.h"
@@ -10,6 +11,7 @@ namespace RoguelikeGame
     {
     public:
         static LevelData Load(const std::string& filePath);
+        static LevelData Parse(std::istream& input, const std::string& sourceName);
 
     private:
         using Legend = std::map<char, TileType>;

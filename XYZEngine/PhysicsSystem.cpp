@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "PhysicsSystem.h"
+#include "GameObject.h"
 #include <cassert>
 
 namespace XYZEngine
@@ -10,16 +11,11 @@ namespace XYZEngine
 		return &physicsSystem;
 	}
 
-	float PhysicsSystem::GetFixedDeltaTime() const
-	{
-		return fixedDeltaTime;
-	}
-
 	void PhysicsSystem::Update()
 	{
 		for (int i = 0; i < colliders.size(); i++)
 		{
-			auto body = colliders[i]->GetGameObject()->GetComponent<RigidbodyComponent>();
+			auto body = colliders[i]->GetBody();
 			if (body == nullptr || body->GetKinematic())
 			{
 				continue;
@@ -61,7 +57,7 @@ namespace XYZEngine
 
 						Vector2Df aPosition = { colliders[i]->bounds.left + 0.5f * colliders[i]->bounds.width,
 												colliders[i]->bounds.top + 0.5f * colliders[i]->bounds.height };
-						auto aTransform = colliders[i]->GetGameObject()->GetComponent<TransformComponent>();
+						auto aTransform = colliders[i]->GetGameObject()->GetTransform();
 
 						Vector2Df pushOffset = { 0.f, 0.f };
 						if (intersectionWidth > intersectionHeight)
@@ -132,6 +128,11 @@ namespace XYZEngine
 		}
 
 		return found;
+	}
+
+	const std::vector<ColliderComponent*>& PhysicsSystem::GetColliders() const
+	{
+		return colliders;
 	}
 
 	void PhysicsSystem::Subscribe(ColliderComponent* collider)

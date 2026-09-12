@@ -1,9 +1,6 @@
 #pragma once
 
-#include <memory>
-#include <SFML/Graphics.hpp>
 #include "Component.h"
-#include "GameObject.h"
 #include "Vector.h"
 #include "Matrix2D.h"
 
@@ -38,16 +35,18 @@ namespace XYZEngine
 		const Vector2Df& GetWorldPosition() const;
 		const Vector2Df& GetLocalPosition() const;
 
-		const float GetWorldRotation() const;
-		const float GetLocalRotation() const;
+		float GetWorldRotation() const;
+		float GetLocalRotation() const;
 
 		const Vector2Df& GetWorldScale() const;
 		const Vector2Df& GetLocalScale() const;
 
+		Vector2Df GetForward() const;
+
 		void SetParent(TransformComponent* newParent);
 		TransformComponent* GetParent() const;
 
-		const Matrix2D GetWorldTransform() const;
+		Matrix2D GetWorldTransform() const;
 		void Print() const;
 
 	private:

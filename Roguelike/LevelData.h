@@ -28,13 +28,7 @@ namespace RoguelikeGame
         {"Empty", TileType::Empty},
         {"Floor", TileType::Floor},
         {"Wall", TileType::Wall},
-        {"PlayerSpawn", TileType::PlayerSpawn},
-        {"GruntSpawn", TileType::GruntSpawn},
-        {"AssaultSpawn", TileType::AssaultSpawn},
-        {"ShieldSpawn", TileType::ShieldSpawn},
-        {"HeavySpawn", TileType::HeavySpawn},
-        {"RadioSpawn", TileType::RadioSpawn},
-        {"BossSpawn", TileType::BossSpawn}
+        {"PlayerSpawn", TileType::PlayerSpawn}
     };
 
     struct LevelData
@@ -43,4 +37,21 @@ namespace RoguelikeGame
         int height = 0;
         std::vector<std::vector<TileType>> tiles;
     };
+
+    inline int CountTiles(const LevelData& levelData, TileType tileType)
+    {
+        int count = 0;
+        for (const auto& row : levelData.tiles)
+        {
+            for (TileType tile : row)
+            {
+                if (tile == tileType)
+                {
+                    count++;
+                }
+            }
+        }
+
+        return count;
+    }
 }

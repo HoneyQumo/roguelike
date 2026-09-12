@@ -19,12 +19,12 @@ namespace RoguelikeGame
     {
         int row;
         int frames;
-        float framesPerSecond;
+        float secondsPerFrame;
     };
 
-    constexpr float FramesPerSecond(float millisecondsPerFrame)
+    constexpr int ClampFrame(int frame, int framesCount)
     {
-        return 1000.f / millisecondsPerFrame;
+        return frame < 0 ? 0 : (frame >= framesCount ? framesCount - 1 : frame);
     }
 
     constexpr int AtlasFrameIndex(int row, int column)
@@ -32,14 +32,14 @@ namespace RoguelikeGame
         return row * CHARACTER_ATLAS_COLUMNS + column;
     }
 
-    constexpr CharacterAnimation IDLE_ANIMATION = {0, 6, FramesPerSecond(175.f)};
-    constexpr CharacterAnimation WALK_ANIMATION = {1, 8, FramesPerSecond(110.f)};
-    constexpr CharacterAnimation RUN_ANIMATION = {2, 8, FramesPerSecond(75.f)};
-    constexpr CharacterAnimation SHOOT_ANIMATION = {3, 4, FramesPerSecond(60.f)};
-    constexpr CharacterAnimation RELOAD_ANIMATION = {4, 12, FramesPerSecond(90.f)};
-    constexpr CharacterAnimation MELEE_ANIMATION = {5, 6, FramesPerSecond(60.f)};
-    constexpr CharacterAnimation HURT_ANIMATION = {6, 3, FramesPerSecond(80.f)};
-    constexpr CharacterAnimation DEATH_ANIMATION = {7, 8, FramesPerSecond(110.f)};
+    constexpr CharacterAnimation IDLE_ANIMATION = {0, 6, 0.175f};
+    constexpr CharacterAnimation WALK_ANIMATION = {1, 8, 0.110f};
+    constexpr CharacterAnimation RUN_ANIMATION = {2, 8, 0.075f};
+    constexpr CharacterAnimation SHOOT_ANIMATION = {3, 4, 0.060f};
+    constexpr CharacterAnimation RELOAD_ANIMATION = {4, 12, 0.090f};
+    constexpr CharacterAnimation MELEE_ANIMATION = {5, 6, 0.060f};
+    constexpr CharacterAnimation HURT_ANIMATION = {6, 3, 0.080f};
+    constexpr CharacterAnimation DEATH_ANIMATION = {7, 8, 0.110f};
 
     constexpr int HEAVY_ANIMATION_ROW = 8;
     constexpr int HEAVY_ANIMATION_FRAMES = 12;
@@ -67,7 +67,7 @@ namespace RoguelikeGame
     constexpr int ROLL_ANIMATION_ROW0 = 10;
     constexpr int ROLL_DIRECTIONS = 8;
     constexpr int ROLL_ANIMATION_FRAMES = 10;
-    constexpr float ROLL_FRAMES_PER_SECOND = FramesPerSecond(50.f);
+    constexpr float ROLL_FRAME_SECONDS = 0.050f;
 
     constexpr int RollAtlasRow(int direction)
     {
@@ -162,20 +162,20 @@ namespace RoguelikeGame
         int frames;
         float pivotX;
         float pivotY;
-        float millisecondsPerFrame;
+        float secondsPerFrame;
     };
 
-    constexpr FxStrip FX_MUZZLE_FLASH = {0, 0, 32, 24, 3, 4.f, 12.f, 60.f};
-    constexpr FxStrip FX_BLOOD_POOL = {0, 24, 64, 64, 10, 32.f, 32.f, 150.f};
-    constexpr FxStrip FX_EXPLOSION = {0, 88, 64, 64, 7, 32.f, 32.f, 55.f};
-    constexpr FxStrip FX_BLOOD_HIT = {0, 152, 32, 24, 4, 6.f, 12.f, 45.f};
-    constexpr FxStrip FX_BLOOD_SPECK = {0, 176, 32, 24, 1, 6.f, 12.f, 45.f};
-    constexpr FxStrip FX_IMPACT = {0, 200, 24, 24, 4, 4.f, 12.f, 40.f};
-    constexpr FxStrip FX_PICKUP = {0, 224, 24, 24, 6, 12.f, 12.f, 150.f};
-    constexpr FxStrip FX_HAND_ITEM = {0, 248, 16, 16, 6, 8.f, 8.f, 90.f};
-    constexpr FxStrip FX_SHELL_FLY = {0, 264, 12, 12, 4, 6.f, 6.f, 60.f};
-    constexpr FxStrip FX_ROCKET = {0, 276, 28, 12, 2, 4.f, 6.f, 70.f};
-    constexpr FxStrip FX_BULLET = {0, 288, 24, 8, 3, 2.f, 4.f, 60.f};
+    constexpr FxStrip FX_MUZZLE_FLASH = {0, 0, 32, 24, 3, 4.f, 12.f, 0.060f};
+    constexpr FxStrip FX_BLOOD_POOL = {0, 24, 64, 64, 10, 32.f, 32.f, 0.150f};
+    constexpr FxStrip FX_EXPLOSION = {0, 88, 64, 64, 7, 32.f, 32.f, 0.055f};
+    constexpr FxStrip FX_BLOOD_HIT = {0, 152, 32, 24, 4, 6.f, 12.f, 0.045f};
+    constexpr FxStrip FX_BLOOD_SPECK = {0, 176, 32, 24, 1, 6.f, 12.f, 0.045f};
+    constexpr FxStrip FX_IMPACT = {0, 200, 24, 24, 4, 4.f, 12.f, 0.040f};
+    constexpr FxStrip FX_PICKUP = {0, 224, 24, 24, 6, 12.f, 12.f, 0.150f};
+    constexpr FxStrip FX_HAND_ITEM = {0, 248, 16, 16, 6, 8.f, 8.f, 0.090f};
+    constexpr FxStrip FX_SHELL_FLY = {0, 264, 12, 12, 4, 6.f, 6.f, 0.060f};
+    constexpr FxStrip FX_ROCKET = {0, 276, 28, 12, 2, 4.f, 6.f, 0.070f};
+    constexpr FxStrip FX_BULLET = {0, 288, 24, 8, 3, 2.f, 4.f, 0.060f};
 
     inline XYZEngine::Vector2Df ToWorldOffset(float frameX, float frameY)
     {

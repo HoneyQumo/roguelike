@@ -1,23 +1,30 @@
 ﻿#include "GameResources.h"
 #include "GameSettings.h"
 #include "WeaponCatalog.h"
+#include "EnemyCatalog.h"
 #include <ResourceSystem.h>
 #include <randomizer.h>
 #include <SFML/Graphics/Shader.hpp>
 
 namespace RoguelikeGame
 {
+    namespace
+    {
+        std::string MeleeHitSoundKey(const MeleeDefinition& melee, int variant)
+        {
+            return std::string(melee.hitSound) + "_" + std::to_string(variant);
+        }
+    }
+
     void GameResources::Load()
     {
         XYZEngine::ResourceSystem::Instance()->LoadTexture(CROSSHAIR_TEXTURE, CROSSHAIR_FILE, false);
 
         LoadCharacterAtlas(PLAYER_TEXTURE, PLAYER_ATLAS_FRAMES);
-        LoadCharacterAtlas(GRUNT_CONFIG.textureMapName, ENEMY_ATLAS_FRAMES);
-        LoadCharacterAtlas(ASSAULT_CONFIG.textureMapName, ENEMY_ATLAS_FRAMES);
-        LoadCharacterAtlas(SHIELD_CONFIG.textureMapName, ENEMY_ATLAS_FRAMES);
-        LoadCharacterAtlas(HEAVY_CONFIG.textureMapName, ENEMY_ATLAS_FRAMES);
-        LoadCharacterAtlas(RADIO_CONFIG.textureMapName, ENEMY_ATLAS_FRAMES);
-        LoadCharacterAtlas(BOSS_CONFIG.textureMapName, ENEMY_ATLAS_FRAMES);
+        for (const EnemyDefinition& enemy : ENEMIES)
+        {
+            LoadCharacterAtlas(enemy.config.textureMapName, ENEMY_ATLAS_FRAMES);
+        }
 
         XYZEngine::ResourceSystem::Instance()->LoadTextureMap(WEAPONS_TEXTURE, WEAPONS_ATLAS_FILE,
                                                              {WEAPON_FRAME_WIDTH, WEAPON_FRAME_HEIGHT}, WEAPON_ATLAS_FRAMES, false);
@@ -65,30 +72,36 @@ namespace RoguelikeGame
         }
 
         int variant = random<int>(1, melee.hitSoundVariants);
-        return XYZEngine::ResourceSystem::Instance()->GetSound(std::string(melee.hitSound) + "_" + std::to_string(variant));
+        return XYZEngine::ResourceSystem::Instance()->GetSound(MeleeHitSoundKey(melee, variant));
+    }
+
+    void GameResources::LoadWeaponSound(const std::string& key)
+    {
+        XYZEngine::ResourceSystem::Instance()->LoadSound(key, WEAPONS_AUDIO_PATH + key + ".wav");
     }
 
     void GameResources::LoadWeaponSounds()
     {
-        for (const MeleeDefinition& melee : MELEE_WEAPONS)
-        {
-            for (int variant = 1; variant <= melee.hitSoundVariants; variant++)
-            {
-                std::string key = std::string(melee.hitSound) + "_" + std::to_string(variant);
-                XYZEngine::ResourceSystem::Instance()->LoadSound(key, WEAPONS_AUDIO_PATH + key + ".wav");
-            }
-        }
-
         for (const WeaponDefinition& weapon : WEAPONS)
         {
             if (weapon.shotSound != nullptr)
             {
-                XYZEngine::ResourceSystem::Instance()->LoadSound(weapon.shotSound, WEAPONS_AUDIO_PATH + weapon.shotSound + ".wav");
+                LoadWeaponSound(weapon.shotSound);
             }
 
             if (weapon.reloadSound != nullptr)
             {
-                XYZEngine::ResourceSystem::Instance()->LoadSound(weapon.reloadSound, WEAPONS_AUDIO_PATH + weapon.reloadSound + ".wav");
+                LoadWeaponSound(weapon.reloadSound);
+            }
+
+            if (weapon.melee == nullptr)
+            {
+                continue;
+            }
+
+            for (int variant = 1; variant <= weapon.melee->hitSoundVariants; variant++)
+            {
+                LoadWeaponSound(MeleeHitSoundKey(*weapon.melee, variant));
             }
         }
     }

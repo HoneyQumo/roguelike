@@ -9,7 +9,6 @@ namespace XYZEngine
     {
     public:
         CameraComponent(GameObject* gameObject);
-        ~CameraComponent() override;
 
         void Update(float deltaTime) override;
         void Render() override;
@@ -21,9 +20,9 @@ namespace XYZEngine
         void SetRotationEnabled(bool newIsRotationEnabled);
 
     private:
-        TransformComponent* transform;
-        sf::RenderWindow* window;
-        sf::View* view;
+        TransformComponent* transform = nullptr;
+        sf::RenderWindow* window = nullptr;
+        sf::View view = sf::View(sf::FloatRect(0.f, 0.f, 800.f, -600.f));
 
         bool isRotationEnabled = true;
     };

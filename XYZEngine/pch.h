@@ -10,4 +10,14 @@
 // Добавьте сюда заголовочные файлы для предварительной компиляции
 #include "framework.h"
 
+#include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
+
+#include <string>
+#include <vector>
+#include <map>
+#include <memory>
+#include <functional>
+#include <algorithm>
+
 #endif //PCH_H

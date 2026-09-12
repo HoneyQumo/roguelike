@@ -1,14 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <ItemGroup Label="ProjectConfigurations">
-        <ProjectConfiguration Include="Debug|Win32">
-            <Configuration>Debug</Configuration>
-            <Platform>Win32</Platform>
-        </ProjectConfiguration>
-        <ProjectConfiguration Include="Release|Win32">
-            <Configuration>Release</Configuration>
-            <Platform>Win32</Platform>
-        </ProjectConfiguration>
         <ProjectConfiguration Include="Debug|x64">
             <Configuration>Debug</Configuration>
             <Platform>x64</Platform>
@@ -27,19 +19,6 @@
         <ProjectName>Roguelike</ProjectName>
     </PropertyGroup>
     <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props"/>
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-        <ConfigurationType>Application</ConfigurationType>
-        <UseDebugLibraries>true</UseDebugLibraries>
-        <PlatformToolset>v143</PlatformToolset>
-        <CharacterSet>Unicode</CharacterSet>
-    </PropertyGroup>
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-        <ConfigurationType>Application</ConfigurationType>
-        <UseDebugLibraries>false</UseDebugLibraries>
-        <PlatformToolset>v143</PlatformToolset>
-        <WholeProgramOptimization>true</WholeProgramOptimization>
-        <CharacterSet>Unicode</CharacterSet>
-    </PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
         <ConfigurationType>Application</ConfigurationType>
         <UseDebugLibraries>true</UseDebugLibraries>
@@ -54,15 +33,10 @@
         <CharacterSet>Unicode</CharacterSet>
     </PropertyGroup>
     <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props"/>
+    <Import Project="$(SolutionDir)Common.props" />
     <ImportGroup Label="ExtensionSettings">
     </ImportGroup>
     <ImportGroup Label="Shared">
-    </ImportGroup>
-    <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-        <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform"/>
-    </ImportGroup>
-    <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-        <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform"/>
     </ImportGroup>
     <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
         <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform"/>
@@ -72,65 +46,23 @@
     </ImportGroup>
     <PropertyGroup Label="UserMacros"/>
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-        <CustomBuildAfterTargets>Build</CustomBuildAfterTargets>
         <OutDir>$(ProjectDir)\$(Platform)\$(Configuration)\</OutDir>
         <IntDir>$(ProjectDir)\$(Platform)\$(Configuration)\</IntDir>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-        <CustomBuildAfterTargets>Build</CustomBuildAfterTargets>
         <OutDir>$(ProjectDir)\$(Platform)\$(Configuration)\</OutDir>
         <IntDir>$(ProjectDir)\$(Platform)\$(Configuration)\</IntDir>
     </PropertyGroup>
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-        <OutDir>$(ProjectDir)\$(Platform)\$(Configuration)\</OutDir>
-        <IntDir>$(ProjectDir)\$(Platform)\$(Configuration)\</IntDir>
-    </PropertyGroup>
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-        <OutDir>$(ProjectDir)\$(Platform)\$(Configuration)\</OutDir>
-        <IntDir>$(ProjectDir)\$(Platform)\$(Configuration)\</IntDir>
-    </PropertyGroup>
-    <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-        <ClCompile>
-            <WarningLevel>Level3</WarningLevel>
-            <SDLCheck>true</SDLCheck>
-            <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-            <ConformanceMode>true</ConformanceMode>
-        </ClCompile>
-        <Link>
-            <SubSystem>Console</SubSystem>
-            <GenerateDebugInformation>true</GenerateDebugInformation>
-        </Link>
-    </ItemDefinitionGroup>
-    <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-        <ClCompile>
-            <WarningLevel>Level3</WarningLevel>
-            <FunctionLevelLinking>true</FunctionLevelLinking>
-            <IntrinsicFunctions>true</IntrinsicFunctions>
-            <SDLCheck>true</SDLCheck>
-            <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-            <ConformanceMode>true</ConformanceMode>
-        </ClCompile>
-        <Link>
-            <SubSystem>Console</SubSystem>
-            <EnableCOMDATFolding>true</EnableCOMDATFolding>
-            <OptimizeReferences>true</OptimizeReferences>
-            <GenerateDebugInformation>true</GenerateDebugInformation>
-        </Link>
-    </ItemDefinitionGroup>
     <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
         <ClCompile>
-            <WarningLevel>Level3</WarningLevel>
-            <SDLCheck>true</SDLCheck>
-            <PreprocessorDefinitions>SFML_STATIC;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-            <ConformanceMode>true</ConformanceMode>
-            <AdditionalIncludeDirectories>$(SolutionDir)\SFML\SFML-2.5.1\include;$(SolutionDir)XYZEngine;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-            <LanguageStandard>stdcpp17</LanguageStandard>
+            <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+            <AdditionalIncludeDirectories>$(SolutionDir)XYZEngine;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
         </ClCompile>
         <Link>
             <SubSystem>Windows</SubSystem>
             <GenerateDebugInformation>true</GenerateDebugInformation>
-            <AdditionalLibraryDirectories>$(SolutionDir)\SFML\SFML-2.5.1\lib;$(ProjectDir)\$(Platform)\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-            <AdditionalDependencies>sfml-main-d.lib;sfml-graphics-s-d.lib;sfml-window-s-d.lib;sfml-system-s-d.lib;sfml-audio-s-d.lib;sfml-network-s-d.lib;ws2_32.lib;opengl32.lib;freetype.lib;winmm.lib;gdi32.lib;openal32.lib;flac.lib;vorbisenc.lib;vorbisfile.lib;vorbis.lib;ogg.lib;%(AdditionalDependencies);XYZEngine.lib</AdditionalDependencies>
+            <AdditionalLibraryDirectories>$(ProjectDir)\$(Platform)\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+            <AdditionalDependencies>sfml-main-d.lib;%(AdditionalDependencies);XYZEngine.lib</AdditionalDependencies>
             <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
             <IgnoreSpecificDefaultLibraries>
             </IgnoreSpecificDefaultLibraries>
@@ -138,22 +70,18 @@
     </ItemDefinitionGroup>
     <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
         <ClCompile>
-            <WarningLevel>Level3</WarningLevel>
             <FunctionLevelLinking>true</FunctionLevelLinking>
             <IntrinsicFunctions>true</IntrinsicFunctions>
-            <SDLCheck>true</SDLCheck>
-            <PreprocessorDefinitions>SFML_STATIC;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-            <ConformanceMode>true</ConformanceMode>
-            <AdditionalIncludeDirectories>$(SolutionDir)\SFML\SFML-2.5.1\include;$(SolutionDir)XYZEngine;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-            <LanguageStandard>stdcpp17</LanguageStandard>
+            <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+            <AdditionalIncludeDirectories>$(SolutionDir)XYZEngine;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
         </ClCompile>
         <Link>
             <SubSystem>Windows</SubSystem>
             <EnableCOMDATFolding>true</EnableCOMDATFolding>
             <OptimizeReferences>true</OptimizeReferences>
             <GenerateDebugInformation>true</GenerateDebugInformation>
-            <AdditionalLibraryDirectories>$(SolutionDir)\SFML\SFML-2.5.1\lib;$(ProjectDir)\$(Platform)\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-            <AdditionalDependencies>sfml-main.lib;sfml-graphics-s.lib;sfml-window-s.lib;sfml-system-s.lib;sfml-audio-s.lib;sfml-network-s.lib;ws2_32.lib;opengl32.lib;freetype.lib;winmm.lib;gdi32.lib;openal32.lib;flac.lib;vorbisenc.lib;vorbisfile.lib;vorbis.lib;ogg.lib;%(AdditionalDependencies);XYZEngine.lib</AdditionalDependencies>
+            <AdditionalLibraryDirectories>$(ProjectDir)\$(Platform)\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+            <AdditionalDependencies>sfml-main.lib;%(AdditionalDependencies);XYZEngine.lib</AdditionalDependencies>
             <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
             <IgnoreSpecificDefaultLibraries>
             </IgnoreSpecificDefaultLibraries>
@@ -162,6 +90,19 @@
     <ItemGroup>
         <ClCompile Include="AmmoHud.cpp"/>
         <ClCompile Include="AmmoHudComponent.cpp"/>
+        <ClCompile Include="AreaDamage.cpp"/>
+        <ClCompile Include="FactionComponent.cpp"/>
+        <ClCompile Include="ChaseComponent.cpp"/>
+        <ClCompile Include="AmmoPouchComponent.cpp"/>
+        <ClCompile Include="HealthBarComponent.cpp"/>
+        <ClCompile Include="HealthComponent.cpp"/>
+        <ClCompile Include="ProjectileComponent.cpp"/>
+        <ClCompile Include="DodgeRollComponent.cpp"/>
+        <ClCompile Include="ExplosiveComponent.cpp"/>
+        <ClCompile Include="MeleeWeaponComponent.cpp"/>
+        <ClCompile Include="WeaponComponent.cpp"/>
+        <ClCompile Include="MessageOverlayComponent.cpp"/>
+        <ClCompile Include="MessageOverlay.cpp"/>
         <ClCompile Include="BloodPool.cpp"/>
         <ClCompile Include="ReloadIndicatorComponent.cpp"/>
         <ClCompile Include="Crosshair.cpp"/>
@@ -169,7 +110,9 @@
         <ClCompile Include="GameResources.cpp"/>
         <ClCompile Include="HitFlashComponent.cpp"/>
         <ClCompile Include="WeaponLayerComponent.cpp"/>
+        <ClCompile Include="WeaponSetup.cpp"/>
         <ClCompile Include="DeveloperLevel.cpp"/>
+        <ClCompile Include="CharacterFactory.cpp"/>
         <ClCompile Include="Enemy.cpp"/>
         <ClCompile Include="EnemyAttackComponent.cpp"/>
         <ClCompile Include="PlayerAttackComponent.cpp"/>
@@ -178,7 +121,7 @@
         <ClCompile Include="StowedWeaponComponent.cpp"/>
         <ClCompile Include="Projectile.cpp"/>
         <ClCompile Include="Weapon.cpp"/>
-        <ClCompile Include="Floor.cpp"/>
+        <ClCompile Include="Level.cpp"/>
         <ClCompile Include="LevelBuilder.cpp"/>
         <ClCompile Include="LevelLoader.cpp"/>
         <ClCompile Include="Wall.cpp"/>
@@ -189,6 +132,21 @@
     <ItemGroup>
         <ClInclude Include="AmmoHud.h"/>
         <ClInclude Include="AmmoHudComponent.h"/>
+        <ClInclude Include="AreaDamage.h"/>
+        <ClInclude Include="Faction.h"/>
+        <ClInclude Include="FactionComponent.h"/>
+        <ClInclude Include="ChaseComponent.h"/>
+        <ClInclude Include="AmmoPouchComponent.h"/>
+        <ClInclude Include="HealthBarComponent.h"/>
+        <ClInclude Include="HealthComponent.h"/>
+        <ClInclude Include="ProjectileComponent.h"/>
+        <ClInclude Include="DodgeRollComponent.h"/>
+        <ClInclude Include="ExplosiveComponent.h"/>
+        <ClInclude Include="MeleeWeaponComponent.h"/>
+        <ClInclude Include="WeaponComponent.h"/>
+        <ClInclude Include="TextUtils.h"/>
+        <ClInclude Include="MessageOverlayComponent.h"/>
+        <ClInclude Include="MessageOverlay.h"/>
         <ClInclude Include="BloodPool.h"/>
         <ClInclude Include="ReloadIndicatorComponent.h"/>
         <ClInclude Include="Crosshair.h"/>
@@ -198,11 +156,13 @@
         <ClInclude Include="SpriteAtlas.h"/>
         <ClInclude Include="WeaponCatalog.h"/>
         <ClInclude Include="WeaponLayerComponent.h"/>
+        <ClInclude Include="WeaponSetup.h"/>
         <ClInclude Include="DeveloperLevel.h"/>
+        <ClInclude Include="CharacterFactory.h"/>
         <ClInclude Include="Enemy.h"/>
         <ClInclude Include="EnemyAttackComponent.h"/>
+        <ClInclude Include="EnemyCatalog.h"/>
         <ClInclude Include="EnemyConfig.h"/>
-        <ClInclude Include="Floor.h"/>
         <ClInclude Include="PlayerAttackComponent.h"/>
         <ClInclude Include="PlayerLoadoutComponent.h"/>
         <ClInclude Include="PlayerRollComponent.h"/>
@@ -210,6 +170,7 @@
         <ClInclude Include="Projectile.h"/>
         <ClInclude Include="Weapon.h"/>
         <ClInclude Include="GameSettings.h"/>
+        <ClInclude Include="Level.h"/>
         <ClInclude Include="LevelBuilder.h"/>
         <ClInclude Include="LevelData.h"/>
         <ClInclude Include="LevelLoader.h"/>
@@ -223,6 +184,14 @@
         </ProjectReference>
     </ItemGroup>
     <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets"/>
+    <ItemGroup>
+        <GameResourceFiles Include="$(ProjectDir)Resources\**\*"/>
+        <GameRuntimeFiles Include="$(ProjectDir)openal32.dll"/>
+    </ItemGroup>
+    <Target Name="CopyGameFiles" AfterTargets="Build">
+        <Copy SourceFiles="@(GameResourceFiles)" DestinationFiles="@(GameResourceFiles->'$(OutDir)Resources\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true"/>
+        <Copy SourceFiles="@(GameRuntimeFiles)" DestinationFolder="$(OutDir)" SkipUnchangedFiles="true"/>
+    </Target>
     <ImportGroup Label="ExtensionTargets">
     </ImportGroup>
 </Project>

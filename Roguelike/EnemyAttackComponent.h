@@ -3,9 +3,9 @@
 #include <string>
 #include <Component.h>
 #include <TransformComponent.h>
-#include <WeaponComponent.h>
-#include <MeleeWeaponComponent.h>
-#include <HealthComponent.h>
+#include "WeaponComponent.h"
+#include "MeleeWeaponComponent.h"
+#include "HealthComponent.h"
 #include <Vector.h>
 
 namespace RoguelikeGame
@@ -16,6 +16,7 @@ namespace RoguelikeGame
     public:
         EnemyAttackComponent(XYZEngine::GameObject* gameObject);
 
+        void Start() override;
         void Update(float deltaTime) override;
         void Render() override;
 
@@ -23,11 +24,10 @@ namespace RoguelikeGame
         void SetAttackRange(float newAttackRange);
 
     private:
-        XYZEngine::TransformComponent* transform;
-        XYZEngine::WeaponComponent* weapon = nullptr;
-        XYZEngine::MeleeWeaponComponent* meleeWeapon = nullptr;
-        XYZEngine::HealthComponent* health = nullptr;
-        bool areWeaponsSearched = false;
+        XYZEngine::TransformComponent* transform = nullptr;
+        WeaponComponent* weapon = nullptr;
+        MeleeWeaponComponent* meleeWeapon = nullptr;
+        HealthComponent* health = nullptr;
 
         std::string targetName;
         float attackRange = 0.f;

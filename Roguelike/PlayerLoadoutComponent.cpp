@@ -1,4 +1,6 @@
 ﻿#include "PlayerLoadoutComponent.h"
+#include <InputSystem.h>
+#include "WeaponSetup.h"
 #include "GameResources.h"
 #include "Projectile.h"
 #include "Fx.h"
@@ -12,23 +14,32 @@ namespace RoguelikeGame
     {
     }
 
-    void PlayerLoadoutComponent::Update(float deltaTime)
+    void PlayerLoadoutComponent::Start()
     {
         FindComponents();
+    }
 
-        if (animation == nullptr)
+    void PlayerLoadoutComponent::Update(float deltaTime)
+    {
+        if (animation == nullptr || (health != nullptr && !health->IsAlive()))
         {
             return;
+        }
+
+        int selectedSlot = ReadSelectedSlot();
+        if (selectedSlot != NO_WEAPON_SLOT)
+        {
+            requestedSlot = selectedSlot;
         }
 
         if (isSwapping)
         {
             bool isSwapPlaying = animation->GetCurrentAnimation() == XYZEngine::MovementAnimation::Swap;
 
-            if (pendingSlot != XYZEngine::NO_WEAPON_SLOT && (!isSwapPlaying || animation->GetCurrentFrame() >= SWAP_CHANGE_FRAME))
+            if (pendingSlot != NO_WEAPON_SLOT && (!isSwapPlaying || animation->GetCurrentFrame() >= SWAP_CHANGE_FRAME))
             {
                 ApplyWeapon(pendingSlot);
-                pendingSlot = XYZEngine::NO_WEAPON_SLOT;
+                pendingSlot = NO_WEAPON_SLOT;
             }
 
             if (!isSwapPlaying || animation->IsFinished())
@@ -39,17 +50,20 @@ namespace RoguelikeGame
             return;
         }
 
-        if (input != nullptr && (dodgeRoll == nullptr || !dodgeRoll->IsRolling()))
+        if (dodgeRoll != nullptr && dodgeRoll->IsRolling())
         {
-            TrySelectSlot(input->GetSelectedWeaponSlot());
+            return;
         }
+
+        TrySelectSlot(requestedSlot);
+        requestedSlot = NO_WEAPON_SLOT;
     }
 
     void PlayerLoadoutComponent::Render()
     {
     }
 
-    void PlayerLoadoutComponent::SetWeapon(Weapon* newWeapon)
+    void PlayerLoadoutComponent::SetWeapon(WeaponLayerComponent* newWeapon)
     {
         weapon = newWeapon;
     }
@@ -59,12 +73,10 @@ namespace RoguelikeGame
         stowedWeapon = newStowedWeapon;
     }
 
-    void PlayerLoadoutComponent::SetAudio(XYZEngine::AudioComponent* newShotAudio, XYZEngine::AudioComponent* newReloadAudio,
-                                          XYZEngine::AudioComponent* newMeleeAudio)
+    void PlayerLoadoutComponent::SetAudio(XYZEngine::AudioComponent* newShotAudio, XYZEngine::AudioComponent* newReloadAudio)
     {
         shotAudio = newShotAudio;
         reloadAudio = newReloadAudio;
-        meleeAudio = newMeleeAudio;
     }
 
     void PlayerLoadoutComponent::SetSlots(const WeaponId* newSlots, int newSlotsCount, int startSlot)
@@ -77,12 +89,12 @@ namespace RoguelikeGame
         }
 
         FindComponents();
-        ApplyWeapon(std::min(std::max(startSlot, 0), slotsCount - 1));
+        ApplyWeapon(std::clamp(startSlot, 0, slotsCount - 1));
     }
 
     bool PlayerLoadoutComponent::TrySelectSlot(int slot)
     {
-        if (slot == XYZEngine::NO_WEAPON_SLOT || slot < 0 || slot >= slotsCount || slot == currentSlot || isSwapping)
+        if (slot == NO_WEAPON_SLOT || slot < 0 || slot >= slotsCount || slot == currentSlot || isSwapping)
         {
             return false;
         }
@@ -145,28 +157,27 @@ namespace RoguelikeGame
         return slots[currentSlot];
     }
 
+    int PlayerLoadoutComponent::ReadSelectedSlot() const
+    {
+        auto input = XYZEngine::InputSystem::Instance();
+        for (int slot = 0; slot < slotsCount; slot++)
+        {
+            if (input->WasKeyPressed(WEAPON_SLOT_KEYS[slot]))
+            {
+                return slot;
+            }
+        }
+
+        return NO_WEAPON_SLOT;
+    }
+
     void PlayerLoadoutComponent::FindComponents()
     {
-        if (input == nullptr)
-        {
-            input = gameObject->GetComponent<XYZEngine::InputComponent>();
-        }
-        if (animation == nullptr)
-        {
-            animation = gameObject->GetComponent<XYZEngine::SpriteMovementAnimationComponent>();
-        }
-        if (rangedWeapon == nullptr)
-        {
-            rangedWeapon = gameObject->GetComponent<XYZEngine::WeaponComponent>();
-        }
-        if (meleeWeapon == nullptr)
-        {
-            meleeWeapon = gameObject->GetComponent<XYZEngine::MeleeWeaponComponent>();
-        }
-        if (dodgeRoll == nullptr)
-        {
-            dodgeRoll = gameObject->GetComponent<XYZEngine::DodgeRollComponent>();
-        }
+        animation = gameObject->GetComponent<XYZEngine::SpriteMovementAnimationComponent>();
+        rangedWeapon = gameObject->GetComponent<WeaponComponent>();
+        meleeWeapon = gameObject->GetComponent<MeleeWeaponComponent>();
+        dodgeRoll = gameObject->GetComponent<DodgeRollComponent>();
+        health = gameObject->GetComponent<HealthComponent>();
     }
 
     void PlayerLoadoutComponent::ApplyWeapon(int slot)
@@ -187,7 +198,7 @@ namespace RoguelikeGame
         if (animation != nullptr)
         {
             animation->SetReloadAnimation(PLAYER_TEXTURE, AtlasFrameIndex(RELOAD_ANIMATION.row, 0), RELOAD_ANIMATION.frames,
-                                          ReloadFramesPerSecond(definition.reloadTime));
+                                          ReloadFrameSeconds(definition.reloadTime));
         }
     }
 
@@ -202,15 +213,8 @@ namespace RoguelikeGame
         ShotProfile shot = MakeShotProfile(id, PLAYER_ATTACK_DAMAGE, PLAYER_PROJECTILE_SPEED, PLAYER_ATTACK_COOLDOWN);
 
         rangedWeapon->CancelReload();
-        rangedWeapon->SetCooldown(shot.cooldown);
-        rangedWeapon->SetDamage(shot.damage);
-        rangedWeapon->SetProjectileSpeed(shot.speed);
-        rangedWeapon->SetPellets(shot.pellets);
-        rangedWeapon->SetConeDegrees(shot.coneDegrees);
-        rangedWeapon->SetMuzzleOffset(ShotOffset(definition));
-        rangedWeapon->SetMagazine(definition.magazineSize, AmmoKindKey(definition.ammo));
+        ApplyWeaponDefinition(rangedWeapon, id, shot);
         rangedWeapon->SetAmmoInMagazine(ammoInMagazine);
-        rangedWeapon->SetReloadTime(definition.reloadTime);
 
         if (shotAudio != nullptr)
         {
@@ -223,32 +227,6 @@ namespace RoguelikeGame
             reloadAudio->Stop();
             reloadAudio->SetSound(GameResources::GetWeaponSound(definition.reloadSound));
         }
-
-        std::string shooterName = gameObject->GetName();
-
-        rangedWeapon->SetShotStartAction([this]()
-        {
-            if (shotAudio != nullptr)
-            {
-                shotAudio->Play();
-            }
-
-            if (animation != nullptr)
-            {
-                animation->PlayShoot();
-            }
-
-            if (weapon != nullptr)
-            {
-                weapon->PlayMuzzleFlash();
-            }
-        });
-
-        rangedWeapon->SetShotAction([id, shooterName](const XYZEngine::Vector2Df& shotPosition, const XYZEngine::Vector2Df& shotDirection,
-                                                      float damage, float speed)
-        {
-            Projectile::Spawn(shotPosition, shotDirection, damage, speed, shooterName, id);
-        });
     }
 
     void PlayerLoadoutComponent::ApplyMeleeWeapon(const MeleeDefinition* melee)
@@ -259,50 +237,16 @@ namespace RoguelikeGame
         }
 
         meleeWeapon->CancelAttack();
+        meleeWeapon->SetDefinition(melee);
 
         if (melee == nullptr)
         {
             return;
         }
 
-        XYZEngine::MeleeAttack quick;
-        quick.damage = PLAYER_MELEE_DAMAGE * melee->quick.damageScale;
-        quick.chargedDamage = quick.damage;
-        quick.range = melee->quick.range;
-        quick.arcDegrees = melee->quick.arcDegrees;
-        quick.recovery = melee->quick.recovery;
-        quick.hitFrame = MELEE_HIT_FRAME;
-        quick.windup = MELEE_HIT_FRAME / MELEE_ANIMATION.framesPerSecond;
-
-        XYZEngine::MeleeAttack heavy;
-        heavy.damage = PLAYER_MELEE_DAMAGE * melee->heavy.damageScale;
-        heavy.chargedDamage = PLAYER_MELEE_DAMAGE * melee->heavy.chargedDamageScale;
-        heavy.range = melee->heavy.range;
-        heavy.arcDegrees = melee->heavy.arcDegrees;
-        heavy.recovery = melee->heavy.recovery;
-        heavy.hitFrame = HEAVY_HIT_FIRST_FRAME;
-        heavy.windup = HEAVY_FRAME_SECONDS[HEAVY_RELEASE_FRAME];
-
-        meleeWeapon->SetQuickAttack(quick);
-        meleeWeapon->SetHeavyAttack(heavy);
+        meleeWeapon->SetQuickAttack(MakeQuickAttack(melee->quick, PLAYER_MELEE_DAMAGE, melee->quick.recovery));
+        meleeWeapon->SetHeavyAttack(MakeHeavyAttack(melee->heavy, PLAYER_MELEE_DAMAGE));
         meleeWeapon->SetChargeTime(HEAVY_CHARGE_TIME);
         meleeWeapon->SetLunge(HEAVY_MOVE_SPEED, HEAVY_ANIMATION_FRAMES, PLAYER_HEAVY_LUNGE_SPEED);
-
-        const MeleeDefinition* current = melee;
-        meleeWeapon->SetStrikeAction([this, current](XYZEngine::MeleeAttackKind kind, int hits)
-        {
-            if (hits <= 0 || meleeAudio == nullptr)
-            {
-                return;
-            }
-
-            meleeAudio->SetSound(GameResources::GetMeleeHitSound(*current));
-            meleeAudio->Play();
-        });
-
-        meleeWeapon->SetHitAction([](XYZEngine::MeleeAttackKind kind, const XYZEngine::Vector2Df& position, const XYZEngine::Vector2Df& direction)
-        {
-            Fx::SpawnBloodHit(position, direction);
-        });
     }
 }

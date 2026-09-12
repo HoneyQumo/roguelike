@@ -1,75 +1,41 @@
 #include "pch.h"
 #include "AudioComponent.h"
-#include <iostream>
+#include "LoggerRegistry.h"
 
 namespace XYZEngine
 {
-	AudioComponent::AudioComponent(GameObject* gameObject) : Component(gameObject)
+	AudioComponent::AudioComponent(GameObject* gameObject) : SoundSourceComponent(gameObject)
 	{
-		sound = new sf::Sound();
-	}
-	AudioComponent::~AudioComponent()
-	{
-		sound->stop();
-		delete sound;
-	}
-
-	void AudioComponent::Update(float deltaTime)
-	{
-
-	}
-	void AudioComponent::Render()
-	{
-
 	}
 
 	void AudioComponent::SetSound(const sf::SoundBuffer* newSound)
 	{
 		if (newSound == nullptr)
 		{
-			std::cout << "Can't set empty sound." << std::endl;
+			LOG_WARN("Can't set empty sound.");
 			return;
 		}
 
-		sound->setBuffer(*newSound);
-	}
-	void AudioComponent::SetLoop(bool isLooped)
-	{
-		sound->setLoop(isLooped);
-	}
-	void AudioComponent::SetVolume(float newVolume)
-	{
-		sound->setVolume(newVolume);
+		sound.setBuffer(*newSound);
 	}
 
 	void AudioComponent::Play()
 	{
-		if (sound->getBuffer() == nullptr)
+		if (sound.getBuffer() == nullptr)
 		{
-			std::cout << "Can't play sound without buffer." << std::endl;
+			LOG_WARN("Can't play sound without buffer.");
 			return;
 		}
 
-		sound->play();
-	}
-	void AudioComponent::Pause()
-	{
-		sound->pause();
-	}
-	void AudioComponent::Resume()
-	{
-		if (sound->getStatus() == sf::SoundSource::Paused)
-		{
-			sound->play();
-		}
-	}
-	void AudioComponent::Stop()
-	{
-		sound->stop();
+		SoundSourceComponent::Play();
 	}
 
-	bool AudioComponent::IsPlaying() const
+	sf::Sound* AudioComponent::GetSource()
 	{
-		return sound->getStatus() == sf::SoundSource::Playing;
+		return &sound;
+	}
+	const sf::Sound* AudioComponent::GetSource() const
+	{
+		return &sound;
 	}
 }

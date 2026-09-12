@@ -8,6 +8,9 @@ namespace XYZEngine
 {
 	class TransformComponent;
 
+	using GameObjectId = unsigned int;
+	constexpr GameObjectId NO_GAME_OBJECT = 0;
+
 	class GameObject
 	{
 	public:
@@ -16,7 +19,9 @@ namespace XYZEngine
 
 		~GameObject();
 
-		std::string GetName() const;
+		const std::string& GetName() const;
+		GameObjectId GetId() const;
+		TransformComponent* GetTransform() const;
 		void Print(int depth = 0) const;
 
 		void SetRenderLayer(int newRenderLayer);
@@ -36,7 +41,7 @@ namespace XYZEngine
 
 			if constexpr (std::is_same<T, TransformComponent>::value)
 			{
-				if (GetComponent<TransformComponent>() != nullptr)
+				if (transform != nullptr)
 				{
 					LOG_WARN("Can't add second Transform to " + name);
 					return nullptr;
@@ -49,11 +54,8 @@ namespace XYZEngine
 			return newComponent;
 		}
 
-		void RemoveComponent(Component* component)
-		{
-			components.erase(std::remove_if(components.begin(), components.end(), [component](Component* obj) { return obj == component; }), components.end());
-			delete component;
-		}
+		void DestroyComponent(Component* component);
+		void DestroyMarkedComponents();
 
 		template <typename T>
 		T* GetComponent() const
@@ -128,10 +130,13 @@ namespace XYZEngine
 
 	private:
 		std::string name;
+		GameObjectId id = NO_GAME_OBJECT;
 		int renderLayer = 0;
+		TransformComponent* transform = nullptr;
 
 		std::vector<GameObject*> children = {};
 		std::vector<Component*> components = {};
+		std::vector<Component*> markedToDestroyComponents = {};
 
 		void AddChild(GameObject* child);
 		void RemoveChild(GameObject* child);

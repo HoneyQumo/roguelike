@@ -10,7 +10,10 @@ namespace XYZEngine
 		if (!logFile.is_open())
 		{
 			std::cout << "Can't open log file: " << filePath << std::endl;
+			return;
 		}
+
+		logFile << "===== run started " << CurrentDateTimeText() << " =====" << std::endl;
 	}
 	FileSink::~FileSink()
 	{
@@ -20,13 +23,13 @@ namespace XYZEngine
 		}
 	}
 
-	void FileSink::Log(LogLevel level, const std::string& message)
+	void FileSink::Log(const LogEntry& entry)
 	{
 		if (!logFile.is_open())
 		{
 			return;
 		}
 
-		logFile << LogLevelToString(level) << " " << message << std::endl;
+		logFile << FormatLogLine(entry) << std::endl;
 	}
 }

@@ -5,11 +5,14 @@
 #include <functional>
 #include "Component.h"
 #include "Collision.h"
+#include "EventList.h"
 #include "Trigger.h"
 #include "PhysicsSystem.h"
 
 namespace XYZEngine
 {
+	class RigidbodyComponent;
+
 	constexpr unsigned int DEFAULT_COLLISION_LAYER = 1u;
 
 	class ColliderComponent : public Component
@@ -17,6 +20,7 @@ namespace XYZEngine
 	public:
 		ColliderComponent(GameObject* gameObject);
 
+		void Start() override;
 		virtual void Update(float deltaTime) = 0;
 		virtual void Render() = 0;
 
@@ -24,6 +28,7 @@ namespace XYZEngine
 		bool IsTrigger() const;
 
 		const sf::FloatRect& GetBounds() const;
+		RigidbodyComponent* GetBody();
 
 		void SetCollisionLayer(unsigned int newCollisionLayer);
 		unsigned int GetCollisionLayer() const;
@@ -31,29 +36,31 @@ namespace XYZEngine
 		void SetIgnoredLayers(unsigned int newIgnoredLayers);
 		unsigned int GetIgnoredLayers() const;
 
-		void SubscribeCollision(std::function<void(Collision)> onCollisionAction);
-		void UnsubscribeCollision(std::function<void(Collision)> onCollisionAction);
+		SubscriptionId SubscribeCollision(std::function<void(const Collision&)> onCollisionAction);
+		void UnsubscribeCollision(SubscriptionId subscription);
 
-		void SubscribeTriggerEnter(std::function<void(Trigger)> onTriggerEnterAction);
-		void UnsubscribeTriggerEnter(std::function<void(Trigger)> onTriggerEnterAction);
+		SubscriptionId SubscribeTriggerEnter(std::function<void(const Trigger&)> onTriggerEnterAction);
+		void UnsubscribeTriggerEnter(SubscriptionId subscription);
 
-		void SubscribeTriggerExit(std::function<void(Trigger)> onTriggerExitAction);
-		void UnsubscribeTriggerExit(std::function<void(Trigger)> onTriggerExitAction);
+		SubscriptionId SubscribeTriggerExit(std::function<void(const Trigger&)> onTriggerExitAction);
+		void UnsubscribeTriggerExit(SubscriptionId subscription);
 
 		friend class PhysicsSystem;
 
 	protected:
 		sf::FloatRect bounds;
+		RigidbodyComponent* body = nullptr;
+		bool isBodyFound = false;
 		bool isTrigger = false;
 		unsigned int collisionLayer = DEFAULT_COLLISION_LAYER;
 		unsigned int ignoredLayers = 0u;
 
-		void OnCollision(Collision collision);
-		void OnTriggerEnter(Trigger trigger);
-		void OnTriggerExit(Trigger trigger);
+		void OnCollision(const Collision& collision);
+		void OnTriggerEnter(const Trigger& trigger);
+		void OnTriggerExit(const Trigger& trigger);
 
-		std::vector<std::function<void(Collision)>> onCollisionActions;
-		std::vector<std::function<void(Trigger)>> onTriggerEnterActions;
-		std::vector<std::function<void(Trigger)>> onTriggerExitActions;
+		EventList<const Collision&> collisionEvent;
+		EventList<const Trigger&> triggerEnterEvent;
+		EventList<const Trigger&> triggerExitEvent;
 	};
 }

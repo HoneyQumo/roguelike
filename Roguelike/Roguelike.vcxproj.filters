@@ -19,6 +19,9 @@
     <ClCompile Include="Music.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
+    <ClCompile Include="CharacterFactory.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
     <ClCompile Include="Enemy.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
@@ -49,6 +52,45 @@
     <ClCompile Include="AmmoHudComponent.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
+    <ClCompile Include="AreaDamage.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="FactionComponent.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="ChaseComponent.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="AmmoPouchComponent.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="HealthBarComponent.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="HealthComponent.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="ProjectileComponent.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="DodgeRollComponent.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="ExplosiveComponent.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="MeleeWeaponComponent.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="WeaponComponent.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="MessageOverlayComponent.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="MessageOverlay.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
     <ClCompile Include="Crosshair.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
@@ -56,6 +98,9 @@
       <Filter>Sources</Filter>
     </ClCompile>
     <ClCompile Include="WeaponLayerComponent.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="WeaponSetup.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
     <ClCompile Include="BloodPool.cpp">
@@ -73,10 +118,10 @@
     <ClCompile Include="Wall.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
-    <ClCompile Include="Floor.cpp">
+    <ClCompile Include="LevelLoader.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
-    <ClCompile Include="LevelLoader.cpp">
+    <ClCompile Include="Level.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
     <ClCompile Include="LevelBuilder.cpp">
@@ -87,6 +132,21 @@
     <ClInclude Include="ReloadIndicatorComponent.h" />
     <ClInclude Include="AmmoHud.h" />
     <ClInclude Include="AmmoHudComponent.h" />
+    <ClInclude Include="AreaDamage.h" />
+    <ClInclude Include="Faction.h" />
+    <ClInclude Include="FactionComponent.h" />
+    <ClInclude Include="ChaseComponent.h" />
+    <ClInclude Include="AmmoPouchComponent.h" />
+    <ClInclude Include="HealthBarComponent.h" />
+    <ClInclude Include="HealthComponent.h" />
+    <ClInclude Include="ProjectileComponent.h" />
+    <ClInclude Include="DodgeRollComponent.h" />
+    <ClInclude Include="ExplosiveComponent.h" />
+    <ClInclude Include="MeleeWeaponComponent.h" />
+    <ClInclude Include="WeaponComponent.h" />
+    <ClInclude Include="TextUtils.h" />
+    <ClInclude Include="MessageOverlayComponent.h" />
+    <ClInclude Include="MessageOverlay.h" />
     <ClInclude Include="BloodPool.h" />
     <ClInclude Include="Crosshair.h" />
     <ClInclude Include="Fx.h" />
@@ -95,11 +155,13 @@
     <ClInclude Include="SpriteAtlas.h" />
     <ClInclude Include="WeaponCatalog.h" />
     <ClInclude Include="WeaponLayerComponent.h" />
+    <ClInclude Include="WeaponSetup.h" />
     <ClInclude Include="DeveloperLevel.h" />
+    <ClInclude Include="CharacterFactory.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="EnemyAttackComponent.h" />
+    <ClInclude Include="EnemyCatalog.h" />
     <ClInclude Include="EnemyConfig.h" />
-    <ClInclude Include="Floor.h" />
     <ClInclude Include="PlayerAttackComponent.h" />
     <ClInclude Include="PlayerLoadoutComponent.h" />
     <ClInclude Include="PlayerRollComponent.h" />
@@ -107,6 +169,7 @@
     <ClInclude Include="Projectile.h" />
     <ClInclude Include="Weapon.h" />
     <ClInclude Include="GameSettings.h" />
+    <ClInclude Include="Level.h" />
     <ClInclude Include="LevelBuilder.h" />
     <ClInclude Include="LevelData.h" />
     <ClInclude Include="LevelLoader.h" />

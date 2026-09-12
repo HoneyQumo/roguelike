@@ -1,11 +1,17 @@
 #include "pch.h"
 #include "MovementComponent.h"
+#include "GameObject.h"
 
 namespace XYZEngine
 {
 	MovementComponent::MovementComponent(GameObject* gameObject) : Component(gameObject)
 	{
-		transform = gameObject->GetComponent<TransformComponent>();
+		transform = gameObject->GetTransform();
+	}
+
+	void MovementComponent::Start()
+	{
+		input = gameObject->GetComponent<InputComponent>();
 	}
 
 	void MovementComponent::Update(float deltaTime)
@@ -17,11 +23,6 @@ namespace XYZEngine
 		}
 
 		// If the owner is player-controlled, input overrides any direction set from the outside.
-		if (input == nullptr)
-		{
-			input = gameObject->GetComponent<InputComponent>();
-		}
-
 		if (input != nullptr)
 		{
 			direction = { input->GetHorizontalAxis(), input->GetVerticalAxis() };
@@ -29,17 +30,15 @@ namespace XYZEngine
 
 		isRunning = false;
 
-		float length = direction.GetLength();
-		if (length <= 0.f || speed <= 0.f)
+		if (direction.IsZero() || speed <= 0.f)
 		{
 			return;
 		}
 
-		isRunning = input != nullptr && input->IsRunPressed();
+		isRunning = input != nullptr && input->IsActionHeld(InputAction::Run);
 		float currentSpeed = isRunning ? speed * runSpeedMultiplier : speed;
 
-		Vector2Df normalizedDirection = (1.f / length) * direction;
-		transform->MoveBy(currentSpeed * deltaTime * normalizedDirection);
+		transform->MoveBy(currentSpeed * deltaTime * direction.Normalized());
 	}
 	void MovementComponent::Render()
 	{

@@ -5,7 +5,7 @@
 #include <SFML/Graphics/Texture.hpp>
 #include <Component.h>
 #include <SpriteRendererComponent.h>
-#include <WeaponComponent.h>
+#include "WeaponComponent.h"
 
 namespace RoguelikeGame
 {
@@ -14,6 +14,7 @@ namespace RoguelikeGame
     public:
         ReloadIndicatorComponent(XYZEngine::GameObject* gameObject);
 
+        void Start() override;
         void Update(float deltaTime) override;
         void Render() override;
 
@@ -21,7 +22,7 @@ namespace RoguelikeGame
 
     private:
         XYZEngine::SpriteRendererComponent* renderer = nullptr;
-        XYZEngine::WeaponComponent* weapon = nullptr;
+        WeaponComponent* weapon = nullptr;
 
         std::string targetName;
 

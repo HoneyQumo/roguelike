@@ -1,14 +1,13 @@
-﻿#pragma once
+#pragma once
 
-#include <string>
 #include "WeaponCatalog.h"
 
 namespace RoguelikeGame
 {
     struct EnemyConfig
     {
-        std::string objectName;
-        std::string textureMapName;
+        const char* objectName;
+        const char* textureMapName;
 
         WeaponId weapon = WeaponId::Knife;
 

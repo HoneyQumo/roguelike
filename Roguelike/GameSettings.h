@@ -2,7 +2,7 @@
 
 #include <string>
 #include <SFML/Graphics/Color.hpp>
-#include "EnemyConfig.h"
+#include <SFML/Window/Keyboard.hpp>
 #include "SpriteAtlas.h"
 #include "WeaponCatalog.h"
 
@@ -10,6 +10,7 @@ namespace RoguelikeGame
 {
     constexpr int SCREEN_WIDTH = 1280;
     constexpr int SCREEN_HEIGHT = 720;
+    constexpr unsigned int FRAME_RATE_LIMIT = 60;
 
     constexpr float TILE_SIZE = 64.f;
 
@@ -38,6 +39,9 @@ namespace RoguelikeGame
     constexpr int PLAYER_START_WEAPON_SLOT = 0;
     constexpr WeaponId PLAYER_LOADOUT[PLAYER_WEAPON_SLOTS] = {WeaponId::Rpg, WeaponId::ShotgunPump, WeaponId::Bat};
 
+    constexpr int NO_WEAPON_SLOT = -1;
+    constexpr sf::Keyboard::Key WEAPON_SLOT_KEYS[PLAYER_WEAPON_SLOTS] = {sf::Keyboard::Num1, sf::Keyboard::Num2, sf::Keyboard::Num3};
+
     struct AmmoReserve
     {
         AmmoKind kind;
@@ -52,9 +56,9 @@ namespace RoguelikeGame
         {AmmoKind::Rocket, 6}
     };
 
-    constexpr float ReloadFramesPerSecond(float reloadTime)
+    constexpr float ReloadFrameSeconds(float reloadTime)
     {
-        return reloadTime > 0.f ? RELOAD_ANIMATION.frames / reloadTime : RELOAD_ANIMATION.framesPerSecond;
+        return reloadTime > 0.f ? reloadTime / RELOAD_ANIMATION.frames : RELOAD_ANIMATION.secondsPerFrame;
     }
 
     constexpr float PROJECTILE_COLLIDER_SIZE = 8.f;
@@ -94,6 +98,17 @@ namespace RoguelikeGame
     // Красная зона обоймы
     constexpr float AMMO_HUD_LOW_PART = 0.25f;
 
+    constexpr int OVERLAY_TITLE_FONT_SIZE = 56;
+    constexpr int OVERLAY_HINT_FONT_SIZE = 24;
+    constexpr float OVERLAY_LINE_GAP = 36.f;
+    constexpr sf::Keyboard::Key PAUSE_KEY = sf::Keyboard::Escape;
+    constexpr sf::Keyboard::Key RESTART_KEY = sf::Keyboard::R;
+    constexpr float GAME_OVER_DELAY = 1.5f;
+    constexpr auto PAUSE_TITLE = u8"ПАУЗА";
+    constexpr auto PAUSE_HINT = u8"Esc — продолжить";
+    constexpr auto GAME_OVER_TITLE = u8"ВЫ ПОГИБЛИ";
+    constexpr auto GAME_OVER_HINT = u8"R — заново";
+
     constexpr float HEALTH_BAR_WIDTH = 48.f;
     constexpr float HEALTH_BAR_HEIGHT = 6.f;
     constexpr float HEALTH_BAR_OFFSET_Y = 30.f;
@@ -101,8 +116,8 @@ namespace RoguelikeGame
     constexpr float HIT_FLASH_DURATION = 0.12f;
     constexpr auto HIT_FLASH_UNIFORM = "amount";
 
-    // Лужа кров начинается с 3го кадра анимации смерти
-    constexpr float BLOOD_POOL_DELAY = 3.f * 110.f / 1000.f;
+    // Лужа крови начинается с 3го кадра анимации смерти
+    constexpr float BLOOD_POOL_DELAY = 3.f * DEATH_ANIMATION.secondsPerFrame;
 
     constexpr float MUSIC_VOLUME = 15.f;
     constexpr float SHOT_VOLUME = 20.f;
@@ -112,6 +127,8 @@ namespace RoguelikeGame
 
     constexpr float HEAVY_CHARGED_GLOW = 0.22f;
     constexpr float HEAVY_CHARGED_GLOW_PERIOD = 0.18f;
+
+    constexpr auto PLAYER_OBJECT_NAME = "Player";
 
     constexpr auto PLAYER_TEXTURE = "player";
     constexpr auto WEAPONS_TEXTURE = "weapons";
@@ -130,68 +147,34 @@ namespace RoguelikeGame
     constexpr auto HURT_SOUND = "hurt";
     constexpr auto MAIN_THEME_MUSIC = "main_theme";
 
-    const std::string TEXTURES_PATH = "Resources/Textures/";
-    const std::string AUDIO_PATH = "Resources/Audio/";
-    const std::string SHADERS_PATH = "Resources/Shaders/";
-    const std::string LEVELS_PATH = "Resources/Levels/";
-    const std::string FONTS_PATH = "Resources/Fonts/";
-    const std::string WEAPONS_AUDIO_PATH = "Resources/Audio/Weapons/";
+    constexpr auto TEXTURES_PATH = "Resources/Textures/";
+    constexpr auto AUDIO_PATH = "Resources/Audio/";
+    constexpr auto WEAPONS_AUDIO_PATH = "Resources/Audio/Weapons/";
 
-    const std::string CROSSHAIR_FILE = TEXTURES_PATH + "crosshair.png";
-    const std::string WEAPONS_ATLAS_FILE = TEXTURES_PATH + "weapons.png";
-    const std::string RELOAD_MAG_FILE = TEXTURES_PATH + "reload_mag.png";
-    const std::string FX_ATLAS_FILE = TEXTURES_PATH + "fx.png";
-    const std::string HIT_FLASH_SHADER_FILE = SHADERS_PATH + "hit_flash.frag";
-    const std::string SHOT_SOUND_FILE = AUDIO_PATH + "shot.wav";
-    const std::string HURT_SOUND_FILE = AUDIO_PATH + "hurt.wav";
-    const std::string MAIN_THEME_FILE = AUDIO_PATH + "main_music_1.ogg";
-    const std::string TEST_LEVEL_FILE = LEVELS_PATH + "test_level.config";
-    const std::string HUD_FONT_FILE = FONTS_PATH + "Roboto-Medium.ttf";
+    constexpr auto CROSSHAIR_FILE = "Resources/Textures/crosshair.png";
+    constexpr auto WEAPONS_ATLAS_FILE = "Resources/Textures/weapons.png";
+    constexpr auto RELOAD_MAG_FILE = "Resources/Textures/reload_mag.png";
+    constexpr auto FX_ATLAS_FILE = "Resources/Textures/fx.png";
+    constexpr auto HIT_FLASH_SHADER_FILE = "Resources/Shaders/hit_flash.frag";
+    constexpr auto SHOT_SOUND_FILE = "Resources/Audio/shot.wav";
+    constexpr auto HURT_SOUND_FILE = "Resources/Audio/hurt.wav";
+    constexpr auto MAIN_THEME_FILE = "Resources/Audio/main_music_1.ogg";
+    constexpr auto TEST_LEVEL_FILE = "Resources/Levels/test_level.config";
+    constexpr auto HUD_FONT_FILE = "Resources/Fonts/Roboto-Medium.ttf";
 
     constexpr auto LOG_FILE_PATH = "log.txt";
 
-    const sf::Color WALL_COLOR = {92, 86, 80};
-    const sf::Color FLOOR_COLOR = {46, 42, 38};
-    const sf::Color CROSSHAIR_COLOR = {255, 255, 255};
-    const sf::Color AMMO_HUD_COLOR = {235, 230, 220};
-    const sf::Color AMMO_HUD_LOW_COLOR = {220, 90, 70};
-    const sf::Color AMMO_HUD_RELOADING_COLOR = {235, 190, 90};
-    const sf::Color AMMO_HUD_OUTLINE_COLOR = {15, 13, 12, 220};
-    const sf::Color RELOAD_INDICATOR_COLOR = {235, 190, 90};
-
-    const EnemyConfig GRUNT_CONFIG = {
-        "Grunt", "enemy_grunt", WeaponId::Knife,
-        150.f, 300.f, 40.f, 50.f, 0.f,
-        50.f, 30.f, 0.9f, 0.f
-    };
-
-    const EnemyConfig ASSAULT_CONFIG = {
-        "Assault", "enemy_assault", WeaponId::Ak47,
-        110.f, 420.f, 220.f, 70.f, 5.f,
-        360.f, 12.f, 1.4f, 700.f
-    };
-
-    const EnemyConfig SHIELD_CONFIG = {
-        "Shield", "enemy_shield", WeaponId::Glock,
-        95.f, 380.f, 150.f, 120.f, 14.f,
-        300.f, 9.f, 1.1f, 650.f
-    };
-
-    const EnemyConfig HEAVY_CONFIG = {
-        "Heavy", "enemy_heavy", WeaponId::M16,
-        80.f, 400.f, 200.f, 150.f, 10.f,
-        340.f, 6.f, 0.3f, 720.f
-    };
-
-    const EnemyConfig RADIO_CONFIG = {
-        "Radio", "enemy_radio", WeaponId::SmgSuppressed,
-        165.f, 460.f, 260.f, 55.f, 2.f,
-        300.f, 5.f, 0.45f, 680.f
-    };
-
-    const EnemyConfig BOSS_CONFIG = {
-        "Boss", "enemy_boss", WeaponId::ShotgunPump,
-        90.f, 500.f, 170.f, 260.f, 18.f,
-        260.f, 16.f, 1.0f, 900.f
-    };
+    inline const sf::Color WALL_COLOR = {92, 86, 80};
+    inline const sf::Color FLOOR_COLOR = {46, 42, 38};
+    inline const sf::Color CROSSHAIR_COLOR = {255, 255, 255};
+    inline const sf::Color AMMO_HUD_COLOR = {235, 230, 220};
+    inline const sf::Color AMMO_HUD_LOW_COLOR = {220, 90, 70};
+    inline const sf::Color AMMO_HUD_RELOADING_COLOR = {235, 190, 90};
+    inline const sf::Color AMMO_HUD_OUTLINE_COLOR = {15, 13, 12, 220};
+    inline const sf::Color RELOAD_INDICATOR_COLOR = {235, 190, 90};
+    inline const sf::Color OVERLAY_BACKGROUND_COLOR = {0, 0, 0, 150};
+    inline const sf::Color DEBUG_DETECTION_COLOR = {240, 200, 60};
+    inline const sf::Color DEBUG_CHASING_COLOR = {240, 80, 60};
+    inline const sf::Color DEBUG_ATTACK_RANGE_COLOR = {255, 140, 40};
+    inline const sf::Color DEBUG_BLAST_COLOR = {230, 80, 230};
 }

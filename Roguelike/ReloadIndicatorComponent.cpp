@@ -23,15 +23,16 @@ namespace RoguelikeGame
         }
     }
 
+    void ReloadIndicatorComponent::Start()
+    {
+        renderer = gameObject->GetComponent<XYZEngine::SpriteRendererComponent>();
+    }
+
     void ReloadIndicatorComponent::Update(float deltaTime)
     {
         if (renderer == nullptr)
         {
-            renderer = gameObject->GetComponent<XYZEngine::SpriteRendererComponent>();
-            if (renderer == nullptr)
-            {
-                return;
-            }
+            return;
         }
 
         if (weapon == nullptr)
@@ -47,7 +48,7 @@ namespace RoguelikeGame
 
         int lastFrame = static_cast<int>(magazineFrames.size()) - 1;
         int frame = static_cast<int>(weapon->GetReloadProgress() * (lastFrame + 1));
-        ShowMagazineFrame(std::min(std::max(frame, 0), lastFrame));
+        ShowMagazineFrame(std::clamp(frame, 0, lastFrame));
     }
 
     void ReloadIndicatorComponent::Render()
@@ -67,13 +68,7 @@ namespace RoguelikeGame
             return;
         }
 
-        XYZEngine::GameObject* target = XYZEngine::GameWorld::Instance()->FindGameObject(targetName);
-        if (target == nullptr)
-        {
-            return;
-        }
-
-        weapon = target->GetComponent<XYZEngine::WeaponComponent>();
+        weapon = XYZEngine::GameWorld::Instance()->FindComponent<WeaponComponent>(targetName);
     }
 
     void ReloadIndicatorComponent::ShowMagazineFrame(int frame)

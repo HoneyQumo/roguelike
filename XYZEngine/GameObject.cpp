@@ -7,12 +7,12 @@ namespace XYZEngine
 	GameObject::GameObject()
 	{
 		name = "GameObject";
-		AddComponent<TransformComponent>();
+		transform = AddComponent<TransformComponent>();
 	}
 	GameObject::GameObject(std::string newName)
 	{
 		name = newName;
-		AddComponent<TransformComponent>();
+		transform = AddComponent<TransformComponent>();
 	}
 
 	GameObject::~GameObject()
@@ -22,12 +22,51 @@ namespace XYZEngine
 			delete component;
 		}
 		components.clear();
+		markedToDestroyComponents.clear();
 		children.clear();
 	}
 
-	std::string GameObject::GetName() const
+	void GameObject::DestroyComponent(Component* component)
+	{
+		if (component == nullptr || component->isDestroyed)
+		{
+			return;
+		}
+
+		component->isDestroyed = true;
+		markedToDestroyComponents.push_back(component);
+	}
+
+	void GameObject::DestroyMarkedComponents()
+	{
+		if (markedToDestroyComponents.empty())
+		{
+			return;
+		}
+
+		std::vector<Component*> destroying;
+		destroying.swap(markedToDestroyComponents);
+
+		for (auto component : destroying)
+		{
+			components.erase(std::remove(components.begin(), components.end(), component), components.end());
+			delete component;
+		}
+	}
+
+	const std::string& GameObject::GetName() const
 	{
 		return name;
+	}
+
+	GameObjectId GameObject::GetId() const
+	{
+		return id;
+	}
+
+	TransformComponent* GameObject::GetTransform() const
+	{
+		return transform;
 	}
 
 	void GameObject::Print(int depth) const
@@ -46,16 +85,33 @@ namespace XYZEngine
 
 	void GameObject::Update(float deltaTime)
 	{
-		for (auto& component : components)
+		for (int i = 0; i < components.size(); i++)
 		{
-			component->Update(deltaTime);
+			if (components[i]->isDestroyed || components[i]->isStarted)
+			{
+				continue;
+			}
+
+			components[i]->isStarted = true;
+			components[i]->Start();
+		}
+
+		for (int i = 0; i < components.size(); i++)
+		{
+			if (!components[i]->isDestroyed)
+			{
+				components[i]->Update(deltaTime);
+			}
 		}
 	}
 	void GameObject::Render()
 	{
-		for (auto& component : components)
+		for (int i = 0; i < components.size(); i++)
 		{
-			component->Render();
+			if (!components[i]->isDestroyed)
+			{
+				components[i]->Render();
+			}
 		}
 	}
 

@@ -12,6 +12,7 @@ namespace XYZEngine
 	public:
 		MovementComponent(GameObject* gameObject);
 
+		void Start() override;
 		void Update(float deltaTime) override;
 		void Render() override;
 
@@ -27,7 +28,7 @@ namespace XYZEngine
 		void SetDirection(const Vector2Df& newDirection);
 		Vector2Df GetDirection() const;
 	private:
-		TransformComponent* transform;
+		TransformComponent* transform = nullptr;
 		InputComponent* input = nullptr;
 
 		bool isEnabled = true;

@@ -16,6 +16,7 @@ namespace RoguelikeGame
 
     private:
         static void LoadCharacterAtlas(const std::string& name, int framesCount);
+        static void LoadWeaponSound(const std::string& key);
         static void LoadWeaponSounds();
         static void LoadFxStrip(const std::string& name, const FxStrip& strip);
     };

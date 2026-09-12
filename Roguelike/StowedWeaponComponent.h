@@ -14,6 +14,7 @@ namespace RoguelikeGame
     public:
         StowedWeaponComponent(XYZEngine::GameObject* gameObject);
 
+        void Start() override;
         void Update(float deltaTime) override;
         void Render() override;
 
@@ -21,7 +22,7 @@ namespace RoguelikeGame
         void SetWeaponId(WeaponId newWeaponId);
 
     private:
-        XYZEngine::TransformComponent* transform;
+        XYZEngine::TransformComponent* transform = nullptr;
         XYZEngine::SpriteRendererComponent* renderer = nullptr;
         XYZEngine::SpriteMovementAnimationComponent* ownerAnimation = nullptr;
 

@@ -1,11 +1,30 @@
 #include "pch.h"
 #include "ColliderComponent.h"
+#include "GameObject.h"
+#include "RigidbodyComponent.h"
 
 namespace XYZEngine
 {
 	ColliderComponent::ColliderComponent(GameObject* gameObject) : Component(gameObject) 
 	{ 
 		
+	}
+
+	void ColliderComponent::Start()
+	{
+		GetBody();
+	}
+
+	// Тело ищется один раз: состав компонентов объекта после создания не меняется.
+	RigidbodyComponent* ColliderComponent::GetBody()
+	{
+		if (!isBodyFound)
+		{
+			body = gameObject->GetComponent<RigidbodyComponent>();
+			isBodyFound = true;
+		}
+
+		return body;
 	}
 
 	void ColliderComponent::SetTrigger(bool newIsTrigger)
@@ -40,76 +59,43 @@ namespace XYZEngine
 		return ignoredLayers;
 	}
 
-	void ColliderComponent::SubscribeCollision(std::function<void(Collision)> onCollisionAction)
+	SubscriptionId ColliderComponent::SubscribeCollision(std::function<void(const Collision&)> onCollisionAction)
 	{
-		onCollisionActions.push_back(onCollisionAction);
+		return collisionEvent.Subscribe(std::move(onCollisionAction));
 	}
-	void ColliderComponent::UnsubscribeCollision(std::function<void(Collision)> onCollisionAction)
+	void ColliderComponent::UnsubscribeCollision(SubscriptionId subscription)
 	{
-		onCollisionActions.erase(std::remove_if
-		(
-			onCollisionActions.begin(),
-			onCollisionActions.end(),
-			[&onCollisionAction](const std::function<void(Collision)>& action)
-			{
-				return action.target<void(Collision)>() == onCollisionAction.target<void(Collision)>();
-			}
-		), onCollisionActions.end());
+		collisionEvent.Unsubscribe(subscription);
 	}
 
-	void ColliderComponent::SubscribeTriggerEnter(std::function<void(Trigger)> onTriggerEnterAction)
+	SubscriptionId ColliderComponent::SubscribeTriggerEnter(std::function<void(const Trigger&)> onTriggerEnterAction)
 	{
-		onTriggerEnterActions.push_back(onTriggerEnterAction);
+		return triggerEnterEvent.Subscribe(std::move(onTriggerEnterAction));
 	}
-	void ColliderComponent::UnsubscribeTriggerEnter(std::function<void(Trigger)> onTriggerEnterAction)
+	void ColliderComponent::UnsubscribeTriggerEnter(SubscriptionId subscription)
 	{
-		onTriggerEnterActions.erase(std::remove_if
-		(
-			onTriggerEnterActions.begin(),
-			onTriggerEnterActions.end(),
-			[&onTriggerEnterAction](const std::function<void(Trigger)>& action)
-			{
-				return action.target<void(Trigger)>() == onTriggerEnterAction.target<void(Trigger)>();
-			}
-		), onTriggerEnterActions.end());
+		triggerEnterEvent.Unsubscribe(subscription);
 	}
 
-	void ColliderComponent::SubscribeTriggerExit(std::function<void(Trigger)> onTriggerExitAction)
+	SubscriptionId ColliderComponent::SubscribeTriggerExit(std::function<void(const Trigger&)> onTriggerExitAction)
 	{
-		onTriggerExitActions.push_back(onTriggerExitAction);
+		return triggerExitEvent.Subscribe(std::move(onTriggerExitAction));
 	}
-	void ColliderComponent::UnsubscribeTriggerExit(std::function<void(Trigger)> onTriggerExitAction)
+	void ColliderComponent::UnsubscribeTriggerExit(SubscriptionId subscription)
 	{
-		onTriggerExitActions.erase(std::remove_if
-		(
-			onTriggerExitActions.begin(),
-			onTriggerExitActions.end(),
-			[&onTriggerExitAction](const std::function<void(Trigger)>& action)
-			{
-				return action.target<void(Trigger)>() == onTriggerExitAction.target<void(Trigger)>();
-			}
-		), onTriggerExitActions.end());
+		triggerExitEvent.Unsubscribe(subscription);
 	}
 
-	void ColliderComponent::OnCollision(Collision collision)
+	void ColliderComponent::OnCollision(const Collision& collision)
 	{
-		for (int i = 0; i < onCollisionActions.size(); i++)
-		{
-			onCollisionActions[i](collision);
-		}
+		collisionEvent.Invoke(collision);
 	}
-	void ColliderComponent::OnTriggerEnter(Trigger trigger)
+	void ColliderComponent::OnTriggerEnter(const Trigger& trigger)
 	{
-		for (int i = 0; i < onTriggerEnterActions.size(); i++)
-		{
-			onTriggerEnterActions[i](trigger);
-		}
+		triggerEnterEvent.Invoke(trigger);
 	}
-	void ColliderComponent::OnTriggerExit(Trigger trigger)
+	void ColliderComponent::OnTriggerExit(const Trigger& trigger)
 	{
-		for (int i = 0; i < onTriggerExitActions.size(); i++)
-		{
-			onTriggerExitActions[i](trigger);
-		}
+		triggerExitEvent.Invoke(trigger);
 	}
 }

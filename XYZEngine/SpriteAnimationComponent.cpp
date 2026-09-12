@@ -2,7 +2,6 @@
 #include "SpriteAnimationComponent.h"
 #include "GameObject.h"
 #include "GameWorld.h"
-#include "ResourceSystem.h"
 #include "LoggerRegistry.h"
 #include <cassert>
 
@@ -10,28 +9,33 @@ namespace XYZEngine
 {
 	SpriteAnimationComponent::SpriteAnimationComponent(GameObject* gameObject) : Component(gameObject) {}
 
-	void SpriteAnimationComponent::Update(float deltaTime)
+	void SpriteAnimationComponent::Start()
 	{
+		renderer = gameObject->GetComponent<SpriteRendererComponent>();
 		if (renderer == nullptr)
-		{
-			renderer = gameObject->GetComponent<SpriteRendererComponent>();
-			if (renderer == nullptr)
-			{
-				return;
-			}
-
-			renderer->SetVisible(isPlaying && delayTimer <= 0.f);
-		}
-
-		if (!isPlaying || frames.empty())
 		{
 			return;
 		}
 
-		if (delayTimer > 0.f)
+		renderer->SetVisible(isPlaying && startDelay.IsReady());
+	}
+
+	void SpriteAnimationComponent::Update(float deltaTime)
+	{
+		if (renderer == nullptr)
 		{
-			delayTimer -= deltaTime;
-			if (delayTimer > 0.f)
+			return;
+		}
+
+		if (!isPlaying || clip.IsEmpty())
+		{
+			return;
+		}
+
+		if (startDelay.IsRunning())
+		{
+			startDelay.Tick(deltaTime);
+			if (startDelay.IsRunning())
 			{
 				return;
 			}
@@ -40,12 +44,12 @@ namespace XYZEngine
 		}
 
 		frameTimer += deltaTime;
-		while (frameTimer >= secondsPerFrame)
+		while (frameTimer >= clip.GetFrameSeconds(currentFrame))
 		{
-			frameTimer -= secondsPerFrame;
+			frameTimer -= clip.GetFrameSeconds(currentFrame);
 			currentFrame++;
 
-			if (currentFrame < (int)frames.size())
+			if (currentFrame < clip.GetFramesCount())
 			{
 				continue;
 			}
@@ -56,38 +60,24 @@ namespace XYZEngine
 				continue;
 			}
 
-			currentFrame = (int)frames.size() - 1;
+			currentFrame = clip.GetFramesCount() - 1;
 			Finish();
 			break;
 		}
 
-		renderer->SetTexture(*frames[currentFrame]);
+		renderer->SetTexture(*clip.GetFrame(currentFrame));
 	}
 	void SpriteAnimationComponent::Render()
 	{
 
 	}
 
-	void SpriteAnimationComponent::SetFrames(const std::string& textureMapName, int firstFrameIndex, int framesCount, float framesPerSecond)
+	void SpriteAnimationComponent::SetFrames(const std::string& textureMapName, int firstFrameIndex, int framesCount, float secondsPerFrame)
 	{
 		assert(framesCount > 0);
-		assert(framesPerSecond > 0.f);
+		assert(secondsPerFrame > 0.f);
 
-		frames.clear();
-
-		int totalFrames = ResourceSystem::Instance()->GetTextureMapElementsCount(textureMapName);
-		if (firstFrameIndex < 0 || framesCount <= 0 || firstFrameIndex + framesCount > totalFrames)
-		{
-			LOG_ERROR("Wrong animation frames range for texture map: " + textureMapName);
-			return;
-		}
-
-		for (int i = firstFrameIndex; i < firstFrameIndex + framesCount; i++)
-		{
-			frames.push_back(ResourceSystem::Instance()->GetTextureMapElementShared(textureMapName, i));
-		}
-
-		secondsPerFrame = 1.f / framesPerSecond;
+		clip.Load(textureMapName, firstFrameIndex, framesCount, secondsPerFrame);
 	}
 	void SpriteAnimationComponent::SetLooped(bool newIsLooped)
 	{
@@ -99,22 +89,22 @@ namespace XYZEngine
 	}
 	void SpriteAnimationComponent::SetStartDelay(float newStartDelay)
 	{
-		startDelay = newStartDelay;
+		startDelay.SetDuration(newStartDelay);
 	}
 
 	void SpriteAnimationComponent::Play()
 	{
-		if (frames.empty())
+		if (clip.IsEmpty())
 		{
 			return;
 		}
 
 		isPlaying = true;
-		delayTimer = startDelay;
+		startDelay.Restart();
 		frameTimer = 0.f;
 		currentFrame = 0;
 
-		if (delayTimer <= 0.f)
+		if (startDelay.IsReady())
 		{
 			ShowFirstFrame();
 		}
@@ -135,7 +125,7 @@ namespace XYZEngine
 			return;
 		}
 
-		renderer->SetTexture(*frames[0]);
+		renderer->SetTexture(*clip.GetFrame(0));
 		renderer->SetVisible(true);
 	}
 

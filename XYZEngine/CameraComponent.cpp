@@ -1,19 +1,14 @@
 #include "pch.h"
 #include "CameraComponent.h"
+#include "GameObject.h"
 #include "TransformComponent.h"
 
 namespace XYZEngine
 {
 	CameraComponent::CameraComponent(GameObject* gameObject) : Component(gameObject)
 	{
-		view = new sf::View(sf::FloatRect(0, 0, 800, -600));
-		transform = gameObject->GetComponent<TransformComponent>();
+		transform = gameObject->GetTransform();
 	}
-	CameraComponent::~CameraComponent()
-	{
-		delete view;
-	}
-
 	void CameraComponent::Update(float deltaTime)
 	{
 		if (window == nullptr)
@@ -23,10 +18,10 @@ namespace XYZEngine
 
 		auto position = transform->GetWorldPosition();
 
-		view->setCenter(Convert<sf::Vector2f, Vector2Df>(position));
-		view->setRotation(isRotationEnabled ? transform->GetWorldRotation() : 0.f);
+		view.setCenter(Convert<sf::Vector2f, Vector2Df>(position));
+		view.setRotation(isRotationEnabled ? transform->GetWorldRotation() : 0.f);
 
-		window->setView(*view);
+		window->setView(view);
 	}
 	void CameraComponent::Render()
 	{
@@ -38,7 +33,7 @@ namespace XYZEngine
 
 	void CameraComponent::SetBaseResolution(int width, int height)
 	{
-		view->reset(sf::FloatRect(0, 0, width, -height));
+		view.reset(sf::FloatRect(0.f, 0.f, static_cast<float>(width), -static_cast<float>(height)));
 	}
 	void CameraComponent::SetWindow(sf::RenderWindow* newWindow)
 	{
@@ -55,6 +50,6 @@ namespace XYZEngine
 			LOG_WARN("Zoom must be greater than zero.");
 			return;
 		}
-		view->zoom(newZoom);
+		view.zoom(newZoom);
 	}
 }

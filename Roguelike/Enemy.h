@@ -1,21 +1,10 @@
 #pragma once
 
-#include <memory>
-#include "GameObject.h"
-#include "Vector.h"
 #include "EnemyConfig.h"
-#include "Weapon.h"
+#include <GameObject.h>
+#include <Vector.h>
 
 namespace RoguelikeGame
 {
-    class Enemy
-    {
-    public:
-        Enemy(const EnemyConfig& config, const XYZEngine::Vector2Df& position);
-        XYZEngine::GameObject* GetGameObject();
-
-    private:
-        XYZEngine::GameObject* gameObject;
-        std::unique_ptr<Weapon> weapon;
-    };
+    XYZEngine::GameObject* CreateEnemy(const EnemyConfig& config, const XYZEngine::Vector2Df& position);
 }

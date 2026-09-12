@@ -11,7 +11,7 @@ namespace XYZEngine
 		FileSink(const std::string& filePath);
 		~FileSink();
 
-		void Log(LogLevel level, const std::string& message) override;
+		void Log(const LogEntry& entry) override;
 	private:
 		std::ofstream logFile;
 	};

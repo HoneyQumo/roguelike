@@ -11,7 +11,6 @@ namespace XYZEngine
 	{
 	public:
 		RectangleRendererComponent(GameObject* gameObject);
-		~RectangleRendererComponent();
 
 		void Update(float deltaTime) override;
 		void Render() override;
@@ -21,8 +20,8 @@ namespace XYZEngine
 
 		void SetColor(const sf::Color& newColor);
 	private:
-		sf::RectangleShape* rectangle;
-		TransformComponent* transform;
+		sf::RectangleShape rectangle;
+		TransformComponent* transform = nullptr;
 
 		Vector2Df size = { 0.f, 0.f };
 	};

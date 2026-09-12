@@ -14,6 +14,7 @@ namespace XYZEngine
 	public:
 		AimRotationComponent(GameObject* gameObject);
 
+		void Start() override;
 		void Update(float deltaTime) override;
 		void Render() override;
 
@@ -24,7 +25,7 @@ namespace XYZEngine
 
 		const Vector2Df& GetAimDirection() const;
 	private:
-		TransformComponent* transform;
+		TransformComponent* transform = nullptr;
 		InputComponent* input = nullptr;
 
 		std::string targetName;

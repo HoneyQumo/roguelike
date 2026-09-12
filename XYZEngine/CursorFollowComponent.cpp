@@ -9,7 +9,7 @@ namespace XYZEngine
 {
 	CursorFollowComponent::CursorFollowComponent(GameObject* gameObject) : Component(gameObject)
 	{
-		transform = gameObject->GetComponent<TransformComponent>();
+		transform = gameObject->GetTransform();
 	}
 
 	void CursorFollowComponent::Update(float deltaTime)

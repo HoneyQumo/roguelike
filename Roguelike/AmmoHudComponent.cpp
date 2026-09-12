@@ -1,5 +1,6 @@
 ﻿#include "AmmoHudComponent.h"
 #include "GameSettings.h"
+#include "TextUtils.h"
 #include <GameObject.h>
 #include <GameWorld.h>
 #include <RenderSystem.h>
@@ -100,14 +101,13 @@ namespace RoguelikeGame
             return;
         }
 
-        weapon = target->GetComponent<XYZEngine::WeaponComponent>();
+        weapon = target->GetComponent<WeaponComponent>();
         loadout = target->GetComponent<PlayerLoadoutComponent>();
     }
 
     void AmmoHudComponent::ShowWeaponName(WeaponId weaponId)
     {
-        const char* name = GetWeapon(weaponId).name;
-        nameText.setString(sf::String::fromUtf8(name, name + std::char_traits<char>::length(name)));
+        nameText.setString(FromUtf8(GetWeapon(weaponId).name));
 
         shownWeapon = weaponId;
         hasShownWeapon = true;
@@ -116,7 +116,7 @@ namespace RoguelikeGame
     std::string AmmoHudComponent::GetAmmoLine() const
     {
         int reserve = weapon->GetReserveAmmo();
-        std::string reserveText = reserve == XYZEngine::INFINITE_AMMO ? "--" : std::to_string(reserve);
+        std::string reserveText = reserve == INFINITE_AMMO ? "--" : std::to_string(reserve);
 
         return std::to_string(weapon->GetAmmoInMagazine()) + " / " + reserveText;
     }

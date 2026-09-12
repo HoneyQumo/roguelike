@@ -10,11 +10,19 @@ namespace XYZEngine
 		Component(GameObject* gameObject);
 		virtual ~Component();
 
+		virtual void Start() {}
 		virtual void Update(float deltaTime) = 0;
 		virtual void Render() = 0;
 
-		GameObject* GetGameObject();
+		GameObject* GetGameObject() const;
+
+		bool IsDestroyed() const;
+
+		friend class GameObject;
 	protected:
-		GameObject* gameObject;
+		GameObject* gameObject = nullptr;
+	private:
+		bool isStarted = false;
+		bool isDestroyed = false;
 	};
 }

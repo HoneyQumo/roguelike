@@ -3,6 +3,9 @@
 #include <iostream>
 #include "GameWorld.h"
 #include "RenderSystem.h"
+#include "InputSystem.h"
+#include "FrameClock.h"
+#include "DebugDraw.h"
 #include "LoggerRegistry.h"
 
 namespace XYZEngine
@@ -19,24 +22,32 @@ namespace XYZEngine
 		srand(seed);
 	}
 
-	void Engine::Run()
+	void Engine::Run(Scene& scene)
 	{
+		scene.Start();
+
 		LOG_INFO("Engine loop started");
 
 		sf::Clock gameClock;
 		sf::Event event;
 
+		RenderSystem::Instance()->GetMainWindow().setKeyRepeatEnabled(false);
+
 		while (RenderSystem::Instance()->GetMainWindow().isOpen())
 		{
 			sf::Time dt = gameClock.restart();
-			float deltaTime = dt.asSeconds();
+			float deltaTime = std::min(dt.asSeconds(), MAX_FRAME_TIME);
+			FrameClock::Instance()->Advance(deltaTime);
 
+			InputSystem::Instance()->BeginFrame();
 			while (RenderSystem::Instance()->GetMainWindow().pollEvent(event))
 			{
 				if (event.type == sf::Event::Closed)
 				{
 					RenderSystem::Instance()->GetMainWindow().close();
 				}
+
+				InputSystem::Instance()->HandleEvent(event);
 			}
 
 			if (!RenderSystem::Instance()->GetMainWindow().isOpen())
@@ -44,16 +55,38 @@ namespace XYZEngine
 				break;
 			}
 
+			if (InputSystem::Instance()->WasKeyPressed(DEBUG_DRAW_KEY))
+			{
+				DebugDraw::Instance()->Toggle();
+			}
+
+			scene.Update(deltaTime);
+
 			RenderSystem::Instance()->GetMainWindow().clear();
 
-			GameWorld::Instance()->Update(deltaTime);
-			GameWorld::Instance()->FixedUpdate(deltaTime);
+			if (!isPaused)
+			{
+				GameWorld::Instance()->Update(deltaTime);
+				GameWorld::Instance()->UpdatePhysics();
+			}
 			GameWorld::Instance()->Render();
+			DebugDraw::Instance()->Render();
 			GameWorld::Instance()->LateUpdate();
 
 			RenderSystem::Instance()->GetMainWindow().display();
 		}
 
 		LOG_INFO("Engine loop finished");
+
+		scene.Stop();
+	}
+
+	void Engine::SetPaused(bool newIsPaused)
+	{
+		isPaused = newIsPaused;
+	}
+	bool Engine::IsPaused() const
+	{
+		return isPaused;
 	}
 }

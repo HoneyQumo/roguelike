@@ -1,4 +1,6 @@
 #include "EnemyAttackComponent.h"
+#include "GameSettings.h"
+#include <DebugDraw.h>
 #include <GameObject.h>
 #include <GameWorld.h>
 #include <LoggerRegistry.h>
@@ -7,29 +9,24 @@ namespace RoguelikeGame
 {
     EnemyAttackComponent::EnemyAttackComponent(XYZEngine::GameObject* gameObject) : Component(gameObject)
     {
-        transform = gameObject->GetComponent<XYZEngine::TransformComponent>();
+        transform = gameObject->GetTransform();
+    }
+
+    void EnemyAttackComponent::Start()
+    {
+        weapon = gameObject->GetComponent<WeaponComponent>();
+        meleeWeapon = gameObject->GetComponent<MeleeWeaponComponent>();
+        health = gameObject->GetComponent<HealthComponent>();
+
+        if (weapon == nullptr && meleeWeapon == nullptr)
+        {
+            LOG_ERROR("Enemy attack needs a weapon component on " + gameObject->GetName());
+            gameObject->DestroyComponent(this);
+        }
     }
 
     void EnemyAttackComponent::Update(float deltaTime)
     {
-        if (!areWeaponsSearched)
-        {
-            weapon = gameObject->GetComponent<XYZEngine::WeaponComponent>();
-            meleeWeapon = gameObject->GetComponent<XYZEngine::MeleeWeaponComponent>();
-            areWeaponsSearched = true;
-
-            if (weapon == nullptr && meleeWeapon == nullptr)
-            {
-                LOG_ERROR("Enemy attack needs a weapon component on " + gameObject->GetName());
-                gameObject->RemoveComponent(this);
-                return;
-            }
-        }
-
-        if (health == nullptr)
-        {
-            health = gameObject->GetComponent<XYZEngine::HealthComponent>();
-        }
 
         if (health != nullptr && !health->IsAlive())
         {
@@ -47,13 +44,13 @@ namespace RoguelikeGame
             return;
         }
 
-        auto targetHealth = target->GetComponent<XYZEngine::HealthComponent>();
+        auto targetHealth = target->GetComponent<HealthComponent>();
         if (targetHealth != nullptr && !targetHealth->IsAlive())
         {
             return;
         }
 
-        XYZEngine::Vector2Df targetPosition = target->GetComponent<XYZEngine::TransformComponent>()->GetWorldPosition();
+        XYZEngine::Vector2Df targetPosition = target->GetTransform()->GetWorldPosition();
         if ((targetPosition - transform->GetWorldPosition()).GetLength() > attackRange)
         {
             return;
@@ -70,6 +67,10 @@ namespace RoguelikeGame
 
     void EnemyAttackComponent::Render()
     {
+        if (XYZEngine::DebugDraw::Instance()->IsEnabled() && attackRange > 0.f)
+        {
+            XYZEngine::DebugDraw::Instance()->DrawCircle(transform->GetWorldPosition(), attackRange, DEBUG_ATTACK_RANGE_COLOR);
+        }
     }
 
     void EnemyAttackComponent::SetTargetName(const std::string& newTargetName)

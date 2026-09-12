@@ -2,9 +2,9 @@
 
 #include <Component.h>
 #include <InputComponent.h>
-#include <DodgeRollComponent.h>
-#include <MeleeWeaponComponent.h>
-#include <HealthComponent.h>
+#include "DodgeRollComponent.h"
+#include "MeleeWeaponComponent.h"
+#include "HealthComponent.h"
 #include "PlayerLoadoutComponent.h"
 
 namespace RoguelikeGame
@@ -14,17 +14,16 @@ namespace RoguelikeGame
     public:
         PlayerRollComponent(XYZEngine::GameObject* gameObject);
 
+        void Start() override;
         void Update(float deltaTime) override;
         void Render() override;
 
     private:
         XYZEngine::InputComponent* input = nullptr;
-        XYZEngine::DodgeRollComponent* dodgeRoll = nullptr;
-        XYZEngine::MeleeWeaponComponent* meleeWeapon = nullptr;
-        XYZEngine::HealthComponent* health = nullptr;
+        DodgeRollComponent* dodgeRoll = nullptr;
+        MeleeWeaponComponent* meleeWeapon = nullptr;
+        HealthComponent* health = nullptr;
         PlayerLoadoutComponent* loadout = nullptr;
-
-        bool wasRollPressed = false;
 
         bool CanRoll() const;
     };

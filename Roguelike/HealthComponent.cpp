@@ -1,0 +1,170 @@
+#include "HealthComponent.h"
+#include <GameObject.h>
+#include <LoggerRegistry.h>
+#include <cassert>
+
+using namespace XYZEngine;
+
+namespace RoguelikeGame
+{
+    constexpr float MIN_DAMAGE = 1.f;
+    constexpr float LOW_HEALTH_PERCENT = 0.3f;
+
+    HealthComponent::HealthComponent(GameObject* gameObject) : Component(gameObject)
+    {
+    }
+
+    void HealthComponent::Update(float deltaTime)
+    {
+    }
+
+    void HealthComponent::Render()
+    {
+    }
+
+    void HealthComponent::SetMaxHealth(float newMaxHealth)
+    {
+        assert(newMaxHealth > 0.f);
+
+        if (newMaxHealth <= 0.f)
+        {
+            LOG_WARN("Max health must be positive on " + gameObject->GetName());
+            return;
+        }
+
+        maxHealth = newMaxHealth;
+        health = newMaxHealth;
+    }
+
+    float HealthComponent::GetMaxHealth() const
+    {
+        return maxHealth;
+    }
+
+    float HealthComponent::GetHealth() const
+    {
+        return health;
+    }
+
+    float HealthComponent::GetHealthPercent() const
+    {
+        return health / maxHealth;
+    }
+
+    void HealthComponent::SetArmor(float newArmor)
+    {
+        assert(newArmor >= 0.f);
+
+        if (newArmor < 0.f)
+        {
+            LOG_WARN("Armor can't be negative on " + gameObject->GetName());
+            return;
+        }
+
+        armor = newArmor;
+    }
+
+    float HealthComponent::GetArmor() const
+    {
+        return armor;
+    }
+
+    void HealthComponent::SetInvulnerable(bool newIsInvulnerable)
+    {
+        isInvulnerable = newIsInvulnerable;
+    }
+
+    bool HealthComponent::IsInvulnerable() const
+    {
+        return isInvulnerable;
+    }
+
+    void HealthComponent::TakeDamage(float damage)
+    {
+        assert(damage >= 0.f);
+
+        if (damage < 0.f)
+        {
+            LOG_WARN("Negative damage is ignored on " + gameObject->GetName());
+            return;
+        }
+
+        if (isInvulnerable || !IsAlive())
+        {
+            return;
+        }
+
+
+        float takenDamage = CalculateDamage(damage);
+        health -= takenDamage;
+        if (health < 0.f)
+        {
+            health = 0.f;
+        }
+
+        LOG_INFO(gameObject->GetName() + " takes " + std::to_string(static_cast<int>(takenDamage))
+            + " damage, health " + std::to_string(static_cast<int>(health)) + "/" + std::to_string(static_cast<int>(maxHealth)));
+
+        damageEvent.Invoke(takenDamage);
+
+        if (!IsAlive())
+        {
+            LOG_WARN(gameObject->GetName() + " is dead");
+
+            deathEvent.Invoke();
+            return;
+        }
+
+        if (GetHealthPercent() <= LOW_HEALTH_PERCENT)
+        {
+            LOG_WARN(gameObject->GetName() + " health is low: " + std::to_string(static_cast<int>(health)));
+        }
+    }
+
+    void HealthComponent::Heal(float amount)
+    {
+        assert(amount >= 0.f);
+
+        if (amount < 0.f || !IsAlive())
+        {
+            return;
+        }
+
+        health += amount;
+        if (health > maxHealth)
+        {
+            health = maxHealth;
+        }
+
+        LOG_INFO(gameObject->GetName() + " healed to " + std::to_string(static_cast<int>(health)));
+    }
+
+    bool HealthComponent::IsAlive() const
+    {
+        return health > 0.f;
+    }
+
+    XYZEngine::SubscriptionId HealthComponent::SubscribeDamage(std::function<void(float)> onDamage)
+    {
+        return damageEvent.Subscribe(std::move(onDamage));
+    }
+    void HealthComponent::UnsubscribeDamage(XYZEngine::SubscriptionId subscription)
+    {
+        damageEvent.Unsubscribe(subscription);
+    }
+
+    XYZEngine::SubscriptionId HealthComponent::SubscribeDeath(std::function<void()> onDeath)
+    {
+        return deathEvent.Subscribe(std::move(onDeath));
+    }
+    void HealthComponent::UnsubscribeDeath(XYZEngine::SubscriptionId subscription)
+    {
+        deathEvent.Unsubscribe(subscription);
+    }
+
+    float HealthComponent::CalculateDamage(float damage) const
+    {
+        float reducedDamage = damage - armor;
+        return reducedDamage < MIN_DAMAGE ? MIN_DAMAGE : reducedDamage;
+    }
+}

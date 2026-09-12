@@ -1,4 +1,5 @@
 ﻿#include "PlayerAttackComponent.h"
+#include <MathUtils.h>
 #include "GameSettings.h"
 #include <GameObject.h>
 #include <LoggerRegistry.h>
@@ -6,50 +7,30 @@
 
 namespace RoguelikeGame
 {
-    constexpr float TWO_PI = 6.2831853f;
 
     PlayerAttackComponent::PlayerAttackComponent(XYZEngine::GameObject* gameObject) : Component(gameObject)
     {
     }
 
-    void PlayerAttackComponent::Update(float deltaTime)
+    void PlayerAttackComponent::Start()
     {
-        if (input == nullptr)
-        {
-            input = gameObject->GetComponent<XYZEngine::InputComponent>();
-        }
-        if (weapon == nullptr)
-        {
-            weapon = gameObject->GetComponent<XYZEngine::WeaponComponent>();
-        }
-        if (meleeWeapon == nullptr)
-        {
-            meleeWeapon = gameObject->GetComponent<XYZEngine::MeleeWeaponComponent>();
-        }
-        if (health == nullptr)
-        {
-            health = gameObject->GetComponent<XYZEngine::HealthComponent>();
-        }
-        if (dodgeRoll == nullptr)
-        {
-            dodgeRoll = gameObject->GetComponent<XYZEngine::DodgeRollComponent>();
-        }
-        if (loadout == nullptr)
-        {
-            loadout = gameObject->GetComponent<PlayerLoadoutComponent>();
-        }
-        if (hitFlash == nullptr)
-        {
-            hitFlash = gameObject->GetComponent<HitFlashComponent>();
-        }
+        input = gameObject->GetComponent<XYZEngine::InputComponent>();
+        weapon = gameObject->GetComponent<WeaponComponent>();
+        meleeWeapon = gameObject->GetComponent<MeleeWeaponComponent>();
+        health = gameObject->GetComponent<HealthComponent>();
+        dodgeRoll = gameObject->GetComponent<DodgeRollComponent>();
+        loadout = gameObject->GetComponent<PlayerLoadoutComponent>();
+        hitFlash = gameObject->GetComponent<HitFlashComponent>();
 
         if (input == nullptr || weapon == nullptr || meleeWeapon == nullptr || loadout == nullptr)
         {
             LOG_ERROR("Player attack needs input, weapon, melee weapon and loadout components");
-            gameObject->RemoveComponent(this);
-            return;
+            gameObject->DestroyComponent(this);
         }
+    }
 
+    void PlayerAttackComponent::Update(float deltaTime)
+    {
         if (health != nullptr && !health->IsAlive())
         {
             return;
@@ -82,7 +63,7 @@ namespace RoguelikeGame
 
     void PlayerAttackComponent::UpdateMelee(float deltaTime)
     {
-        if (input->IsHeavyAttackPressed())
+        if (input->IsActionHeld(XYZEngine::InputAction::HeavyAttack))
         {
             meleeWeapon->TryStartHeavyAttack();
         }
@@ -90,7 +71,7 @@ namespace RoguelikeGame
         {
             meleeWeapon->ReleaseHeavyAttack();
 
-            if (input->IsAttackPressed())
+            if (input->IsActionHeld(XYZEngine::InputAction::Attack))
             {
                 meleeWeapon->TryQuickAttack();
             }
@@ -99,12 +80,12 @@ namespace RoguelikeGame
 
     void PlayerAttackComponent::UpdateRanged()
     {
-        if (input->IsReloadPressed())
+        if (input->IsActionHeld(XYZEngine::InputAction::Reload))
         {
             weapon->TryReload();
         }
 
-        if (input->IsAttackPressed())
+        if (input->IsActionHeld(XYZEngine::InputAction::Attack))
         {
             weapon->TryShootAt(input->GetMouseWorldPosition());
         }
@@ -125,7 +106,7 @@ namespace RoguelikeGame
         }
 
         glowTimer += deltaTime;
-        float phase = TWO_PI * glowTimer / HEAVY_CHARGED_GLOW_PERIOD;
+        float phase = XYZEngine::TWO_PI * glowTimer / HEAVY_CHARGED_GLOW_PERIOD;
         hitFlash->SetGlow(HEAVY_CHARGED_GLOW * (0.5f + 0.5f * std::sin(phase)));
     }
 }

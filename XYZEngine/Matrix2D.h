@@ -8,6 +8,8 @@
 
 namespace XYZEngine
 {
+	constexpr float MIN_DETERMINANT = 1e-6f;
+
 	class Matrix2D
 	{
 	public:

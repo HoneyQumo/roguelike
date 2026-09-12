@@ -1,8 +1,9 @@
-﻿#pragma once
+#pragma once
 
 #include <Component.h>
 #include <TransformComponent.h>
 #include <SpriteRendererComponent.h>
+#include <SpriteAnimationComponent.h>
 #include <SpriteMovementAnimationComponent.h>
 #include <SFML/Graphics/Texture.hpp>
 #include "SpriteAtlas.h"
@@ -15,17 +16,23 @@ namespace RoguelikeGame
     public:
         WeaponLayerComponent(XYZEngine::GameObject* gameObject);
 
+        void Start() override;
         void Update(float deltaTime) override;
         void Render() override;
 
         void SetOwnerAnimation(XYZEngine::SpriteMovementAnimationComponent* newOwnerAnimation);
-        void SetRecoil(float newRecoil);
         void SetWeaponId(WeaponId newWeaponId);
+        void PlayMuzzleFlash();
 
     private:
-        XYZEngine::TransformComponent* transform;
+        XYZEngine::TransformComponent* transform = nullptr;
         XYZEngine::SpriteRendererComponent* renderer = nullptr;
         XYZEngine::SpriteMovementAnimationComponent* ownerAnimation = nullptr;
+
+        XYZEngine::TransformComponent* muzzleFlashTransform = nullptr;
+        XYZEngine::SpriteRendererComponent* muzzleFlashRenderer = nullptr;
+        XYZEngine::SpriteAnimationComponent* muzzleFlash = nullptr;
+        bool hasMuzzleFlash = false;
 
         float recoil = 1.f;
 
@@ -33,7 +40,7 @@ namespace RoguelikeGame
         const sf::Texture* variants[WEAPON_VARIANTS] = {nullptr, nullptr, nullptr, nullptr};
         int currentVariant = WEAPON_DEFAULT_VARIANT;
 
-        static int ClampFrame(int frame, int framesCount);
+        void CreateMuzzleFlash();
         static FrameOffset GetFrameOffset(XYZEngine::MovementAnimation animation, int frame);
         static float GetFrameRotation(XYZEngine::MovementAnimation animation, int frame);
         static int GetFrameVariant(XYZEngine::MovementAnimation animation, int frame);

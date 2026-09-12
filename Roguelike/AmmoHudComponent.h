@@ -3,7 +3,7 @@
 #include <string>
 #include <SFML/Graphics.hpp>
 #include <Component.h>
-#include <WeaponComponent.h>
+#include "WeaponComponent.h"
 #include "WeaponCatalog.h"
 #include "PlayerLoadoutComponent.h"
 
@@ -20,7 +20,7 @@ namespace RoguelikeGame
         void SetTargetName(const std::string& newTargetName);
 
     private:
-        XYZEngine::WeaponComponent* weapon = nullptr;
+        WeaponComponent* weapon = nullptr;
         PlayerLoadoutComponent* loadout = nullptr;
 
         std::string targetName;

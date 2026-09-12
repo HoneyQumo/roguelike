@@ -1,29 +1,18 @@
 #pragma once
 
-#include <memory>
-#include <vector>
+#include "Level.h"
 #include "LevelData.h"
-#include "Player.h"
-#include "Enemy.h"
-#include "Wall.h"
-#include "Floor.h"
+#include <Vector.h>
 
 namespace RoguelikeGame
 {
     class LevelBuilder
     {
     public:
-        void Build(const LevelData& levelData);
-        void Clear();
-
-        Player* GetPlayer() const;
+        static Level Build(const LevelData& levelData);
 
     private:
-        std::vector<std::unique_ptr<Floor>> floors;
-        std::vector<std::unique_ptr<Wall>> walls;
-        std::vector<std::unique_ptr<Enemy>> enemies;
-        std::unique_ptr<Player> player;
-
+        static int BuildTiles(const LevelData& levelData, Level& level);
         static XYZEngine::Vector2Df TileToWorldPosition(int column, int row, int levelHeight);
     };
 }

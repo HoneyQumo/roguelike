@@ -1,31 +1,65 @@
 name: Build Game Solution
 
-on: 
+on:
   push:
     branches:
-      - main # Запускать при пуше в ветку main
+      - '**' # Запускать на любой ветке
   pull_request:
     branches:
-      - main # Запускать при создании Pull Request в ветку main
+      - main # И на каждый Pull Request в main
+
 jobs:
   build:
     runs-on: windows-latest # Иcnользуем Windows Runner
-    
+
+    strategy:
+      fail-fast: false # Падение Debug не должно скрывать результат Release
+      matrix:
+        configuration: [Debug, Release]
+
+    name: ${{ matrix.configuration }}|x64
+
     steps:
       # Step 1: Checkout the repository
       - name: Checkout code
         uses: actions/checkout@v4
-      
+
       # Step 2: Set up MSBuild and Visual Studio
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v2
-      
+
       # Step 3: Restore NuGet packages (packages.config в EngineTest)
       - name: Restore NuGet packages
         run: |
           msbuild Roguelike.sln -t:restore -p:RestorePackagesConfig=true
-      
+
       # Step 4: Build the solution
       - name: Build solution
-        run: | 
-          msbuild Roguelike.sln /p:Configuration=Release /p:Platform=x64
+        run: |
+          msbuild Roguelike.sln /p:Configuration=${{ matrix.configuration }} /p:Platform=x64
+
+      # Step 5: Run unit tests
+      - name: Run tests
+        run: |
+          .\x64\${{ matrix.configuration }}\EngineTest.exe --gtest_output=xml:test-results.xml
+
+      # Step 6: Keep the report even when tests fail
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-${{ matrix.configuration }}
+          path: test-results.xml
+          if-no-files-found: error
+
+      # Step 7: Playable build: exe, resources and OpenAL next to it
+      - name: Upload game build
+        if: matrix.configuration == 'Release'
+        uses: actions/upload-artifact@v4
+        with:
+          name: roguelike-${{ matrix.configuration }}
+          path: |
+            Roguelike/x64/Release/Roguelike.exe
+            Roguelike/x64/Release/openal32.dll
+            Roguelike/x64/Release/Resources/
+          if-no-files-found: error

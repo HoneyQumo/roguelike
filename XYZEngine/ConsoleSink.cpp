@@ -4,8 +4,8 @@
 
 namespace XYZEngine
 {
-	void ConsoleSink::Log(LogLevel level, const std::string& message)
+	void ConsoleSink::Log(const LogEntry& entry)
 	{
-		std::cout << LogLevelToString(level) << " " << message << std::endl;
+		std::cout << FormatLogLine(entry) << std::endl;
 	}
 }

@@ -30,7 +30,7 @@ namespace XYZEngine
 		void SetKinematic(bool newIsKinematic);
 		bool GetKinematic() const;
 	private:
-		TransformComponent* transform;
+		TransformComponent* transform = nullptr;
 
 		Vector2Df linearVelocity = { 0.f, 0.f };
 		float angleVelocity = 0.f;

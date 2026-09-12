@@ -15,6 +15,11 @@ struct uniform_distribution_selector<false, T> {
     using type = typename std::uniform_real_distribution<T>;
 };
 
+inline std::mt19937& random_engine() {
+    static std::mt19937 engine{ std::random_device{}() };
+    return engine;
+}
+
 template <typename T>
 T random(T lower = T(0), T higher = T(99)) {
     if (lower == higher) {
@@ -27,7 +32,6 @@ T random(T lower = T(0), T higher = T(99)) {
     using uniform_distribution_type = typename uniform_distribution_selector<std::is_integral<T>::value, T>::type;
 
     uniform_distribution_type distribution(lower, higher);
-    static std::mt19937 engine;
 
-    return distribution(engine);
+    return distribution(random_engine());
 }

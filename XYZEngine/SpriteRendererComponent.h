@@ -13,7 +13,6 @@ namespace XYZEngine
     {
     public:
         SpriteRendererComponent(GameObject* gameObject);
-        ~SpriteRendererComponent() override;
 
         void Update(float deltaTime) override;
         void Render() override;
@@ -37,8 +36,8 @@ namespace XYZEngine
     private:
         Vector2Df scale;
         Vector2Df pivot = {0.5f, 0.5f};
-        sf::Sprite* sprite;
-        TransformComponent* transform;
+        sf::Sprite sprite;
+        TransformComponent* transform = nullptr;
 
         sf::Shader* shader = nullptr;
         std::map<std::string, float> shaderFloats;

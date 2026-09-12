@@ -101,6 +101,7 @@
     <ClCompile Include="ItemCatalogLoader.cpp" />
     <ClCompile Include="Item.cpp" />
     <ClCompile Include="ItemPickupComponent.cpp" />
+    <ClCompile Include="InventoryComponent.cpp" />
     <ClCompile Include="HudScreen.cpp" />
     <ClCompile Include="MessageScreen.cpp" />
     <ClCompile Include="PlayerHudBinderComponent.cpp" />
@@ -142,6 +143,7 @@
     <ClInclude Include="ItemCatalogLoader.h" />
     <ClInclude Include="Item.h" />
     <ClInclude Include="ItemPickupComponent.h" />
+    <ClInclude Include="InventoryComponent.h" />
     <ClInclude Include="Faction.h" />
     <ClInclude Include="FactionComponent.h" />
     <ClInclude Include="ChaseComponent.h" />

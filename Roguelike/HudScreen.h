@@ -32,6 +32,10 @@ namespace RoguelikeGame
         void SetAmmo(const AmmoHudState& state);
         void SetVitals(const VitalsHudState& state);
 
+        void ShowNotice(const char* text);
+        void Update(float deltaTime) override;
+        bool IsNoticeShown() const;
+
         const XYZEngine::UiLabel& GetNameLabel() const;
         const XYZEngine::UiLabel& GetAmmoLabel() const;
         const XYZEngine::UiProgressBar& GetHealthBar() const;
@@ -42,6 +46,8 @@ namespace RoguelikeGame
         XYZEngine::UiLabel* ammoLabel = nullptr;
         XYZEngine::UiProgressBar* healthBar = nullptr;
         XYZEngine::UiProgressBar* staminaBar = nullptr;
+        XYZEngine::UiLabel* noticeLabel = nullptr;
+        float noticeTimeLeft = 0.f;
 
         std::string shownName;
         std::string shownAmmo;

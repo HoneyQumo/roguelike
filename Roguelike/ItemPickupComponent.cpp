@@ -1,5 +1,6 @@
 #include "ItemPickupComponent.h"
 #include "FactionComponent.h"
+#include "InventoryComponent.h"
 #include <ColliderComponent.h>
 #include <GameObject.h>
 #include <LoggerRegistry.h>
@@ -73,6 +74,12 @@ namespace RoguelikeGame
     bool ItemPickupComponent::TryPickUp(XYZEngine::GameObject* collector)
     {
         if (isPickedUp || definition == nullptr || collector == nullptr)
+        {
+            return false;
+        }
+
+        auto inventory = collector->GetComponent<InventoryComponent>();
+        if (inventory != nullptr && !inventory->TryAdd(*definition))
         {
             return false;
         }

@@ -3,6 +3,7 @@
 #include <string>
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Window/Keyboard.hpp>
+#include <CameraComponent.h>
 #include "SpriteAtlas.h"
 #include "WeaponCatalog.h"
 
@@ -13,6 +14,10 @@ namespace RoguelikeGame
     constexpr unsigned int FRAME_RATE_LIMIT = 60;
 
     constexpr float CAMERA_VIEW_HEIGHT = static_cast<float>(SCREEN_HEIGHT);
+    constexpr float CAMERA_SHAKE_LIMIT = 40.f;
+    constexpr XYZEngine::CameraShake CAMERA_SHAKE_LIGHT = {5.f, 0.12f, 24.f};
+    constexpr XYZEngine::CameraShake CAMERA_SHAKE_HEAVY = {13.f, 0.28f, 18.f};
+    constexpr XYZEngine::CameraShake CAMERA_SHAKE_BLAST = {24.f, 0.45f, 14.f};
 
     constexpr float TILE_SIZE = 64.f;
 

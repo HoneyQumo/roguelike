@@ -70,15 +70,22 @@ namespace RoguelikeGame
         projectile->SetShooter(shooter == nullptr ? XYZEngine::NO_GAME_OBJECT : shooter->GetId(), GetFactionOf(shooter),
             shooter == nullptr ? std::string() : shooter->GetName());
 
+        bool isPlayerShot = shooter != nullptr && shooter->GetName() == PLAYER_OBJECT_NAME;
+
         if (explosive == nullptr)
         {
             projectile->SetDamage(damage);
             projectile->SetLifetime(PROJECTILE_LIFETIME);
-            projectile->SubscribeHit([](const XYZEngine::Vector2Df& hitPosition, const XYZEngine::Vector2Df& hitDirection, bool isCharacterHit)
+            projectile->SubscribeHit([isPlayerShot](const XYZEngine::Vector2Df& hitPosition, const XYZEngine::Vector2Df& hitDirection, bool isCharacterHit)
             {
                 if (isCharacterHit)
                 {
                     Fx::SpawnBloodHit(hitPosition, hitDirection);
+
+                    if (isPlayerShot)
+                    {
+                        Fx::ShakeCamera(CAMERA_SHAKE_LIGHT);
+                    }
                 }
                 else
                 {
@@ -105,6 +112,7 @@ namespace RoguelikeGame
         blast->SubscribeExplode([blastRadius](const XYZEngine::Vector2Df& blastPosition)
         {
             Fx::SpawnExplosion(blastPosition, blastRadius);
+            Fx::ShakeCamera(CAMERA_SHAKE_BLAST);
         });
         blast->SubscribeHit([](const XYZEngine::Vector2Df& targetPosition, const XYZEngine::Vector2Df& hitDirection)
         {

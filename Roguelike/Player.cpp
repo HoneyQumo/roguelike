@@ -6,6 +6,7 @@
 #include "PlayerRollComponent.h"
 #include "StowedWeaponComponent.h"
 #include "BloodPool.h"
+#include "Fx.h"
 #include "WeaponSetup.h"
 #include <GameWorld.h>
 #include <RenderSystem.h>
@@ -63,6 +64,7 @@ namespace RoguelikeGame
         {
             auto camera = object->AddComponent<XYZEngine::CameraComponent>();
             camera->SetViewHeight(CAMERA_VIEW_HEIGHT);
+            camera->SetMaxShakeAmplitude(CAMERA_SHAKE_LIMIT);
             camera->SetRotationEnabled(false);
 
             object->AddComponent<XYZEngine::InputComponent>();
@@ -129,6 +131,13 @@ namespace RoguelikeGame
 
         auto meleeWeapon = gameObject->AddComponent<MeleeWeaponComponent>();
         PlayEffectsOnMeleeHit(meleeWeapon, meleeAudio);
+        meleeWeapon->SubscribeStrike([](MeleeAttackKind kind, int hits)
+        {
+            if (hits > 0)
+            {
+                Fx::ShakeCamera(kind == MeleeAttackKind::Heavy ? CAMERA_SHAKE_HEAVY : CAMERA_SHAKE_LIGHT);
+            }
+        });
 
         auto loadout = gameObject->AddComponent<PlayerLoadoutComponent>();
         loadout->SetWeapon(parts.weapon);
@@ -141,6 +150,7 @@ namespace RoguelikeGame
 
         health->SubscribeDamage([animation, hurtAudio, hitFlash, meleeWeapon](const DamageInfo& damage)
         {
+            Fx::ShakeCamera(CAMERA_SHAKE_HEAVY);
             meleeWeapon->CancelAttack();
             animation->PlayHurt();
             hurtAudio->Play();

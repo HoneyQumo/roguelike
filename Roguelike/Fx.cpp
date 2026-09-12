@@ -12,6 +12,17 @@
 namespace RoguelikeGame
 {
 
+    void Fx::ShakeCamera(const XYZEngine::CameraShake& shake)
+    {
+        auto camera = XYZEngine::GameWorld::Instance()->FindComponent<XYZEngine::CameraComponent>(PLAYER_OBJECT_NAME);
+        if (camera == nullptr)
+        {
+            return;
+        }
+
+        camera->Shake(shake);
+    }
+
     constexpr int BLOOD_HIT_SPLASHES = 2;
     constexpr float BLOOD_HIT_SPREAD = 20.f;
 

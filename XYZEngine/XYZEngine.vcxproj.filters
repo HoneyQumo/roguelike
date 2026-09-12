@@ -54,10 +54,10 @@
     <ClInclude Include="UiButton.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="UiScreen.h">
+    <ClInclude Include="UiManager.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="UiRootComponent.h">
+    <ClInclude Include="UiScreen.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="ParticleSpec.h">
@@ -224,10 +224,10 @@
     <ClCompile Include="UiButton.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="UiScreen.cpp">
+    <ClCompile Include="UiManager.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="UiRootComponent.cpp">
+    <ClCompile Include="UiScreen.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="ParticleSystem.cpp">

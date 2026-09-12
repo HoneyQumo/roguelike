@@ -87,8 +87,8 @@
     <ClInclude Include="UiProgressBar.h" />
     <ClInclude Include="UiIcon.h" />
     <ClInclude Include="UiButton.h" />
+    <ClInclude Include="UiManager.h" />
     <ClInclude Include="UiScreen.h" />
-    <ClInclude Include="UiRootComponent.h" />
     <ClInclude Include="ParticleSpec.h" />
     <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="ParticleSystemComponent.h" />
@@ -147,8 +147,8 @@
     <ClCompile Include="UiProgressBar.cpp" />
     <ClCompile Include="UiIcon.cpp" />
     <ClCompile Include="UiButton.cpp" />
+    <ClCompile Include="UiManager.cpp" />
     <ClCompile Include="UiScreen.cpp" />
-    <ClCompile Include="UiRootComponent.cpp" />
     <ClCompile Include="ParticleSystem.cpp" />
     <ClCompile Include="ParticleSystemComponent.cpp" />
     <ClCompile Include="ParticleEmitterComponent.cpp" />

@@ -4,6 +4,7 @@
 #include <GameObject.h>
 #include <LoggerRegistry.h>
 #include <cmath>
+#include <UiManager.h>
 
 namespace RoguelikeGame
 {
@@ -37,6 +38,11 @@ namespace RoguelikeGame
         }
 
         UpdateChargeGlow(deltaTime);
+
+        if (XYZEngine::UiManager::Instance()->IsPointerCaptured())
+        {
+            return;
+        }
 
         if (dodgeRoll != nullptr && dodgeRoll->IsRolling())
         {

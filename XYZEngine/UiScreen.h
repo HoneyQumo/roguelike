@@ -14,6 +14,7 @@ namespace XYZEngine
 
 		void Resize(const sf::Vector2f& screenSize);
 		void Draw() const;
+		bool HandlePointer(const sf::Vector2f& point, bool isPressed, bool wasReleased);
 
 		void SetVisible(bool isVisible);
 		bool IsVisible() const;

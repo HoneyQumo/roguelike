@@ -4,6 +4,7 @@
 #include "GameWorld.h"
 #include "RenderSystem.h"
 #include "InputSystem.h"
+#include "UiManager.h"
 #include "FrameClock.h"
 #include "DebugDraw.h"
 #include "LoggerRegistry.h"
@@ -71,6 +72,9 @@ namespace XYZEngine
 				DebugDraw::Instance()->Toggle();
 			}
 
+			UiManager::Instance()->HandleInput();
+			UiManager::Instance()->Update(deltaTime);
+
 			scene.Update(deltaTime);
 			float gameDeltaTime = FrameClock::Instance()->GetDeltaTime();
 
@@ -82,6 +86,7 @@ namespace XYZEngine
 				GameWorld::Instance()->UpdatePhysics();
 			}
 			GameWorld::Instance()->Render();
+			UiManager::Instance()->Render();
 			DebugDraw::Instance()->Render();
 			GameWorld::Instance()->LateUpdate();
 

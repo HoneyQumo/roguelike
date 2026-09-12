@@ -3,7 +3,7 @@
 #include "PlayerHudBinderComponent.h"
 #include <GameWorld.h>
 #include <LoggerRegistry.h>
-#include <UiRootComponent.h>
+#include <UiManager.h>
 
 namespace RoguelikeGame
 {
@@ -12,9 +12,8 @@ namespace RoguelikeGame
         auto gameObject = XYZEngine::GameWorld::Instance()->CreateGameObject(UI_ROOT_OBJECT_NAME);
         gameObject->SetRenderLayer(UI_RENDER_LAYER);
 
-        auto root = gameObject->AddComponent<XYZEngine::UiRootComponent>();
-        root->AddScreen(&hud);
-        root->AddScreen(&message);
+        XYZEngine::UiManager::Instance()->Push(&hud);
+        XYZEngine::UiManager::Instance()->Push(&message);
 
         auto binder = gameObject->AddComponent<PlayerHudBinderComponent>();
         binder->SetScreen(&hud);

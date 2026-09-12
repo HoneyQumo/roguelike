@@ -25,7 +25,7 @@ namespace XYZEngine
 		void SetColors(const sf::Color& normal, const sf::Color& hovered, const sf::Color& pressed);
 		void SetOnClick(std::function<void()> newOnClick);
 
-		bool HandlePointer(const sf::Vector2f& point, bool isPressed, bool wasReleased);
+		bool HandlePointer(const sf::Vector2f& point, bool isPressed, bool wasReleased) override;
 
 	private:
 		UiPanel* background = nullptr;

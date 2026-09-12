@@ -47,6 +47,24 @@ namespace XYZEngine
 		return isVisible && bounds.contains(point);
 	}
 
+	bool UiWidget::HandlePointer(const sf::Vector2f& point, bool isPressed, bool wasReleased)
+	{
+		if (!isVisible)
+		{
+			return false;
+		}
+
+		for (auto child = children.rbegin(); child != children.rend(); ++child)
+		{
+			if ((*child)->HandlePointer(point, isPressed, wasReleased))
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	void UiWidget::Layout(const sf::FloatRect& parentBounds)
 	{
 		if (parent == nullptr)

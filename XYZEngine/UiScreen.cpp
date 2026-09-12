@@ -23,6 +23,11 @@ namespace XYZEngine
 		root.Draw();
 	}
 
+	bool UiScreen::HandlePointer(const sf::Vector2f& point, bool isPressed, bool wasReleased)
+	{
+		return root.HandlePointer(point, isPressed, wasReleased);
+	}
+
 	void UiScreen::SetVisible(bool isVisible)
 	{
 		root.SetVisible(isVisible);

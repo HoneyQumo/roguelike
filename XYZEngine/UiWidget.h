@@ -41,6 +41,7 @@ namespace XYZEngine
 		std::size_t GetChildrenCount() const;
 
 		bool HitTest(const sf::Vector2f& point) const;
+		virtual bool HandlePointer(const sf::Vector2f& point, bool isPressed, bool wasReleased);
 
 		void Layout(const sf::FloatRect& parentBounds);
 		void Draw() const;

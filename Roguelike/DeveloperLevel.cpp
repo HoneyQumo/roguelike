@@ -9,6 +9,7 @@
 #include "UiRoot.h"
 #include <Engine.h>
 #include <GameWorld.h>
+#include <UiManager.h>
 #include <FrameClock.h>
 #include <InputSystem.h>
 #include <RenderSystem.h>
@@ -153,6 +154,7 @@ namespace RoguelikeGame
 
         level.Clear();
 
+        XYZEngine::UiManager::Instance()->Clear();
         GameWorld::Instance()->Clear();
 
         hudScreen.reset();

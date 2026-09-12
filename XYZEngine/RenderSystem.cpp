@@ -72,6 +72,29 @@ namespace XYZEngine
 		return *window;
 	}
 
+	void RenderSystem::BeginUiPass()
+	{
+		if (isUiPass)
+		{
+			return;
+		}
+
+		savedView = GetMainWindow().getView();
+		GetMainWindow().setView(uiView);
+		isUiPass = true;
+	}
+
+	void RenderSystem::EndUiPass()
+	{
+		if (!isUiPass)
+		{
+			return;
+		}
+
+		GetMainWindow().setView(savedView);
+		isUiPass = false;
+	}
+
 	void RenderSystem::Render(const sf::Drawable& drawable)
 	{
 		GetMainWindow().draw(drawable);

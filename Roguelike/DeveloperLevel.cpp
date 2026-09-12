@@ -6,9 +6,7 @@
 #include "Music.h"
 #include "Crosshair.h"
 #include "Particles.h"
-#include "AmmoHud.h"
-#include "MessageOverlay.h"
-#include "MessageOverlayComponent.h"
+#include "UiRoot.h"
 #include <Engine.h>
 #include <GameWorld.h>
 #include <FrameClock.h>
@@ -79,8 +77,9 @@ namespace RoguelikeGame
             LOG_ERROR(std::string("Crosshair is not created: ") + exception.what());
         }
 
-        ammoHud = CreateAmmoHud();
-        messageOverlay = CreateMessageOverlay();
+        hudScreen = std::make_unique<HudScreen>();
+        messageScreen = std::make_unique<MessageScreen>();
+        uiRoot = CreateUiRoot(*hudScreen, *messageScreen);
     }
 
     void DeveloperLevel::Update(float deltaTime)
@@ -139,15 +138,14 @@ namespace RoguelikeGame
 
         XYZEngine::FrameClock::Instance()->StopTimeEffects();
 
-        for (auto sceneObject : {messageOverlay, ammoHud, crosshair, music, player, particles})
+        for (auto sceneObject : {uiRoot, crosshair, music, player, particles})
         {
             if (sceneObject != nullptr)
             {
                 GameWorld::Instance()->DestroyGameObject(sceneObject);
             }
         }
-        messageOverlay = nullptr;
-        ammoHud = nullptr;
+        uiRoot = nullptr;
         crosshair = nullptr;
         music = nullptr;
         player = nullptr;
@@ -156,6 +154,9 @@ namespace RoguelikeGame
         level.Clear();
 
         GameWorld::Instance()->Clear();
+
+        hudScreen.reset();
+        messageScreen.reset();
     }
 
     void DeveloperLevel::SetPaused(bool isPaused)
@@ -184,23 +185,22 @@ namespace RoguelikeGame
 
     void DeveloperLevel::UpdateOverlay()
     {
-        if (messageOverlay == nullptr)
+        if (messageScreen == nullptr)
         {
             return;
         }
 
-        auto overlay = messageOverlay->GetComponent<MessageOverlayComponent>();
         if (Engine::Instance()->IsPaused())
         {
-            overlay->Show(PAUSE_TITLE, PAUSE_HINT);
+            messageScreen->Show(PAUSE_TITLE, PAUSE_HINT);
         }
         else if (state == State::GameOver)
         {
-            overlay->Show(GAME_OVER_TITLE, GAME_OVER_HINT);
+            messageScreen->Show(GAME_OVER_TITLE, GAME_OVER_HINT);
         }
         else
         {
-            overlay->Hide();
+            messageScreen->Hide();
         }
     }
 }

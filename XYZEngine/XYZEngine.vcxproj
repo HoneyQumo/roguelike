@@ -79,6 +79,16 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="AnimationClip.h" />
+    <ClInclude Include="TextUtils.h" />
+    <ClInclude Include="UiAnchor.h" />
+    <ClInclude Include="UiWidget.h" />
+    <ClInclude Include="UiPanel.h" />
+    <ClInclude Include="UiLabel.h" />
+    <ClInclude Include="UiProgressBar.h" />
+    <ClInclude Include="UiIcon.h" />
+    <ClInclude Include="UiButton.h" />
+    <ClInclude Include="UiScreen.h" />
+    <ClInclude Include="UiRootComponent.h" />
     <ClInclude Include="ParticleSpec.h" />
     <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="ParticleSystemComponent.h" />
@@ -131,6 +141,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AnimationClip.cpp" />
+    <ClCompile Include="UiWidget.cpp" />
+    <ClCompile Include="UiPanel.cpp" />
+    <ClCompile Include="UiLabel.cpp" />
+    <ClCompile Include="UiProgressBar.cpp" />
+    <ClCompile Include="UiIcon.cpp" />
+    <ClCompile Include="UiButton.cpp" />
+    <ClCompile Include="UiScreen.cpp" />
+    <ClCompile Include="UiRootComponent.cpp" />
     <ClCompile Include="ParticleSystem.cpp" />
     <ClCompile Include="ParticleSystemComponent.cpp" />
     <ClCompile Include="ParticleEmitterComponent.cpp" />

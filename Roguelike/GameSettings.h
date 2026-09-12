@@ -108,6 +108,10 @@ namespace RoguelikeGame
     constexpr float AMMO_HUD_MARGIN_Y = 22.f;
     constexpr float AMMO_HUD_LINE_HEIGHT = 1.35f;
     constexpr float AMMO_HUD_OUTLINE = 2.f;
+    constexpr float AMMO_HUD_NAME_HEIGHT = AMMO_HUD_NAME_FONT_SIZE * AMMO_HUD_LINE_HEIGHT;
+    constexpr float AMMO_HUD_AMMO_HEIGHT = AMMO_HUD_FONT_SIZE * AMMO_HUD_LINE_HEIGHT;
+    constexpr float AMMO_HUD_WIDTH = 260.f;
+    constexpr float AMMO_HUD_HEIGHT = AMMO_HUD_NAME_HEIGHT + AMMO_HUD_AMMO_HEIGHT;
 
     // Красная зона обоймы
     constexpr float AMMO_HUD_LOW_PART = 0.25f;
@@ -115,6 +119,7 @@ namespace RoguelikeGame
     constexpr int OVERLAY_TITLE_FONT_SIZE = 56;
     constexpr int OVERLAY_HINT_FONT_SIZE = 24;
     constexpr float OVERLAY_LINE_GAP = 36.f;
+    constexpr float OVERLAY_LINE_WIDTH = 720.f;
     constexpr sf::Keyboard::Key RESTART_KEY = sf::Keyboard::R;
     constexpr float GAME_OVER_DELAY = 1.5f;
     constexpr auto PAUSE_TITLE = u8"ПАУЗА";
@@ -143,6 +148,7 @@ namespace RoguelikeGame
 
     constexpr auto PLAYER_OBJECT_NAME = "Player";
     constexpr auto PARTICLES_OBJECT_NAME = "Particles";
+    constexpr auto UI_ROOT_OBJECT_NAME = "Ui";
 
     constexpr auto PLAYER_TEXTURE = "player";
     constexpr auto WEAPONS_TEXTURE = "weapons";

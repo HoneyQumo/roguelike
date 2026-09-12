@@ -20,6 +20,9 @@ namespace XYZEngine
 		SubscriptionId SubscribeResize(std::function<void(unsigned int, unsigned int)> handler);
 		void UnsubscribeResize(SubscriptionId id);
 
+		void BeginUiPass();
+		void EndUiPass();
+
 		void Render(const sf::Drawable& drawable);
 		void Render(const sf::Drawable& drawable, const sf::RenderStates& states);
 
@@ -27,6 +30,8 @@ namespace XYZEngine
 		sf::RenderWindow* window = nullptr;
 		sf::Vector2u windowSize = {0, 0};
 		sf::View uiView = sf::View(sf::FloatRect(0.f, 0.f, 0.f, 0.f));
+		sf::View savedView = sf::View(sf::FloatRect(0.f, 0.f, 0.f, 0.f));
+		bool isUiPass = false;
 		EventList<unsigned int, unsigned int> resizeEvent;
 
 		RenderSystem() {}

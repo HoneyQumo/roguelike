@@ -46,12 +46,6 @@
     <ClCompile Include="ReloadIndicatorComponent.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
-    <ClCompile Include="AmmoHud.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="AmmoHudComponent.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
     <ClCompile Include="AreaDamage.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
@@ -85,12 +79,6 @@
     <ClCompile Include="WeaponComponent.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
-    <ClCompile Include="MessageOverlayComponent.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="MessageOverlay.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
     <ClCompile Include="Crosshair.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
@@ -108,6 +96,10 @@
     </ClCompile>
     <ClCompile Include="Fx.cpp">
     <ClCompile Include="Particles.cpp" />
+    <ClCompile Include="HudScreen.cpp" />
+    <ClCompile Include="MessageScreen.cpp" />
+    <ClCompile Include="PlayerHudBinderComponent.cpp" />
+    <ClCompile Include="UiRoot.cpp" />
       <Filter>Sources</Filter>
     </ClCompile>
     <ClCompile Include="GameResources.cpp">
@@ -131,11 +123,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ReloadIndicatorComponent.h" />
-    <ClInclude Include="AmmoHud.h" />
-    <ClInclude Include="AmmoHudComponent.h" />
     <ClInclude Include="AreaDamage.h" />
     <ClInclude Include="DamageInfo.h" />
     <ClInclude Include="ParticleCatalog.h" />
+    <ClInclude Include="HudScreen.h" />
+    <ClInclude Include="MessageScreen.h" />
+    <ClInclude Include="PlayerHudBinderComponent.h" />
+    <ClInclude Include="UiRoot.h" />
     <ClInclude Include="Particles.h" />
     <ClInclude Include="Faction.h" />
     <ClInclude Include="FactionComponent.h" />
@@ -148,9 +142,6 @@
     <ClInclude Include="ExplosiveComponent.h" />
     <ClInclude Include="MeleeWeaponComponent.h" />
     <ClInclude Include="WeaponComponent.h" />
-    <ClInclude Include="TextUtils.h" />
-    <ClInclude Include="MessageOverlayComponent.h" />
-    <ClInclude Include="MessageOverlay.h" />
     <ClInclude Include="BloodPool.h" />
     <ClInclude Include="Crosshair.h" />
     <ClInclude Include="Fx.h" />

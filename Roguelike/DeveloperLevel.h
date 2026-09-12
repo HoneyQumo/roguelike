@@ -2,6 +2,9 @@
 
 #include "Scene.h"
 #include "Level.h"
+#include "HudScreen.h"
+#include "MessageScreen.h"
+#include <memory>
 #include <GameObject.h>
 #include <Cooldown.h>
 
@@ -26,10 +29,11 @@ namespace RoguelikeGame
         Level level;
         XYZEngine::GameObject* player = nullptr;
         XYZEngine::GameObject* particles = nullptr;
+        XYZEngine::GameObject* uiRoot = nullptr;
+        std::unique_ptr<HudScreen> hudScreen;
+        std::unique_ptr<MessageScreen> messageScreen;
         XYZEngine::GameObject* music = nullptr;
         XYZEngine::GameObject* crosshair = nullptr;
-        XYZEngine::GameObject* ammoHud = nullptr;
-        XYZEngine::GameObject* messageOverlay = nullptr;
 
         State state = State::Playing;
         XYZEngine::Cooldown gameOverDelay;

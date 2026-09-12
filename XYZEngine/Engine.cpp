@@ -72,12 +72,13 @@ namespace XYZEngine
 			}
 
 			scene.Update(deltaTime);
+			float gameDeltaTime = FrameClock::Instance()->GetDeltaTime();
 
 			RenderSystem::Instance()->GetMainWindow().clear();
 
 			if (!isPaused)
 			{
-				GameWorld::Instance()->Update(deltaTime);
+				GameWorld::Instance()->Update(gameDeltaTime);
 				GameWorld::Instance()->UpdatePhysics();
 			}
 			GameWorld::Instance()->Render();

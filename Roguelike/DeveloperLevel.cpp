@@ -10,6 +10,7 @@
 #include "MessageOverlayComponent.h"
 #include <Engine.h>
 #include <GameWorld.h>
+#include <FrameClock.h>
 #include <InputSystem.h>
 #include <RenderSystem.h>
 #include <MusicComponent.h>
@@ -124,6 +125,8 @@ namespace RoguelikeGame
     void DeveloperLevel::Stop()
     {
         LOG_INFO("Developer level is stopping");
+
+        XYZEngine::FrameClock::Instance()->StopTimeEffects();
 
         for (auto sceneObject : {messageOverlay, ammoHud, crosshair, music, player})
         {

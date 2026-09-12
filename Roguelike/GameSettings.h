@@ -15,6 +15,11 @@ namespace RoguelikeGame
 
     constexpr float CAMERA_VIEW_HEIGHT = static_cast<float>(SCREEN_HEIGHT);
     constexpr float CAMERA_SHAKE_LIMIT = 40.f;
+    constexpr float HIT_STOP_LIGHT = 0.035f;
+    constexpr float HIT_STOP_HEAVY = 0.07f;
+    constexpr float DEATH_TIME_SCALE = 0.35f;
+    constexpr float DEATH_SLOW_MOTION_TIME = 0.7f;
+    constexpr float DEATH_SLOW_MOTION_BLEND = 0.6f;
     constexpr XYZEngine::CameraShake CAMERA_SHAKE_LIGHT = {5.f, 0.12f, 24.f};
     constexpr XYZEngine::CameraShake CAMERA_SHAKE_HEAVY = {13.f, 0.28f, 18.f};
     constexpr XYZEngine::CameraShake CAMERA_SHAKE_BLAST = {24.f, 0.45f, 14.f};

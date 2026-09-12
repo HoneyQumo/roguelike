@@ -2,6 +2,7 @@
 #include <MathUtils.h>
 #include "GameSettings.h"
 #include "Fx.h"
+#include <FrameClock.h>
 #include <GameWorld.h>
 #include <ResourceSystem.h>
 #include <SpriteRendererComponent.h>
@@ -85,6 +86,7 @@ namespace RoguelikeGame
                     if (isPlayerShot)
                     {
                         Fx::ShakeCamera(CAMERA_SHAKE_LIGHT);
+                        XYZEngine::FrameClock::Instance()->HitStop(HIT_STOP_LIGHT);
                     }
                 }
                 else

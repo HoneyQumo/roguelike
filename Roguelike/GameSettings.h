@@ -12,6 +12,8 @@ namespace RoguelikeGame
     constexpr int SCREEN_HEIGHT = 720;
     constexpr unsigned int FRAME_RATE_LIMIT = 60;
 
+    constexpr float CAMERA_VIEW_HEIGHT = static_cast<float>(SCREEN_HEIGHT);
+
     constexpr float TILE_SIZE = 64.f;
 
     constexpr int CHARACTER_SPRITE_SIZE = CHARACTER_FRAME_SIZE;
@@ -40,7 +42,6 @@ namespace RoguelikeGame
     constexpr WeaponId PLAYER_LOADOUT[PLAYER_WEAPON_SLOTS] = {WeaponId::Rpg, WeaponId::ShotgunPump, WeaponId::Bat};
 
     constexpr int NO_WEAPON_SLOT = -1;
-    constexpr sf::Keyboard::Key WEAPON_SLOT_KEYS[PLAYER_WEAPON_SLOTS] = {sf::Keyboard::Num1, sf::Keyboard::Num2, sf::Keyboard::Num3};
 
     struct AmmoReserve
     {
@@ -101,7 +102,6 @@ namespace RoguelikeGame
     constexpr int OVERLAY_TITLE_FONT_SIZE = 56;
     constexpr int OVERLAY_HINT_FONT_SIZE = 24;
     constexpr float OVERLAY_LINE_GAP = 36.f;
-    constexpr sf::Keyboard::Key PAUSE_KEY = sf::Keyboard::Escape;
     constexpr sf::Keyboard::Key RESTART_KEY = sf::Keyboard::R;
     constexpr float GAME_OVER_DELAY = 1.5f;
     constexpr auto PAUSE_TITLE = u8"ПАУЗА";

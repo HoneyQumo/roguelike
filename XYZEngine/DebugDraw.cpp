@@ -166,7 +166,7 @@ namespace XYZEngine
 
 		auto& window = RenderSystem::Instance()->GetMainWindow();
 		sf::View worldView = window.getView();
-		window.setView(window.getDefaultView());
+		window.setView(RenderSystem::Instance()->GetUiView());
 
 		float fps = smoothedFrameTime > 0.f ? 1.f / smoothedFrameTime : 0.f;
 

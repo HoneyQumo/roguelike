@@ -31,7 +31,9 @@ namespace XYZEngine
 		sf::Clock gameClock;
 		sf::Event event;
 
-		RenderSystem::Instance()->GetMainWindow().setKeyRepeatEnabled(false);
+		auto& mainWindow = RenderSystem::Instance()->GetMainWindow();
+		mainWindow.setKeyRepeatEnabled(false);
+		InputSystem::Instance()->SetMousePosition(sf::Mouse::getPosition(mainWindow));
 
 		while (RenderSystem::Instance()->GetMainWindow().isOpen())
 		{
@@ -45,6 +47,10 @@ namespace XYZEngine
 				if (event.type == sf::Event::Closed)
 				{
 					RenderSystem::Instance()->GetMainWindow().close();
+				}
+				if (event.type == sf::Event::Resized)
+				{
+					RenderSystem::Instance()->HandleResize(event.size.width, event.size.height);
 				}
 
 				InputSystem::Instance()->HandleEvent(event);

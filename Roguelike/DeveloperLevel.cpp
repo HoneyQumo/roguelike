@@ -84,7 +84,7 @@ namespace RoguelikeGame
         auto input = InputSystem::Instance();
         bool isPaused = Engine::Instance()->IsPaused();
 
-        if (input->WasKeyPressed(PAUSE_KEY))
+        if (input->WasActionPressed(XYZEngine::InputAction::Pause))
         {
             SetPaused(!isPaused);
             return;

@@ -46,9 +46,9 @@ namespace RoguelikeGame
 
         auto& window = XYZEngine::RenderSystem::Instance()->GetMainWindow();
         sf::View worldView = window.getView();
-        window.setView(window.getDefaultView());
+        window.setView(XYZEngine::RenderSystem::Instance()->GetUiView());
 
-        sf::Vector2f screenSize = window.getDefaultView().getSize();
+        sf::Vector2f screenSize = XYZEngine::RenderSystem::Instance()->GetUiView().getSize();
         sf::Vector2f center = screenSize * 0.5f;
 
         background.setSize(screenSize);

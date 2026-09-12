@@ -3,7 +3,9 @@
 #include <string>
 #include <Component.h>
 #include "HudScreen.h"
+#include "HealthComponent.h"
 #include "PlayerLoadoutComponent.h"
+#include "StaminaComponent.h"
 #include "WeaponComponent.h"
 
 namespace RoguelikeGame
@@ -23,10 +25,13 @@ namespace RoguelikeGame
         HudScreen* screen = nullptr;
         WeaponComponent* weapon = nullptr;
         PlayerLoadoutComponent* loadout = nullptr;
+        HealthComponent* health = nullptr;
+        StaminaComponent* stamina = nullptr;
 
         std::string targetName;
 
         void FindTarget();
-        AmmoHudState ReadState() const;
+        AmmoHudState ReadAmmoState() const;
+        VitalsHudState ReadVitalsState() const;
     };
 }

@@ -119,6 +119,20 @@ namespace RoguelikeGame
     constexpr float AMMO_HUD_NAME_HEIGHT = AMMO_HUD_NAME_FONT_SIZE * AMMO_HUD_LINE_HEIGHT;
     constexpr float AMMO_HUD_AMMO_HEIGHT = AMMO_HUD_FONT_SIZE * AMMO_HUD_LINE_HEIGHT;
     constexpr float AMMO_HUD_WIDTH = 260.f;
+    constexpr float VITALS_HUD_MARGIN_X = 26.f;
+    constexpr float VITALS_HUD_MARGIN_Y = 22.f;
+    constexpr float VITALS_HUD_WIDTH = 280.f;
+    constexpr float VITALS_HUD_HEALTH_HEIGHT = 20.f;
+    constexpr float VITALS_HUD_STAMINA_HEIGHT = 10.f;
+    constexpr float VITALS_HUD_GAP = 6.f;
+    constexpr float VITALS_HUD_CRITICAL_PART = 0.25f;
+    constexpr float VITALS_HUD_LOW_PART = 0.5f;
+    inline const sf::Color VITALS_HUD_BACK_COLOR = {20, 20, 20, 180};
+    inline const sf::Color VITALS_HUD_HEALTH_COLOR = {90, 200, 90};
+    inline const sf::Color VITALS_HUD_HEALTH_LOW_COLOR = {220, 190, 70};
+    inline const sf::Color VITALS_HUD_HEALTH_CRITICAL_COLOR = {215, 60, 55};
+    inline const sf::Color VITALS_HUD_STAMINA_COLOR = {80, 170, 230};
+    inline const sf::Color VITALS_HUD_STAMINA_EMPTY_COLOR = {120, 120, 130};
     constexpr float AMMO_HUD_HEIGHT = AMMO_HUD_NAME_HEIGHT + AMMO_HUD_AMMO_HEIGHT;
 
     // Красная зона обоймы

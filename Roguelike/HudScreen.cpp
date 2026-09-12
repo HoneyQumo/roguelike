@@ -36,6 +36,46 @@ namespace RoguelikeGame
         ammoLabel->SetOutline(AMMO_HUD_OUTLINE, AMMO_HUD_OUTLINE_COLOR);
         ammoLabel->SetFont(font);
         ammoLabel->SetVisible(false);
+
+        auto vitals = GetRoot().AddChild<XYZEngine::UiWidget>();
+        vitals->SetAnchor(XYZEngine::UiAnchor::TopLeft);
+        vitals->SetPivot(XYZEngine::UiAnchor::TopLeft);
+        vitals->SetOffset({VITALS_HUD_MARGIN_X, VITALS_HUD_MARGIN_Y});
+        vitals->SetSize({VITALS_HUD_WIDTH, VITALS_HUD_HEALTH_HEIGHT + VITALS_HUD_GAP + VITALS_HUD_STAMINA_HEIGHT});
+
+        healthBar = vitals->AddChild<XYZEngine::UiProgressBar>();
+        healthBar->SetAnchor(XYZEngine::UiAnchor::TopLeft);
+        healthBar->SetPivot(XYZEngine::UiAnchor::TopLeft);
+        healthBar->SetSize({VITALS_HUD_WIDTH, VITALS_HUD_HEALTH_HEIGHT});
+        healthBar->SetColors(VITALS_HUD_HEALTH_COLOR, VITALS_HUD_BACK_COLOR);
+
+        staminaBar = vitals->AddChild<XYZEngine::UiProgressBar>();
+        staminaBar->SetAnchor(XYZEngine::UiAnchor::BottomLeft);
+        staminaBar->SetPivot(XYZEngine::UiAnchor::BottomLeft);
+        staminaBar->SetSize({VITALS_HUD_WIDTH, VITALS_HUD_STAMINA_HEIGHT});
+        staminaBar->SetColors(VITALS_HUD_STAMINA_COLOR, VITALS_HUD_BACK_COLOR);
+    }
+
+    void HudScreen::SetVitals(const VitalsHudState& state)
+    {
+        healthBar->SetValue(state.healthPart);
+        staminaBar->SetValue(state.staminaPart);
+
+        if (state.healthPart <= VITALS_HUD_CRITICAL_PART)
+        {
+            healthBar->SetColors(VITALS_HUD_HEALTH_CRITICAL_COLOR, VITALS_HUD_BACK_COLOR);
+        }
+        else if (state.healthPart <= VITALS_HUD_LOW_PART)
+        {
+            healthBar->SetColors(VITALS_HUD_HEALTH_LOW_COLOR, VITALS_HUD_BACK_COLOR);
+        }
+        else
+        {
+            healthBar->SetColors(VITALS_HUD_HEALTH_COLOR, VITALS_HUD_BACK_COLOR);
+        }
+
+        staminaBar->SetColors(state.isExhausted ? VITALS_HUD_STAMINA_EMPTY_COLOR : VITALS_HUD_STAMINA_COLOR,
+            VITALS_HUD_BACK_COLOR);
     }
 
     void HudScreen::SetAmmo(const AmmoHudState& state)
@@ -68,6 +108,16 @@ namespace RoguelikeGame
         }
 
         ammoLabel->SetColor(state.isLow ? AMMO_HUD_LOW_COLOR : AMMO_HUD_COLOR);
+    }
+
+    const XYZEngine::UiProgressBar& HudScreen::GetHealthBar() const
+    {
+        return *healthBar;
+    }
+
+    const XYZEngine::UiProgressBar& HudScreen::GetStaminaBar() const
+    {
+        return *staminaBar;
     }
 
     const XYZEngine::UiLabel& HudScreen::GetNameLabel() const

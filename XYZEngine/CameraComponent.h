@@ -6,6 +6,13 @@
 
 namespace XYZEngine
 {
+    struct CameraShake
+    {
+        float amplitude = 0.f;
+        float duration = 0.f;
+        float frequency = 16.f;
+    };
+
     class CameraComponent : public Component
     {
     public:
@@ -21,6 +28,11 @@ namespace XYZEngine
         void SetViewHeight(float newViewHeight);
         void SetRotationEnabled(bool newIsRotationEnabled);
 
+        void Shake(const CameraShake& newShake);
+        void StopShake();
+        const Vector2Df& GetShakeOffset() const;
+        void SetMaxShakeAmplitude(float newMaxShakeAmplitude);
+
     private:
         TransformComponent* transform = nullptr;
         sf::View view = sf::View(sf::FloatRect(0.f, 0.f, 800.f, -600.f));
@@ -30,6 +42,13 @@ namespace XYZEngine
         bool isRotationEnabled = true;
         SubscriptionId resizeSubscription = NO_SUBSCRIPTION;
 
+        CameraShake shake;
+        float shakeTime = 0.f;
+        float maxShakeAmplitude = 48.f;
+        Vector2Df shakeOffset = {0.f, 0.f};
+
         void ApplyViewSize();
+        void UpdateShake(float deltaTime);
+        float GetShakeDecay() const;
     };
 }

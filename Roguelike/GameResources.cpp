@@ -29,6 +29,8 @@ namespace RoguelikeGame
         XYZEngine::ResourceSystem::Instance()->LoadTextureMap(WEAPONS_TEXTURE, WEAPONS_ATLAS_FILE,
                                                              {WEAPON_FRAME_WIDTH, WEAPON_FRAME_HEIGHT}, WEAPON_ATLAS_FRAMES, false);
 
+        XYZEngine::ResourceSystem::Instance()->LoadTexture(FX_ATLAS_TEXTURE, FX_ATLAS_FILE, false);
+
         LoadFxStrip(MUZZLE_FLASH_TEXTURE, FX_MUZZLE_FLASH);
         LoadFxStrip(BLOOD_POOL_TEXTURE, FX_BLOOD_POOL);
         LoadFxStrip(BLOOD_HIT_TEXTURE, FX_BLOOD_HIT);

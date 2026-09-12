@@ -153,6 +153,11 @@ namespace RoguelikeGame
         gameObject->AddComponent<PlayerAttackComponent>();
         gameObject->AddComponent<PlayerRollComponent>();
 
+        health->SubscribeHeal([gameObject](float restored)
+        {
+            Fx::SpawnHealBurst(gameObject->GetTransform()->GetWorldPosition());
+        });
+
         health->SubscribeDamage([animation, hurtAudio, hitFlash, meleeWeapon](const DamageInfo& damage)
         {
             Fx::ShakeCamera(CAMERA_SHAKE_HEAVY);

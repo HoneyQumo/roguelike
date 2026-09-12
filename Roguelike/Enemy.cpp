@@ -5,6 +5,7 @@
 #include "WeaponSetup.h"
 #include "EnemyAttackComponent.h"
 #include "BloodPool.h"
+#include "Fx.h"
 #include <GameWorld.h>
 #include "ChaseComponent.h"
 #include "WeaponComponent.h"
@@ -97,6 +98,8 @@ namespace RoguelikeGame
         auto meleeComponent = gameObject->GetComponent<MeleeWeaponComponent>();
         health->SubscribeDamage([animation, hurtAudio, hitFlash, meleeComponent](const DamageInfo& damage)
         {
+            Fx::SpawnHitBurst(damage.source.position, damage.source.direction);
+
             if (meleeComponent != nullptr)
             {
                 meleeComponent->CancelAttack();

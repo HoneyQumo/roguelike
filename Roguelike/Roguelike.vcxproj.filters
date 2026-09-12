@@ -107,6 +107,7 @@
       <Filter>Sources</Filter>
     </ClCompile>
     <ClCompile Include="Fx.cpp">
+    <ClCompile Include="Particles.cpp" />
       <Filter>Sources</Filter>
     </ClCompile>
     <ClCompile Include="GameResources.cpp">
@@ -134,6 +135,8 @@
     <ClInclude Include="AmmoHudComponent.h" />
     <ClInclude Include="AreaDamage.h" />
     <ClInclude Include="DamageInfo.h" />
+    <ClInclude Include="ParticleCatalog.h" />
+    <ClInclude Include="Particles.h" />
     <ClInclude Include="Faction.h" />
     <ClInclude Include="FactionComponent.h" />
     <ClInclude Include="ChaseComponent.h" />

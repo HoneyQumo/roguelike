@@ -15,6 +15,9 @@ namespace RoguelikeGame
     public:
         static void ShakeCamera(const XYZEngine::CameraShake& shake);
 
+        static void SpawnHealBurst(const XYZEngine::Vector2Df& position);
+        static void SpawnHitBurst(const XYZEngine::Vector2Df& position, const XYZEngine::Vector2Df& direction);
+
         static void SpawnBloodHit(const XYZEngine::Vector2Df& position, const XYZEngine::Vector2Df& direction);
         static void SpawnImpact(const XYZEngine::Vector2Df& position, const XYZEngine::Vector2Df& direction);
         static void SpawnExplosion(const XYZEngine::Vector2Df& position, float radius);

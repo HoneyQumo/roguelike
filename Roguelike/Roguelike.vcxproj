@@ -107,6 +107,7 @@
         <ClCompile Include="ReloadIndicatorComponent.cpp"/>
         <ClCompile Include="Crosshair.cpp"/>
         <ClCompile Include="Fx.cpp"/>
+        <ClCompile Include="Particles.cpp"/>
         <ClCompile Include="GameResources.cpp"/>
         <ClCompile Include="HitFlashComponent.cpp"/>
         <ClCompile Include="WeaponLayerComponent.cpp"/>
@@ -134,6 +135,8 @@
         <ClInclude Include="AmmoHudComponent.h"/>
         <ClInclude Include="AreaDamage.h"/>
         <ClInclude Include="DamageInfo.h"/>
+        <ClInclude Include="ParticleCatalog.h"/>
+        <ClInclude Include="Particles.h"/>
         <ClInclude Include="Faction.h"/>
         <ClInclude Include="FactionComponent.h"/>
         <ClInclude Include="ChaseComponent.h"/>

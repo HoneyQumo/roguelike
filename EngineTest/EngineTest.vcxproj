@@ -82,6 +82,8 @@
     <ClCompile Include="RenderSystem.tests.cpp" />
     <ClCompile Include="HealthComponent.tests.cpp" />
     <ClCompile Include="CameraShake.tests.cpp" />
+    <ClCompile Include="ParticleSystem.tests.cpp" />
+    <ClCompile Include="ParticleCatalog.tests.cpp" />
     <ClCompile Include="..\Roguelike\LevelLoader.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>

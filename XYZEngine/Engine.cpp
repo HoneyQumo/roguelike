@@ -54,6 +54,11 @@ namespace XYZEngine
 				}
 
 				InputSystem::Instance()->HandleEvent(event);
+
+				if (event.type == sf::Event::GainedFocus)
+				{
+					InputSystem::Instance()->SyncWithDevice();
+				}
 			}
 
 			if (!RenderSystem::Instance()->GetMainWindow().isOpen())

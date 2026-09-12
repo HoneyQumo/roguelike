@@ -83,7 +83,6 @@ namespace XYZEngine
 			break;
 		case sf::Event::GainedFocus:
 			hasFocus = true;
-			SyncHeldWithDevice();
 			break;
 		default:
 			break;
@@ -92,6 +91,7 @@ namespace XYZEngine
 
 	void InputSystem::Reset()
 	{
+		hasFocus = true;
 		keysHeld.reset();
 		keysPressed.reset();
 		keysReleased.reset();
@@ -160,7 +160,7 @@ namespace XYZEngine
 		return hasFocus && IsValid(button) && buttonsReleased[button];
 	}
 
-	void InputSystem::SyncHeldWithDevice()
+	void InputSystem::SyncWithDevice()
 	{
 		for (int key = 0; key < sf::Keyboard::KeyCount; key++)
 		{

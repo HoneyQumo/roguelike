@@ -33,6 +33,8 @@ namespace RoguelikeGame
         void SetVitals(const VitalsHudState& state);
 
         void ShowNotice(const char* text);
+        void SetPrompt(const std::string& text);
+        const XYZEngine::UiLabel& GetPromptLabel() const;
         void Update(float deltaTime) override;
         bool IsNoticeShown() const;
 
@@ -47,6 +49,7 @@ namespace RoguelikeGame
         XYZEngine::UiProgressBar* healthBar = nullptr;
         XYZEngine::UiProgressBar* staminaBar = nullptr;
         XYZEngine::UiLabel* noticeLabel = nullptr;
+        XYZEngine::UiLabel* promptLabel = nullptr;
         float noticeTimeLeft = 0.f;
 
         std::string shownName;

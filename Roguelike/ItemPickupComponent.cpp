@@ -1,5 +1,6 @@
 #include "ItemPickupComponent.h"
 #include "FactionComponent.h"
+#include "InteractionComponent.h"
 #include "InventoryComponent.h"
 #include <ColliderComponent.h>
 #include <GameObject.h>
@@ -23,7 +24,8 @@ namespace RoguelikeGame
             return;
         }
 
-        collider->SubscribeTriggerEnter([this](const XYZEngine::Trigger& trigger) { OnTrigger(trigger); });
+        collider->SubscribeTriggerEnter([this](const XYZEngine::Trigger& trigger) { OnTriggerEnter(trigger); });
+        collider->SubscribeTriggerExit([this](const XYZEngine::Trigger& trigger) { OnTriggerExit(trigger); });
     }
 
     void ItemPickupComponent::Update(float deltaTime)
@@ -49,26 +51,54 @@ namespace RoguelikeGame
         return isPickedUp;
     }
 
-    void ItemPickupComponent::OnTrigger(const XYZEngine::Trigger& trigger)
+    XYZEngine::GameObject* ItemPickupComponent::GetPlayerOf(const XYZEngine::Trigger& trigger, XYZEngine::ColliderComponent* self)
+    {
+        XYZEngine::ColliderComponent* other = trigger.GetFirst() == self ? trigger.GetSecond() : trigger.GetFirst();
+        if (other == nullptr)
+        {
+            return nullptr;
+        }
+
+        XYZEngine::GameObject* candidate = other->GetGameObject();
+        return GetFactionOf(candidate) == Faction::Player ? candidate : nullptr;
+    }
+
+    void ItemPickupComponent::OnTriggerEnter(const XYZEngine::Trigger& trigger)
     {
         if (isPickedUp)
         {
             return;
         }
 
-        XYZEngine::ColliderComponent* other = trigger.GetFirst() == collider ? trigger.GetSecond() : trigger.GetFirst();
-        if (other == nullptr)
+        XYZEngine::GameObject* player = GetPlayerOf(trigger, collider);
+        if (player == nullptr)
         {
             return;
         }
 
-        XYZEngine::GameObject* collector = other->GetGameObject();
-        if (GetFactionOf(collector) != Faction::Player)
+        auto interaction = player->GetComponent<InteractionComponent>();
+        if (interaction != nullptr)
+        {
+            interaction->AddCandidate(this);
+            return;
+        }
+
+        TryPickUp(player);
+    }
+
+    void ItemPickupComponent::OnTriggerExit(const XYZEngine::Trigger& trigger)
+    {
+        XYZEngine::GameObject* player = GetPlayerOf(trigger, collider);
+        if (player == nullptr)
         {
             return;
         }
 
-        TryPickUp(collector);
+        auto interaction = player->GetComponent<InteractionComponent>();
+        if (interaction != nullptr)
+        {
+            interaction->RemoveCandidate(this);
+        }
     }
 
     bool ItemPickupComponent::TryPickUp(XYZEngine::GameObject* collector)

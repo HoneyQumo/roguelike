@@ -58,7 +58,7 @@ namespace RoguelikeGame
     constexpr unsigned int PLAYER_COLLISION_LAYER = 1u << 1;
     constexpr unsigned int ENEMY_COLLISION_LAYER = 1u << 2;
     constexpr unsigned int ITEM_COLLISION_LAYER = 1u << 3;
-    constexpr float ITEM_PICKUP_SIZE = 40.f;
+    constexpr float ITEM_PICKUP_SIZE = 48.f;
     constexpr int INVENTORY_CAPACITY = 12;
 
     constexpr int PLAYER_WEAPON_SLOTS = 3;
@@ -150,6 +150,9 @@ namespace RoguelikeGame
     constexpr float HUD_NOTICE_MARGIN_Y = 120.f;
     constexpr float HUD_NOTICE_TIME = 2.f;
     constexpr auto INVENTORY_FULL_NOTICE = u8"Инвентарь полон";
+    constexpr auto INTERACT_PROMPT_PREFIX = u8"[E] Подобрать: ";
+    constexpr int HUD_PROMPT_FONT_SIZE = 24;
+    constexpr float HUD_PROMPT_MARGIN_Y = 170.f;
     constexpr sf::Keyboard::Key RESTART_KEY = sf::Keyboard::R;
     constexpr float GAME_OVER_DELAY = 1.5f;
     constexpr auto PAUSE_TITLE = u8"ПАУЗА";

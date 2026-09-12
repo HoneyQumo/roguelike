@@ -110,6 +110,7 @@
         <ClCompile Include="Item.cpp"/>
         <ClCompile Include="ItemPickupComponent.cpp"/>
         <ClCompile Include="InventoryComponent.cpp"/>
+        <ClCompile Include="InteractionComponent.cpp"/>
         <ClCompile Include="HudScreen.cpp"/>
         <ClCompile Include="MessageScreen.cpp"/>
         <ClCompile Include="PlayerHudBinderComponent.cpp"/>
@@ -152,6 +153,7 @@
         <ClInclude Include="Item.h"/>
         <ClInclude Include="ItemPickupComponent.h"/>
         <ClInclude Include="InventoryComponent.h"/>
+        <ClInclude Include="InteractionComponent.h"/>
         <ClInclude Include="Faction.h"/>
         <ClInclude Include="FactionComponent.h"/>
         <ClInclude Include="ChaseComponent.h"/>

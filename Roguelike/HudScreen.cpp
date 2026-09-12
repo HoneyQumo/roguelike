@@ -2,6 +2,7 @@
 #include "GameSettings.h"
 #include "WeaponComponent.h"
 #include <ResourceSystem.h>
+#include <TextUtils.h>
 #include <UiWidget.h>
 
 namespace RoguelikeGame
@@ -66,6 +67,35 @@ namespace RoguelikeGame
         noticeLabel->SetOutline(AMMO_HUD_OUTLINE, AMMO_HUD_OUTLINE_COLOR);
         noticeLabel->SetFont(font);
         noticeLabel->SetVisible(false);
+
+        promptLabel = GetRoot().AddChild<XYZEngine::UiLabel>();
+        promptLabel->SetAnchor(XYZEngine::UiAnchor::Bottom);
+        promptLabel->SetPivot(XYZEngine::UiAnchor::Bottom);
+        promptLabel->SetOffset({0.f, -HUD_PROMPT_MARGIN_Y});
+        promptLabel->SetSize({OVERLAY_LINE_WIDTH, HUD_PROMPT_FONT_SIZE * AMMO_HUD_LINE_HEIGHT});
+        promptLabel->SetAlign(XYZEngine::UiAnchor::Center);
+        promptLabel->SetCharacterSize(HUD_PROMPT_FONT_SIZE);
+        promptLabel->SetColor(AMMO_HUD_COLOR);
+        promptLabel->SetOutline(AMMO_HUD_OUTLINE, AMMO_HUD_OUTLINE_COLOR);
+        promptLabel->SetFont(font);
+        promptLabel->SetVisible(false);
+    }
+
+    void HudScreen::SetPrompt(const std::string& text)
+    {
+        if (text.empty())
+        {
+            promptLabel->SetVisible(false);
+            return;
+        }
+
+        promptLabel->SetText(XYZEngine::FromUtf8(text.c_str()));
+        promptLabel->SetVisible(true);
+    }
+
+    const XYZEngine::UiLabel& HudScreen::GetPromptLabel() const
+    {
+        return *promptLabel;
     }
 
     void HudScreen::ShowNotice(const char* text)

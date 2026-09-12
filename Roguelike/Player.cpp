@@ -69,7 +69,6 @@ namespace RoguelikeGame
         });
 
         auto gameObject = parts.gameObject;
-        auto transform = parts.transform;
         auto movement = parts.movement;
         auto collider = parts.collider;
         auto aim = parts.aim;
@@ -140,7 +139,7 @@ namespace RoguelikeGame
         gameObject->AddComponent<PlayerAttackComponent>();
         gameObject->AddComponent<PlayerRollComponent>();
 
-        health->SubscribeDamage([animation, hurtAudio, hitFlash, meleeWeapon](float damage)
+        health->SubscribeDamage([animation, hurtAudio, hitFlash, meleeWeapon](const DamageInfo& damage)
         {
             meleeWeapon->CancelAttack();
             animation->PlayHurt();
@@ -148,7 +147,7 @@ namespace RoguelikeGame
             hitFlash->Flash();
         });
 
-        health->SubscribeDeath([gameObject, transform, animation, movement, collider, aim, weaponComponent, meleeWeapon, dodgeRoll, reloadAudio, hitFlash]()
+        health->SubscribeDeath([gameObject, animation, movement, collider, aim, weaponComponent, meleeWeapon, dodgeRoll, reloadAudio, hitFlash](const DeathInfo& death)
         {
             dodgeRoll->CancelRoll();
             weaponComponent->CancelReload();
@@ -161,7 +160,7 @@ namespace RoguelikeGame
             aim->SetEnabled(false);
 
             gameObject->SetRenderLayer(CORPSE_RENDER_LAYER);
-            BloodPool::Spawn(transform->GetWorldPosition(), transform->GetWorldRotation());
+            BloodPool::Spawn(death.position, death.rotation);
 
             LOG_WARN("Player is dead, controls are disabled");
         });

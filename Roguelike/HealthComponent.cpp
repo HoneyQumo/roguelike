@@ -1,5 +1,6 @@
 #include "HealthComponent.h"
 #include <GameObject.h>
+#include <TransformComponent.h>
 #include <LoggerRegistry.h>
 #include <cassert>
 
@@ -79,7 +80,7 @@ namespace RoguelikeGame
         return isInvulnerable;
     }
 
-    void HealthComponent::TakeDamage(float damage)
+    void HealthComponent::TakeDamage(float damage, const DamageSource& source)
     {
         assert(damage >= 0.f);
 
@@ -105,13 +106,27 @@ namespace RoguelikeGame
         LOG_INFO(gameObject->GetName() + " takes " + std::to_string(static_cast<int>(takenDamage))
             + " damage, health " + std::to_string(static_cast<int>(health)) + "/" + std::to_string(static_cast<int>(maxHealth)));
 
-        damageEvent.Invoke(takenDamage);
+        DamageInfo info;
+        info.amount = takenDamage;
+        info.rawAmount = damage;
+        info.isLethal = !IsAlive();
+        info.source = source;
+
+        damageEvent.Invoke(info);
 
         if (!IsAlive())
         {
-            LOG_WARN(gameObject->GetName() + " is dead");
+            LOG_WARN(gameObject->GetName() + " is dead, killed by "
+                + (source.attackerName.empty() ? "nobody" : source.attackerName));
 
-            deathEvent.Invoke();
+            auto transform = gameObject->GetTransform();
+
+            DeathInfo death;
+            death.position = transform->GetWorldPosition();
+            death.rotation = transform->GetWorldRotation();
+            death.source = source;
+
+            deathEvent.Invoke(death);
             return;
         }
 
@@ -121,22 +136,34 @@ namespace RoguelikeGame
         }
     }
 
-    void HealthComponent::Heal(float amount)
+    float HealthComponent::Heal(float amount)
     {
         assert(amount >= 0.f);
 
         if (amount < 0.f || !IsAlive())
         {
-            return;
+            return 0.f;
         }
 
-        health += amount;
-        if (health > maxHealth)
+        float restored = maxHealth - health;
+        if (restored > amount)
         {
-            health = maxHealth;
+            restored = amount;
         }
 
-        LOG_INFO(gameObject->GetName() + " healed to " + std::to_string(static_cast<int>(health)));
+        if (restored <= 0.f)
+        {
+            return 0.f;
+        }
+
+        health += restored;
+
+        LOG_INFO(gameObject->GetName() + " healed by " + std::to_string(static_cast<int>(restored))
+            + " to " + std::to_string(static_cast<int>(health)));
+
+        healEvent.Invoke(restored);
+
+        return restored;
     }
 
     bool HealthComponent::IsAlive() const
@@ -144,7 +171,7 @@ namespace RoguelikeGame
         return health > 0.f;
     }
 
-    XYZEngine::SubscriptionId HealthComponent::SubscribeDamage(std::function<void(float)> onDamage)
+    XYZEngine::SubscriptionId HealthComponent::SubscribeDamage(std::function<void(const DamageInfo&)> onDamage)
     {
         return damageEvent.Subscribe(std::move(onDamage));
     }
@@ -153,7 +180,16 @@ namespace RoguelikeGame
         damageEvent.Unsubscribe(subscription);
     }
 
-    XYZEngine::SubscriptionId HealthComponent::SubscribeDeath(std::function<void()> onDeath)
+    XYZEngine::SubscriptionId HealthComponent::SubscribeHeal(std::function<void(float)> onHeal)
+    {
+        return healEvent.Subscribe(std::move(onHeal));
+    }
+    void HealthComponent::UnsubscribeHeal(XYZEngine::SubscriptionId subscription)
+    {
+        healEvent.Unsubscribe(subscription);
+    }
+
+    XYZEngine::SubscriptionId HealthComponent::SubscribeDeath(std::function<void(const DeathInfo&)> onDeath)
     {
         return deathEvent.Subscribe(std::move(onDeath));
     }

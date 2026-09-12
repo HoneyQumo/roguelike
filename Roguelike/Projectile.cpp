@@ -67,7 +67,8 @@ namespace RoguelikeGame
         auto projectile = gameObject->AddComponent<ProjectileComponent>();
         projectile->SetDirection(direction);
         projectile->SetSpeed(speed);
-        projectile->SetShooter(shooter == nullptr ? XYZEngine::NO_GAME_OBJECT : shooter->GetId(), GetFactionOf(shooter));
+        projectile->SetShooter(shooter == nullptr ? XYZEngine::NO_GAME_OBJECT : shooter->GetId(), GetFactionOf(shooter),
+            shooter == nullptr ? std::string() : shooter->GetName());
 
         if (explosive == nullptr)
         {
@@ -99,7 +100,8 @@ namespace RoguelikeGame
         blast->SetCenterDamage(damage);
         blast->SetEdgeDamagePart(explosive->edgeDamagePart);
         blast->SetSelfDamagePart(explosive->selfDamagePart);
-        blast->SetOwnerId(shooter == nullptr ? XYZEngine::NO_GAME_OBJECT : shooter->GetId());
+        blast->SetOwner(shooter == nullptr ? XYZEngine::NO_GAME_OBJECT : shooter->GetId(),
+            shooter == nullptr ? std::string() : shooter->GetName(), GetFactionOf(shooter));
         blast->SubscribeExplode([blastRadius](const XYZEngine::Vector2Df& blastPosition)
         {
             Fx::SpawnExplosion(blastPosition, blastRadius);

@@ -80,6 +80,7 @@
     <ClCompile Include="AreaDamage.tests.cpp" />
     <ClCompile Include="Component.tests.cpp" />
     <ClCompile Include="RenderSystem.tests.cpp" />
+    <ClCompile Include="HealthComponent.tests.cpp" />
     <ClCompile Include="..\Roguelike\LevelLoader.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
@@ -90,6 +91,9 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\Roguelike\AreaDamage.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Roguelike\ExplosiveComponent.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\Roguelike\FactionComponent.cpp">

@@ -9,6 +9,7 @@
 #include <GameObject.h>
 #include <TransformComponent.h>
 #include <Vector.h>
+#include "Faction.h"
 
 namespace RoguelikeGame
 {
@@ -25,7 +26,7 @@ namespace RoguelikeGame
         void SetCenterDamage(float newCenterDamage);
         void SetEdgeDamagePart(float newEdgeDamagePart);
         void SetSelfDamagePart(float newSelfDamagePart);
-        void SetOwnerId(XYZEngine::GameObjectId newOwnerId);
+        void SetOwner(XYZEngine::GameObjectId newOwnerId, const std::string& newOwnerName = std::string(), Faction newOwnerFaction = Faction::Neutral);
         XYZEngine::SubscriptionId SubscribeExplode(std::function<void(const XYZEngine::Vector2Df&)> onExplode);
         XYZEngine::SubscriptionId SubscribeHit(std::function<void(const XYZEngine::Vector2Df&, const XYZEngine::Vector2Df&)> onHit);
 
@@ -43,6 +44,8 @@ namespace RoguelikeGame
         float edgeDamagePart = 0.25f;
         float selfDamagePart = 1.f;
         XYZEngine::GameObjectId ownerId = XYZEngine::NO_GAME_OBJECT;
+        std::string ownerName;
+        Faction ownerFaction = Faction::Neutral;
         bool hasExploded = false;
 
         XYZEngine::EventList<const XYZEngine::Vector2Df&> explodeEvent;

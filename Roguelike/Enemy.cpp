@@ -38,7 +38,6 @@ namespace RoguelikeGame
 
         auto gameObject = parts.gameObject;
         auto weaponLayer = parts.weapon;
-        auto transform = parts.transform;
         auto movement = parts.movement;
         auto collider = parts.collider;
         auto aim = parts.aim;
@@ -96,7 +95,7 @@ namespace RoguelikeGame
         }
 
         auto meleeComponent = gameObject->GetComponent<MeleeWeaponComponent>();
-        health->SubscribeDamage([animation, hurtAudio, hitFlash, meleeComponent](float damage)
+        health->SubscribeDamage([animation, hurtAudio, hitFlash, meleeComponent](const DamageInfo& damage)
         {
             if (meleeComponent != nullptr)
             {
@@ -109,7 +108,7 @@ namespace RoguelikeGame
         });
 
         auto weaponComponent = gameObject->GetComponent<WeaponComponent>();
-        health->SubscribeDeath([gameObject, transform, animation, movement, chase, collider, aim, weaponComponent, meleeComponent]()
+        health->SubscribeDeath([gameObject, animation, movement, chase, collider, aim, weaponComponent, meleeComponent](const DeathInfo& death)
         {
             if (weaponComponent != nullptr)
             {
@@ -128,7 +127,7 @@ namespace RoguelikeGame
             aim->SetEnabled(false);
 
             gameObject->SetRenderLayer(CORPSE_RENDER_LAYER);
-            BloodPool::Spawn(transform->GetWorldPosition(), transform->GetWorldRotation());
+            BloodPool::Spawn(death.position, death.rotation);
         });
 
         gameObject->SetRenderLayer(ENEMY_RENDER_LAYER);

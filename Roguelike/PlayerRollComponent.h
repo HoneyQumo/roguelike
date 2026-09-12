@@ -6,6 +6,7 @@
 #include "MeleeWeaponComponent.h"
 #include "HealthComponent.h"
 #include "PlayerLoadoutComponent.h"
+#include "StaminaComponent.h"
 
 namespace RoguelikeGame
 {
@@ -24,6 +25,7 @@ namespace RoguelikeGame
         MeleeWeaponComponent* meleeWeapon = nullptr;
         HealthComponent* health = nullptr;
         PlayerLoadoutComponent* loadout = nullptr;
+        StaminaComponent* stamina = nullptr;
 
         bool CanRoll() const;
     };

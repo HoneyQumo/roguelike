@@ -8,6 +8,7 @@
 #include "HealthComponent.h"
 #include "HitFlashComponent.h"
 #include "PlayerLoadoutComponent.h"
+#include "StaminaComponent.h"
 
 namespace RoguelikeGame
 {
@@ -28,6 +29,7 @@ namespace RoguelikeGame
         HealthComponent* health = nullptr;
         DodgeRollComponent* dodgeRoll = nullptr;
         PlayerLoadoutComponent* loadout = nullptr;
+        StaminaComponent* stamina = nullptr;
         HitFlashComponent* hitFlash = nullptr;
 
         float glowTimer = 0.f;

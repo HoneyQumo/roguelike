@@ -6,6 +6,7 @@
 #include "PlayerRollComponent.h"
 #include "StowedWeaponComponent.h"
 #include "BloodPool.h"
+#include "StaminaComponent.h"
 #include "Fx.h"
 #include <FrameClock.h>
 #include "WeaponSetup.h"
@@ -149,6 +150,12 @@ namespace RoguelikeGame
         loadout->SetStowedWeapon(stowedWeapon);
         loadout->SetAudio(shotAudio, reloadAudio);
         loadout->SetSlots(PLAYER_LOADOUT, PLAYER_WEAPON_SLOTS, PLAYER_START_WEAPON_SLOT);
+
+        auto stamina = gameObject->AddComponent<StaminaComponent>();
+        stamina->SetMaxStamina(PLAYER_MAX_STAMINA);
+        stamina->SetRegen(PLAYER_STAMINA_REGEN, PLAYER_STAMINA_REGEN_DELAY);
+        stamina->SetRunDrain(PLAYER_STAMINA_RUN_DRAIN);
+        stamina->SetRunResumePart(PLAYER_STAMINA_RUN_RESUME_PART);
 
         gameObject->AddComponent<PlayerAttackComponent>();
         gameObject->AddComponent<PlayerRollComponent>();

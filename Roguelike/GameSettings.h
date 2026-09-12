@@ -43,6 +43,14 @@ namespace RoguelikeGame
     constexpr float PLAYER_MELEE_DAMAGE = 15.f;
     constexpr float PLAYER_HEAVY_LUNGE_SPEED = 150.f;
 
+    constexpr float PLAYER_MAX_STAMINA = 100.f;
+    constexpr float PLAYER_STAMINA_RUN_DRAIN = 24.f;
+    constexpr float PLAYER_STAMINA_REGEN = 20.f;
+    constexpr float PLAYER_STAMINA_REGEN_DELAY = 0.7f;
+    constexpr float PLAYER_STAMINA_RUN_RESUME_PART = 0.25f;
+    constexpr float PLAYER_ROLL_STAMINA = 25.f;
+    constexpr float PLAYER_HEAVY_ATTACK_STAMINA = 20.f;
+
     constexpr float PLAYER_ROLL_SPEED = 900.f;
     constexpr float PLAYER_ROLL_MAX_STEP = 0.75f * CHARACTER_COLLIDER_SIZE;
     constexpr float PLAYER_ROLL_COOLDOWN = 0.35f;

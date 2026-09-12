@@ -29,7 +29,7 @@ namespace XYZEngine
 			return;
 		}
 
-		isRunning = input != nullptr && input->IsActionHeld(InputAction::Run);
+		isRunning = isRunAllowed && input != nullptr && input->IsActionHeld(InputAction::Run);
 		float currentSpeed = isRunning ? speed * runSpeedMultiplier : speed;
 
 		transform->MoveBy(currentSpeed * deltaTime * direction.Normalized());
@@ -37,6 +37,19 @@ namespace XYZEngine
 	void MovementComponent::Render()
 	{
 
+	}
+
+	void MovementComponent::SetRunAllowed(bool newIsRunAllowed)
+	{
+		isRunAllowed = newIsRunAllowed;
+		if (!isRunAllowed)
+		{
+			isRunning = false;
+		}
+	}
+	bool MovementComponent::IsRunAllowed() const
+	{
+		return isRunAllowed;
 	}
 
 	void MovementComponent::OnDisable()

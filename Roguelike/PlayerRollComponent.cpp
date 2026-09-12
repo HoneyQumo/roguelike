@@ -1,6 +1,7 @@
 #include "PlayerRollComponent.h"
 #include <GameObject.h>
 #include <LoggerRegistry.h>
+#include "GameSettings.h"
 
 namespace RoguelikeGame
 {
@@ -15,6 +16,7 @@ namespace RoguelikeGame
         meleeWeapon = gameObject->GetComponent<MeleeWeaponComponent>();
         health = gameObject->GetComponent<HealthComponent>();
         loadout = gameObject->GetComponent<PlayerLoadoutComponent>();
+        stamina = gameObject->GetComponent<StaminaComponent>();
 
         if (input == nullptr || dodgeRoll == nullptr)
         {
@@ -38,6 +40,11 @@ namespace RoguelikeGame
         if (meleeWeapon != nullptr)
         {
             meleeWeapon->CancelAttack();
+        }
+
+        if (stamina != nullptr && !stamina->TrySpend(PLAYER_ROLL_STAMINA))
+        {
+            return;
         }
 
         dodgeRoll->TryRoll({input->GetHorizontalAxis(), input->GetVerticalAxis()});

@@ -138,3 +138,56 @@ TEST_F(InputSystemTest, UnrelatedEventsDoNothing)
 	EXPECT_TRUE(input->HasFocus());
 	EXPECT_FALSE(input->IsKeyHeld(sf::Keyboard::W));
 }
+
+TEST_F(InputSystemTest, DefaultBindingsCoverTheNewActions)
+{
+	input->HandleEvent(KeyEvent(sf::Event::KeyPressed, sf::Keyboard::E));
+	EXPECT_TRUE(input->WasActionPressed(XYZEngine::InputAction::Interact));
+	EXPECT_TRUE(input->IsActionHeld(XYZEngine::InputAction::Interact));
+
+	input->BeginFrame();
+	input->HandleEvent(KeyEvent(sf::Event::KeyPressed, sf::Keyboard::Escape));
+	EXPECT_TRUE(input->WasActionPressed(XYZEngine::InputAction::Pause));
+
+	input->BeginFrame();
+	input->HandleEvent(KeyEvent(sf::Event::KeyPressed, sf::Keyboard::Num2));
+	EXPECT_TRUE(input->WasActionPressed(XYZEngine::InputAction::WeaponSlot2));
+	EXPECT_FALSE(input->WasActionPressed(XYZEngine::InputAction::WeaponSlot1));
+}
+
+TEST_F(InputSystemTest, AlternativeKeyTriggersTheSameAction)
+{
+	input->HandleEvent(KeyEvent(sf::Event::KeyPressed, sf::Keyboard::Tab));
+
+	EXPECT_TRUE(input->WasActionPressed(XYZEngine::InputAction::Inventory));
+}
+
+TEST_F(InputSystemTest, ActionFollowsRebinding)
+{
+	XYZEngine::InputBinding original = input->GetBinding(XYZEngine::InputAction::Interact);
+	XYZEngine::InputBinding rebound;
+	rebound.key = sf::Keyboard::F;
+	input->SetBinding(XYZEngine::InputAction::Interact, rebound);
+
+	input->HandleEvent(KeyEvent(sf::Event::KeyPressed, sf::Keyboard::F));
+	EXPECT_TRUE(input->WasActionPressed(XYZEngine::InputAction::Interact));
+
+	input->BeginFrame();
+	input->HandleEvent(KeyEvent(sf::Event::KeyPressed, sf::Keyboard::E));
+	EXPECT_FALSE(input->WasActionPressed(XYZEngine::InputAction::Interact));
+
+	input->SetBinding(XYZEngine::InputAction::Interact, original);
+}
+
+TEST_F(InputSystemTest, MousePositionFollowsMoveEvents)
+{
+	sf::Event moved;
+	moved.type = sf::Event::MouseMoved;
+	moved.mouseMove.x = 320;
+	moved.mouseMove.y = 240;
+
+	input->HandleEvent(moved);
+
+	EXPECT_EQ(input->GetMousePosition().x, 320);
+	EXPECT_EQ(input->GetMousePosition().y, 240);
+}

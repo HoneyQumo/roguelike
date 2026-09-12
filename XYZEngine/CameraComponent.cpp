@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "CameraComponent.h"
 #include "GameObject.h"
+#include "RenderSystem.h"
 #include "TransformComponent.h"
 
 namespace XYZEngine
@@ -9,35 +10,47 @@ namespace XYZEngine
 	{
 		transform = gameObject->GetTransform();
 	}
+	CameraComponent::~CameraComponent()
+	{
+		RenderSystem::Instance()->UnsubscribeResize(resizeSubscription);
+	}
+
+	void CameraComponent::Start()
+	{
+		resizeSubscription = RenderSystem::Instance()->SubscribeResize([this](unsigned int, unsigned int) { ApplyViewSize(); });
+		ApplyViewSize();
+	}
 	void CameraComponent::Update(float deltaTime)
 	{
-		if (window == nullptr)
-		{
-			return;
-		}
-
 		auto position = transform->GetWorldPosition();
 
 		view.setCenter(Convert<sf::Vector2f, Vector2Df>(position));
 		view.setRotation(isRotationEnabled ? transform->GetWorldRotation() : 0.f);
 
-		window->setView(view);
+		RenderSystem::Instance()->GetMainWindow().setView(view);
 	}
 	void CameraComponent::Render()
 	{
-		if (window == nullptr)
-		{
-			LOG_ERROR("Camera has no window on " + gameObject->GetName());
-		}
 	}
 
-	void CameraComponent::SetBaseResolution(int width, int height)
+	void CameraComponent::SetViewHeight(float newViewHeight)
 	{
-		view.reset(sf::FloatRect(0.f, 0.f, static_cast<float>(width), -static_cast<float>(height)));
+		if (newViewHeight <= 0.f)
+		{
+			LOG_WARN("View height must be greater than zero.");
+			return;
+		}
+
+		viewHeight = newViewHeight;
+		ApplyViewSize();
 	}
-	void CameraComponent::SetWindow(sf::RenderWindow* newWindow)
+	void CameraComponent::ApplyViewSize()
 	{
-		window = newWindow;
+		sf::Vector2u windowSize = RenderSystem::Instance()->GetWindowSize();
+		float aspect = windowSize.y > 0 ? static_cast<float>(windowSize.x) / static_cast<float>(windowSize.y) : 1.f;
+		float height = viewHeight * zoom;
+
+		view.setSize(height * aspect, -height);
 	}
 	void CameraComponent::SetRotationEnabled(bool newIsRotationEnabled)
 	{
@@ -50,6 +63,8 @@ namespace XYZEngine
 			LOG_WARN("Zoom must be greater than zero.");
 			return;
 		}
-		view.zoom(newZoom);
+
+		zoom *= newZoom;
+		ApplyViewSize();
 	}
 }

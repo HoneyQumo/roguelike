@@ -60,9 +60,9 @@ namespace RoguelikeGame
 
         auto& window = XYZEngine::RenderSystem::Instance()->GetMainWindow();
         sf::View worldView = window.getView();
-        window.setView(window.getDefaultView());
+        window.setView(XYZEngine::RenderSystem::Instance()->GetUiView());
 
-        sf::Vector2f screenSize = window.getDefaultView().getSize();
+        sf::Vector2f screenSize = XYZEngine::RenderSystem::Instance()->GetUiView().getSize();
         float ammoY = screenSize.y - AMMO_HUD_MARGIN_Y - AMMO_HUD_FONT_SIZE * AMMO_HUD_LINE_HEIGHT;
         float nameY = ammoY - AMMO_HUD_NAME_FONT_SIZE * AMMO_HUD_LINE_HEIGHT;
 

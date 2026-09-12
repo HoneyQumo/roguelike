@@ -62,8 +62,7 @@ namespace RoguelikeGame
         CharacterParts parts = CreateCharacter(spec, [](XYZEngine::GameObject* object)
         {
             auto camera = object->AddComponent<XYZEngine::CameraComponent>();
-            camera->SetWindow(&XYZEngine::RenderSystem::Instance()->GetMainWindow());
-            camera->SetBaseResolution(SCREEN_WIDTH, SCREEN_HEIGHT);
+            camera->SetViewHeight(CAMERA_VIEW_HEIGHT);
             camera->SetRotationEnabled(false);
 
             object->AddComponent<XYZEngine::InputComponent>();

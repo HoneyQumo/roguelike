@@ -162,7 +162,8 @@ namespace RoguelikeGame
         auto input = XYZEngine::InputSystem::Instance();
         for (int slot = 0; slot < slotsCount; slot++)
         {
-            if (input->WasKeyPressed(WEAPON_SLOT_KEYS[slot]))
+            auto action = static_cast<XYZEngine::InputAction>(static_cast<int>(XYZEngine::InputAction::WeaponSlot1) + slot);
+            if (input->WasActionPressed(action))
             {
                 return slot;
             }

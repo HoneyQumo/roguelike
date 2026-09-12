@@ -84,6 +84,8 @@
     <ClCompile Include="CameraShake.tests.cpp" />
     <ClCompile Include="ParticleSystem.tests.cpp" />
     <ClCompile Include="ParticleCatalog.tests.cpp" />
+    <ClCompile Include="UiLayout.tests.cpp" />
+    <ClCompile Include="UiScreen.tests.cpp" />
     <ClCompile Include="..\Roguelike\LevelLoader.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>

@@ -5,6 +5,7 @@
 #include "Player.h"
 #include "Music.h"
 #include "Crosshair.h"
+#include "Particles.h"
 #include "AmmoHud.h"
 #include "MessageOverlay.h"
 #include "MessageOverlayComponent.h"
@@ -37,6 +38,8 @@ namespace RoguelikeGame
             LOG_ERROR(std::string("Level is not loaded: ") + exception.what());
             LOG_WARN("Game continues with an empty level");
         }
+
+        particles = CreateParticles();
 
         auto playerSpawn = level.GetPlayerSpawn();
         if (playerSpawn.has_value())
@@ -112,6 +115,14 @@ namespace RoguelikeGame
         {
             Restart();
         }
+        else if (input->WasKeyPressed(DEBUG_HEAL_KEY))
+        {
+            auto health = GameWorld::Instance()->FindComponent<HealthComponent>(PLAYER_OBJECT_NAME);
+            if (health != nullptr)
+            {
+                health->Heal(DEBUG_HEAL_AMOUNT);
+            }
+        }
     }
 
     void DeveloperLevel::Restart()
@@ -128,7 +139,7 @@ namespace RoguelikeGame
 
         XYZEngine::FrameClock::Instance()->StopTimeEffects();
 
-        for (auto sceneObject : {messageOverlay, ammoHud, crosshair, music, player})
+        for (auto sceneObject : {messageOverlay, ammoHud, crosshair, music, player, particles})
         {
             if (sceneObject != nullptr)
             {
@@ -140,6 +151,7 @@ namespace RoguelikeGame
         crosshair = nullptr;
         music = nullptr;
         player = nullptr;
+        particles = nullptr;
 
         level.Clear();
 

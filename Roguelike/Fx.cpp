@@ -1,5 +1,7 @@
 ﻿#include "Fx.h"
+#include "ParticleCatalog.h"
 #include <MathUtils.h>
+#include <ParticleSystem.h>
 #include "GameSettings.h"
 #include <GameWorld.h>
 #include <ResourceSystem.h>
@@ -11,6 +13,28 @@
 
 namespace RoguelikeGame
 {
+
+    void Fx::SpawnHealBurst(const XYZEngine::Vector2Df& position)
+    {
+        const XYZEngine::ParticleSpec* spec = FindParticleSpec(ParticleEffect::HealBurst);
+        if (spec == nullptr)
+        {
+            return;
+        }
+
+        XYZEngine::ParticleSystem::Instance()->Emit(*spec, position, {0.f, 1.f});
+    }
+
+    void Fx::SpawnHitBurst(const XYZEngine::Vector2Df& position, const XYZEngine::Vector2Df& direction)
+    {
+        const XYZEngine::ParticleSpec* spec = FindParticleSpec(ParticleEffect::HitBurst);
+        if (spec == nullptr)
+        {
+            return;
+        }
+
+        XYZEngine::ParticleSystem::Instance()->Emit(*spec, position, direction.IsZero() ? XYZEngine::Vector2Df{0.f, 1.f} : direction);
+    }
 
     void Fx::ShakeCamera(const XYZEngine::CameraShake& shake)
     {

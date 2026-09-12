@@ -15,6 +15,9 @@ namespace RoguelikeGame
 
     constexpr float CAMERA_VIEW_HEIGHT = static_cast<float>(SCREEN_HEIGHT);
     constexpr float CAMERA_SHAKE_LIMIT = 40.f;
+    constexpr std::size_t PARTICLE_POOL_CAPACITY = 1024;
+    constexpr sf::Keyboard::Key DEBUG_HEAL_KEY = sf::Keyboard::H;
+    constexpr float DEBUG_HEAL_AMOUNT = 25.f;
     constexpr float HIT_STOP_LIGHT = 0.035f;
     constexpr float HIT_STOP_HEAVY = 0.07f;
     constexpr float DEATH_TIME_SCALE = 0.35f;
@@ -139,6 +142,7 @@ namespace RoguelikeGame
     constexpr float HEAVY_CHARGED_GLOW_PERIOD = 0.18f;
 
     constexpr auto PLAYER_OBJECT_NAME = "Player";
+    constexpr auto PARTICLES_OBJECT_NAME = "Particles";
 
     constexpr auto PLAYER_TEXTURE = "player";
     constexpr auto WEAPONS_TEXTURE = "weapons";
@@ -150,6 +154,7 @@ namespace RoguelikeGame
     constexpr auto BULLET_TEXTURE = "fx_bullet";
     constexpr auto ROCKET_TEXTURE = "fx_rocket";
     constexpr auto EXPLOSION_TEXTURE = "fx_explosion";
+    constexpr auto FX_ATLAS_TEXTURE = "fx_atlas";
     constexpr auto RELOAD_MAG_TEXTURE = "reload_mag";
     constexpr auto HIT_FLASH_SHADER = "hit_flash";
     constexpr auto HUD_FONT = "hud";

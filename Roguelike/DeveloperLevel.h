@@ -25,6 +25,7 @@ namespace RoguelikeGame
 
         Level level;
         XYZEngine::GameObject* player = nullptr;
+        XYZEngine::GameObject* particles = nullptr;
         XYZEngine::GameObject* music = nullptr;
         XYZEngine::GameObject* crosshair = nullptr;
         XYZEngine::GameObject* ammoHud = nullptr;

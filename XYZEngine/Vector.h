@@ -10,17 +10,9 @@ namespace XYZEngine
 		T x = (T)0;
 		T y = (T)0;
 
-		Vector2D()
-		{
-			x = (T)0;
-			y = (T)0;
-		}
+		constexpr Vector2D() : x((T)0), y((T)0) {}
 
-		Vector2D(T newX, T newY)
-		{
-			x = newX;
-			y = newY;
-		}
+		constexpr Vector2D(T newX, T newY) : x(newX), y(newY) {}
 
 		float GetLength() const
 		{

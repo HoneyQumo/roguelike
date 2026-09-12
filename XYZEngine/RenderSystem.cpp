@@ -26,15 +26,29 @@ namespace XYZEngine
 	}
 	sf::RenderWindow& RenderSystem::GetMainWindow() const
 	{
+		static sf::RenderWindow fallbackWindow;
+		static bool isFallbackReported = false;
+
+		if (window == nullptr)
+		{
+			if (!isFallbackReported)
+			{
+				isFallbackReported = true;
+				LOG_ERROR("Main window is not set");
+			}
+
+			return fallbackWindow;
+		}
+
 		return *window;
 	}
 
 	void RenderSystem::Render(const sf::Drawable& drawable)
 	{
-		window->draw(drawable);
+		GetMainWindow().draw(drawable);
 	}
 	void RenderSystem::Render(const sf::Drawable& drawable, const sf::RenderStates& states)
 	{
-		window->draw(drawable, states);
+		GetMainWindow().draw(drawable, states);
 	}
 }

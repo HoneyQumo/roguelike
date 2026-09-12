@@ -16,13 +16,20 @@ namespace XYZEngine
 
 		GameObject* GetGameObject() const;
 
+		void SetEnabled(bool newIsEnabled);
+		bool IsEnabled() const;
+
 		bool IsDestroyed() const;
 
 		friend class GameObject;
 	protected:
+		virtual void OnEnable() {}
+		virtual void OnDisable() {}
+
 		GameObject* gameObject = nullptr;
 	private:
 		bool isStarted = false;
 		bool isDestroyed = false;
+		bool isEnabled = true;
 	};
 }

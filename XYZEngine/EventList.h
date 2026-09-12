@@ -39,9 +39,15 @@ namespace XYZEngine
 
 		void Invoke(TArgs... args) const
 		{
-			for (std::size_t i = 0; i < subscriptions.size(); i++)
+			std::vector<Subscription> current = subscriptions;
+			for (const Subscription& subscription : current)
 			{
-				subscriptions[i].handler(args...);
+				if (!IsSubscribed(subscription.id))
+				{
+					continue;
+				}
+
+				subscription.handler(args...);
 			}
 		}
 
@@ -61,6 +67,12 @@ namespace XYZEngine
 			SubscriptionId id;
 			std::function<void(TArgs...)> handler;
 		};
+
+		bool IsSubscribed(SubscriptionId id) const
+		{
+			return std::find_if(subscriptions.begin(), subscriptions.end(),
+				[id](const Subscription& subscription) { return subscription.id == id; }) != subscriptions.end();
+		}
 
 		std::vector<Subscription> subscriptions;
 		SubscriptionId nextId = NO_SUBSCRIPTION + 1;

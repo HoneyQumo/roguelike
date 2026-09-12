@@ -54,6 +54,5 @@ namespace XYZEngine
 		void DestroyGameObjectImmediate(GameObject* gameObject);
 		void RegisterGameObject(GameObject* gameObject);
 		void UnregisterGameObject(GameObject* gameObject);
-		bool IsRegistered(GameObject* gameObject) const;
 	};
 }

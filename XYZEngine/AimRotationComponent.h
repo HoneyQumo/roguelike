@@ -21,7 +21,6 @@ namespace XYZEngine
 		void AimAtCursor();
 		void AimAtGameObject(const std::string& newTargetName);
 		void SetMaxDistance(float newMaxDistance);
-		void SetEnabled(bool newIsEnabled);
 
 		const Vector2Df& GetAimDirection() const;
 	private:
@@ -30,7 +29,6 @@ namespace XYZEngine
 
 		std::string targetName;
 		bool isCursorAim = false;
-		bool isEnabled = true;
 		float maxDistance = 0.f;
 
 		Vector2Df aimDirection = { 1.f, 0.f };

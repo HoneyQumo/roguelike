@@ -1,4 +1,4 @@
-﻿#include "pch.h"
+#include "pch.h"
 #include "GameWorld.h"
 
 namespace XYZEngine
@@ -39,15 +39,12 @@ namespace XYZEngine
 	}
 	void GameWorld::LateUpdate()
 	{
-		std::vector<GameObject*> toDestroy;
-		toDestroy.swap(markedToDestroyGameObjects);
-
-		for (GameObject* gameObject : toDestroy)
+		while (!markedToDestroyGameObjects.empty())
 		{
-			if (IsRegistered(gameObject))
-			{
-				DestroyGameObjectImmediate(gameObject);
-			}
+			GameObject* gameObject = markedToDestroyGameObjects.back();
+			markedToDestroyGameObjects.pop_back();
+
+			DestroyGameObjectImmediate(gameObject);
 		}
 
 		for (int i = 0; i < gameObjects.size(); i++)
@@ -108,18 +105,22 @@ namespace XYZEngine
 	}
 	void GameWorld::Clear()
 	{
-		for (int i = static_cast<int>(gameObjects.size()) - 1; i >= 0; i--)
+		while (!gameObjects.empty())
 		{
-			if (gameObjects[i] == nullptr)
+			GameObject* toDestroy = gameObjects.front();
+			for (GameObject* gameObject : gameObjects)
 			{
-				continue;
+				if (gameObject->GetTransform()->GetParent() == nullptr)
+				{
+					toDestroy = gameObject;
+					break;
+				}
 			}
 
-			if (gameObjects[i]->GetTransform()->GetParent() == nullptr)
-			{
-				DestroyGameObjectImmediate(gameObjects[i]);
-			}
+			DestroyGameObjectImmediate(toDestroy);
 		}
+
+		markedToDestroyGameObjects.clear();
 	}
 
 	void GameWorld::Print() const
@@ -156,11 +157,6 @@ namespace XYZEngine
 		}
 
 		isRenderOrderDirty = true;
-	}
-
-	bool GameWorld::IsRegistered(GameObject* gameObject) const
-	{
-		return std::find(gameObjects.begin(), gameObjects.end(), gameObject) != gameObjects.end();
 	}
 
 	void GameWorld::RegisterGameObject(GameObject* gameObject)

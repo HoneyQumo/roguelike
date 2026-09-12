@@ -22,6 +22,9 @@ namespace XYZEngine
 		void SetRunSpeedMultiplier(float newRunSpeedMultiplier);
 		bool IsRunning() const;
 
+		void SetRunAllowed(bool newIsRunAllowed);
+		bool IsRunAllowed() const;
+
 		void SetDirection(const Vector2Df& newDirection);
 		Vector2Df GetDirection() const;
 	protected:
@@ -33,6 +36,7 @@ namespace XYZEngine
 		float speed = 0.f;
 		float runSpeedMultiplier = 1.f;
 		bool isRunning = false;
+		bool isRunAllowed = true;
 		Vector2Df direction = { 0.f, 0.f };
 	};
 }

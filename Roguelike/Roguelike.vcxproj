@@ -104,6 +104,7 @@
         <ClCompile Include="Crosshair.cpp"/>
         <ClCompile Include="Fx.cpp"/>
         <ClCompile Include="Particles.cpp"/>
+        <ClCompile Include="StaminaComponent.cpp"/>
         <ClCompile Include="HudScreen.cpp"/>
         <ClCompile Include="MessageScreen.cpp"/>
         <ClCompile Include="PlayerHudBinderComponent.cpp"/>
@@ -139,6 +140,7 @@
         <ClInclude Include="PlayerHudBinderComponent.h"/>
         <ClInclude Include="UiRoot.h"/>
         <ClInclude Include="Particles.h"/>
+        <ClInclude Include="StaminaComponent.h"/>
         <ClInclude Include="Faction.h"/>
         <ClInclude Include="FactionComponent.h"/>
         <ClInclude Include="ChaseComponent.h"/>

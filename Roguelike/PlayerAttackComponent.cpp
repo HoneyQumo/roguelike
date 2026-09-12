@@ -22,6 +22,7 @@ namespace RoguelikeGame
         dodgeRoll = gameObject->GetComponent<DodgeRollComponent>();
         loadout = gameObject->GetComponent<PlayerLoadoutComponent>();
         hitFlash = gameObject->GetComponent<HitFlashComponent>();
+        stamina = gameObject->GetComponent<StaminaComponent>();
 
         if (input == nullptr || weapon == nullptr || meleeWeapon == nullptr || loadout == nullptr)
         {
@@ -71,7 +72,13 @@ namespace RoguelikeGame
     {
         if (input->IsActionHeld(XYZEngine::InputAction::HeavyAttack))
         {
-            meleeWeapon->TryStartHeavyAttack();
+            if (stamina == nullptr || stamina->HasStamina(PLAYER_HEAVY_ATTACK_STAMINA))
+            {
+                if (meleeWeapon->TryStartHeavyAttack() && stamina != nullptr)
+                {
+                    stamina->TrySpend(PLAYER_HEAVY_ATTACK_STAMINA);
+                }
+            }
         }
         else
         {

@@ -91,7 +91,7 @@ namespace XYZEngine
 
 	void DebugDraw::Render()
 	{
-		float frameTime = FrameClock::Instance()->GetDeltaTime();
+		float frameTime = FrameClock::Instance()->GetUnscaledDeltaTime();
 		smoothedFrameTime += (frameTime - smoothedFrameTime) * FRAME_TIME_SMOOTHING;
 
 		if (!isEnabled)

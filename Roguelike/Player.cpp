@@ -7,6 +7,7 @@
 #include "StowedWeaponComponent.h"
 #include "BloodPool.h"
 #include "Fx.h"
+#include <FrameClock.h>
 #include "WeaponSetup.h"
 #include <GameWorld.h>
 #include <RenderSystem.h>
@@ -133,10 +134,14 @@ namespace RoguelikeGame
         PlayEffectsOnMeleeHit(meleeWeapon, meleeAudio);
         meleeWeapon->SubscribeStrike([](MeleeAttackKind kind, int hits)
         {
-            if (hits > 0)
+            if (hits <= 0)
             {
-                Fx::ShakeCamera(kind == MeleeAttackKind::Heavy ? CAMERA_SHAKE_HEAVY : CAMERA_SHAKE_LIGHT);
+                return;
             }
+
+            bool isHeavy = kind == MeleeAttackKind::Heavy;
+            Fx::ShakeCamera(isHeavy ? CAMERA_SHAKE_HEAVY : CAMERA_SHAKE_LIGHT);
+            XYZEngine::FrameClock::Instance()->HitStop(isHeavy ? HIT_STOP_HEAVY : HIT_STOP_LIGHT);
         });
 
         auto loadout = gameObject->AddComponent<PlayerLoadoutComponent>();
@@ -171,6 +176,7 @@ namespace RoguelikeGame
 
             gameObject->SetRenderLayer(CORPSE_RENDER_LAYER);
             BloodPool::Spawn(death.position, death.rotation);
+            XYZEngine::FrameClock::Instance()->SlowMotion(DEATH_TIME_SCALE, DEATH_SLOW_MOTION_TIME, DEATH_SLOW_MOTION_BLEND);
 
             LOG_WARN("Player is dead, controls are disabled");
         });

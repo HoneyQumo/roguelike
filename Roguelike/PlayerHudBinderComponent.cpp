@@ -12,6 +12,8 @@ namespace RoguelikeGame
         targetName = newTargetName;
         weapon = nullptr;
         loadout = nullptr;
+        health = nullptr;
+        stamina = nullptr;
     }
 
     void PlayerHudBinderComponent::SetScreen(HudScreen* newScreen)
@@ -21,17 +23,25 @@ namespace RoguelikeGame
 
     void PlayerHudBinderComponent::Update(float deltaTime)
     {
-        if (weapon == nullptr || loadout == nullptr)
+        if (loadout == nullptr || health == nullptr)
         {
             FindTarget();
         }
 
-        if (screen == nullptr || loadout == nullptr)
+        if (screen == nullptr)
         {
             return;
         }
 
-        screen->SetAmmo(ReadState());
+        if (loadout != nullptr)
+        {
+            screen->SetAmmo(ReadAmmoState());
+        }
+
+        if (health != nullptr || stamina != nullptr)
+        {
+            screen->SetVitals(ReadVitalsState());
+        }
     }
 
     void PlayerHudBinderComponent::Render()
@@ -53,9 +63,29 @@ namespace RoguelikeGame
 
         weapon = target->GetComponent<WeaponComponent>();
         loadout = target->GetComponent<PlayerLoadoutComponent>();
+        health = target->GetComponent<HealthComponent>();
+        stamina = target->GetComponent<StaminaComponent>();
     }
 
-    AmmoHudState PlayerHudBinderComponent::ReadState() const
+    VitalsHudState PlayerHudBinderComponent::ReadVitalsState() const
+    {
+        VitalsHudState state;
+
+        if (health != nullptr)
+        {
+            state.healthPart = health->GetHealthPercent();
+        }
+
+        if (stamina != nullptr)
+        {
+            state.staminaPart = stamina->GetStaminaPercent();
+            state.isExhausted = stamina->IsExhausted();
+        }
+
+        return state;
+    }
+
+    AmmoHudState PlayerHudBinderComponent::ReadAmmoState() const
     {
         AmmoHudState state;
         state.weaponName = GetWeapon(loadout->GetCurrentWeapon()).name;

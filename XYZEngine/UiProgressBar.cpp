@@ -27,6 +27,11 @@ namespace XYZEngine
 		return fillShape.getGlobalBounds();
 	}
 
+	const sf::Color& UiProgressBar::GetFillColor() const
+	{
+		return fillShape.getFillColor();
+	}
+
 	void UiProgressBar::OnLayout()
 	{
 		const sf::FloatRect& bounds = GetBounds();

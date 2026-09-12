@@ -13,6 +13,7 @@ namespace XYZEngine
 
 		void SetColors(const sf::Color& fill, const sf::Color& background);
 		sf::FloatRect GetFillBounds() const;
+		const sf::Color& GetFillColor() const;
 
 	protected:
 		void OnLayout() override;

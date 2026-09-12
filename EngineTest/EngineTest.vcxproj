@@ -87,6 +87,7 @@
     <ClCompile Include="UiLayout.tests.cpp" />
     <ClCompile Include="UiScreen.tests.cpp" />
     <ClCompile Include="StaminaComponent.tests.cpp" />
+    <ClCompile Include="HudScreen.tests.cpp" />
     <ClCompile Include="..\Roguelike\LevelLoader.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
@@ -103,6 +104,9 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\Roguelike\StaminaComponent.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Roguelike\HudScreen.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\Roguelike\FactionComponent.cpp">

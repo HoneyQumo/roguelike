@@ -99,10 +99,11 @@ namespace RoguelikeGame
 		assert(newLifetime > 0.f);
 		lifetime.Start(newLifetime);
 	}
-	void ProjectileComponent::SetShooter(GameObjectId newShooterId, Faction newShooterFaction)
+	void ProjectileComponent::SetShooter(GameObjectId newShooterId, Faction newShooterFaction, const std::string& newShooterName)
 	{
 		shooterId = newShooterId;
 		shooterFaction = newShooterFaction;
+		shooterName = newShooterName;
 	}
 	SubscriptionId ProjectileComponent::SubscribeHit(std::function<void(const Vector2Df&, const Vector2Df&, bool)> onHit)
 	{
@@ -182,7 +183,15 @@ namespace RoguelikeGame
 		bool isCharacterHit = health != nullptr && health->IsAlive() && !health->IsInvulnerable();
 		if (isCharacterHit && damage > 0.f)
 		{
-			health->TakeDamage(damage);
+			DamageSource source;
+			source.kind = DamageKind::Bullet;
+			source.attackerId = shooterId;
+			source.attackerName = shooterName;
+			source.attackerFaction = shooterFaction;
+			source.position = transform->GetWorldPosition();
+			source.direction = direction.Normalized();
+
+			health->TakeDamage(damage, source);
 		}
 
 		hitEvent.Invoke(transform->GetWorldPosition(), direction.Normalized(), isCharacterHit);

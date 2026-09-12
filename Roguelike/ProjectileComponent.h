@@ -26,7 +26,7 @@ namespace RoguelikeGame
         void SetSpeed(float newSpeed);
         void SetDamage(float newDamage);
         void SetLifetime(float newLifetime);
-        void SetShooter(XYZEngine::GameObjectId newShooterId, Faction newShooterFaction);
+        void SetShooter(XYZEngine::GameObjectId newShooterId, Faction newShooterFaction, const std::string& newShooterName = std::string());
         XYZEngine::SubscriptionId SubscribeHit(std::function<void(const XYZEngine::Vector2Df&, const XYZEngine::Vector2Df&, bool)> onHit);
         XYZEngine::SubscriptionId SubscribeExpire(std::function<void(const XYZEngine::Vector2Df&)> onExpire);
 
@@ -40,6 +40,7 @@ namespace RoguelikeGame
         XYZEngine::Cooldown lifetime = XYZEngine::Cooldown::Started(3.f);
         XYZEngine::GameObjectId shooterId = XYZEngine::NO_GAME_OBJECT;
         Faction shooterFaction = Faction::Neutral;
+        std::string shooterName;
         XYZEngine::EventList<const XYZEngine::Vector2Df&, const XYZEngine::Vector2Df&, bool> hitEvent;
         XYZEngine::EventList<const XYZEngine::Vector2Df&> expireEvent;
 

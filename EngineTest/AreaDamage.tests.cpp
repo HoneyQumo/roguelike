@@ -2,6 +2,7 @@
 #include "AreaDamage.h"
 #include "GameWorld.h"
 #include "BoxColliderComponent.h"
+#include "ExplosiveComponent.h"
 
 using namespace XYZEngine;
 using namespace RoguelikeGame;
@@ -107,4 +108,28 @@ TEST_F(AreaDamageTest, TargetWithTwoCollidersIsReportedOnce)
 	AreaQuery query = QueryDamageArea({0.f, 0.f}, 100.f, nullptr);
 
 	EXPECT_EQ(query.targets.size(), 1u);
+}
+
+TEST_F(AreaDamageTest, ExplosionFillsDamageSourceWithOwner)
+{
+	GameObject* bomb = GameWorld::Instance()->CreateGameObject("Rocket");
+	bomb->GetTransform()->SetWorldPosition({0.f, 0.f});
+	auto explosive = bomb->AddComponent<ExplosiveComponent>();
+	explosive->SetRadius(100.f);
+	explosive->SetCenterDamage(40.f);
+	explosive->SetOwner(11, "Player", Faction::Player);
+
+	GameObject* victim = CreateCharacter("Enemy", 50.f, 0.f);
+	DamageInfo taken;
+	victim->GetComponent<HealthComponent>()->SubscribeDamage([&taken](const DamageInfo& info) { taken = info; });
+	UpdateBounds();
+
+	int hits = explosive->Explode({0.f, 0.f});
+
+	EXPECT_EQ(hits, 1);
+	EXPECT_EQ(taken.source.kind, DamageKind::Explosion);
+	EXPECT_EQ(taken.source.attackerId, 11u);
+	EXPECT_EQ(taken.source.attackerName, "Player");
+	EXPECT_EQ(taken.source.attackerFaction, Faction::Player);
+	EXPECT_FLOAT_EQ(taken.source.position.x, 50.f);
 }

@@ -274,6 +274,12 @@ namespace RoguelikeGame
         Vector2Df forward = GetForward();
         float arcLimit = std::cos(ToRadians(0.5f * attack.arcDegrees));
 
+        DamageSource source;
+        source.kind = DamageKind::Melee;
+        source.attackerId = gameObject->GetId();
+        source.attackerName = gameObject->GetName();
+        source.attackerFaction = faction == nullptr ? Faction::Neutral : faction->GetFaction();
+
         int hits = 0;
         for (const AreaTarget& target : QueryDamageArea(origin, attack.range, gameObject).targets)
         {
@@ -292,7 +298,10 @@ namespace RoguelikeGame
                 }
             }
 
-            target.health->TakeDamage(damage);
+            source.position = target.position;
+            source.direction = hitDirection;
+
+            target.health->TakeDamage(damage, source);
             hits++;
 
             hitEvent.Invoke(currentKind, target.position, hitDirection);

@@ -47,7 +47,7 @@ namespace RoguelikeGame
                 auto health = player->GetComponent<HealthComponent>();
                 if (health != nullptr)
                 {
-                    health->SubscribeDeath([this]()
+                    health->SubscribeDeath([this](const DeathInfo& death)
                     {
                         state = State::PlayerDied;
                         gameOverDelay.Start(GAME_OVER_DELAY);

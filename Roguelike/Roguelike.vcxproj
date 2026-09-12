@@ -133,6 +133,7 @@
         <ClInclude Include="AmmoHud.h"/>
         <ClInclude Include="AmmoHudComponent.h"/>
         <ClInclude Include="AreaDamage.h"/>
+        <ClInclude Include="DamageInfo.h"/>
         <ClInclude Include="Faction.h"/>
         <ClInclude Include="FactionComponent.h"/>
         <ClInclude Include="ChaseComponent.h"/>

@@ -3,6 +3,7 @@
 #include "BoxColliderComponent.h"
 #include "ProjectileComponent.h"
 #include "FactionComponent.h"
+#include "HealthComponent.h"
 
 using namespace XYZEngine;
 using RoguelikeGame::Faction;
@@ -117,4 +118,30 @@ TEST_F(ProjectileTest, TwoEnemiesOfTheSameKindShareOneFactionButNotOneId)
 	EXPECT_EQ(first->GetName(), second->GetName());
 	EXPECT_NE(first->GetId(), second->GetId());
 	EXPECT_NE(first->GetId(), NO_GAME_OBJECT);
+}
+
+TEST_F(ProjectileTest, HitFillsDamageSourceWithShooter)
+{
+	GameObject* target = CreateCharacter("Enemy", 100.f, 32.f, Faction::Enemy);
+	auto health = target->AddComponent<RoguelikeGame::HealthComponent>();
+	health->SetMaxHealth(100.f);
+
+	RoguelikeGame::DamageInfo taken;
+	health->SubscribeDamage([&taken](const RoguelikeGame::DamageInfo& info) { taken = info; });
+
+	int hits = 0;
+	GameObject* projectile = CreateProjectile(1000.f, 8.f, hits, 42, Faction::Player);
+	projectile->GetComponent<ProjectileComponent>()->SetDamage(20.f);
+	projectile->GetComponent<ProjectileComponent>()->SetShooter(42, Faction::Player, "Player");
+
+	GameWorld::Instance()->Update(0.2f);
+	GameWorld::Instance()->LateUpdate();
+
+	EXPECT_EQ(hits, 1);
+	EXPECT_FLOAT_EQ(taken.amount, 20.f);
+	EXPECT_EQ(taken.source.kind, RoguelikeGame::DamageKind::Bullet);
+	EXPECT_EQ(taken.source.attackerId, 42u);
+	EXPECT_EQ(taken.source.attackerName, "Player");
+	EXPECT_EQ(taken.source.attackerFaction, Faction::Player);
+	EXPECT_FLOAT_EQ(taken.source.direction.x, 1.f);
 }

@@ -64,9 +64,11 @@ namespace RoguelikeGame
         selfDamagePart = std::max(newSelfDamagePart, 0.f);
     }
 
-    void ExplosiveComponent::SetOwnerId(GameObjectId newOwnerId)
+    void ExplosiveComponent::SetOwner(GameObjectId newOwnerId, const std::string& newOwnerName, Faction newOwnerFaction)
     {
         ownerId = newOwnerId;
+        ownerName = newOwnerName;
+        ownerFaction = newOwnerFaction;
     }
 
     SubscriptionId ExplosiveComponent::SubscribeExplode(std::function<void(const Vector2Df&)> onExplode)
@@ -100,6 +102,12 @@ namespace RoguelikeGame
 
         AreaQuery query = QueryDamageArea(position, radius, gameObject);
 
+        DamageSource source;
+        source.kind = DamageKind::Explosion;
+        source.attackerId = ownerId;
+        source.attackerName = ownerName;
+        source.attackerFaction = ownerFaction;
+
         int hits = 0;
 
         for (const AreaTarget& target : query.targets)
@@ -120,7 +128,10 @@ namespace RoguelikeGame
                 continue;
             }
 
-            target.health->TakeDamage(damage);
+            source.position = target.position;
+            source.direction = target.direction;
+
+            target.health->TakeDamage(damage, source);
             hits++;
 
             hitEvent.Invoke(target.position, target.direction);

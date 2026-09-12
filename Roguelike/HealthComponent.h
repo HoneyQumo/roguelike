@@ -3,6 +3,7 @@
 #include <functional>
 #include <Component.h>
 #include <EventList.h>
+#include "DamageInfo.h"
 
 namespace RoguelikeGame
 {
@@ -25,15 +26,18 @@ namespace RoguelikeGame
         void SetInvulnerable(bool newIsInvulnerable);
         bool IsInvulnerable() const;
 
-        void TakeDamage(float damage);
-        void Heal(float amount);
+        void TakeDamage(float damage, const DamageSource& source = DamageSource());
+        float Heal(float amount);
 
         bool IsAlive() const;
 
-        XYZEngine::SubscriptionId SubscribeDamage(std::function<void(float)> onDamage);
+        XYZEngine::SubscriptionId SubscribeDamage(std::function<void(const DamageInfo&)> onDamage);
         void UnsubscribeDamage(XYZEngine::SubscriptionId subscription);
 
-        XYZEngine::SubscriptionId SubscribeDeath(std::function<void()> onDeath);
+        XYZEngine::SubscriptionId SubscribeHeal(std::function<void(float)> onHeal);
+        void UnsubscribeHeal(XYZEngine::SubscriptionId subscription);
+
+        XYZEngine::SubscriptionId SubscribeDeath(std::function<void(const DeathInfo&)> onDeath);
         void UnsubscribeDeath(XYZEngine::SubscriptionId subscription);
 
     private:
@@ -42,8 +46,9 @@ namespace RoguelikeGame
         float armor = 0.f;
         bool isInvulnerable = false;
 
-        XYZEngine::EventList<float> damageEvent;
-        XYZEngine::EventList<> deathEvent;
+        XYZEngine::EventList<const DamageInfo&> damageEvent;
+        XYZEngine::EventList<float> healEvent;
+        XYZEngine::EventList<const DeathInfo&> deathEvent;
 
         float CalculateDamage(float damage) const;
     };

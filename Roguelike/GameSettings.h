@@ -57,6 +57,8 @@ namespace RoguelikeGame
 
     constexpr unsigned int PLAYER_COLLISION_LAYER = 1u << 1;
     constexpr unsigned int ENEMY_COLLISION_LAYER = 1u << 2;
+    constexpr unsigned int ITEM_COLLISION_LAYER = 1u << 3;
+    constexpr float ITEM_PICKUP_SIZE = 40.f;
 
     constexpr int PLAYER_WEAPON_SLOTS = 3;
     constexpr int PLAYER_START_WEAPON_SLOT = 0;
@@ -97,13 +99,14 @@ namespace RoguelikeGame
     }
 
     constexpr int GROUND_RENDER_LAYER = 0;
-    constexpr int BLOOD_RENDER_LAYER = 1;
-    constexpr int CORPSE_RENDER_LAYER = 2;
-    constexpr int ENEMY_RENDER_LAYER = 3;
-    constexpr int STOWED_WEAPON_RENDER_LAYER = 4;
-    constexpr int PLAYER_RENDER_LAYER = 5;
-    constexpr int EFFECT_RENDER_LAYER = 6;
-    constexpr int UI_RENDER_LAYER = 7;
+    constexpr int BLOOD_RENDER_LAYER = 10;
+    constexpr int ITEM_RENDER_LAYER = 15;
+    constexpr int CORPSE_RENDER_LAYER = 20;
+    constexpr int ENEMY_RENDER_LAYER = 30;
+    constexpr int STOWED_WEAPON_RENDER_LAYER = 40;
+    constexpr int PLAYER_RENDER_LAYER = 50;
+    constexpr int EFFECT_RENDER_LAYER = 60;
+    constexpr int UI_RENDER_LAYER = 70;
 
     constexpr int CROSSHAIR_SIZE = 32;
     constexpr int RELOAD_MAG_FRAME_SIZE = 64;
@@ -203,6 +206,7 @@ namespace RoguelikeGame
     constexpr auto HURT_SOUND_FILE = "Resources/Audio/hurt.wav";
     constexpr auto MAIN_THEME_FILE = "Resources/Audio/main_music_1.ogg";
     constexpr auto TEST_LEVEL_FILE = "Resources/Levels/test_level.config";
+    constexpr auto ITEMS_CATALOG_FILE = "Resources/Items/items.config";
     constexpr auto HUD_FONT_FILE = "Resources/Fonts/Roboto-Medium.ttf";
 
     constexpr auto LOG_FILE_PATH = "log.txt";

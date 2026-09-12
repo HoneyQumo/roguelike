@@ -2,6 +2,7 @@
 #include "GameSettings.h"
 #include "Enemy.h"
 #include "EnemyCatalog.h"
+#include "Item.h"
 #include "Wall.h"
 #include <GameWorld.h>
 #include <VertexArrayRendererComponent.h>
@@ -10,7 +11,7 @@
 
 namespace RoguelikeGame
 {
-    Level LevelBuilder::Build(const LevelData& levelData)
+    Level LevelBuilder::Build(const LevelData& levelData, const ItemCatalog& items)
     {
         Level level;
 
@@ -66,11 +67,45 @@ namespace RoguelikeGame
             }
         }
 
+        int itemsCount = BuildItems(levelData, items, level);
+
         LOG_INFO("Level built: tiles " + std::to_string(tilesCount)
             + ", walls " + std::to_string(wallsCount)
-            + ", enemies " + std::to_string(enemiesCount));
+            + ", enemies " + std::to_string(enemiesCount)
+            + ", items " + std::to_string(itemsCount));
 
         return level;
+    }
+
+    int LevelBuilder::BuildItems(const LevelData& levelData, const ItemCatalog& items, Level& level)
+    {
+        int itemsCount = 0;
+
+        for (const ItemPlacement& placement : levelData.items)
+        {
+            const ItemDefinition* definition = items.Find(placement.itemId);
+            if (definition == nullptr)
+            {
+                LOG_ERROR("Unknown item id on level: " + placement.itemId);
+                continue;
+            }
+
+            auto position = TileToWorldPosition(placement.column, placement.row, levelData.height);
+
+            try
+            {
+                if (level.Add(CreateItem(*definition, position)))
+                {
+                    itemsCount++;
+                }
+            }
+            catch (const std::exception& exception)
+            {
+                LOG_ERROR("Can't spawn item " + placement.itemId + ": " + exception.what());
+            }
+        }
+
+        return itemsCount;
     }
 
     int LevelBuilder::BuildTiles(const LevelData& levelData, Level& level)

@@ -93,3 +93,73 @@ TEST(LevelLoaderTests, MissingFileThrows)
 {
 	EXPECT_THROW(LevelLoader::Load("no_such_level.config"), std::runtime_error);
 }
+
+TEST(LevelLoaderTests, ItemLegendEntryProducesPlacement)
+{
+	std::istringstream input(
+		"[legend]\n"
+		"# Wall\n"
+		". Floor\n"
+		"k Item:key_rusty\n"
+		"@ PlayerSpawn\n"
+		"[map]\n"
+		"#k@#\n");
+
+	LevelData level = LevelLoader::Parse(input, "test");
+
+	ASSERT_EQ(level.items.size(), 1u);
+	EXPECT_EQ(level.items[0].itemId, "key_rusty");
+	EXPECT_EQ(level.items[0].column, 1);
+	EXPECT_EQ(level.items[0].row, 0);
+	EXPECT_EQ(level.tiles[0][1], TileType::Floor);
+}
+
+TEST(LevelLoaderTests, ItemPlacementsKeepTheirCoordinates)
+{
+	std::istringstream input(
+		"[legend]\n"
+		"# Wall\n"
+		". Floor\n"
+		"@ PlayerSpawn\n"
+		"p Item:potion_small\n"
+		"w Item:weapon_deagle\n"
+		"[map]\n"
+		"#p.#\n"
+		"#.w@\n");
+
+	LevelData level = LevelLoader::Parse(input, "test");
+
+	ASSERT_EQ(level.items.size(), 2u);
+	EXPECT_EQ(level.items[0].itemId, "potion_small");
+	EXPECT_EQ(level.items[0].row, 0);
+	EXPECT_EQ(level.items[1].itemId, "weapon_deagle");
+	EXPECT_EQ(level.items[1].column, 2);
+	EXPECT_EQ(level.items[1].row, 1);
+}
+
+TEST(LevelLoaderTests, ItemLegendWithoutIdIsRejected)
+{
+	std::istringstream input(
+		"[legend]\n"
+		"k Item:\n"
+		"[map]\n"
+		"#k#\n");
+
+	EXPECT_THROW(LevelLoader::Parse(input, "test"), std::runtime_error);
+}
+
+TEST(LevelLoaderTests, LoaderDoesNotValidateItemIds)
+{
+	std::istringstream input(
+		"[legend]\n"
+		". Floor\n"
+		"@ PlayerSpawn\n"
+		"x Item:no_such_item\n"
+		"[map]\n"
+		".x@\n");
+
+	LevelData level = LevelLoader::Parse(input, "test");
+
+	ASSERT_EQ(level.items.size(), 1u);
+	EXPECT_EQ(level.items[0].itemId, "no_such_item");
+}

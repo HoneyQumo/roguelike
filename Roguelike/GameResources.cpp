@@ -1,4 +1,6 @@
 ﻿#include "GameResources.h"
+#include "Item.h"
+#include "ItemCatalogLoader.h"
 #include "GameSettings.h"
 #include "WeaponCatalog.h"
 #include "EnemyCatalog.h"
@@ -8,6 +10,11 @@
 
 namespace RoguelikeGame
 {
+    namespace
+    {
+        ItemCatalog items;
+    }
+
     namespace
     {
         std::string MeleeHitSoundKey(const MeleeDefinition& melee, int variant)
@@ -41,6 +48,8 @@ namespace RoguelikeGame
 
         XYZEngine::ResourceSystem::Instance()->LoadTextureStrip(RELOAD_MAG_TEXTURE, RELOAD_MAG_FILE,
                                                                 {0, 0, RELOAD_MAG_FRAME_SIZE, RELOAD_MAG_FRAME_SIZE}, RELOAD_MAG_FRAMES, false);
+
+        LoadItems();
 
         XYZEngine::ResourceSystem::Instance()->LoadShader(HIT_FLASH_SHADER, HIT_FLASH_SHADER_FILE, sf::Shader::Fragment);
 
@@ -112,5 +121,31 @@ namespace RoguelikeGame
     {
         XYZEngine::ResourceSystem::Instance()->LoadTextureStrip(name, FX_ATLAS_FILE,
                                                                {strip.x, strip.y, strip.width, strip.height}, strip.frames, false);
+    }
+
+    void GameResources::LoadItems()
+    {
+        try
+        {
+            items = ItemCatalogLoader::Load(ITEMS_CATALOG_FILE);
+        }
+        catch (const std::exception& exception)
+        {
+            LOG_ERROR(std::string("Item catalog is not loaded: ") + exception.what());
+            return;
+        }
+
+        for (const ItemDefinition& item : items)
+        {
+            XYZEngine::ResourceSystem::Instance()->LoadTexturePart(ItemTextureName(item.id), item.icon.texturePath,
+                                                                   item.icon.rect, false);
+        }
+
+        LOG_INFO("Items loaded: " + std::to_string(items.Size()));
+    }
+
+    const ItemCatalog& GameResources::GetItems()
+    {
+        return items;
     }
 }

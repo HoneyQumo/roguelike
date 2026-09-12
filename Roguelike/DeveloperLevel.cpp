@@ -1,5 +1,6 @@
 #include "DeveloperLevel.h"
 #include "GameSettings.h"
+#include "GameResources.h"
 #include "LevelBuilder.h"
 #include "LevelLoader.h"
 #include "Player.h"
@@ -30,7 +31,7 @@ namespace RoguelikeGame
 
         try
         {
-            level = LevelBuilder::Build(LevelLoader::Load(TEST_LEVEL_FILE));
+            level = LevelBuilder::Build(LevelLoader::Load(TEST_LEVEL_FILE), GameResources::GetItems());
         }
         catch (const std::exception& exception)
         {

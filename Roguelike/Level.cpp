@@ -29,12 +29,15 @@ namespace RoguelikeGame
         return *this;
     }
 
-    void Level::Add(XYZEngine::GameObject* gameObject)
+    bool Level::Add(XYZEngine::GameObject* gameObject)
     {
-        if (gameObject != nullptr)
+        if (gameObject == nullptr)
         {
-            objects.push_back(gameObject);
+            return false;
         }
+
+        objects.push_back(gameObject);
+        return true;
     }
 
     void Level::SetPlayerSpawn(const XYZEngine::Vector2Df& position)

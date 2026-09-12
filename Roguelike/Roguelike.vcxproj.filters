@@ -97,6 +97,10 @@
     <ClCompile Include="Fx.cpp">
     <ClCompile Include="Particles.cpp" />
     <ClCompile Include="StaminaComponent.cpp" />
+    <ClCompile Include="ItemCatalog.cpp" />
+    <ClCompile Include="ItemCatalogLoader.cpp" />
+    <ClCompile Include="Item.cpp" />
+    <ClCompile Include="ItemPickupComponent.cpp" />
     <ClCompile Include="HudScreen.cpp" />
     <ClCompile Include="MessageScreen.cpp" />
     <ClCompile Include="PlayerHudBinderComponent.cpp" />
@@ -133,6 +137,11 @@
     <ClInclude Include="UiRoot.h" />
     <ClInclude Include="Particles.h" />
     <ClInclude Include="StaminaComponent.h" />
+    <ClInclude Include="ItemDefinition.h" />
+    <ClInclude Include="ItemCatalog.h" />
+    <ClInclude Include="ItemCatalogLoader.h" />
+    <ClInclude Include="Item.h" />
+    <ClInclude Include="ItemPickupComponent.h" />
     <ClInclude Include="Faction.h" />
     <ClInclude Include="FactionComponent.h" />
     <ClInclude Include="ChaseComponent.h" />

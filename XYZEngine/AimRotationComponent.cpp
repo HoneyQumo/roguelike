@@ -21,11 +21,6 @@ namespace XYZEngine
 
     void AimRotationComponent::Update(float deltaTime)
     {
-        if (!isEnabled)
-        {
-            return;
-        }
-
         Vector2Df aimPosition;
         if (!TryGetAimPosition(aimPosition))
         {
@@ -63,11 +58,6 @@ namespace XYZEngine
     void AimRotationComponent::SetMaxDistance(float newMaxDistance)
     {
         maxDistance = newMaxDistance;
-    }
-
-    void AimRotationComponent::SetEnabled(bool newIsEnabled)
-    {
-        isEnabled = newIsEnabled;
     }
 
     const Vector2Df& AimRotationComponent::GetAimDirection() const

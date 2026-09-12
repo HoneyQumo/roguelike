@@ -89,3 +89,61 @@ TEST(EventListTests, ClearRemovesEverySubscriber)
 	EXPECT_EQ(event.GetCount(), 0u);
 	EXPECT_EQ(calls, 0);
 }
+
+TEST(EventListTests, HandlerCanUnsubscribeItselfDuringInvoke)
+{
+	EventList<int> event;
+	int selfCalls = 0;
+	int otherCalls = 0;
+	SubscriptionId selfId = NO_SUBSCRIPTION;
+	selfId = event.Subscribe([&event, &selfId, &selfCalls](const int&)
+	{
+		selfCalls++;
+		event.Unsubscribe(selfId);
+	});
+	event.Subscribe([&otherCalls](const int&) { otherCalls++; });
+
+	event.Invoke(1);
+	event.Invoke(1);
+
+	EXPECT_EQ(selfCalls, 1);
+	EXPECT_EQ(otherCalls, 2);
+	EXPECT_EQ(event.GetCount(), 1u);
+}
+
+TEST(EventListTests, HandlerUnsubscribedByAnotherHandlerIsNotCalled)
+{
+	EventList<int> event;
+	int removedCalls = 0;
+	SubscriptionId removedId = NO_SUBSCRIPTION;
+	event.Subscribe([&event, &removedId](const int&) { event.Unsubscribe(removedId); });
+	removedId = event.Subscribe([&removedCalls](const int&) { removedCalls++; });
+
+	event.Invoke(1);
+
+	EXPECT_EQ(removedCalls, 0);
+	EXPECT_EQ(event.GetCount(), 1u);
+}
+
+TEST(EventListTests, HandlerSubscribedDuringInvokeIsCalledOnNextInvokeOnly)
+{
+	EventList<int> event;
+	int addedCalls = 0;
+	bool hasSubscribed = false;
+	event.Subscribe([&event, &addedCalls, &hasSubscribed](const int&)
+	{
+		if (hasSubscribed)
+		{
+			return;
+		}
+
+		hasSubscribed = true;
+		event.Subscribe([&addedCalls](const int&) { addedCalls++; });
+	});
+
+	event.Invoke(1);
+	EXPECT_EQ(addedCalls, 0);
+
+	event.Invoke(1);
+	EXPECT_EQ(addedCalls, 1);
+}

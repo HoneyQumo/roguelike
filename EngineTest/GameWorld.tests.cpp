@@ -122,3 +122,41 @@ TEST_F(GameWorldTest, ChildObjectStartsAtTheParentOrigin)
 	EXPECT_FLOAT_EQ(childTransform->GetWorldPosition().x, 100.f);
 	EXPECT_FLOAT_EQ(childTransform->GetWorldPosition().y, 50.f);
 }
+
+TEST_F(GameWorldTest, ClearRemovesWholeHierarchy)
+{
+	GameObject* parent = GameWorld::Instance()->CreateGameObject("Parent");
+	GameWorld::Instance()->CreateGameObject("FirstChild", parent);
+	GameWorld::Instance()->CreateGameObject("SecondChild", parent);
+	GameWorld::Instance()->CreateGameObject("Standalone");
+
+	GameWorld::Instance()->Clear();
+
+	EXPECT_EQ(GameWorld::Instance()->GetObjectsCount(), 0u);
+	EXPECT_EQ(GameWorld::Instance()->FindGameObject("Parent"), nullptr);
+	EXPECT_EQ(GameWorld::Instance()->FindGameObject("FirstChild"), nullptr);
+	EXPECT_EQ(GameWorld::Instance()->FindGameObject("Standalone"), nullptr);
+}
+
+TEST_F(GameWorldTest, ClearAfterDestroyRequestLeavesNothingToDestroy)
+{
+	GameObject* parent = GameWorld::Instance()->CreateGameObject("Parent");
+	GameWorld::Instance()->CreateGameObject("Child", parent);
+
+	GameWorld::Instance()->DestroyGameObject(parent);
+	GameWorld::Instance()->Clear();
+	GameWorld::Instance()->LateUpdate();
+
+	EXPECT_EQ(GameWorld::Instance()->GetObjectsCount(), 0u);
+}
+
+TEST_F(GameWorldTest, DestroyingSameObjectTwiceInOneFrameIsSafe)
+{
+	GameObject* enemy = GameWorld::Instance()->CreateGameObject("Enemy");
+
+	GameWorld::Instance()->DestroyGameObject(enemy);
+	GameWorld::Instance()->DestroyGameObject(enemy);
+	GameWorld::Instance()->LateUpdate();
+
+	EXPECT_EQ(GameWorld::Instance()->GetObjectsCount(), 0u);
+}

@@ -16,12 +16,6 @@ namespace XYZEngine
 
 	void MovementComponent::Update(float deltaTime)
 	{
-		if (!isEnabled)
-		{
-			isRunning = false;
-			return;
-		}
-
 		// If the owner is player-controlled, input overrides any direction set from the outside.
 		if (input != nullptr)
 		{
@@ -45,13 +39,10 @@ namespace XYZEngine
 
 	}
 
-	void MovementComponent::SetEnabled(bool newIsEnabled)
+	void MovementComponent::OnDisable()
 	{
-		isEnabled = newIsEnabled;
-	}
-	bool MovementComponent::IsEnabled() const
-	{
-		return isEnabled;
+		isRunning = false;
+		direction = { 0.f, 0.f };
 	}
 
 	void MovementComponent::SetSpeed(float newSpeed)

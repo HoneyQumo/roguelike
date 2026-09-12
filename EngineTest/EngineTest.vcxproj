@@ -78,6 +78,7 @@
     <ClCompile Include="AnimationClip.tests.cpp" />
     <ClCompile Include="Physics.tests.cpp" />
     <ClCompile Include="AreaDamage.tests.cpp" />
+    <ClCompile Include="Component.tests.cpp" />
     <ClCompile Include="..\Roguelike\LevelLoader.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>

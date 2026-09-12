@@ -11,6 +11,28 @@ namespace XYZEngine
 	{
 		return gameObject;
 	}
+	void Component::SetEnabled(bool newIsEnabled)
+	{
+		if (isEnabled == newIsEnabled)
+		{
+			return;
+		}
+
+		isEnabled = newIsEnabled;
+
+		if (isEnabled)
+		{
+			OnEnable();
+		}
+		else
+		{
+			OnDisable();
+		}
+	}
+	bool Component::IsEnabled() const
+	{
+		return isEnabled;
+	}
 	bool Component::IsDestroyed() const
 	{
 		return isDestroyed;

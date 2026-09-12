@@ -87,7 +87,7 @@ namespace XYZEngine
 	{
 		for (int i = 0; i < components.size(); i++)
 		{
-			if (components[i]->isDestroyed || components[i]->isStarted)
+			if (components[i]->isDestroyed || components[i]->isStarted || !components[i]->isEnabled)
 			{
 				continue;
 			}
@@ -98,7 +98,7 @@ namespace XYZEngine
 
 		for (int i = 0; i < components.size(); i++)
 		{
-			if (!components[i]->isDestroyed)
+			if (!components[i]->isDestroyed && components[i]->isEnabled)
 			{
 				components[i]->Update(deltaTime);
 			}
@@ -108,7 +108,7 @@ namespace XYZEngine
 	{
 		for (int i = 0; i < components.size(); i++)
 		{
-			if (!components[i]->isDestroyed)
+			if (!components[i]->isDestroyed && components[i]->isEnabled)
 			{
 				components[i]->Render();
 			}

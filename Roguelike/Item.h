@@ -6,6 +6,7 @@
 
 namespace RoguelikeGame
 {
-    XYZEngine::GameObject* CreateItem(const ItemDefinition& definition, const XYZEngine::Vector2Df& position);
+    XYZEngine::GameObject* CreateItem(const ItemDefinition& definition, const XYZEngine::Vector2Df& position,
+        XYZEngine::GameObject* parent = nullptr);
     std::string ItemTextureName(const std::string& itemId);
 }

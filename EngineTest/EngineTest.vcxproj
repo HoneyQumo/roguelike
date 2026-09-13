@@ -101,6 +101,7 @@
     <ClCompile Include="ParticleAura.tests.cpp" />
     <ClCompile Include="FadeScreen.tests.cpp" />
     <ClCompile Include="ItemEffect.tests.cpp" />
+    <ClCompile Include="LootCatalog.tests.cpp" />
     <ClCompile Include="Level.tests.cpp" />
     <ClCompile Include="..\Roguelike\LevelLoader.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
@@ -139,6 +140,9 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\Roguelike\InventoryScreen.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Roguelike\LootCatalog.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\Roguelike\LevelCatalog.cpp">

@@ -160,3 +160,17 @@ TEST_F(GameWorldTest, DestroyingSameObjectTwiceInOneFrameIsSafe)
 
 	EXPECT_EQ(GameWorld::Instance()->GetObjectsCount(), 0u);
 }
+
+TEST_F(GameWorldTest, ChildCreatedWithAParentDiesWithIt)
+{
+	GameObject* parent = GameWorld::Instance()->CreateGameObject("Corpse");
+	GameWorld::Instance()->CreateGameObject("Item_glock", parent);
+	ASSERT_NE(GameWorld::Instance()->FindGameObject("Item_glock"), nullptr);
+
+	GameWorld::Instance()->DestroyGameObject(parent);
+	GameWorld::Instance()->LateUpdate();
+
+	EXPECT_EQ(GameWorld::Instance()->FindGameObject("Corpse"), nullptr);
+	EXPECT_EQ(GameWorld::Instance()->FindGameObject("Item_glock"), nullptr);
+	EXPECT_EQ(GameWorld::Instance()->GetObjectsCount(), 0u);
+}

@@ -1,6 +1,7 @@
 ﻿#include "pch.h"
 #include "SpriteRendererComponent.h"
 #include "GameObject.h"
+#include "LoggerRegistry.h"
 #include "TransformComponent.h"
 #include "RenderSystem.h"
 
@@ -58,6 +59,12 @@ namespace XYZEngine
 
     void SpriteRendererComponent::SetPixelSize(int newWidth, int newHeight)
     {
+        if (sprite.getTexture() == nullptr)
+        {
+            LOG_WARN("Sprite size is set before its texture on " + gameObject->GetName());
+            return;
+        }
+
         auto originalSize = sprite.getTexture()->getSize();
         scale = {static_cast<float>(newWidth) / static_cast<float>(originalSize.x), -static_cast<float>(newHeight) / static_cast<float>(originalSize.y)};
     }

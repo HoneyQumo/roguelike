@@ -192,6 +192,8 @@ namespace RoguelikeGame
     constexpr float BOSS_ENRAGE_PACE_SCALE = 0.7f;
     constexpr float BOSS_MUZZLE_DISTANCE = 40.f;
     constexpr float RAGE_AURA_RADIUS = 34.f;
+    constexpr float BOSS_RIFT_RADIUS = 48.f;
+    constexpr float BOSS_MINION_RIFT_RADIUS = 26.f;
     inline const sf::Color BOSS_HEALTH_BAR_COLOR = {215, 60, 55};
     inline const sf::Color BOSS_ENRAGED_BAR_COLOR = {235, 140, 40};
     inline const sf::Color BOSS_CAST_MARK_COLOR = {235, 90, 60, 90};

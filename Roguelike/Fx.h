@@ -6,6 +6,7 @@
 #include <SpriteRendererComponent.h>
 #include <SpriteAnimationComponent.h>
 #include <Vector.h>
+#include "BossSpriteAtlas.h"
 #include "SpriteAtlas.h"
 
 namespace RoguelikeGame
@@ -21,6 +22,10 @@ namespace RoguelikeGame
         static void SpawnBloodHit(const XYZEngine::Vector2Df& position, const XYZEngine::Vector2Df& direction);
         static void SpawnImpact(const XYZEngine::Vector2Df& position, const XYZEngine::Vector2Df& direction);
         static void SpawnExplosion(const XYZEngine::Vector2Df& position, float radius);
+
+        static void SpawnPuppeteerRift(const XYZEngine::Vector2Df& position, float radius);
+        static void SpawnPuppeteerCloud(const XYZEngine::Vector2Df& position, float radius);
+        static void SpawnStringSnap(const XYZEngine::Vector2Df& position);
 
         static XYZEngine::SpriteRendererComponent* AddSprite(XYZEngine::GameObject* gameObject, const std::string& textureMapName,
                                                              const FxStrip& strip, int frameIndex = 0, float scale = 1.f);

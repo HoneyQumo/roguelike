@@ -24,8 +24,20 @@ namespace RoguelikeGame
 
     void SummonMinionsOnBossCall(BossBrainComponent* brain)
     {
+        XYZEngine::GameObject* boss = brain->GetGameObject();
+
+        brain->SubscribeAbilityUsed([boss](BossAbility ability)
+        {
+            if (ability == BossAbility::Summon)
+            {
+                Fx::SpawnPuppeteerRift(boss->GetTransform()->GetWorldPosition(), BOSS_RIFT_RADIUS);
+            }
+        });
+
         brain->SubscribeSummon([brain](const XYZEngine::Vector2Df& point)
         {
+            Fx::SpawnPuppeteerRift(point, BOSS_MINION_RIFT_RADIUS);
+
             const EnemyConfig* config = FindEnemyConfig(BOSS_MINION_TILE);
             if (config == nullptr)
             {
@@ -47,7 +59,7 @@ namespace RoguelikeGame
     {
         brain->SubscribeBlast([](const XYZEngine::Vector2Df& center, float radius)
         {
-            Fx::SpawnExplosion(center, radius);
+            Fx::SpawnPuppeteerCloud(center, radius);
             Fx::ShakeCamera(CAMERA_SHAKE_HEAVY);
         });
     }
@@ -139,8 +151,10 @@ namespace RoguelikeGame
 
         if (health != nullptr)
         {
-            health->SubscribeDamage([animation](const DamageInfo&)
+            health->SubscribeDamage([animation](const DamageInfo& damage)
             {
+                Fx::SpawnStringSnap(damage.source.position);
+
                 if (!animation->IsWaitingInWindup())
                 {
                     animation->Play(BOSS_SLOT_HURT);

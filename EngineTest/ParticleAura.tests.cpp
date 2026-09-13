@@ -2,6 +2,7 @@
 #include "GameWorld.h"
 #include "ParticleAuraComponent.h"
 #include "ParticleSystemComponent.h"
+#include "SpriteRendererComponent.h"
 
 using XYZEngine::GameObject;
 using XYZEngine::GameWorld;
@@ -138,4 +139,18 @@ TEST_F(ParticleAuraTest, RestartDropsTheLeftover)
 	Step(1, 0.04f);
 
 	EXPECT_EQ(particles->GetActiveCount(), 0u);
+}
+
+TEST(SpriteRendererTest, SizeWithoutTextureIsIgnored)
+{
+	GameWorld::Instance()->Clear();
+
+	GameObject* object = GameWorld::Instance()->CreateGameObject("Sprite");
+	auto renderer = object->AddComponent<XYZEngine::SpriteRendererComponent>();
+
+	renderer->SetPixelSize(96, 96);
+
+	EXPECT_EQ(renderer->GetSprite()->getTexture(), nullptr);
+
+	GameWorld::Instance()->Clear();
 }

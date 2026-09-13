@@ -70,6 +70,23 @@ namespace RoguelikeGame
         Spawn(EXPLOSION_TEXTURE, FX_EXPLOSION, position, 0.f, 2.f * radius / static_cast<float>(FX_EXPLOSION.width));
     }
 
+    void Fx::SpawnPuppeteerRift(const XYZEngine::Vector2Df& position, float radius)
+    {
+        Spawn(PUPPETEER_RIFT_TEXTURE, FX_PUPPETEER_RIFT, position, 0.f,
+              2.f * radius / static_cast<float>(FX_PUPPETEER_RIFT.width));
+    }
+
+    void Fx::SpawnPuppeteerCloud(const XYZEngine::Vector2Df& position, float radius)
+    {
+        Spawn(PUPPETEER_CLOUD_TEXTURE, FX_PUPPETEER_CLOUD, position, 0.f,
+              2.f * radius / static_cast<float>(FX_PUPPETEER_CLOUD.width));
+    }
+
+    void Fx::SpawnStringSnap(const XYZEngine::Vector2Df& position)
+    {
+        Spawn(PUPPETEER_SNAP_TEXTURE, FX_PUPPETEER_SNAP, position, 0.f, 1.f);
+    }
+
     XYZEngine::SpriteRendererComponent* Fx::AddSprite(XYZEngine::GameObject* gameObject, const std::string& textureMapName,
                                                       const FxStrip& strip, int frameIndex, float scale)
     {

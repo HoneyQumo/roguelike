@@ -102,3 +102,20 @@ TEST(PropCatalogTest, EmptyCatalogIsShared)
 	EXPECT_TRUE(PropCatalog::Empty().IsEmpty());
 	EXPECT_EQ(PropCatalog::Empty().Find("crate_wood"), nullptr);
 }
+
+TEST(PropCatalogTest, HitEffectComesFromTheData)
+{
+	PropCatalog catalog = ParseProps(
+		"[prop crate_wood]\n"
+		"health 40\n"
+		"hit impact\n"
+		"[prop flesh_pile]\n"
+		"health 10\n"
+		"hit blood\n"
+		"[prop statue]\n"
+		"health 90\n");
+
+	EXPECT_EQ(catalog.Find("crate_wood")->hitEffect, "impact");
+	EXPECT_EQ(catalog.Find("flesh_pile")->hitEffect, "blood");
+	EXPECT_EQ(catalog.Find("statue")->hitEffect, "impact");
+}

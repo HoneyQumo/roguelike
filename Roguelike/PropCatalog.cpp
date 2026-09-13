@@ -114,6 +114,12 @@ namespace RoguelikeGame
                 continue;
             }
 
+            if (key == "hit")
+            {
+                stream >> current.hitEffect;
+                continue;
+            }
+
             if (key == "loot")
             {
                 stream >> current.lootTable;

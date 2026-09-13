@@ -70,6 +70,22 @@ namespace RoguelikeGame
         Spawn(EXPLOSION_TEXTURE, FX_EXPLOSION, position, 0.f, 2.f * radius / static_cast<float>(FX_EXPLOSION.width));
     }
 
+    void Fx::SpawnHit(const std::string& effect, const XYZEngine::Vector2Df& position, const XYZEngine::Vector2Df& direction)
+    {
+        if (effect == "none")
+        {
+            return;
+        }
+
+        if (effect == "blood")
+        {
+            SpawnBloodHit(position, direction);
+            return;
+        }
+
+        SpawnImpact(position, direction);
+    }
+
     void Fx::SpawnPuppeteerRift(const XYZEngine::Vector2Df& position, float radius)
     {
         Spawn(PUPPETEER_RIFT_TEXTURE, FX_PUPPETEER_RIFT, position, 0.f,

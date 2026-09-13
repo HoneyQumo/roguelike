@@ -84,9 +84,6 @@ namespace RoguelikeGame
             meleeAudio->Play();
         });
 
-        melee->SubscribeHit([](MeleeAttackKind kind, const XYZEngine::Vector2Df& position, const XYZEngine::Vector2Df& direction)
-        {
-            Fx::SpawnBloodHit(position, direction);
-        });
+
     }
 }

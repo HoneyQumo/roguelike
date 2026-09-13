@@ -32,6 +32,12 @@ namespace RoguelikeGame
         auto health = gameObject->AddComponent<HealthComponent>();
         health->SetMaxHealth(definition.health);
 
+        std::string hitEffect = definition.hitEffect;
+        health->SubscribeDamage([hitEffect](const DamageInfo& damage)
+        {
+            Fx::SpawnHit(hitEffect, damage.source.position, damage.source.direction);
+        });
+
         auto destructible = gameObject->AddComponent<DestructibleComponent>();
         destructible->SetBrokenColor(definition.brokenColor);
 

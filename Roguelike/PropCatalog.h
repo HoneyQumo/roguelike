@@ -12,6 +12,7 @@ namespace RoguelikeGame
         std::string id;
         std::string name;
         std::string lootTable;
+        std::string hitEffect = "impact";
         float health = 0.f;
         float size = 48.f;
         sf::Color color = {150, 110, 60};

@@ -21,12 +21,8 @@ namespace RoguelikeGame
 
         XYZEngine::Vector2Df SpreadAround(const XYZEngine::Vector2Df& position, int index, int count)
         {
-            if (count <= 1)
-            {
-                return position;
-            }
-
-            float angle = 360.f * index / count;
+            float step = count > 0 ? 360.f / count : 360.f;
+            float angle = random<float>(0.f, step) + step * index;
 
             return position + XYZEngine::RotateByDegrees({1.f, 0.f}, angle) * LOOT_DROP_SPREAD;
         }

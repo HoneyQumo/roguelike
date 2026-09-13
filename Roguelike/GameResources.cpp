@@ -3,6 +3,8 @@
 #include "ItemCatalogLoader.h"
 #include "GameSettings.h"
 #include "WeaponCatalog.h"
+#include "BossCatalog.h"
+#include "BossSpriteAtlas.h"
 #include "EnemyCatalog.h"
 #include <ResourceSystem.h>
 #include <randomizer.h>
@@ -34,6 +36,14 @@ namespace RoguelikeGame
             LoadCharacterAtlas(enemy.config.textureMapName, ENEMY_ATLAS_FRAMES);
         }
 
+        for (const BossDefinition& boss : BOSSES)
+        {
+            if (boss.textureMapName != nullptr)
+            {
+                LoadCharacterAtlas(boss.textureMapName, BOSS_ATLAS_FRAMES, BOSS_FRAME_SIZE);
+            }
+        }
+
         XYZEngine::ResourceSystem::Instance()->LoadTextureMap(WEAPONS_TEXTURE, WEAPONS_ATLAS_FILE,
                                                              {WEAPON_FRAME_WIDTH, WEAPON_FRAME_HEIGHT}, WEAPON_ATLAS_FRAMES, false);
 
@@ -46,6 +56,11 @@ namespace RoguelikeGame
         LoadFxStrip(BULLET_TEXTURE, FX_BULLET);
         LoadFxStrip(ROCKET_TEXTURE, FX_ROCKET);
         LoadFxStrip(EXPLOSION_TEXTURE, FX_EXPLOSION);
+
+        LoadBossFxStrip(PUPPETEER_RIFT_TEXTURE, FX_PUPPETEER_RIFT);
+        LoadBossFxStrip(PUPPETEER_CLOUD_TEXTURE, FX_PUPPETEER_CLOUD);
+        LoadBossFxStrip(PUPPETEER_SNAP_TEXTURE, FX_PUPPETEER_SNAP);
+        LoadBossFxStrip(PUPPETEER_MARK_TEXTURE, FX_PUPPETEER_MARK);
 
         XYZEngine::ResourceSystem::Instance()->LoadTextureStrip(RELOAD_MAG_TEXTURE, RELOAD_MAG_FILE,
                                                                 {0, 0, RELOAD_MAG_FRAME_SIZE, RELOAD_MAG_FRAME_SIZE}, RELOAD_MAG_FRAMES, false);
@@ -66,10 +81,17 @@ namespace RoguelikeGame
     }
 
     // Имя карты совпадает с именем файла.
-    void GameResources::LoadCharacterAtlas(const std::string& name, int framesCount)
+    void GameResources::LoadCharacterAtlas(const std::string& name, int framesCount, int frameSize)
     {
         XYZEngine::ResourceSystem::Instance()->LoadTextureMap(name, TEXTURES_PATH + name + ".png",
-                                                             {CHARACTER_FRAME_SIZE, CHARACTER_FRAME_SIZE}, framesCount, false);
+                                                             {static_cast<unsigned int>(frameSize), static_cast<unsigned int>(frameSize)},
+                                                             framesCount, false);
+    }
+
+    void GameResources::LoadBossFxStrip(const std::string& name, const FxStrip& strip)
+    {
+        XYZEngine::ResourceSystem::Instance()->LoadTextureStrip(name, BOSS_FX_ATLAS_FILE,
+                                                               {strip.x, strip.y, strip.width, strip.height}, strip.frames, false);
     }
 
     const sf::SoundBuffer* GameResources::GetWeaponSound(const char* key)

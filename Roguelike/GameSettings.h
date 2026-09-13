@@ -186,8 +186,17 @@ namespace RoguelikeGame
     constexpr float BOSS_HEALTH_BAR_OFFSET_Y = 44.f;
     constexpr float BOSS_BASIC_ATTACK_TIME = 1.2f;
     constexpr float BOSS_RECOVERY_TIME = 0.9f;
-    constexpr float BOSS_ENRAGE_ROAR_TIME = 0.8f;
+    constexpr float BOSS_ENRAGE_ROAR_TIME = 0.96f;
+    constexpr float BOSS_ENRAGE_SPEED_SCALE = 1.35f;
+    constexpr float BOSS_ENRAGE_DAMAGE_SCALE = 1.25f;
+    constexpr float BOSS_ENRAGE_PACE_SCALE = 0.7f;
+    constexpr float BOSS_MUZZLE_DISTANCE = 40.f;
+    constexpr float RAGE_AURA_RADIUS = 34.f;
+    constexpr float BOSS_RIFT_RADIUS = 48.f;
+    constexpr float BOSS_MINION_RIFT_RADIUS = 26.f;
     inline const sf::Color BOSS_HEALTH_BAR_COLOR = {215, 60, 55};
+    inline const sf::Color BOSS_ENRAGED_BAR_COLOR = {235, 140, 40};
+    inline const sf::Color BOSS_CAST_MARK_COLOR = {235, 90, 60, 90};
 
     constexpr float HIT_FLASH_DURATION = 0.12f;
     constexpr auto HIT_FLASH_UNIFORM = "amount";
@@ -208,6 +217,7 @@ namespace RoguelikeGame
     constexpr auto PARTICLES_OBJECT_NAME = "Particles";
     constexpr auto UI_ROOT_OBJECT_NAME = "Ui";
     constexpr auto LEVEL_EXIT_OBJECT_NAME = "LevelExit";
+    constexpr auto CAST_MARK_OBJECT_NAME = "CastMark";
 
     constexpr auto PLAYER_TEXTURE = "player";
     constexpr auto WEAPONS_TEXTURE = "weapons";
@@ -220,6 +230,11 @@ namespace RoguelikeGame
     constexpr auto ROCKET_TEXTURE = "fx_rocket";
     constexpr auto EXPLOSION_TEXTURE = "fx_explosion";
     constexpr auto FX_ATLAS_TEXTURE = "fx_atlas";
+    constexpr auto BOSS_FX_ATLAS_FILE = "Resources/Textures/boss_puppeteer_fx.png";
+    constexpr auto PUPPETEER_RIFT_TEXTURE = "fx_puppeteer_rift";
+    constexpr auto PUPPETEER_CLOUD_TEXTURE = "fx_puppeteer_cloud";
+    constexpr auto PUPPETEER_SNAP_TEXTURE = "fx_puppeteer_snap";
+    constexpr auto PUPPETEER_MARK_TEXTURE = "fx_puppeteer_mark";
     constexpr auto RELOAD_MAG_TEXTURE = "reload_mag";
     constexpr auto HIT_FLASH_SHADER = "hit_flash";
     constexpr auto HUD_FONT = "hud";

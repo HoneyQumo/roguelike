@@ -19,7 +19,8 @@ namespace RoguelikeGame
         static const LevelCatalog& GetLevels();
 
     private:
-        static void LoadCharacterAtlas(const std::string& name, int framesCount);
+        static void LoadCharacterAtlas(const std::string& name, int framesCount, int frameSize = CHARACTER_FRAME_SIZE);
+        static void LoadBossFxStrip(const std::string& name, const FxStrip& strip);
         static void LoadWeaponSound(const std::string& key);
         static void LoadWeaponSounds();
         static void LoadFxStrip(const std::string& name, const FxStrip& strip);

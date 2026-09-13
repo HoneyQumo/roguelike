@@ -102,6 +102,8 @@
     <ClCompile Include="FadeScreen.tests.cpp" />
     <ClCompile Include="ItemEffect.tests.cpp" />
     <ClCompile Include="LootCatalog.tests.cpp" />
+    <ClCompile Include="PropCatalog.tests.cpp" />
+    <ClCompile Include="Destructible.tests.cpp" />
     <ClCompile Include="Level.tests.cpp" />
     <ClCompile Include="..\Roguelike\LevelLoader.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
@@ -140,6 +142,12 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\Roguelike\InventoryScreen.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Roguelike\PropCatalog.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Roguelike\DestructibleComponent.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\Roguelike\LootCatalog.cpp">

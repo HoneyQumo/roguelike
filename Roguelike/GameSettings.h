@@ -296,6 +296,8 @@ namespace RoguelikeGame
     constexpr auto LEVELS_CATALOG_FILE = "Resources/Levels/levels.config";
     constexpr float LOOT_DROP_SPREAD = 26.f;
     constexpr auto LOOT_CATALOG_FILE = "Resources/Loot/loot.config";
+    constexpr auto PROPS_CATALOG_FILE = "Resources/Props/props.config";
+    constexpr auto PROP_OBJECT_PREFIX = "Prop_";
     constexpr auto ITEMS_CATALOG_FILE = "Resources/Items/items.config";
     constexpr auto HUD_FONT_FILE = "Resources/Fonts/Roboto-Medium.ttf";
 

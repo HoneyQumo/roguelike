@@ -163,3 +163,83 @@ TEST(LevelLoaderTests, LoaderDoesNotValidateItemIds)
 	ASSERT_EQ(level.items.size(), 1u);
 	EXPECT_EQ(level.items[0].itemId, "no_such_item");
 }
+
+TEST(LevelLoaderTests, LevelSectionCarriesTitleNextAndBoss)
+{
+	std::istringstream input(
+		"[level]\n"
+		"title Gorod\n"
+		"next arena\n"
+		"boss Boss 2.5 1.5\n"
+		"[legend]\n"
+		". Floor\n"
+		"@ PlayerSpawn\n"
+		"> Exit\n"
+		"[map]\n"
+		".@>\n");
+
+	LevelData level = LevelLoader::Parse(input, "test");
+
+	EXPECT_EQ(level.info.title, "Gorod");
+	EXPECT_EQ(level.info.nextLevelId, "arena");
+	EXPECT_EQ(level.info.boss.enemyName, "Boss");
+	EXPECT_FLOAT_EQ(level.info.boss.healthScale, 2.5f);
+	EXPECT_FLOAT_EQ(level.info.boss.damageScale, 1.5f);
+}
+
+TEST(LevelLoaderTests, EntranceAndExitAreRegularTiles)
+{
+	std::istringstream input(
+		"[legend]\n"
+		". Floor\n"
+		"< Entrance\n"
+		"> Exit\n"
+		"[map]\n"
+		"<.>\n");
+
+	LevelData level = LevelLoader::Parse(input, "test");
+
+	EXPECT_EQ(level.tiles[0][0], TileType::Entrance);
+	EXPECT_EQ(level.tiles[0][2], TileType::Exit);
+}
+
+TEST(LevelLoaderTests, NextLevelWithoutExitIsRejected)
+{
+	std::istringstream input(
+		"[level]\n"
+		"next arena\n"
+		"[legend]\n"
+		". Floor\n"
+		"@ PlayerSpawn\n"
+		"[map]\n"
+		".@.\n");
+
+	EXPECT_THROW(LevelLoader::Parse(input, "test"), std::runtime_error);
+}
+
+TEST(LevelLoaderTests, BossWithoutNameIsRejected)
+{
+	std::istringstream input(
+		"[level]\n"
+		"boss\n"
+		"[legend]\n"
+		"@ PlayerSpawn\n"
+		"[map]\n"
+		"@\n");
+
+	EXPECT_THROW(LevelLoader::Parse(input, "test"), std::runtime_error);
+}
+
+TEST(LevelLoaderTests, EntranceWorksAsStartPoint)
+{
+	std::istringstream input(
+		"[legend]\n"
+		". Floor\n"
+		"< Entrance\n"
+		"[map]\n"
+		".<.\n");
+
+	LevelData level = LevelLoader::Parse(input, "test");
+
+	EXPECT_EQ(level.tiles[0][1], TileType::Entrance);
+}

@@ -112,6 +112,7 @@
         <ClCompile Include="InventoryComponent.cpp"/>
         <ClCompile Include="InteractionComponent.cpp"/>
         <ClCompile Include="InventoryScreen.cpp"/>
+        <ClCompile Include="LevelCatalog.cpp"/>
         <ClCompile Include="HudScreen.cpp"/>
         <ClCompile Include="MessageScreen.cpp"/>
         <ClCompile Include="PlayerHudBinderComponent.cpp"/>
@@ -156,6 +157,7 @@
         <ClInclude Include="InventoryComponent.h"/>
         <ClInclude Include="InteractionComponent.h"/>
         <ClInclude Include="InventoryScreen.h"/>
+        <ClInclude Include="LevelCatalog.h"/>
         <ClInclude Include="Faction.h"/>
         <ClInclude Include="FactionComponent.h"/>
         <ClInclude Include="ChaseComponent.h"/>

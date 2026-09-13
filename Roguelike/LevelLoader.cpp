@@ -2,12 +2,14 @@
 #include "EnemyCatalog.h"
 #include <LoggerRegistry.h>
 #include <fstream>
+#include <sstream>
 #include <stdexcept>
 
 namespace RoguelikeGame
 {
     const std::string LEGEND_SECTION = "legend";
     const std::string MAP_SECTION = "map";
+    const std::string LEVEL_SECTION = "level";
     const std::string ITEM_PREFIX = "Item:";
     constexpr char COMMENT_SYMBOL = ';';
     constexpr char EMPTY_SYMBOL = ' ';
@@ -31,6 +33,7 @@ namespace RoguelikeGame
         LevelData levelData;
         Legend legend = GetDefaultLegend();
         bool isLegendSection = false;
+        bool isLevelSection = false;
 
         std::string line;
         int lineNumber = 0;
@@ -53,15 +56,29 @@ namespace RoguelikeGame
                 continue;
             }
 
+            if (IsSection(line, LEVEL_SECTION))
+            {
+                isLevelSection = true;
+                isLegendSection = false;
+                continue;
+            }
             if (IsSection(line, LEGEND_SECTION))
             {
                 isLegendSection = true;
+                isLevelSection = false;
                 legend.clear();
                 continue;
             }
             if (IsSection(line, MAP_SECTION))
             {
                 isLegendSection = false;
+                isLevelSection = false;
+                continue;
+            }
+
+            if (isLevelSection)
+            {
+                ReadInfoLine(line, lineNumber, levelData.info);
                 continue;
             }
 
@@ -75,15 +92,82 @@ namespace RoguelikeGame
         }
 
         levelData.height = static_cast<int>(levelData.tiles.size());
+        Validate(levelData, sourceName);
+
+        LOG_INFO("Level loaded: " + sourceName + ", size " + std::to_string(levelData.width) + "x" + std::to_string(levelData.height)
+            + ", legend entries " + std::to_string(legend.size()));
+        return levelData;
+    }
+
+    void LevelLoader::ReadInfoLine(const std::string& line, int lineNumber, LevelInfo& info)
+    {
+        std::istringstream stream(line);
+        std::string key;
+        stream >> key;
+
+        if (key == "title")
+        {
+            std::string rest;
+            std::getline(stream, rest);
+            info.title = Trim(rest);
+            return;
+        }
+
+        if (key == "next")
+        {
+            stream >> info.nextLevelId;
+            return;
+        }
+
+        if (key == "boss")
+        {
+            if (!(stream >> info.boss.enemyName))
+            {
+                LOG_ERROR("Level boss has no enemy name, line " + std::to_string(lineNumber));
+                throw std::runtime_error("Level boss has no enemy name");
+            }
+
+            if (!(stream >> info.boss.healthScale))
+            {
+                info.boss.healthScale = 1.f;
+            }
+
+            if (!(stream >> info.boss.damageScale))
+            {
+                info.boss.damageScale = 1.f;
+            }
+
+            if (info.boss.healthScale <= 0.f || info.boss.damageScale <= 0.f)
+            {
+                LOG_ERROR("Level boss scales must be positive, line " + std::to_string(lineNumber));
+                throw std::runtime_error("Level boss scales must be positive");
+            }
+
+            return;
+        }
+
+        LOG_WARN("Unknown level field at line " + std::to_string(lineNumber) + ": " + key);
+    }
+
+    void LevelLoader::Validate(const LevelData& levelData, const std::string& sourceName)
+    {
         if (levelData.height == 0)
         {
             LOG_ERROR("Level file is empty: " + sourceName);
             throw std::runtime_error("Level file has no tiles: " + sourceName);
         }
 
-        LOG_INFO("Level loaded: " + sourceName + ", size " + std::to_string(levelData.width) + "x" + std::to_string(levelData.height)
-            + ", legend entries " + std::to_string(legend.size()));
-        return levelData;
+        int exits = CountTiles(levelData, TileType::Exit);
+        if (!levelData.info.nextLevelId.empty() && exits == 0)
+        {
+            LOG_ERROR("Level " + sourceName + " leads to " + levelData.info.nextLevelId + " but has no exit tile");
+            throw std::runtime_error("Level has no exit: " + sourceName);
+        }
+
+        if (exits > 0 && levelData.info.nextLevelId.empty())
+        {
+            LOG_WARN("Level " + sourceName + " has an exit but no next level");
+        }
     }
 
     bool LevelLoader::IsSection(const std::string& line, const std::string& sectionName)

@@ -227,6 +227,7 @@ namespace RoguelikeGame
     constexpr auto HURT_SOUND_FILE = "Resources/Audio/hurt.wav";
     constexpr auto MAIN_THEME_FILE = "Resources/Audio/main_music_1.ogg";
     constexpr auto TEST_LEVEL_FILE = "Resources/Levels/test_level.config";
+    constexpr auto LEVELS_CATALOG_FILE = "Resources/Levels/levels.config";
     constexpr auto ITEMS_CATALOG_FILE = "Resources/Items/items.config";
     constexpr auto HUD_FONT_FILE = "Resources/Fonts/Roboto-Medium.ttf";
 

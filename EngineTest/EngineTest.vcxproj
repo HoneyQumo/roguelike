@@ -92,6 +92,7 @@
     <ClCompile Include="InventoryComponent.tests.cpp" />
     <ClCompile Include="Interaction.tests.cpp" />
     <ClCompile Include="InventoryScreen.tests.cpp" />
+    <ClCompile Include="LevelCatalog.tests.cpp" />
     <ClCompile Include="..\Roguelike\LevelLoader.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
@@ -126,6 +127,9 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\Roguelike\InventoryScreen.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Roguelike\LevelCatalog.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\Roguelike\Item.cpp">

@@ -80,8 +80,9 @@ namespace RoguelikeGame
         }
 
         hudScreen = std::make_unique<HudScreen>();
+        inventoryScreen = std::make_unique<InventoryScreen>();
         messageScreen = std::make_unique<MessageScreen>();
-        uiRoot = CreateUiRoot(*hudScreen, *messageScreen);
+        uiRoot = CreateUiRoot(*hudScreen, *inventoryScreen, *messageScreen);
     }
 
     void DeveloperLevel::Update(float deltaTime)
@@ -159,6 +160,7 @@ namespace RoguelikeGame
         GameWorld::Instance()->Clear();
 
         hudScreen.reset();
+        inventoryScreen.reset();
         messageScreen.reset();
     }
 

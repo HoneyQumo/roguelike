@@ -9,10 +9,13 @@ namespace RoguelikeGame
     }
 
     Level::Level(Level&& other) noexcept
-        : objects(std::move(other.objects)), playerSpawn(other.playerSpawn)
+        : objects(std::move(other.objects)), playerSpawn(other.playerSpawn), entrance(other.entrance),
+          exitObject(other.exitObject), info(std::move(other.info))
     {
         other.objects.clear();
         other.playerSpawn.reset();
+        other.entrance.reset();
+        other.exitObject = nullptr;
     }
 
     Level& Level::operator=(Level&& other) noexcept
@@ -22,8 +25,13 @@ namespace RoguelikeGame
             Clear();
             objects = std::move(other.objects);
             playerSpawn = other.playerSpawn;
+            entrance = other.entrance;
+            exitObject = other.exitObject;
+            info = std::move(other.info);
             other.objects.clear();
             other.playerSpawn.reset();
+            other.entrance.reset();
+            other.exitObject = nullptr;
         }
 
         return *this;
@@ -45,6 +53,46 @@ namespace RoguelikeGame
         playerSpawn = position;
     }
 
+    void Level::SetEntrance(const XYZEngine::Vector2Df& position)
+    {
+        entrance = position;
+    }
+
+    void Level::SetInfo(const LevelInfo& newInfo)
+    {
+        info = newInfo;
+    }
+
+    void Level::SetExit(XYZEngine::GameObject* newExitObject)
+    {
+        exitObject = newExitObject;
+    }
+
+    std::optional<XYZEngine::Vector2Df> Level::GetEntrance() const
+    {
+        return entrance;
+    }
+
+    XYZEngine::Vector2Df Level::GetStartPosition() const
+    {
+        if (entrance.has_value())
+        {
+            return *entrance;
+        }
+
+        return playerSpawn.value_or(XYZEngine::Vector2Df{0.f, 0.f});
+    }
+
+    const LevelInfo& Level::GetInfo() const
+    {
+        return info;
+    }
+
+    XYZEngine::GameObject* Level::GetExit() const
+    {
+        return exitObject;
+    }
+
     std::optional<XYZEngine::Vector2Df> Level::GetPlayerSpawn() const
     {
         return playerSpawn;
@@ -64,5 +112,8 @@ namespace RoguelikeGame
 
         objects.clear();
         playerSpawn.reset();
+        entrance.reset();
+        exitObject = nullptr;
+        info = LevelInfo();
     }
 }

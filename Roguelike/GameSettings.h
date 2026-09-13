@@ -195,6 +195,7 @@ namespace RoguelikeGame
     constexpr auto PLAYER_OBJECT_NAME = "Player";
     constexpr auto PARTICLES_OBJECT_NAME = "Particles";
     constexpr auto UI_ROOT_OBJECT_NAME = "Ui";
+    constexpr auto LEVEL_EXIT_OBJECT_NAME = "LevelExit";
 
     constexpr auto PLAYER_TEXTURE = "player";
     constexpr auto WEAPONS_TEXTURE = "weapons";
@@ -242,6 +243,7 @@ namespace RoguelikeGame
     inline const sf::Color AMMO_HUD_OUTLINE_COLOR = {15, 13, 12, 220};
     inline const sf::Color RELOAD_INDICATOR_COLOR = {235, 190, 90};
     inline const sf::Color OVERLAY_BACKGROUND_COLOR = {0, 0, 0, 150};
+    inline const sf::Color LEVEL_EXIT_COLOR = {90, 190, 120, 200};
     inline const sf::Color INVENTORY_DIM_COLOR = {0, 0, 0, 150};
     inline const sf::Color INVENTORY_WINDOW_COLOR = {28, 28, 32, 235};
     inline const sf::Color INVENTORY_SLOT_EMPTY_COLOR = {44, 44, 50, 220};

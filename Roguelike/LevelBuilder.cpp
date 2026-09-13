@@ -3,6 +3,7 @@
 #include "Enemy.h"
 #include "EnemyCatalog.h"
 #include "Item.h"
+#include "LevelExit.h"
 #include "Wall.h"
 #include <GameWorld.h>
 #include <VertexArrayRendererComponent.h>
@@ -15,9 +16,9 @@ namespace RoguelikeGame
     {
         Level level;
 
-        if (CountTiles(levelData, TileType::PlayerSpawn) == 0)
+        if (CountTiles(levelData, TileType::PlayerSpawn) == 0 && CountTiles(levelData, TileType::Entrance) == 0)
         {
-            LOG_ERROR("Level has no player spawn point, nothing is built");
+            LOG_ERROR("Level has no player spawn point and no entrance, nothing is built");
             return level;
         }
 
@@ -51,6 +52,30 @@ namespace RoguelikeGame
                             level.SetPlayerSpawn(position);
                         }
                         break;
+                    case TileType::Entrance:
+                        if (level.GetEntrance().has_value())
+                        {
+                            LOG_WARN("Level has more than one entrance, extra one at "
+                                + std::to_string(column) + ";" + std::to_string(row) + " is ignored");
+                        }
+                        else
+                        {
+                            level.SetEntrance(position);
+                        }
+                        break;
+                    case TileType::Exit:
+                        if (level.GetExit() != nullptr)
+                        {
+                            LOG_WARN("Level has more than one exit, extra one at "
+                                + std::to_string(column) + ";" + std::to_string(row) + " is ignored");
+                        }
+                        else
+                        {
+                            XYZEngine::GameObject* exitObject = CreateLevelExit(position);
+                            level.Add(exitObject);
+                            level.SetExit(exitObject);
+                        }
+                        break;
                     default:
                         if (const EnemyConfig* config = FindEnemyConfig(tile))
                         {
@@ -66,6 +91,8 @@ namespace RoguelikeGame
                 }
             }
         }
+
+        level.SetInfo(levelData.info);
 
         int itemsCount = BuildItems(levelData, items, level);
 

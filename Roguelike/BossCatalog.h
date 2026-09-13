@@ -88,6 +88,66 @@ namespace RoguelikeGame
         return scaled;
     }
 
+    struct BossAbilitySpec
+    {
+        BossAbility ability;
+        float minDistance;
+        float maxDistance;
+        float windup;
+        float duration;
+        float cooldown;
+        float damageScale;
+        float radius;
+        float speedScale;
+        int count;
+        float coneDegrees;
+    };
+
+    inline constexpr BossAbilitySpec BOSS_ABILITIES[] = {
+        {BossAbility::Volley, 220.f, 700.f, 0.55f, 0.35f, 6.f, 0.8f, 0.f, 1.f, 7, 90.f},
+        {BossAbility::Dash, 260.f, 620.f, 0.45f, 0.45f, 7.f, 2.f, 110.f, 4.f, 0, 0.f},
+        {BossAbility::Summon, 0.f, 900.f, 0.80f, 0.40f, 14.f, 0.f, 90.f, 1.f, 3, 0.f},
+        {BossAbility::Blast, 0.f, 240.f, 0.60f, 0.30f, 9.f, 1.5f, 190.f, 1.f, 0, 0.f}
+    };
+
+    constexpr int BOSS_MINION_LIMIT = 4;
+
+    constexpr const BossAbilitySpec* FindBossAbility(BossAbility ability)
+    {
+        for (const BossAbilitySpec& spec : BOSS_ABILITIES)
+        {
+            if (spec.ability == ability)
+            {
+                return &spec;
+            }
+        }
+
+        return nullptr;
+    }
+
+    constexpr bool IsInBossAbilityRange(BossAbility ability, float distance)
+    {
+        const BossAbilitySpec* spec = FindBossAbility(ability);
+
+        return spec != nullptr && distance >= spec->minDistance && distance <= spec->maxDistance;
+    }
+
+    constexpr BossAbility ChooseBossAbility(const BossDefinition& boss, float distance, float attackRange,
+        bool isFirstReady, bool isSecondReady)
+    {
+        if (isFirstReady && IsInBossAbilityRange(boss.first, distance))
+        {
+            return boss.first;
+        }
+
+        if (isSecondReady && IsInBossAbilityRange(boss.second, distance))
+        {
+            return boss.second;
+        }
+
+        return distance <= attackRange ? BossAbility::Basic : BossAbility::None;
+    }
+
     struct BossBrainInput
     {
         bool isAlive = true;

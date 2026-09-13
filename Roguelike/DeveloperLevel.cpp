@@ -8,6 +8,7 @@
 #include "Music.h"
 #include "Crosshair.h"
 #include "Particles.h"
+#include "BossBrainComponent.h"
 #include "Fx.h"
 #include "LevelExitComponent.h"
 #include "UiRoot.h"
@@ -140,6 +141,12 @@ namespace RoguelikeGame
         if (bossHealth != nullptr)
         {
             bossHealth->SubscribeDeath([this](const DeathInfo& death) { OnBossDefeated(); });
+        }
+
+        auto brain = bossObject->GetComponent<BossBrainComponent>();
+        if (brain != nullptr)
+        {
+            brain->SubscribeMinionSpawned([this](XYZEngine::GameObject* minion) { level.Add(minion); });
         }
     }
 

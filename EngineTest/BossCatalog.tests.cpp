@@ -304,3 +304,85 @@ TEST(BossStateTest, FullCycleRunsIdleChaseAttackCooldown)
 	state = NextBossState(state, input);
 	EXPECT_EQ(state, BossState::Chase);
 }
+
+TEST(BossAbilityTest, EveryAbilityInTheCatalogHasASpec)
+{
+	for (const BossDefinition& boss : BOSSES)
+	{
+		EXPECT_NE(RoguelikeGame::FindBossAbility(boss.first), nullptr) << boss.id;
+		EXPECT_NE(RoguelikeGame::FindBossAbility(boss.second), nullptr) << boss.id;
+	}
+
+	EXPECT_EQ(RoguelikeGame::FindBossAbility(BossAbility::Basic), nullptr);
+	EXPECT_EQ(RoguelikeGame::FindBossAbility(BossAbility::None), nullptr);
+}
+
+TEST(BossAbilityTest, SpecsAreSane)
+{
+	for (const RoguelikeGame::BossAbilitySpec& spec : RoguelikeGame::BOSS_ABILITIES)
+	{
+		EXPECT_LT(spec.minDistance, spec.maxDistance);
+		EXPECT_GT(spec.windup, 0.f);
+		EXPECT_GT(spec.duration, 0.f);
+		EXPECT_GT(spec.cooldown, spec.windup + spec.duration);
+	}
+}
+
+TEST(BossAbilityTest, RangeIsCheckedByTheSpec)
+{
+	EXPECT_TRUE(RoguelikeGame::IsInBossAbilityRange(BossAbility::Volley, 400.f));
+	EXPECT_FALSE(RoguelikeGame::IsInBossAbilityRange(BossAbility::Volley, 100.f));
+	EXPECT_FALSE(RoguelikeGame::IsInBossAbilityRange(BossAbility::Volley, 900.f));
+	EXPECT_FALSE(RoguelikeGame::IsInBossAbilityRange(BossAbility::Basic, 100.f));
+}
+
+TEST(BossAbilityTest, FirstSlotWinsWhenBothFit)
+{
+	const BossDefinition* boss = FindBoss("colossus");
+	ASSERT_NE(boss, nullptr);
+
+	EXPECT_EQ(RoguelikeGame::ChooseBossAbility(*boss, 400.f, 260.f, true, true), boss->first);
+}
+
+TEST(BossAbilityTest, SecondSlotIsTakenWhenFirstIsOnCooldown)
+{
+	const BossDefinition* boss = FindBoss("colossus");
+	ASSERT_NE(boss, nullptr);
+
+	EXPECT_EQ(RoguelikeGame::ChooseBossAbility(*boss, 400.f, 260.f, false, true), boss->second);
+}
+
+TEST(BossAbilityTest, SecondSlotIsTakenWhenFirstIsOutOfRange)
+{
+	const BossDefinition* boss = FindBoss("gravedigger");
+	ASSERT_NE(boss, nullptr);
+
+	EXPECT_EQ(RoguelikeGame::ChooseBossAbility(*boss, 400.f, 260.f, true, true), BossAbility::Dash);
+}
+
+TEST(BossAbilityTest, BasicIsTheFallbackInsideAttackRange)
+{
+	const BossDefinition* boss = FindBoss("colossus");
+	ASSERT_NE(boss, nullptr);
+
+	EXPECT_EQ(RoguelikeGame::ChooseBossAbility(*boss, 120.f, 260.f, true, true), BossAbility::Basic);
+	EXPECT_EQ(RoguelikeGame::ChooseBossAbility(*boss, 400.f, 260.f, false, false), BossAbility::None);
+}
+
+TEST(BossAbilityTest, NothingIsChosenTooFarAway)
+{
+	const BossDefinition* boss = FindBoss("gravedigger");
+	ASSERT_NE(boss, nullptr);
+
+	EXPECT_EQ(RoguelikeGame::ChooseBossAbility(*boss, 5000.f, 260.f, true, true), BossAbility::None);
+}
+
+TEST(BossAbilityTest, ChoiceIsDecidedAtCompileTime)
+{
+	static_assert(RoguelikeGame::ChooseBossAbility(BOSSES[0], 400.f, 260.f, true, true) == BossAbility::Summon);
+	static_assert(RoguelikeGame::ChooseBossAbility(BOSSES[0], 200.f, 260.f, false, true) == BossAbility::Blast);
+	static_assert(RoguelikeGame::ChooseBossAbility(BOSSES[0], 400.f, 260.f, false, false) == BossAbility::None);
+	static_assert(RoguelikeGame::ChooseBossAbility(BOSSES[2], 400.f, 260.f, true, true) == BossAbility::Dash);
+
+	SUCCEED();
+}

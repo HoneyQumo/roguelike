@@ -1,5 +1,6 @@
 #include "Enemy.h"
 #include "BossBrainComponent.h"
+#include "BossEffects.h"
 #include "CharacterFactory.h"
 #include "GameSettings.h"
 #include "GameResources.h"
@@ -163,6 +164,11 @@ namespace RoguelikeGame
         brain->SetConfig(config);
         brain->SetTargetName(PLAYER_OBJECT_NAME);
         brain->SetBasicAttack(gameObject->GetComponent<EnemyAttackComponent>());
+
+        SpawnProjectilesOnBossVolley(brain, gameObject, config.weapon);
+        SummonMinionsOnBossCall(brain);
+        PlayEffectsOnBossBlast(brain);
+        PlayEffectsOnBossRage(brain, gameObject->GetComponent<HitFlashComponent>(), healthBar);
 
         LOG_INFO(std::string("Boss ") + definition.id + " created with health " + std::to_string(static_cast<int>(config.maxHealth)));
         return gameObject;

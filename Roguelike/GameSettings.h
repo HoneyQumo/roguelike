@@ -187,7 +187,12 @@ namespace RoguelikeGame
     constexpr float BOSS_BASIC_ATTACK_TIME = 1.2f;
     constexpr float BOSS_RECOVERY_TIME = 0.9f;
     constexpr float BOSS_ENRAGE_ROAR_TIME = 0.8f;
+    constexpr float BOSS_ENRAGE_SPEED_SCALE = 1.35f;
+    constexpr float BOSS_ENRAGE_DAMAGE_SCALE = 1.25f;
+    constexpr float BOSS_ENRAGE_PACE_SCALE = 0.7f;
+    constexpr float BOSS_MUZZLE_DISTANCE = 40.f;
     inline const sf::Color BOSS_HEALTH_BAR_COLOR = {215, 60, 55};
+    inline const sf::Color BOSS_ENRAGED_BAR_COLOR = {235, 140, 40};
 
     constexpr float HIT_FLASH_DURATION = 0.12f;
     constexpr auto HIT_FLASH_UNIFORM = "amount";

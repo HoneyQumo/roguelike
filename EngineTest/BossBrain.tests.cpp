@@ -1,9 +1,11 @@
 #include "pch.h"
 #include "GameWorld.h"
+#include "BoxColliderComponent.h"
 #include "MovementComponent.h"
 #include "BossBrainComponent.h"
 #include "BossCatalog.h"
 #include "ChaseComponent.h"
+#include "FactionComponent.h"
 #include "HealthComponent.h"
 
 using RoguelikeGame::BossAbility;
@@ -11,11 +13,14 @@ using RoguelikeGame::BossBrainComponent;
 using RoguelikeGame::BossState;
 using RoguelikeGame::ChaseComponent;
 using RoguelikeGame::EnemyConfig;
+using RoguelikeGame::Faction;
+using RoguelikeGame::FactionComponent;
 using RoguelikeGame::FindBoss;
 using RoguelikeGame::HealthComponent;
 using XYZEngine::GameObject;
 using XYZEngine::GameWorld;
 using XYZEngine::MovementComponent;
+using XYZEngine::Vector2Df;
 
 namespace
 {
@@ -35,7 +40,8 @@ namespace
 			config.stopDistance = 170.f;
 			config.maxHealth = 600.f;
 			config.attackRange = 260.f;
-			config.attackDamage = 24.f;
+			config.attackDamage = 20.f;
+			config.projectileSpeed = 900.f;
 		}
 
 		void TearDown() override { GameWorld::Instance()->Clear(); }
@@ -47,10 +53,11 @@ namespace
 		ChaseComponent* chase = nullptr;
 		HealthComponent* health = nullptr;
 
-		void CreateBoss()
+		void CreateBoss(const char* bossId = "puppeteer")
 		{
 			boss = GameWorld::Instance()->CreateGameObject("Boss");
 			boss->GetTransform()->SetWorldPosition({0.f, 0.f});
+			boss->AddComponent<FactionComponent>()->SetFaction(Faction::Enemy);
 			boss->AddComponent<MovementComponent>()->SetSpeed(config.speed);
 
 			health = boss->AddComponent<HealthComponent>();
@@ -62,7 +69,7 @@ namespace
 			chase->SetStopDistance(config.stopDistance);
 
 			brain = boss->AddComponent<BossBrainComponent>();
-			brain->SetDefinition(FindBoss("puppeteer"));
+			brain->SetDefinition(FindBoss(bossId));
 			brain->SetConfig(config);
 			brain->SetTargetName("Player");
 		}
@@ -71,16 +78,45 @@ namespace
 		{
 			player = GameWorld::Instance()->CreateGameObject("Player");
 			player->GetTransform()->SetWorldPosition({x, y});
+			player->AddComponent<FactionComponent>()->SetFaction(Faction::Player);
 			player->AddComponent<HealthComponent>()->SetMaxHealth(100.f);
+
+			auto collider = player->AddComponent<XYZEngine::BoxColliderComponent>();
+			collider->SetSize(30.f, 30.f);
+		}
+
+		GameObject* CreateMinion(int index)
+		{
+			GameObject* minion = GameWorld::Instance()->CreateGameObject("Minion" + std::to_string(index));
+			minion->AddComponent<HealthComponent>()->SetMaxHealth(50.f);
+
+			return minion;
 		}
 
 		void MovePlayerTo(float x, float y) { player->GetTransform()->SetWorldPosition({x, y}); }
 
+		float PlayerHealth() const { return player->GetComponent<HealthComponent>()->GetHealth(); }
+
+		float BossX() const { return boss->GetTransform()->GetWorldPosition().x; }
+
 		void Step(int times = 1)
+		{
+			Step(times, STEP);
+		}
+
+		void Step(int times, float delta)
 		{
 			for (int frame = 0; frame < times; frame++)
 			{
-				GameWorld::Instance()->Update(STEP);
+				GameWorld::Instance()->Update(delta);
+			}
+		}
+
+		void StepUntil(BossState wanted, int limit = 60)
+		{
+			for (int frame = 0; frame < limit && brain->GetState() != wanted; frame++)
+			{
+				Step();
 			}
 		}
 	};
@@ -106,105 +142,308 @@ TEST_F(BossBrainTest, DistantPlayerIsNotDetected)
 	EXPECT_EQ(brain->GetState(), BossState::Idle);
 }
 
-TEST_F(BossBrainTest, BossChasesTheDetectedPlayer)
+TEST_F(BossBrainTest, BossUsesItsFirstAbility)
 {
-	CreateBoss();
+	CreateBoss("puppeteer");
 	CreatePlayer(400.f, 0.f);
 
 	Step(2);
+
+	EXPECT_EQ(brain->GetState(), BossState::Attack);
+	EXPECT_EQ(brain->GetCurrentAbility(), BossAbility::Summon);
+	EXPECT_FALSE(chase->IsEnabled());
+}
+
+TEST_F(BossBrainTest, BossChasesAgainWhileAbilitiesRecharge)
+{
+	CreateBoss("puppeteer");
+	CreatePlayer(400.f, 0.f);
+	StepUntil(BossState::Cooldown);
+	ASSERT_EQ(brain->GetState(), BossState::Cooldown);
+
+	StepUntil(BossState::Chase);
 
 	EXPECT_EQ(brain->GetState(), BossState::Chase);
 	EXPECT_TRUE(chase->IsEnabled());
 }
 
-TEST_F(BossBrainTest, BossAttacksInsideAttackRange)
+TEST_F(BossBrainTest, BasicAttackIsUsedWhenNoAbilityFits)
 {
-	CreateBoss();
-	CreatePlayer(200.f, 0.f);
+	CreateBoss("colossus");
+	CreatePlayer(120.f, 0.f);
 
-	Step(3);
+	Step(2);
 
 	EXPECT_EQ(brain->GetState(), BossState::Attack);
 	EXPECT_EQ(brain->GetCurrentAbility(), BossAbility::Basic);
-	EXPECT_FALSE(chase->IsEnabled());
 }
 
-TEST_F(BossBrainTest, AttackIsFollowedByCooldown)
+TEST_F(BossBrainTest, VolleyFiresDeterministicFan)
 {
-	CreateBoss();
-	CreatePlayer(200.f, 0.f);
-	Step(3);
-	ASSERT_EQ(brain->GetState(), BossState::Attack);
+	CreateBoss("colossus");
+	CreatePlayer(250.f, 0.f);
 
-	Step(13);
+	std::vector<Vector2Df> shots;
+	brain->SubscribeShot([&shots](const Vector2Df&, const Vector2Df& direction, float, float) { shots.push_back(direction); });
+
+	Step(2);
+	ASSERT_EQ(brain->GetCurrentAbility(), BossAbility::Volley);
+	EXPECT_TRUE(shots.empty());
+
+	Step(7);
+
+	ASSERT_EQ(shots.size(), 7u);
+	EXPECT_NEAR(shots[3].x, 1.f, 0.001f);
+	EXPECT_NEAR(shots[3].y, 0.f, 0.001f);
+	EXPECT_NEAR(shots[0].y, -shots[6].y, 0.001f);
+	EXPECT_LT(shots[0].y, 0.f);
+	EXPECT_GT(shots[6].y, 0.f);
+}
+
+TEST_F(BossBrainTest, VolleyDamageFollowsTheAbilityScale)
+{
+	CreateBoss("colossus");
+	CreatePlayer(250.f, 0.f);
+
+	float damage = 0.f;
+	brain->SubscribeShot([&damage](const Vector2Df&, const Vector2Df&, float shotDamage, float) { damage = shotDamage; });
+
+	Step(9);
+
+	EXPECT_FLOAT_EQ(damage, config.attackDamage * 0.8f);
+}
+
+TEST_F(BossBrainTest, SummonAsksForMinionsAroundTheBoss)
+{
+	CreateBoss("puppeteer");
+	CreatePlayer(400.f, 0.f);
+
+	std::vector<Vector2Df> points;
+	brain->SubscribeSummon([&points](const Vector2Df& point) { points.push_back(point); });
+
+	Step(11);
+
+	ASSERT_EQ(points.size(), 3u);
+	for (const Vector2Df& point : points)
+	{
+		EXPECT_NEAR(point.GetLength(), 90.f, 0.5f);
+	}
+}
+
+TEST_F(BossBrainTest, MinionLimitStopsTheSummon)
+{
+	CreateBoss("puppeteer");
+	CreatePlayer(400.f, 0.f);
+
+	for (int index = 0; index < 4; index++)
+	{
+		brain->RegisterMinion(CreateMinion(index));
+	}
+
+	Step(4);
+
+	EXPECT_EQ(brain->GetState(), BossState::Chase);
+	EXPECT_EQ(brain->GetAbilityUses(BossAbility::Summon), 0);
+}
+
+TEST_F(BossBrainTest, SpawnedMinionsAreReported)
+{
+	CreateBoss("puppeteer");
+
+	std::vector<GameObject*> reported;
+	brain->SubscribeMinionSpawned([&reported](GameObject* minion) { reported.push_back(minion); });
+
+	GameObject* minion = CreateMinion(0);
+	brain->RegisterMinion(minion);
+	brain->RegisterMinion(nullptr);
+
+	ASSERT_EQ(reported.size(), 1u);
+	EXPECT_EQ(reported[0], minion);
+}
+
+TEST_F(BossBrainTest, BlastHurtsThePlayerNearby)
+{
+	CreateBoss("gravedigger");
+	CreatePlayer(150.f, 0.f);
+
+	int blasts = 0;
+	brain->SubscribeBlast([&blasts](const Vector2Df&, float) { blasts++; });
+
+	Step(2);
+	ASSERT_EQ(brain->GetCurrentAbility(), BossAbility::Blast);
+
+	Step(8);
+
+	EXPECT_EQ(blasts, 1);
+	EXPECT_FLOAT_EQ(PlayerHealth(), 100.f - config.attackDamage * 1.5f);
+}
+
+TEST_F(BossBrainTest, BlastSparesDistantPlayers)
+{
+	CreateBoss("gravedigger");
+	CreatePlayer(150.f, 0.f);
+	Step(2);
+	ASSERT_EQ(brain->GetCurrentAbility(), BossAbility::Blast);
+
+	MovePlayerTo(1000.f, 0.f);
+	Step(8);
+
+	EXPECT_FLOAT_EQ(PlayerHealth(), 100.f);
+}
+
+TEST_F(BossBrainTest, DashCarriesTheBossTowardsThePlayer)
+{
+	CreateBoss("gravedigger");
+	CreatePlayer(400.f, 0.f);
+
+	Step(2);
+	ASSERT_EQ(brain->GetCurrentAbility(), BossAbility::Dash);
+	float start = BossX();
+
+	Step(10);
+
+	EXPECT_GT(BossX(), start + 80.f);
+}
+
+TEST_F(BossBrainTest, DashEndsWithASlamAndRestoresSpeed)
+{
+	CreateBoss("gravedigger");
+	CreatePlayer(265.f, 0.f);
+
+	int blasts = 0;
+	brain->SubscribeBlast([&blasts](const Vector2Df&, float) { blasts++; });
+
+	Step(2);
+	ASSERT_EQ(brain->GetCurrentAbility(), BossAbility::Dash);
+
+	Step(20, 0.05f);
 
 	EXPECT_EQ(brain->GetState(), BossState::Cooldown);
-	EXPECT_EQ(brain->GetCurrentAbility(), BossAbility::None);
+	EXPECT_EQ(blasts, 1);
+	EXPECT_LT(PlayerHealth(), 100.f);
+	EXPECT_FLOAT_EQ(boss->GetComponent<MovementComponent>()->GetSpeed(), config.speed);
 }
 
-TEST_F(BossBrainTest, CycleRepeatsWhileThePlayerStaysClose)
+TEST_F(BossBrainTest, EnrageStartsBelowTheThreshold)
 {
-	CreateBoss();
-	CreatePlayer(200.f, 0.f);
+	CreateBoss("puppeteer");
+	CreatePlayer(400.f, 0.f);
 
-	std::vector<BossState> states;
-	brain->SubscribeStateChanged([&states](BossState, BossState next) { states.push_back(next); });
+	int rages = 0;
+	brain->SubscribeEnraged([&rages]() { rages++; });
+
+	Step(2);
+	health->TakeDamage(config.maxHealth * 0.7f);
+	Step();
+
+	EXPECT_EQ(brain->GetState(), BossState::Enraged);
+	EXPECT_TRUE(brain->IsEnraged());
+	EXPECT_EQ(rages, 1);
+	EXPECT_FLOAT_EQ(boss->GetComponent<MovementComponent>()->GetSpeed(), config.speed * 1.35f);
+}
+
+TEST_F(BossBrainTest, EnrageHappensOnlyOnce)
+{
+	CreateBoss("puppeteer");
+	CreatePlayer(400.f, 0.f);
+
+	int rages = 0;
+	brain->SubscribeEnraged([&rages]() { rages++; });
+
+	Step(2);
+	health->TakeDamage(config.maxHealth * 0.7f);
+	Step(20);
+	health->TakeDamage(config.maxHealth * 0.1f);
+	Step(20);
+
+	EXPECT_EQ(rages, 1);
+}
+
+TEST_F(BossBrainTest, EnrageEndsInChase)
+{
+	CreateBoss("puppeteer");
+	CreatePlayer(400.f, 0.f);
+	Step(2);
+	health->TakeDamage(config.maxHealth * 0.7f);
+	Step();
+	ASSERT_EQ(brain->GetState(), BossState::Enraged);
+
+	Step(9);
+
+	EXPECT_NE(brain->GetState(), BossState::Enraged);
+}
+
+TEST_F(BossBrainTest, EnragedBossHitsHarder)
+{
+	CreateBoss("gravedigger");
+	CreatePlayer(2000.f, 0.f);
+	Step(2);
+	health->TakeDamage(config.maxHealth * 0.7f);
+	Step();
+	ASSERT_EQ(brain->GetState(), BossState::Enraged);
+	ASSERT_TRUE(brain->IsEnraged());
+
+	MovePlayerTo(150.f, 0.f);
+	StepUntil(BossState::Attack);
+	ASSERT_EQ(brain->GetCurrentAbility(), BossAbility::Blast);
+
+	Step(8);
+
+	EXPECT_FLOAT_EQ(PlayerHealth(), 100.f - config.attackDamage * 1.5f * 1.25f);
+}
+
+TEST_F(BossBrainTest, BothAbilitiesAreUsedInOneFight)
+{
+	CreateBoss("puppeteer");
+	CreatePlayer(400.f, 0.f);
 
 	Step(30);
+	MovePlayerTo(150.f, 0.f);
+	Step(60);
 
-	ASSERT_GE(states.size(), 5u);
-	EXPECT_EQ(states[0], BossState::Chase);
-	EXPECT_EQ(states[1], BossState::Attack);
-	EXPECT_EQ(states[2], BossState::Cooldown);
-	EXPECT_EQ(states[3], BossState::Chase);
-	EXPECT_EQ(states[4], BossState::Attack);
+	EXPECT_GE(brain->GetAbilityUses(BossAbility::Summon), 1);
+	EXPECT_GE(brain->GetAbilityUses(BossAbility::Blast), 1);
 }
 
-TEST_F(BossBrainTest, BossRestsBetweenAttacks)
+TEST_F(BossBrainTest, AbilityWaitsForItsCooldown)
 {
-	CreateBoss();
-	CreatePlayer(200.f, 0.f);
-	Step(3);
-	ASSERT_EQ(brain->GetState(), BossState::Attack);
+	CreateBoss("gravedigger");
+	CreatePlayer(150.f, 0.f);
 
-	int attacks = 0;
-	brain->SubscribeAbilityUsed([&attacks](BossAbility) { attacks++; });
+	Step(40);
 
-	Step(21);
-
-	EXPECT_EQ(attacks, 1);
+	EXPECT_EQ(brain->GetAbilityUses(BossAbility::Blast), 1);
 }
 
 TEST_F(BossBrainTest, LostPlayerReturnsBossToIdle)
 {
-	CreateBoss();
+	CreateBoss("puppeteer");
 	CreatePlayer(400.f, 0.f);
 	Step(2);
-	ASSERT_EQ(brain->GetState(), BossState::Chase);
 
 	MovePlayerTo(3000.f, 0.f);
-	Step(2);
+	StepUntil(BossState::Idle);
 
 	EXPECT_EQ(brain->GetState(), BossState::Idle);
 }
 
 TEST_F(BossBrainTest, DeadPlayerIsNotChased)
 {
-	CreateBoss();
-	CreatePlayer(200.f, 0.f);
+	CreateBoss("puppeteer");
+	CreatePlayer(400.f, 0.f);
 	Step(2);
 
 	player->GetComponent<HealthComponent>()->TakeDamage(999.f);
-	Step(30);
+	StepUntil(BossState::Idle);
 
 	EXPECT_EQ(brain->GetState(), BossState::Idle);
 }
 
 TEST_F(BossBrainTest, DeathWinsOverAnyState)
 {
-	CreateBoss();
-	CreatePlayer(200.f, 0.f);
-	Step(3);
+	CreateBoss("puppeteer");
+	CreatePlayer(400.f, 0.f);
+	Step(2);
 	ASSERT_EQ(brain->GetState(), BossState::Attack);
 
 	health->TakeDamage(config.maxHealth);
@@ -216,8 +455,8 @@ TEST_F(BossBrainTest, DeathWinsOverAnyState)
 
 TEST_F(BossBrainTest, DeadBossStaysDead)
 {
-	CreateBoss();
-	CreatePlayer(200.f, 0.f);
+	CreateBoss("puppeteer");
+	CreatePlayer(400.f, 0.f);
 	Step(2);
 	health->TakeDamage(config.maxHealth);
 	Step();
@@ -231,46 +470,30 @@ TEST_F(BossBrainTest, DeadBossStaysDead)
 
 TEST_F(BossBrainTest, StateChangesAreReported)
 {
-	CreateBoss();
-	CreatePlayer(200.f, 0.f);
+	CreateBoss("puppeteer");
+	CreatePlayer(400.f, 0.f);
 
 	std::vector<BossState> states;
 	brain->SubscribeStateChanged([&states](BossState, BossState next) { states.push_back(next); });
 
-	Step(25);
+	Step(30);
 
-	ASSERT_GE(states.size(), 3u);
+	ASSERT_GE(states.size(), 4u);
 	EXPECT_EQ(states[0], BossState::Chase);
 	EXPECT_EQ(states[1], BossState::Attack);
 	EXPECT_EQ(states[2], BossState::Cooldown);
+	EXPECT_EQ(states[3], BossState::Chase);
 }
 
-TEST_F(BossBrainTest, BossIsNotEnragedInTheFirstStage)
+TEST_F(BossBrainTest, AttackKeepsTheBossInPlace)
 {
-	CreateBoss();
-	CreatePlayer(200.f, 0.f);
-	Step(2);
-
-	health->TakeDamage(config.maxHealth * 0.9f);
-	Step(5);
-
-	EXPECT_FALSE(brain->IsEnraged());
-	EXPECT_NE(brain->GetState(), BossState::Enraged);
-}
-
-TEST_F(BossBrainTest, StoppedBossDoesNotKeepMoving)
-{
-	CreateBoss();
+	CreateBoss("puppeteer");
 	CreatePlayer(400.f, 0.f);
 	Step(2);
-	ASSERT_EQ(brain->GetState(), BossState::Chase);
+	ASSERT_EQ(brain->GetCurrentAbility(), BossAbility::Summon);
 
-	MovePlayerTo(200.f, 0.f);
-	Step(2);
-	ASSERT_EQ(brain->GetState(), BossState::Attack);
-
-	XYZEngine::Vector2Df before = boss->GetTransform()->GetWorldPosition();
-	Step(5);
+	Vector2Df before = boss->GetTransform()->GetWorldPosition();
+	Step(8);
 
 	EXPECT_FLOAT_EQ(boss->GetTransform()->GetWorldPosition().x, before.x);
 	EXPECT_FLOAT_EQ(boss->GetTransform()->GetWorldPosition().y, before.y);

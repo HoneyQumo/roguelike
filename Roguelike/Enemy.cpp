@@ -1,6 +1,8 @@
 #include "Enemy.h"
 #include "BossBrainComponent.h"
+#include "BossAnimationComponent.h"
 #include "BossEffects.h"
+#include "BossSpriteAtlas.h"
 #include "ParticleCatalog.h"
 #include "CharacterFactory.h"
 #include "GameSettings.h"
@@ -160,6 +162,32 @@ namespace RoguelikeGame
             healthBar->SetAlwaysVisible(true);
         }
 
+        BossAnimationComponent* bossAnimation = nullptr;
+        if (definition.textureMapName != nullptr)
+        {
+            auto renderer = gameObject->GetComponent<XYZEngine::SpriteRendererComponent>();
+            if (renderer != nullptr)
+            {
+                renderer->SetPixelSize(definition.frameSize, definition.frameSize);
+            }
+
+            auto sharedAnimation = gameObject->GetComponent<XYZEngine::SpriteMovementAnimationComponent>();
+            if (sharedAnimation != nullptr)
+            {
+                sharedAnimation->SetEnabled(false);
+            }
+
+            bossAnimation = gameObject->AddComponent<BossAnimationComponent>();
+            bossAnimation->SetTextureMap(definition.textureMapName);
+            bossAnimation->SetAnimation(BOSS_SLOT_IDLE, PUPPETEER_IDLE_ANIMATION);
+            bossAnimation->SetAnimation(BOSS_SLOT_GLIDE, PUPPETEER_GLIDE_ANIMATION);
+            bossAnimation->SetAnimation(BOSS_SLOT_SUMMON, PUPPETEER_SUMMON_ANIMATION);
+            bossAnimation->SetAnimation(BOSS_SLOT_CURSE, PUPPETEER_CURSE_ANIMATION);
+            bossAnimation->SetAnimation(BOSS_SLOT_HURT, PUPPETEER_HURT_ANIMATION);
+            bossAnimation->SetAnimation(BOSS_SLOT_DEATH, PUPPETEER_DEATH_ANIMATION);
+            bossAnimation->SetAnimation(BOSS_SLOT_ENRAGE, PUPPETEER_ENRAGE_ANIMATION);
+        }
+
         auto brain = gameObject->AddComponent<BossBrainComponent>();
         brain->SetDefinition(&definition);
         brain->SetConfig(config);
@@ -175,6 +203,11 @@ namespace RoguelikeGame
         PlayEffectsOnBossBlast(brain);
         ShowMarkOnBossCast(brain);
         PlayEffectsOnBossRage(brain, gameObject->GetComponent<HitFlashComponent>(), healthBar, rageAura);
+
+        if (bossAnimation != nullptr)
+        {
+            PlayBossAnimations(brain, bossAnimation, gameObject->GetComponent<HealthComponent>());
+        }
 
         LOG_INFO(std::string("Boss ") + definition.id + " created with health " + std::to_string(static_cast<int>(config.maxHealth)));
         return gameObject;

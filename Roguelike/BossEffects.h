@@ -1,8 +1,10 @@
 #pragma once
 
+#include "BossAnimationComponent.h"
 #include "BossBrainComponent.h"
 #include <ParticleAuraComponent.h>
 #include "HealthBarComponent.h"
+#include "HealthComponent.h"
 #include "HitFlashComponent.h"
 #include "LevelData.h"
 #include "WeaponCatalog.h"
@@ -18,4 +20,5 @@ namespace RoguelikeGame
     void PlayEffectsOnBossRage(BossBrainComponent* brain, HitFlashComponent* hitFlash, HealthBarComponent* healthBar,
         XYZEngine::ParticleAuraComponent* rageAura);
     void ShowMarkOnBossCast(BossBrainComponent* brain);
+    void PlayBossAnimations(BossBrainComponent* brain, BossAnimationComponent* animation, HealthComponent* health);
 }

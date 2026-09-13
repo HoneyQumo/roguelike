@@ -91,6 +91,64 @@ namespace RoguelikeGame
         });
     }
 
+    void PlayBossAnimations(BossBrainComponent* brain, BossAnimationComponent* animation, HealthComponent* health)
+    {
+        animation->SetIdleSlot(BOSS_SLOT_IDLE);
+        animation->Play(BOSS_SLOT_IDLE);
+
+        brain->SubscribeStateChanged([animation](BossState, BossState next)
+        {
+            switch (next)
+            {
+            case BossState::Chase:
+                animation->Play(BOSS_SLOT_GLIDE);
+                break;
+
+            case BossState::Idle:
+            case BossState::Cooldown:
+                animation->Play(BOSS_SLOT_IDLE);
+                break;
+
+            case BossState::Enraged:
+                animation->Play(BOSS_SLOT_ENRAGE);
+                break;
+
+            case BossState::Death:
+                animation->PlayTerminal(BOSS_SLOT_DEATH);
+                break;
+
+            default:
+                break;
+            }
+        });
+
+        brain->SubscribeAbilityUsed([animation](BossAbility ability)
+        {
+            if (ability == BossAbility::Summon)
+            {
+                animation->Play(BOSS_SLOT_SUMMON);
+            }
+            else if (ability == BossAbility::Blast)
+            {
+                animation->Play(BOSS_SLOT_CURSE);
+            }
+        });
+
+        brain->SubscribeSummon([animation](const XYZEngine::Vector2Df&) { animation->ReleaseWindup(); });
+        brain->SubscribeBlast([animation](const XYZEngine::Vector2Df&, float) { animation->ReleaseWindup(); });
+
+        if (health != nullptr)
+        {
+            health->SubscribeDamage([animation](const DamageInfo&)
+            {
+                if (!animation->IsWaitingInWindup())
+                {
+                    animation->Play(BOSS_SLOT_HURT);
+                }
+            });
+        }
+    }
+
     void ShowMarkOnBossCast(BossBrainComponent* brain)
     {
         brain->SubscribeCastMark([](const XYZEngine::Vector2Df& point, float radius, float lifeTime)

@@ -104,6 +104,7 @@
     <ClCompile Include="InventoryComponent.cpp" />
     <ClCompile Include="InteractionComponent.cpp" />
     <ClCompile Include="InventoryScreen.cpp" />
+    <ClCompile Include="BossAnimationComponent.cpp" />
     <ClCompile Include="BossBrainComponent.cpp" />
     <ClCompile Include="BossEffects.cpp" />
     <ClCompile Include="CastMark.cpp" />
@@ -155,7 +156,9 @@
     <ClInclude Include="InventoryComponent.h" />
     <ClInclude Include="InteractionComponent.h" />
     <ClInclude Include="InventoryScreen.h" />
+    <ClInclude Include="BossAnimationComponent.h" />
     <ClInclude Include="BossBrainComponent.h" />
+    <ClInclude Include="BossSpriteAtlas.h" />
     <ClInclude Include="BossEffects.h" />
     <ClInclude Include="CastMark.h" />
     <ClInclude Include="BossCatalog.h" />

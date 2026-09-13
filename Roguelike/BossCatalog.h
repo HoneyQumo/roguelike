@@ -33,12 +33,15 @@ namespace RoguelikeGame
         BossAbility first;
         BossAbility second;
         float enragePart;
+        const char* textureMapName;
+        int frameSize;
+        bool hasBasicAttack;
     };
 
     inline constexpr BossDefinition BOSSES[] = {
-        {"puppeteer", BossAbility::Summon, BossAbility::Blast, 0.35f},
-        {"gravedigger", BossAbility::Blast, BossAbility::Dash, 0.35f},
-        {"colossus", BossAbility::Dash, BossAbility::Volley, 0.40f}
+        {"puppeteer", BossAbility::Summon, BossAbility::Blast, 0.35f, "boss_puppeteer", 96, false},
+        {"gravedigger", BossAbility::Blast, BossAbility::Dash, 0.35f, nullptr, 0, true},
+        {"colossus", BossAbility::Dash, BossAbility::Volley, 0.40f, nullptr, 0, true}
     };
 
     constexpr const BossDefinition* FindBoss(std::string_view id)
@@ -150,7 +153,7 @@ namespace RoguelikeGame
             return boss.second;
         }
 
-        return distance <= attackRange ? BossAbility::Basic : BossAbility::None;
+        return boss.hasBasicAttack && distance <= attackRange ? BossAbility::Basic : BossAbility::None;
     }
 
     struct BossBrainInput

@@ -228,6 +228,11 @@ namespace RoguelikeGame
     constexpr auto ROCKET_TEXTURE = "fx_rocket";
     constexpr auto EXPLOSION_TEXTURE = "fx_explosion";
     constexpr auto FX_ATLAS_TEXTURE = "fx_atlas";
+    constexpr auto BOSS_FX_ATLAS_FILE = "Resources/Textures/boss_puppeteer_fx.png";
+    constexpr auto PUPPETEER_RIFT_TEXTURE = "fx_puppeteer_rift";
+    constexpr auto PUPPETEER_CLOUD_TEXTURE = "fx_puppeteer_cloud";
+    constexpr auto PUPPETEER_SNAP_TEXTURE = "fx_puppeteer_snap";
+    constexpr auto PUPPETEER_MARK_TEXTURE = "fx_puppeteer_mark";
     constexpr auto RELOAD_MAG_TEXTURE = "reload_mag";
     constexpr auto HIT_FLASH_SHADER = "hit_flash";
     constexpr auto HUD_FONT = "hud";

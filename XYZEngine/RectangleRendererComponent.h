@@ -19,6 +19,7 @@ namespace XYZEngine
 		Vector2Df GetSize() const;
 
 		void SetColor(const sf::Color& newColor);
+		sf::Color GetColor() const;
 	private:
 		sf::RectangleShape rectangle;
 		TransformComponent* transform = nullptr;

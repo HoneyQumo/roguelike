@@ -98,9 +98,9 @@ namespace RoguelikeGame
         return *promptLabel;
     }
 
-    void HudScreen::ShowNotice(const char* text)
+    void HudScreen::ShowNotice(const std::string& text)
     {
-        noticeLabel->SetUtf8Text(text);
+        noticeLabel->SetUtf8Text(text.c_str());
         noticeLabel->SetVisible(true);
         noticeTimeLeft = HUD_NOTICE_TIME;
     }

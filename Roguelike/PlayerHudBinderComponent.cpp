@@ -83,6 +83,14 @@ namespace RoguelikeGame
                     screen->SetPrompt(prompt);
                 }
             });
+
+            interaction->SubscribeRefused([this](const std::string& reason)
+            {
+                if (screen != nullptr && !reason.empty())
+                {
+                    screen->ShowNotice(reason);
+                }
+            });
         }
 
         inventory = target->GetComponent<InventoryComponent>();

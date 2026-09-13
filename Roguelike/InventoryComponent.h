@@ -45,6 +45,8 @@ namespace RoguelikeGame
 
         bool Contains(const std::string& itemId) const;
         int CountOf(const std::string& itemId) const;
+        int FindSlot(const std::string& itemId) const;
+        bool RemoveById(const std::string& itemId, int count = 1);
 
         XYZEngine::SubscriptionId SubscribeAdded(std::function<void(const ItemDefinition&, int)> onAdded);
         XYZEngine::SubscriptionId SubscribeRemoved(std::function<void(const ItemDefinition&, int)> onRemoved);

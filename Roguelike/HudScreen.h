@@ -32,7 +32,7 @@ namespace RoguelikeGame
         void SetAmmo(const AmmoHudState& state);
         void SetVitals(const VitalsHudState& state);
 
-        void ShowNotice(const char* text);
+        void ShowNotice(const std::string& text);
         void SetPrompt(const std::string& text);
         const XYZEngine::UiLabel& GetPromptLabel() const;
         void Update(float deltaTime) override;

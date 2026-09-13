@@ -192,6 +192,8 @@ namespace RoguelikeGame
     constexpr auto BOSS_GATE_NOTICE = u8"Выход закрыт: сначала победи босса";
     constexpr auto BOSS_DEFEATED_NOTICE = u8"Босс повержен, выход открыт";
     constexpr auto INTERACT_PROMPT_PREFIX = u8"[E] Подобрать: ";
+    constexpr auto CONTAINER_OPEN_PREFIX = u8"[E] Открыть: ";
+    constexpr auto CONTAINER_LOCKED_PREFIX = u8"Заперто: нужен ";
     constexpr int HUD_PROMPT_FONT_SIZE = 24;
     constexpr float HUD_PROMPT_MARGIN_Y = 170.f;
     constexpr sf::Keyboard::Key RESTART_KEY = sf::Keyboard::R;
@@ -300,6 +302,7 @@ namespace RoguelikeGame
     constexpr auto LOOT_CATALOG_FILE = "Resources/Loot/loot.config";
     constexpr auto PROPS_CATALOG_FILE = "Resources/Props/props.config";
     constexpr auto PROP_OBJECT_PREFIX = "Prop_";
+    constexpr float CONTAINER_REACH_MARGIN = 24.f;
     constexpr auto ITEMS_CATALOG_FILE = "Resources/Items/items.config";
     constexpr auto HUD_FONT_FILE = "Resources/Fonts/Roboto-Medium.ttf";
 

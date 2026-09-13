@@ -91,6 +91,7 @@
     <ClCompile Include="ItemCatalog.tests.cpp" />
     <ClCompile Include="PixelBounds.tests.cpp" />
     <ClCompile Include="ItemIconLayout.tests.cpp" />
+    <ClCompile Include="Container.tests.cpp" />
     <ClCompile Include="InventoryComponent.tests.cpp" />
     <ClCompile Include="Interaction.tests.cpp" />
     <ClCompile Include="InventoryScreen.tests.cpp" />
@@ -171,6 +172,12 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\Roguelike\ItemPickupComponent.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Roguelike\InteractableComponent.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Roguelike\ContainerComponent.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\Roguelike\FadeScreen.cpp">

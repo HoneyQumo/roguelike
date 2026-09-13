@@ -21,5 +21,7 @@ namespace RoguelikeGame
         float attackDamage = 0.f;
         float attackCooldown = 0.f;
         float projectileSpeed = 0.f;
+
+        const char* lootTable = nullptr;
     };
 }

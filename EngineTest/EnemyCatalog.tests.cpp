@@ -69,3 +69,27 @@ TEST(EnemyCatalogTests, ConfigsAreSane)
 		}
 	}
 }
+
+TEST(EnemyCatalogTest, EveryEnemyHasALootTable)
+{
+	for (const RoguelikeGame::EnemyDefinition& enemy : RoguelikeGame::ENEMIES)
+	{
+		ASSERT_NE(enemy.config.lootTable, nullptr) << enemy.tileName;
+		EXPECT_STRNE(enemy.config.lootTable, "") << enemy.tileName;
+	}
+}
+
+TEST(EnemyCatalogTest, MarauderIsTheWeakGunman)
+{
+	const RoguelikeGame::EnemyDefinition* marauder = RoguelikeGame::FindEnemy(RoguelikeGame::TileType::MarauderSpawn);
+	const RoguelikeGame::EnemyDefinition* grunt = RoguelikeGame::FindEnemy(RoguelikeGame::TileType::GruntSpawn);
+
+	ASSERT_NE(marauder, nullptr);
+	ASSERT_NE(grunt, nullptr);
+
+	EXPECT_EQ(marauder->levelSymbol, 'm');
+	EXPECT_EQ(marauder->config.weapon, RoguelikeGame::WeaponId::Glock);
+	EXPECT_LT(marauder->config.detectionRadius, grunt->config.detectionRadius);
+	EXPECT_LT(marauder->config.maxHealth, grunt->config.maxHealth);
+	EXPECT_STREQ(marauder->config.lootTable, "marauder");
+}

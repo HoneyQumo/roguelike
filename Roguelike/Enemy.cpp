@@ -11,6 +11,7 @@
 #include "EnemyAttackComponent.h"
 #include "HealthBarComponent.h"
 #include "BloodPool.h"
+#include "LootDrop.h"
 #include "Fx.h"
 #include <GameWorld.h>
 #include "ChaseComponent.h"
@@ -119,7 +120,8 @@ namespace RoguelikeGame
         });
 
         auto weaponComponent = gameObject->GetComponent<WeaponComponent>();
-        health->SubscribeDeath([gameObject, animation, movement, chase, collider, aim, weaponComponent, meleeComponent](const DeathInfo& death)
+        const char* lootTable = config.lootTable;
+        health->SubscribeDeath([gameObject, animation, movement, chase, collider, aim, weaponComponent, meleeComponent, lootTable](const DeathInfo& death)
         {
             if (weaponComponent != nullptr)
             {
@@ -143,6 +145,11 @@ namespace RoguelikeGame
 
             gameObject->SetRenderLayer(CORPSE_RENDER_LAYER);
             BloodPool::Spawn(death.position, death.rotation);
+
+            if (lootTable != nullptr)
+            {
+                DropLoot(lootTable, gameObject, death.position);
+            }
         });
 
         gameObject->SetRenderLayer(ENEMY_RENDER_LAYER);

@@ -12,6 +12,7 @@ namespace RoguelikeGame
         Wall,
         PlayerSpawn,
         GruntSpawn,
+        MarauderSpawn,
         AssaultSpawn,
         ShieldSpawn,
         HeavySpawn,

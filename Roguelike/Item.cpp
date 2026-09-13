@@ -14,7 +14,8 @@ namespace RoguelikeGame
         return "item_" + itemId;
     }
 
-    XYZEngine::GameObject* CreateItem(const ItemDefinition& definition, const XYZEngine::Vector2Df& position)
+    XYZEngine::GameObject* CreateItem(const ItemDefinition& definition, const XYZEngine::Vector2Df& position,
+        XYZEngine::GameObject* parent)
     {
         const sf::Texture* texture = XYZEngine::ResourceSystem::Instance()->GetTextureShared(ItemTextureName(definition.id));
         if (texture == nullptr)
@@ -23,7 +24,9 @@ namespace RoguelikeGame
             return nullptr;
         }
 
-        auto gameObject = XYZEngine::GameWorld::Instance()->CreateGameObject("Item_" + definition.id);
+        auto gameObject = parent == nullptr
+            ? XYZEngine::GameWorld::Instance()->CreateGameObject("Item_" + definition.id)
+            : XYZEngine::GameWorld::Instance()->CreateGameObject("Item_" + definition.id, parent);
         gameObject->SetRenderLayer(ITEM_RENDER_LAYER);
         gameObject->GetTransform()->SetWorldPosition(position);
 

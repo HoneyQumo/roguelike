@@ -110,6 +110,8 @@
     <ClCompile Include="BossEffects.cpp" />
     <ClCompile Include="CastMark.cpp" />
     <ClCompile Include="LevelCatalog.cpp" />
+    <ClCompile Include="LootCatalog.cpp" />
+    <ClCompile Include="LootDrop.cpp" />
     <ClCompile Include="LevelProgression.cpp" />
     <ClCompile Include="LevelExit.cpp" />
     <ClCompile Include="LevelExitComponent.cpp" />
@@ -167,6 +169,8 @@
     <ClInclude Include="CastMark.h" />
     <ClInclude Include="BossCatalog.h" />
     <ClInclude Include="LevelCatalog.h" />
+    <ClInclude Include="LootCatalog.h" />
+    <ClInclude Include="LootDrop.h" />
     <ClInclude Include="LevelProgression.h" />
     <ClInclude Include="LevelExit.h" />
     <ClInclude Include="LevelExitComponent.h" />

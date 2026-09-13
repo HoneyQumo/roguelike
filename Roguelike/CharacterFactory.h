@@ -31,6 +31,7 @@ namespace RoguelikeGame
         Faction faction = Faction::Neutral;
         WeaponId weapon = WeaponId::Knife;
         sf::Color healthBarColor;
+        bool hasWeaponLayer = true;
     };
 
     struct CharacterParts

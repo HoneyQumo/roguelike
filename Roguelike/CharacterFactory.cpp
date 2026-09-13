@@ -75,14 +75,17 @@ namespace RoguelikeGame
         parts.hitFlash = parts.gameObject->AddComponent<HitFlashComponent>();
         parts.hitFlash->AddRenderer(parts.renderer);
 
-        try
+        if (spec.hasWeaponLayer)
         {
-            parts.weapon = CreateWeapon(parts.gameObject, spec.weapon, parts.animation);
-            parts.hitFlash->AddRenderer(parts.weapon->GetGameObject()->GetComponent<XYZEngine::SpriteRendererComponent>());
-        }
-        catch (const std::exception& exception)
-        {
-            LOG_ERROR(spec.objectName + " weapon is not created: " + exception.what());
+            try
+            {
+                parts.weapon = CreateWeapon(parts.gameObject, spec.weapon, parts.animation);
+                parts.hitFlash->AddRenderer(parts.weapon->GetGameObject()->GetComponent<XYZEngine::SpriteRendererComponent>());
+            }
+            catch (const std::exception& exception)
+            {
+                LOG_ERROR(spec.objectName + " weapon is not created: " + exception.what());
+            }
         }
 
         return parts;

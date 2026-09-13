@@ -23,6 +23,11 @@ namespace RoguelikeGame
         screen = newScreen;
     }
 
+    void PlayerHudBinderComponent::SetInventoryScreen(InventoryScreen* newInventoryScreen)
+    {
+        inventoryScreen = newInventoryScreen;
+    }
+
     void PlayerHudBinderComponent::Update(float deltaTime)
     {
         if (loadout == nullptr || health == nullptr)
@@ -81,6 +86,11 @@ namespace RoguelikeGame
         }
 
         inventory = target->GetComponent<InventoryComponent>();
+        if (inventory != nullptr && inventoryScreen != nullptr)
+        {
+            inventoryScreen->SetInventory(inventory);
+        }
+
         if (inventory != nullptr)
         {
             inventory->SubscribeRejected([this](const ItemDefinition&)

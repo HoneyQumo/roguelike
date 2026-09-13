@@ -60,6 +60,19 @@ namespace RoguelikeGame
     constexpr unsigned int ITEM_COLLISION_LAYER = 1u << 3;
     constexpr float ITEM_PICKUP_SIZE = 48.f;
     constexpr int INVENTORY_CAPACITY = 12;
+    constexpr int INVENTORY_GRID_COLUMNS = 4;
+    constexpr int INVENTORY_GRID_ROWS = 3;
+    constexpr float INVENTORY_SLOT_SIZE = 96.f;
+    constexpr float INVENTORY_SLOT_GAP = 12.f;
+    constexpr float INVENTORY_WINDOW_PADDING = 28.f;
+    constexpr float INVENTORY_TITLE_HEIGHT = 44.f;
+    constexpr int INVENTORY_TITLE_FONT_SIZE = 28;
+    constexpr int INVENTORY_SLOT_FONT_SIZE = 12;
+    constexpr int INVENTORY_COUNT_FONT_SIZE = 18;
+    constexpr float INVENTORY_ICON_PART = 0.52f;
+    constexpr float INVENTORY_OPEN_TIME = 0.18f;
+    constexpr float INVENTORY_SLIDE_OFFSET = 60.f;
+    constexpr auto INVENTORY_TITLE = u8"ИНВЕНТАРЬ";
 
     constexpr int PLAYER_WEAPON_SLOTS = 3;
     constexpr int PLAYER_START_WEAPON_SLOT = 0;
@@ -228,6 +241,12 @@ namespace RoguelikeGame
     inline const sf::Color AMMO_HUD_OUTLINE_COLOR = {15, 13, 12, 220};
     inline const sf::Color RELOAD_INDICATOR_COLOR = {235, 190, 90};
     inline const sf::Color OVERLAY_BACKGROUND_COLOR = {0, 0, 0, 150};
+    inline const sf::Color INVENTORY_DIM_COLOR = {0, 0, 0, 150};
+    inline const sf::Color INVENTORY_WINDOW_COLOR = {28, 28, 32, 235};
+    inline const sf::Color INVENTORY_SLOT_EMPTY_COLOR = {44, 44, 50, 220};
+    inline const sf::Color INVENTORY_SLOT_FILLED_COLOR = {70, 70, 80, 235};
+    inline const sf::Color INVENTORY_SLOT_SELECTED_COLOR = {120, 150, 190, 245};
+    inline const sf::Color INVENTORY_SLOT_OUTLINE_COLOR = {16, 16, 18, 255};
     inline const sf::Color DEBUG_DETECTION_COLOR = {240, 200, 60};
     inline const sf::Color DEBUG_CHASING_COLOR = {240, 80, 60};
     inline const sf::Color DEBUG_ATTACK_RANGE_COLOR = {255, 140, 40};

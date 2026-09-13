@@ -26,6 +26,11 @@ namespace XYZEngine
 		WeaponSlot1,
 		WeaponSlot2,
 		WeaponSlot3,
+		NavigateLeft,
+		NavigateRight,
+		NavigateUp,
+		NavigateDown,
+		Confirm,
 		Count
 	};
 

@@ -18,6 +18,7 @@ namespace XYZEngine
 		void Clear();
 
 		UiScreen* GetTop() const;
+		UiScreen* GetTopVisible() const;
 		std::size_t GetCount() const;
 
 		void HandleInput();
@@ -26,10 +27,14 @@ namespace XYZEngine
 
 		bool IsPointerCaptured() const;
 
+		void CaptureInput();
+		bool IsInputCaptured() const;
+
 	private:
 		std::vector<UiScreen*> screens;
 		SubscriptionId resizeSubscription = NO_SUBSCRIPTION;
 		bool isPointerCaptured = false;
+		bool isInputCaptured = false;
 
 		UiManager();
 		~UiManager() {}

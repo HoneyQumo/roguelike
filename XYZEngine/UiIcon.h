@@ -12,6 +12,7 @@ namespace XYZEngine
 		void SetTextureRect(const sf::IntRect& rect);
 		void SetColor(const sf::Color& color);
 		void SetAdditiveBlending(bool newIsAdditiveBlending);
+		void SetKeepAspect(bool newKeepAspect);
 
 		bool HasTexture() const;
 
@@ -23,5 +24,6 @@ namespace XYZEngine
 		sf::Sprite sprite;
 		const sf::Texture* texture = nullptr;
 		bool isAdditiveBlending = false;
+		bool keepAspect = true;
 	};
 }

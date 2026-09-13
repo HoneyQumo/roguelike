@@ -23,6 +23,11 @@ namespace XYZEngine
 		bindings[static_cast<int>(InputAction::WeaponSlot1)].key = sf::Keyboard::Num1;
 		bindings[static_cast<int>(InputAction::WeaponSlot2)].key = sf::Keyboard::Num2;
 		bindings[static_cast<int>(InputAction::WeaponSlot3)].key = sf::Keyboard::Num3;
+		bindings[static_cast<int>(InputAction::NavigateLeft)].key = sf::Keyboard::Left;
+		bindings[static_cast<int>(InputAction::NavigateRight)].key = sf::Keyboard::Right;
+		bindings[static_cast<int>(InputAction::NavigateUp)].key = sf::Keyboard::Up;
+		bindings[static_cast<int>(InputAction::NavigateDown)].key = sf::Keyboard::Down;
+		bindings[static_cast<int>(InputAction::Confirm)].key = sf::Keyboard::Enter;
 
 		return bindings;
 	}

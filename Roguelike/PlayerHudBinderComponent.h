@@ -6,6 +6,7 @@
 #include "HealthComponent.h"
 #include "InteractionComponent.h"
 #include "InventoryComponent.h"
+#include "InventoryScreen.h"
 #include "PlayerLoadoutComponent.h"
 #include "StaminaComponent.h"
 #include "WeaponComponent.h"
@@ -22,9 +23,11 @@ namespace RoguelikeGame
 
         void SetTargetName(const std::string& newTargetName);
         void SetScreen(HudScreen* newScreen);
+        void SetInventoryScreen(InventoryScreen* newInventoryScreen);
 
     private:
         HudScreen* screen = nullptr;
+        InventoryScreen* inventoryScreen = nullptr;
         WeaponComponent* weapon = nullptr;
         PlayerLoadoutComponent* loadout = nullptr;
         HealthComponent* health = nullptr;

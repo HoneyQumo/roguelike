@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "UiIcon.h"
 #include "RenderSystem.h"
+#include <algorithm>
 
 namespace XYZEngine
 {
@@ -30,6 +31,11 @@ namespace XYZEngine
 		isAdditiveBlending = newIsAdditiveBlending;
 	}
 
+	void UiIcon::SetKeepAspect(bool newKeepAspect)
+	{
+		keepAspect = newKeepAspect;
+	}
+
 	bool UiIcon::HasTexture() const
 	{
 		return texture != nullptr;
@@ -43,8 +49,18 @@ namespace XYZEngine
 		float scaleX = frame.width > 0 ? bounds.width / static_cast<float>(frame.width) : 1.f;
 		float scaleY = frame.height > 0 ? bounds.height / static_cast<float>(frame.height) : 1.f;
 
+		if (keepAspect)
+		{
+			float scale = std::min(scaleX, scaleY);
+			scaleX = scale;
+			scaleY = scale;
+		}
+
+		float width = frame.width * scaleX;
+		float height = frame.height * scaleY;
+
 		sprite.setScale(scaleX, scaleY);
-		sprite.setPosition(bounds.left, bounds.top);
+		sprite.setPosition(bounds.left + 0.5f * (bounds.width - width), bounds.top + 0.5f * (bounds.height - height));
 	}
 
 	void UiIcon::OnDraw() const

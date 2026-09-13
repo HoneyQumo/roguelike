@@ -55,6 +55,19 @@ namespace XYZEngine
 		return screens.empty() ? nullptr : screens.back();
 	}
 
+	UiScreen* UiManager::GetTopVisible() const
+	{
+		for (auto screen = screens.rbegin(); screen != screens.rend(); ++screen)
+		{
+			if ((*screen)->IsVisible())
+			{
+				return *screen;
+			}
+		}
+
+		return nullptr;
+	}
+
 	std::size_t UiManager::GetCount() const
 	{
 		return screens.size();
@@ -78,9 +91,10 @@ namespace XYZEngine
 	void UiManager::HandleInput()
 	{
 		isPointerCaptured = false;
+		isInputCaptured = false;
 
-		UiScreen* top = GetTop();
-		if (top == nullptr || !top->IsVisible())
+		UiScreen* top = GetTopVisible();
+		if (top == nullptr)
 		{
 			return;
 		}
@@ -121,5 +135,15 @@ namespace XYZEngine
 	bool UiManager::IsPointerCaptured() const
 	{
 		return isPointerCaptured;
+	}
+
+	void UiManager::CaptureInput()
+	{
+		isInputCaptured = true;
+	}
+
+	bool UiManager::IsInputCaptured() const
+	{
+		return isInputCaptured;
 	}
 }

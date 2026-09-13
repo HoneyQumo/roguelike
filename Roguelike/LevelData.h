@@ -45,11 +45,11 @@ namespace RoguelikeGame
 
     struct BossSpec
     {
-        std::string enemyName;
+        std::string bossId;
         float healthScale = 1.f;
         float damageScale = 1.f;
 
-        bool IsEmpty() const { return enemyName.empty(); }
+        bool IsEmpty() const { return bossId.empty(); }
     };
 
     struct LevelInfo

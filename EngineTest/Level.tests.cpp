@@ -53,14 +53,14 @@ TEST_F(LevelTest, InfoIsStoredAsIs)
 	LevelInfo info;
 	info.title = "Gorod";
 	info.nextLevelId = "arena";
-	info.boss.enemyName = "Boss";
+	info.boss.bossId = "Boss";
 	info.boss.healthScale = 2.f;
 
 	level.SetInfo(info);
 
 	EXPECT_EQ(level.GetInfo().title, "Gorod");
 	EXPECT_EQ(level.GetInfo().nextLevelId, "arena");
-	EXPECT_EQ(level.GetInfo().boss.enemyName, "Boss");
+	EXPECT_EQ(level.GetInfo().boss.bossId, "Boss");
 	EXPECT_FLOAT_EQ(level.GetInfo().boss.healthScale, 2.f);
 	EXPECT_FALSE(level.GetInfo().boss.IsEmpty());
 }
@@ -148,4 +148,49 @@ TEST_F(LevelTest, RepeatedTransitionsLeaveNoObjectsBehind)
 	}
 
 	EXPECT_EQ(GameWorld::Instance()->FindGameObject("Player"), player);
+}
+
+TEST_F(LevelTest, BossIsRememberedAndForgottenWithTheLevel)
+{
+	Level level;
+	GameObject* boss = GameWorld::Instance()->CreateGameObject("Boss");
+	level.Add(boss);
+	level.SetBoss(boss);
+
+	EXPECT_EQ(level.GetBoss(), boss);
+
+	level.Clear();
+	GameWorld::Instance()->LateUpdate();
+
+	EXPECT_EQ(level.GetBoss(), nullptr);
+}
+
+TEST_F(LevelTest, MovedLevelKeepsItsBoss)
+{
+	Level source;
+	GameObject* boss = GameWorld::Instance()->CreateGameObject("Boss");
+	source.Add(boss);
+	source.SetBoss(boss);
+
+	Level moved = std::move(source);
+
+	EXPECT_EQ(moved.GetBoss(), boss);
+	EXPECT_EQ(source.GetBoss(), nullptr);
+}
+
+TEST_F(LevelTest, MoveAssignedLevelKeepsItsBoss)
+{
+	Level source;
+	GameObject* boss = GameWorld::Instance()->CreateGameObject("Boss");
+	source.Add(boss);
+	source.SetBoss(boss);
+
+	Level target;
+	target.Add(GameWorld::Instance()->CreateGameObject("Wall"));
+	target.SetBoss(GameWorld::Instance()->CreateGameObject("OldBoss"));
+
+	target = std::move(source);
+
+	EXPECT_EQ(target.GetBoss(), boss);
+	EXPECT_EQ(source.GetBoss(), nullptr);
 }

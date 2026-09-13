@@ -22,15 +22,24 @@ namespace RoguelikeGame
         void Render() override;
 
         bool IsUsed() const;
+        bool IsLocked() const;
+        void SetLocked(bool newIsLocked);
 
         XYZEngine::SubscriptionId SubscribeEntered(std::function<void()> onEntered);
+        XYZEngine::SubscriptionId SubscribeBlocked(std::function<void()> onBlocked);
 
     private:
         XYZEngine::ColliderComponent* collider = nullptr;
         bool isUsed = false;
+        bool isLocked = false;
+        bool isPlayerInside = false;
 
         XYZEngine::EventList<> enteredEvent;
+        XYZEngine::EventList<> blockedEvent;
 
+        bool IsPlayerTrigger(const XYZEngine::Trigger& trigger) const;
         void OnTriggerEnter(const XYZEngine::Trigger& trigger);
+        void OnTriggerExit(const XYZEngine::Trigger& trigger);
+        void TryEnter();
     };
 }

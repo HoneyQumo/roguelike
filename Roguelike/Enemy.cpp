@@ -1,9 +1,11 @@
 #include "Enemy.h"
+#include "BossBrainComponent.h"
 #include "CharacterFactory.h"
 #include "GameSettings.h"
 #include "GameResources.h"
 #include "WeaponSetup.h"
 #include "EnemyAttackComponent.h"
+#include "HealthBarComponent.h"
 #include "BloodPool.h"
 #include "Fx.h"
 #include <GameWorld.h>
@@ -125,7 +127,11 @@ namespace RoguelikeGame
 
             animation->PlayDeath();
             movement->SetSpeed(0.f);
-            chase->SetDetectionRadius(0.f);
+            if (chase != nullptr)
+            {
+                chase->SetDetectionRadius(0.f);
+            }
+
             collider->SetTrigger(true);
             aim->SetEnabled(false);
 
@@ -136,6 +142,29 @@ namespace RoguelikeGame
         gameObject->SetRenderLayer(ENEMY_RENDER_LAYER);
 
         LOG_INFO(std::string(config.objectName) + " created at " + std::to_string(static_cast<int>(position.x)) + ";" + std::to_string(static_cast<int>(position.y)));
+        return gameObject;
+    }
+
+    XYZEngine::GameObject* CreateBoss(const EnemyConfig& config, const BossDefinition& definition, const XYZEngine::Vector2Df& position)
+    {
+        auto gameObject = CreateEnemy(config, position);
+
+        auto healthBar = gameObject->GetComponent<HealthBarComponent>();
+        if (healthBar != nullptr)
+        {
+            healthBar->SetSize(BOSS_HEALTH_BAR_WIDTH, BOSS_HEALTH_BAR_HEIGHT);
+            healthBar->SetOffset(0.f, BOSS_HEALTH_BAR_OFFSET_Y);
+            healthBar->SetColors(BOSS_HEALTH_BAR_COLOR, VITALS_HUD_BACK_COLOR);
+            healthBar->SetAlwaysVisible(true);
+        }
+
+        auto brain = gameObject->AddComponent<BossBrainComponent>();
+        brain->SetDefinition(&definition);
+        brain->SetConfig(config);
+        brain->SetTargetName(PLAYER_OBJECT_NAME);
+        brain->SetBasicAttack(gameObject->GetComponent<EnemyAttackComponent>());
+
+        LOG_INFO(std::string("Boss ") + definition.id + " created with health " + std::to_string(static_cast<int>(config.maxHealth)));
         return gameObject;
     }
 }

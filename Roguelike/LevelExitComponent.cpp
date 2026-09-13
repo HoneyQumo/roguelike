@@ -20,6 +20,7 @@ namespace RoguelikeGame
         }
 
         collider->SubscribeTriggerEnter([this](const XYZEngine::Trigger& trigger) { OnTriggerEnter(trigger); });
+        collider->SubscribeTriggerExit([this](const XYZEngine::Trigger& trigger) { OnTriggerExit(trigger); });
     }
 
     void LevelExitComponent::Update(float deltaTime)
@@ -35,16 +36,60 @@ namespace RoguelikeGame
         return isUsed;
     }
 
+    bool LevelExitComponent::IsLocked() const
+    {
+        return isLocked;
+    }
+
+    void LevelExitComponent::SetLocked(bool newIsLocked)
+    {
+        isLocked = newIsLocked;
+
+        if (!isLocked && isPlayerInside)
+        {
+            TryEnter();
+        }
+    }
+
+    bool LevelExitComponent::IsPlayerTrigger(const XYZEngine::Trigger& trigger) const
+    {
+        XYZEngine::ColliderComponent* other = trigger.GetFirst() == collider ? trigger.GetSecond() : trigger.GetFirst();
+
+        return other != nullptr && GetFactionOf(other->GetGameObject()) == Faction::Player;
+    }
+
     void LevelExitComponent::OnTriggerEnter(const XYZEngine::Trigger& trigger)
+    {
+        if (!IsPlayerTrigger(trigger))
+        {
+            return;
+        }
+
+        isPlayerInside = true;
+        TryEnter();
+    }
+
+    void LevelExitComponent::OnTriggerExit(const XYZEngine::Trigger& trigger)
+    {
+        if (!IsPlayerTrigger(trigger))
+        {
+            return;
+        }
+
+        isPlayerInside = false;
+    }
+
+    void LevelExitComponent::TryEnter()
     {
         if (isUsed)
         {
             return;
         }
 
-        XYZEngine::ColliderComponent* other = trigger.GetFirst() == collider ? trigger.GetSecond() : trigger.GetFirst();
-        if (other == nullptr || GetFactionOf(other->GetGameObject()) != Faction::Player)
+        if (isLocked)
         {
+            LOG_INFO("Level exit is locked while the boss is alive");
+            blockedEvent.Invoke();
             return;
         }
 
@@ -57,5 +102,10 @@ namespace RoguelikeGame
     XYZEngine::SubscriptionId LevelExitComponent::SubscribeEntered(std::function<void()> onEntered)
     {
         return enteredEvent.Subscribe(std::move(onEntered));
+    }
+
+    XYZEngine::SubscriptionId LevelExitComponent::SubscribeBlocked(std::function<void()> onBlocked)
+    {
+        return blockedEvent.Subscribe(std::move(onBlocked));
     }
 }

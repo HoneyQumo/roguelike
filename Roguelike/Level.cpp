@@ -10,12 +10,13 @@ namespace RoguelikeGame
 
     Level::Level(Level&& other) noexcept
         : objects(std::move(other.objects)), playerSpawn(other.playerSpawn), entrance(other.entrance),
-          exitObject(other.exitObject), info(std::move(other.info))
+          exitObject(other.exitObject), bossObject(other.bossObject), info(std::move(other.info))
     {
         other.objects.clear();
         other.playerSpawn.reset();
         other.entrance.reset();
         other.exitObject = nullptr;
+        other.bossObject = nullptr;
     }
 
     Level& Level::operator=(Level&& other) noexcept
@@ -27,11 +28,13 @@ namespace RoguelikeGame
             playerSpawn = other.playerSpawn;
             entrance = other.entrance;
             exitObject = other.exitObject;
+            bossObject = other.bossObject;
             info = std::move(other.info);
             other.objects.clear();
             other.playerSpawn.reset();
             other.entrance.reset();
             other.exitObject = nullptr;
+            other.bossObject = nullptr;
         }
 
         return *this;
@@ -68,6 +71,11 @@ namespace RoguelikeGame
         exitObject = newExitObject;
     }
 
+    void Level::SetBoss(XYZEngine::GameObject* newBossObject)
+    {
+        bossObject = newBossObject;
+    }
+
     std::optional<XYZEngine::Vector2Df> Level::GetEntrance() const
     {
         return entrance;
@@ -93,6 +101,11 @@ namespace RoguelikeGame
         return exitObject;
     }
 
+    XYZEngine::GameObject* Level::GetBoss() const
+    {
+        return bossObject;
+    }
+
     std::optional<XYZEngine::Vector2Df> Level::GetPlayerSpawn() const
     {
         return playerSpawn;
@@ -114,6 +127,7 @@ namespace RoguelikeGame
         playerSpawn.reset();
         entrance.reset();
         exitObject = nullptr;
+        bossObject = nullptr;
         info = LevelInfo();
     }
 }

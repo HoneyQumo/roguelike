@@ -182,7 +182,7 @@ TEST(LevelLoaderTests, LevelSectionCarriesTitleNextAndBoss)
 
 	EXPECT_EQ(level.info.title, "Gorod");
 	EXPECT_EQ(level.info.nextLevelId, "arena");
-	EXPECT_EQ(level.info.boss.enemyName, "Boss");
+	EXPECT_EQ(level.info.boss.bossId, "Boss");
 	EXPECT_FLOAT_EQ(level.info.boss.healthScale, 2.5f);
 	EXPECT_FLOAT_EQ(level.info.boss.damageScale, 1.5f);
 }

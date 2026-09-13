@@ -147,7 +147,7 @@ namespace RoguelikeGame
         });
 
         brain->SubscribeSummon([animation](const XYZEngine::Vector2Df&) { animation->ReleaseWindup(); });
-        brain->SubscribeBlast([animation](const XYZEngine::Vector2Df&, float) { animation->ReleaseWindup(); });
+        brain->SubscribeCastMark([animation](const XYZEngine::Vector2Df&, float, float) { animation->ReleaseWindup(); });
 
         if (health != nullptr)
         {
@@ -165,9 +165,16 @@ namespace RoguelikeGame
 
     void ShowMarkOnBossCast(BossBrainComponent* brain)
     {
-        brain->SubscribeCastMark([](const XYZEngine::Vector2Df& point, float radius, float lifeTime)
+        XYZEngine::GameObject* boss = brain->GetGameObject();
+
+        brain->SubscribeCastMark([brain, boss](const XYZEngine::Vector2Df& point, float radius, float fuseTime)
         {
-            CreateCastMark(point, radius, lifeTime);
+            XYZEngine::GameObject* markObject = CreateCastMark(point, radius, fuseTime);
+
+            auto mark = markObject->GetComponent<CastMarkComponent>();
+            mark->SetTargetName(PLAYER_OBJECT_NAME);
+            mark->SetOwnerName(boss->GetName());
+            mark->SetOnDetonate([brain](const XYZEngine::Vector2Df& center) { brain->DetonateBlast(center); });
         });
     }
 }

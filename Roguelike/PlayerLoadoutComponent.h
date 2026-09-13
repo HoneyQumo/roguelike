@@ -28,10 +28,12 @@ namespace RoguelikeGame
         void SetWeapon(WeaponLayerComponent* newWeapon);
         void SetStowedWeapon(StowedWeaponComponent* newStowedWeapon);
         void SetAudio(XYZEngine::AudioComponent* newShotAudio, XYZEngine::AudioComponent* newReloadAudio);
-        void SetSlots(const WeaponId* newSlots, int newSlotsCount, int startSlot);
+        void SetSlots(const StartingSlot* newSlots, int newSlotsCount, int startSlot);
 
         bool TrySelectSlot(int slot);
         bool EquipWeapon(WeaponId id);
+        bool IsSlotEmpty(int slot) const;
+        bool HasWeapon() const;
         void CancelReload();
         bool IsSwapping() const;
         bool IsMeleeEquipped() const;
@@ -50,8 +52,14 @@ namespace RoguelikeGame
         XYZEngine::AudioComponent* shotAudio = nullptr;
         XYZEngine::AudioComponent* reloadAudio = nullptr;
 
-        WeaponId slots[PLAYER_WEAPON_SLOTS] = {};
-        int magazineAmmo[PLAYER_WEAPON_SLOTS] = {};
+        struct Slot
+        {
+            WeaponId id = WeaponId::Knife;
+            int magazine = 0;
+            bool hasWeapon = false;
+        };
+
+        Slot slots[PLAYER_WEAPON_SLOTS] = {};
         int slotsCount = 0;
         int currentSlot = 0;
         int pendingSlot = NO_WEAPON_SLOT;

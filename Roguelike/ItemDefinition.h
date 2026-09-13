@@ -18,7 +18,8 @@ namespace RoguelikeGame
         None,
         Heal,
         Unlock,
-        EquipWeapon
+        EquipWeapon,
+        AddAmmo
     };
 
     struct ItemTypeName
@@ -43,7 +44,8 @@ namespace RoguelikeGame
         {"None", ItemEffectKind::None},
         {"Heal", ItemEffectKind::Heal},
         {"Unlock", ItemEffectKind::Unlock},
-        {"EquipWeapon", ItemEffectKind::EquipWeapon}
+        {"EquipWeapon", ItemEffectKind::EquipWeapon},
+        {"AddAmmo", ItemEffectKind::AddAmmo}
     };
 
     struct ItemIcon

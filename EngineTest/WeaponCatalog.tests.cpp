@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "WeaponCatalog.h"
+#include "GameSettings.h"
 
 using namespace RoguelikeGame;
 
@@ -138,5 +139,75 @@ TEST(WeaponCatalogTests, WeaponFrameIndexStaysInsideAtlas)
 			EXPECT_GE(index, 0);
 			EXPECT_LT(index, WEAPON_ATLAS_FRAMES) << GetWeapon(id).id << " variant " << variant;
 		}
+	}
+}
+
+TEST(WeaponCatalogTest, WeaponIsFoundByItsStringId)
+{
+	RoguelikeGame::WeaponId id = RoguelikeGame::WeaponId::Knife;
+
+	EXPECT_TRUE(RoguelikeGame::TryGetWeaponId("ak47", id));
+	EXPECT_EQ(id, RoguelikeGame::WeaponId::Ak47);
+
+	EXPECT_TRUE(RoguelikeGame::TryGetWeaponId("deagle", id));
+	EXPECT_EQ(id, RoguelikeGame::WeaponId::Deagle);
+
+	EXPECT_FALSE(RoguelikeGame::TryGetWeaponId("railgun", id));
+	EXPECT_FALSE(RoguelikeGame::TryGetWeaponId("", id));
+}
+
+TEST(WeaponCatalogTest, EveryWeaponIsReachableByItsId)
+{
+	for (int index = 0; index < RoguelikeGame::WEAPON_COUNT; index++)
+	{
+		auto expected = static_cast<RoguelikeGame::WeaponId>(index);
+		RoguelikeGame::WeaponId found = RoguelikeGame::WeaponId::Knife;
+
+		EXPECT_TRUE(RoguelikeGame::TryGetWeaponId(RoguelikeGame::WEAPONS[index].id, found));
+		EXPECT_EQ(found, expected);
+	}
+}
+
+TEST(WeaponCatalogTest, AmmoKindIsFoundByName)
+{
+	RoguelikeGame::AmmoKind kind = RoguelikeGame::AmmoKind::None;
+
+	EXPECT_TRUE(RoguelikeGame::TryGetAmmoKind("pistol", kind));
+	EXPECT_EQ(kind, RoguelikeGame::AmmoKind::Pistol);
+
+	EXPECT_TRUE(RoguelikeGame::TryGetAmmoKind("rocket", kind));
+	EXPECT_EQ(kind, RoguelikeGame::AmmoKind::Rocket);
+
+	EXPECT_FALSE(RoguelikeGame::TryGetAmmoKind("plasma", kind));
+}
+
+TEST(WeaponCatalogTest, WeaponKnowsItsSlot)
+{
+	EXPECT_EQ(RoguelikeGame::PreferredWeaponSlot(RoguelikeGame::WeaponId::Ak47), 0);
+	EXPECT_EQ(RoguelikeGame::PreferredWeaponSlot(RoguelikeGame::WeaponId::Rpg), 0);
+	EXPECT_EQ(RoguelikeGame::PreferredWeaponSlot(RoguelikeGame::WeaponId::Glock), 1);
+	EXPECT_EQ(RoguelikeGame::PreferredWeaponSlot(RoguelikeGame::WeaponId::ShotgunPump), 1);
+	EXPECT_EQ(RoguelikeGame::PreferredWeaponSlot(RoguelikeGame::WeaponId::Knife), RoguelikeGame::PLAYER_WEAPON_SLOTS - 1);
+	EXPECT_EQ(RoguelikeGame::PreferredWeaponSlot(RoguelikeGame::WeaponId::Bat), RoguelikeGame::PLAYER_WEAPON_SLOTS - 1);
+}
+
+TEST(WeaponCatalogTest, PlayerStartsWithMeleeOnly)
+{
+	int armed = 0;
+	for (const RoguelikeGame::StartingSlot& slot : RoguelikeGame::PLAYER_LOADOUT)
+	{
+		if (slot.hasWeapon)
+		{
+			armed++;
+			EXPECT_TRUE(RoguelikeGame::IsMelee(slot.id));
+		}
+	}
+
+	EXPECT_EQ(armed, 1);
+	EXPECT_TRUE(RoguelikeGame::PLAYER_LOADOUT[RoguelikeGame::PLAYER_START_WEAPON_SLOT].hasWeapon);
+
+	for (const RoguelikeGame::AmmoReserve& reserve : RoguelikeGame::PLAYER_START_AMMO)
+	{
+		EXPECT_EQ(reserve.count, 0);
 	}
 }

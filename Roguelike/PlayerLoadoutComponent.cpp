@@ -79,48 +79,60 @@ namespace RoguelikeGame
         reloadAudio = newReloadAudio;
     }
 
-    void PlayerLoadoutComponent::SetSlots(const WeaponId* newSlots, int newSlotsCount, int startSlot)
+    void PlayerLoadoutComponent::SetSlots(const StartingSlot* newSlots, int newSlotsCount, int startSlot)
     {
         slotsCount = std::min(newSlotsCount, PLAYER_WEAPON_SLOTS);
         for (int slot = 0; slot < slotsCount; slot++)
         {
-            slots[slot] = newSlots[slot];
-            magazineAmmo[slot] = GetWeapon(newSlots[slot]).magazineSize;
+            slots[slot].id = newSlots[slot].id;
+            slots[slot].hasWeapon = newSlots[slot].hasWeapon;
+            slots[slot].magazine = newSlots[slot].hasWeapon ? GetWeapon(newSlots[slot].id).magazineSize : 0;
         }
 
         FindComponents();
-        ApplyWeapon(std::clamp(startSlot, 0, slotsCount - 1));
-    }
 
-    bool PlayerLoadoutComponent::EquipWeapon(WeaponId id)
-    {
-        if (slotsCount <= 0)
+        int firstArmed = std::clamp(startSlot, 0, slotsCount - 1);
+        if (IsSlotEmpty(firstArmed))
         {
-            return false;
-        }
-
-        int slot = IsMelee(id) ? slotsCount - 1 : currentSlot;
-        if (IsMelee(slots[slot]) != IsMelee(id))
-        {
-            for (int index = 0; index < slotsCount; index++)
+            for (int slot = 0; slot < slotsCount; slot++)
             {
-                if (IsMelee(slots[index]) == IsMelee(id))
+                if (!IsSlotEmpty(slot))
                 {
-                    slot = index;
+                    firstArmed = slot;
                     break;
                 }
             }
         }
 
-        if (slots[slot] == id)
+        if (!IsSlotEmpty(firstArmed))
+        {
+            ApplyWeapon(firstArmed);
+        }
+    }
+
+    bool PlayerLoadoutComponent::IsSlotEmpty(int slot) const
+    {
+        return slot < 0 || slot >= slotsCount || !slots[slot].hasWeapon;
+    }
+
+    bool PlayerLoadoutComponent::HasWeapon() const
+    {
+        return !IsSlotEmpty(currentSlot);
+    }
+
+    bool PlayerLoadoutComponent::EquipWeapon(WeaponId id)
+    {
+        int slot = std::clamp(PreferredWeaponSlot(id), 0, slotsCount - 1);
+        if (slotsCount <= 0 || (slots[slot].hasWeapon && slots[slot].id == id))
         {
             return false;
         }
 
-        slots[slot] = id;
-        magazineAmmo[slot] = GetWeapon(id).magazineSize;
+        slots[slot].id = id;
+        slots[slot].hasWeapon = true;
+        slots[slot].magazine = GetWeapon(id).magazineSize;
 
-        if (slot == currentSlot)
+        if (slot == currentSlot || IsSlotEmpty(currentSlot))
         {
             ApplyWeapon(slot);
         }
@@ -132,6 +144,11 @@ namespace RoguelikeGame
     bool PlayerLoadoutComponent::TrySelectSlot(int slot)
     {
         if (slot == NO_WEAPON_SLOT || slot < 0 || slot >= slotsCount || slot == currentSlot || isSwapping)
+        {
+            return false;
+        }
+
+        if (IsSlotEmpty(slot))
         {
             return false;
         }
@@ -150,19 +167,19 @@ namespace RoguelikeGame
 
         if (!IsMeleeEquipped())
         {
-            magazineAmmo[currentSlot] = rangedWeapon->GetAmmoInMagazine();
+            slots[currentSlot].magazine = rangedWeapon->GetAmmoInMagazine();
         }
 
         if (stowedWeapon != nullptr)
         {
-            stowedWeapon->SetWeaponId(slots[currentSlot]);
+            stowedWeapon->SetWeaponId(slots[currentSlot].id);
         }
 
         pendingSlot = slot;
         isSwapping = true;
         animation->PlaySwap();
 
-        LOG_INFO(std::string("Player swaps to ") + GetWeapon(slots[slot]).id);
+        LOG_INFO(std::string("Player swaps to ") + GetWeapon(slots[slot].id).id);
         return true;
     }
 
@@ -191,7 +208,7 @@ namespace RoguelikeGame
 
     WeaponId PlayerLoadoutComponent::GetCurrentWeapon() const
     {
-        return slots[currentSlot];
+        return slots[currentSlot].id;
     }
 
     int PlayerLoadoutComponent::ReadSelectedSlot() const
@@ -222,7 +239,7 @@ namespace RoguelikeGame
     {
         currentSlot = slot;
 
-        WeaponId id = slots[slot];
+        WeaponId id = slots[slot].id;
         const WeaponDefinition& definition = GetWeapon(id);
 
         if (weapon != nullptr)
@@ -230,7 +247,7 @@ namespace RoguelikeGame
             weapon->SetWeaponId(id);
         }
 
-        ApplyRangedWeapon(id, magazineAmmo[slot]);
+        ApplyRangedWeapon(id, slots[slot].magazine);
         ApplyMeleeWeapon(FindMelee(id));
 
         if (animation != nullptr)

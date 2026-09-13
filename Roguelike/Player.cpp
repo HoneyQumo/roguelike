@@ -51,7 +51,7 @@ namespace RoguelikeGame
 
     XYZEngine::GameObject* CreatePlayer(const XYZEngine::Vector2Df& position)
     {
-        WeaponId startWeapon = PLAYER_LOADOUT[PLAYER_START_WEAPON_SLOT];
+        WeaponId startWeapon = PLAYER_LOADOUT[PLAYER_START_WEAPON_SLOT].id;
 
         CharacterSpec spec;
         spec.objectName = PLAYER_OBJECT_NAME;
@@ -161,6 +161,17 @@ namespace RoguelikeGame
         effects->SetHandler(ItemEffectKind::Heal, [health](const ItemEffect& effect)
         {
             return health->Heal(effect.amount) > 0.f;
+        });
+        effects->SetHandler(ItemEffectKind::AddAmmo, [ammoPouch](const ItemEffect& effect)
+        {
+            AmmoKind kind = AmmoKind::None;
+            if (!TryGetAmmoKind(effect.target, kind) || effect.amount <= 0.f)
+            {
+                return false;
+            }
+
+            ammoPouch->AddAmmo(static_cast<int>(kind), static_cast<int>(effect.amount));
+            return true;
         });
         effects->SetHandler(ItemEffectKind::EquipWeapon, [loadout](const ItemEffect& effect)
         {

@@ -14,6 +14,7 @@
 #include "UiRoot.h"
 #include <Engine.h>
 #include <GameWorld.h>
+#include <ParticleSystem.h>
 #include <UiManager.h>
 #include <FrameClock.h>
 #include <InputSystem.h>
@@ -213,6 +214,14 @@ namespace RoguelikeGame
         }
 
         level.Clear();
+
+        for (const char* temporaryName : {BLOOD_POOL_OBJECT_NAME, FX_OBJECT_NAME, PROJECTILE_OBJECT_NAME,
+                                          ROCKET_OBJECT_NAME, CAST_MARK_OBJECT_NAME})
+        {
+            GameWorld::Instance()->DestroyGameObjects(temporaryName);
+        }
+
+        XYZEngine::ParticleSystem::Instance()->Clear();
         GameWorld::Instance()->LateUpdate();
 
         if (!LoadLevel(nextIndex))

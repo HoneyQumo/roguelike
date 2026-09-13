@@ -17,6 +17,7 @@ namespace XYZEngine
 		ParticleSystemComponent* GetActive() const;
 
 		void Emit(const ParticleSpec& spec, const Vector2Df& position, const Vector2Df& direction);
+		void Clear();
 		void EmitCount(const ParticleSpec& spec, const Vector2Df& position, const Vector2Df& direction, int count);
 
 	private:

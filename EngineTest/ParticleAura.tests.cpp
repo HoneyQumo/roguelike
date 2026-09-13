@@ -154,3 +154,57 @@ TEST(SpriteRendererTest, SizeWithoutTextureIsIgnored)
 
 	GameWorld::Instance()->Clear();
 }
+
+TEST(GameWorldCleanupTest, ObjectsAreDestroyedByName)
+{
+	GameWorld::Instance()->Clear();
+
+	GameWorld::Instance()->CreateGameObject("BloodPool");
+	GameWorld::Instance()->CreateGameObject("BloodPool");
+	GameWorld::Instance()->CreateGameObject("BloodPool");
+	GameObject* player = GameWorld::Instance()->CreateGameObject("Player");
+	ASSERT_EQ(GameWorld::Instance()->GetObjectsCount(), 4u);
+
+	GameWorld::Instance()->DestroyGameObjects("BloodPool");
+	GameWorld::Instance()->LateUpdate();
+
+	EXPECT_EQ(GameWorld::Instance()->GetObjectsCount(), 1u);
+	EXPECT_EQ(GameWorld::Instance()->FindGameObject("Player"), player);
+
+	GameWorld::Instance()->Clear();
+}
+
+TEST(GameWorldCleanupTest, UnknownNameChangesNothing)
+{
+	GameWorld::Instance()->Clear();
+	GameWorld::Instance()->CreateGameObject("Player");
+
+	GameWorld::Instance()->DestroyGameObjects("Rocket");
+	GameWorld::Instance()->LateUpdate();
+
+	EXPECT_EQ(GameWorld::Instance()->GetObjectsCount(), 1u);
+
+	GameWorld::Instance()->Clear();
+}
+
+TEST(ParticleClearTest, ClearDropsLiveParticles)
+{
+	GameWorld::Instance()->Clear();
+
+	GameObject* pool = GameWorld::Instance()->CreateGameObject("Particles");
+	auto particles = pool->AddComponent<ParticleSystemComponent>();
+	particles->SetCapacity(64);
+
+	ParticleSpec spec;
+	spec.count = 10;
+	spec.lifeTime = 10.f;
+	spec.startSpeed = 20.f;
+	particles->Emit(spec, {0.f, 0.f}, {1.f, 0.f});
+	ASSERT_EQ(particles->GetActiveCount(), 10u);
+
+	particles->Clear();
+
+	EXPECT_EQ(particles->GetActiveCount(), 0u);
+
+	GameWorld::Instance()->Clear();
+}

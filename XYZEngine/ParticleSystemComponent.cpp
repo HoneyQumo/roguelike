@@ -51,6 +51,22 @@ namespace XYZEngine
 		usedCount = 0;
 	}
 
+	void ParticleSystemComponent::Clear()
+	{
+		for (Particle& particle : particles)
+		{
+			particle.spec = nullptr;
+			particle.age = 0.f;
+			particle.lifeTime = 0.f;
+		}
+
+		writeIndex = 0;
+		usedCount = 0;
+
+		alphaVertices.clear();
+		additiveVertices.clear();
+	}
+
 	void ParticleSystemComponent::SetTexture(const sf::Texture* newTexture)
 	{
 		texture = newTexture;

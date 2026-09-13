@@ -50,6 +50,8 @@ namespace RoguelikeGame
 
         bool LoadLevel(int levelIndex);
         void SubscribeExit();
+        void SubscribeBoss();
+        void OnBossDefeated();
         void RequestNextLevel();
         void GoToPendingLevel();
     };

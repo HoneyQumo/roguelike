@@ -94,6 +94,9 @@
     <ClCompile Include="InventoryScreen.tests.cpp" />
     <ClCompile Include="LevelCatalog.tests.cpp" />
     <ClCompile Include="LevelProgression.tests.cpp" />
+    <ClCompile Include="BossCatalog.tests.cpp" />
+    <ClCompile Include="LevelExitGate.tests.cpp" />
+    <ClCompile Include="BossBrain.tests.cpp" />
     <ClCompile Include="Level.tests.cpp" />
     <ClCompile Include="..\Roguelike\LevelLoader.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
@@ -144,6 +147,15 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\Roguelike\ItemPickupComponent.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Roguelike\BossBrainComponent.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Roguelike\ChaseComponent.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Roguelike\LevelExitComponent.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\Roguelike\FactionComponent.cpp">

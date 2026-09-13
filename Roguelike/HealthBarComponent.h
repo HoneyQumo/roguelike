@@ -20,6 +20,7 @@ namespace RoguelikeGame
 		void SetSize(float newWidth, float newHeight);
 		void SetOffset(float offsetX, float offsetY);
 		void SetColors(const sf::Color& newFillColor, const sf::Color& newBackgroundColor);
+		void SetAlwaysVisible(bool newIsAlwaysVisible);
 	private:
 		XYZEngine::TransformComponent* transform = nullptr;
 		HealthComponent* health = nullptr;
@@ -29,5 +30,6 @@ namespace RoguelikeGame
 
 		XYZEngine::Vector2Df size = { 48.f, 6.f };
 		XYZEngine::Vector2Df offset = { 0.f, 40.f };
+		bool isAlwaysVisible = false;
 	};
 }

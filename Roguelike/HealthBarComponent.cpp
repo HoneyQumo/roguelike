@@ -30,7 +30,7 @@ namespace RoguelikeGame
 	}
 	void HealthBarComponent::Render()
 	{
-		if (health == nullptr || !health->IsAlive() || health->GetHealthPercent() >= 1.f)
+		if (health == nullptr || !health->IsAlive() || (!isAlwaysVisible && health->GetHealthPercent() >= 1.f))
 		{
 			return;
 		}
@@ -60,5 +60,10 @@ namespace RoguelikeGame
 	{
 		fill.setFillColor(newFillColor);
 		background.setFillColor(newBackgroundColor);
+	}
+
+	void HealthBarComponent::SetAlwaysVisible(bool newIsAlwaysVisible)
+	{
+		isAlwaysVisible = newIsAlwaysVisible;
 	}
 }

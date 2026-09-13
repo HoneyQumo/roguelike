@@ -15,6 +15,8 @@ namespace RoguelikeGame
     private:
         static int BuildTiles(const LevelData& levelData, Level& level);
         static int BuildItems(const LevelData& levelData, const ItemCatalog& items, Level& level);
+        static XYZEngine::GameObject* CreateBossObject(const LevelData& levelData, const XYZEngine::Vector2Df& position, Level& level);
+        static void LockExit(Level& level);
         static XYZEngine::Vector2Df TileToWorldPosition(int column, int row, int levelHeight);
     };
 }

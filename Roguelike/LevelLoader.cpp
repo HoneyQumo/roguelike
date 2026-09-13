@@ -121,10 +121,10 @@ namespace RoguelikeGame
 
         if (key == "boss")
         {
-            if (!(stream >> info.boss.enemyName))
+            if (!(stream >> info.boss.bossId))
             {
-                LOG_ERROR("Level boss has no enemy name, line " + std::to_string(lineNumber));
-                throw std::runtime_error("Level boss has no enemy name");
+                LOG_ERROR("Level boss has no id, line " + std::to_string(lineNumber));
+                throw std::runtime_error("Level boss has no id");
             }
 
             if (!(stream >> info.boss.healthScale))

@@ -163,6 +163,8 @@ namespace RoguelikeGame
     constexpr float HUD_NOTICE_MARGIN_Y = 120.f;
     constexpr float HUD_NOTICE_TIME = 2.f;
     constexpr auto INVENTORY_FULL_NOTICE = u8"Инвентарь полон";
+    constexpr auto BOSS_GATE_NOTICE = u8"Выход закрыт: сначала победи босса";
+    constexpr auto BOSS_DEFEATED_NOTICE = u8"Босс повержен, выход открыт";
     constexpr auto INTERACT_PROMPT_PREFIX = u8"[E] Подобрать: ";
     constexpr int HUD_PROMPT_FONT_SIZE = 24;
     constexpr float HUD_PROMPT_MARGIN_Y = 170.f;
@@ -178,6 +180,14 @@ namespace RoguelikeGame
     constexpr float HEALTH_BAR_WIDTH = 48.f;
     constexpr float HEALTH_BAR_HEIGHT = 6.f;
     constexpr float HEALTH_BAR_OFFSET_Y = 30.f;
+
+    constexpr float BOSS_HEALTH_BAR_WIDTH = 96.f;
+    constexpr float BOSS_HEALTH_BAR_HEIGHT = 10.f;
+    constexpr float BOSS_HEALTH_BAR_OFFSET_Y = 44.f;
+    constexpr float BOSS_BASIC_ATTACK_TIME = 1.2f;
+    constexpr float BOSS_RECOVERY_TIME = 0.9f;
+    constexpr float BOSS_ENRAGE_ROAR_TIME = 0.8f;
+    inline const sf::Color BOSS_HEALTH_BAR_COLOR = {215, 60, 55};
 
     constexpr float HIT_FLASH_DURATION = 0.12f;
     constexpr auto HIT_FLASH_UNIFORM = "amount";
@@ -246,6 +256,7 @@ namespace RoguelikeGame
     inline const sf::Color RELOAD_INDICATOR_COLOR = {235, 190, 90};
     inline const sf::Color OVERLAY_BACKGROUND_COLOR = {0, 0, 0, 150};
     inline const sf::Color LEVEL_EXIT_COLOR = {90, 190, 120, 200};
+    inline const sf::Color LEVEL_EXIT_LOCKED_COLOR = {90, 90, 100, 160};
     inline const sf::Color INVENTORY_DIM_COLOR = {0, 0, 0, 150};
     inline const sf::Color INVENTORY_WINDOW_COLOR = {28, 28, 32, 235};
     inline const sf::Color INVENTORY_SLOT_EMPTY_COLOR = {44, 44, 50, 220};

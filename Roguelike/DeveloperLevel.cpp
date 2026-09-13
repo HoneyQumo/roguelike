@@ -8,6 +8,7 @@
 #include "Music.h"
 #include "Crosshair.h"
 #include "Particles.h"
+#include "Fx.h"
 #include "LevelExitComponent.h"
 #include "UiRoot.h"
 #include <Engine.h>
@@ -15,6 +16,7 @@
 #include <UiManager.h>
 #include <FrameClock.h>
 #include <InputSystem.h>
+#include <RectangleRendererComponent.h>
 #include <RenderSystem.h>
 #include <MusicComponent.h>
 #include "HealthComponent.h"
@@ -61,6 +63,7 @@ namespace RoguelikeGame
         }
 
         SubscribeExit();
+        SubscribeBoss();
 
         music = CreateMusic(MAIN_THEME_MUSIC, MUSIC_VOLUME);
 
@@ -110,10 +113,63 @@ namespace RoguelikeGame
         }
 
         auto exitComponent = exitObject->GetComponent<LevelExitComponent>();
-        if (exitComponent != nullptr)
+        if (exitComponent == nullptr)
         {
-            exitComponent->SubscribeEntered([this]() { RequestNextLevel(); });
+            return;
         }
+
+        exitComponent->SubscribeEntered([this]() { RequestNextLevel(); });
+        exitComponent->SubscribeBlocked([this]()
+        {
+            if (hudScreen != nullptr)
+            {
+                hudScreen->ShowNotice(BOSS_GATE_NOTICE);
+            }
+        });
+    }
+
+    void DeveloperLevel::SubscribeBoss()
+    {
+        XYZEngine::GameObject* bossObject = level.GetBoss();
+        if (bossObject == nullptr)
+        {
+            return;
+        }
+
+        auto bossHealth = bossObject->GetComponent<HealthComponent>();
+        if (bossHealth != nullptr)
+        {
+            bossHealth->SubscribeDeath([this](const DeathInfo& death) { OnBossDefeated(); });
+        }
+    }
+
+    void DeveloperLevel::OnBossDefeated()
+    {
+        XYZEngine::GameObject* exitObject = level.GetExit();
+        if (exitObject != nullptr)
+        {
+            auto exitComponent = exitObject->GetComponent<LevelExitComponent>();
+            if (exitComponent != nullptr)
+            {
+                exitComponent->SetLocked(false);
+            }
+
+            auto renderer = exitObject->GetComponent<XYZEngine::RectangleRendererComponent>();
+            if (renderer != nullptr)
+            {
+                renderer->SetColor(LEVEL_EXIT_COLOR);
+            }
+        }
+
+        XYZEngine::FrameClock::Instance()->SlowMotion(DEATH_TIME_SCALE, DEATH_SLOW_MOTION_TIME, DEATH_SLOW_MOTION_BLEND);
+        Fx::ShakeCamera(CAMERA_SHAKE_HEAVY);
+
+        if (hudScreen != nullptr)
+        {
+            hudScreen->ShowNotice(BOSS_DEFEATED_NOTICE);
+        }
+
+        LOG_INFO("Boss is defeated, the level exit is open");
     }
 
     void DeveloperLevel::RequestNextLevel()
@@ -163,6 +219,7 @@ namespace RoguelikeGame
         }
 
         SubscribeExit();
+        SubscribeBoss();
         ShowLevelTitle();
 
         LOG_INFO("Level changed to " + entry->id + ", objects in world "

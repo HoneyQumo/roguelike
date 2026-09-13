@@ -89,6 +89,7 @@
     <ClCompile Include="StaminaComponent.tests.cpp" />
     <ClCompile Include="HudScreen.tests.cpp" />
     <ClCompile Include="ItemCatalog.tests.cpp" />
+    <ClCompile Include="PixelBounds.tests.cpp" />
     <ClCompile Include="InventoryComponent.tests.cpp" />
     <ClCompile Include="Interaction.tests.cpp" />
     <ClCompile Include="InventoryScreen.tests.cpp" />

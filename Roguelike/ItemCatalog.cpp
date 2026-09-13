@@ -1,4 +1,4 @@
-#include "ItemCatalog.h"
+﻿#include "ItemCatalog.h"
 
 namespace RoguelikeGame
 {
@@ -36,6 +36,16 @@ namespace RoguelikeGame
     }
 
     std::vector<ItemDefinition>::const_iterator ItemCatalog::end() const
+    {
+        return items.end();
+    }
+
+    std::vector<ItemDefinition>::iterator ItemCatalog::begin()
+    {
+        return items.begin();
+    }
+
+    std::vector<ItemDefinition>::iterator ItemCatalog::end()
     {
         return items.end();
     }

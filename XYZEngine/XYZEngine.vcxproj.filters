@@ -72,6 +72,9 @@
     <ClInclude Include="ParticleAuraComponent.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
+    <ClInclude Include="PixelBounds.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
     <ClInclude Include="ParticleEmitterComponent.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
@@ -240,6 +243,9 @@
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="ParticleAuraComponent.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="PixelBounds.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="ParticleEmitterComponent.cpp">

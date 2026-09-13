@@ -186,13 +186,14 @@ namespace RoguelikeGame
     constexpr float BOSS_HEALTH_BAR_OFFSET_Y = 44.f;
     constexpr float BOSS_BASIC_ATTACK_TIME = 1.2f;
     constexpr float BOSS_RECOVERY_TIME = 0.9f;
-    constexpr float BOSS_ENRAGE_ROAR_TIME = 0.8f;
+    constexpr float BOSS_ENRAGE_ROAR_TIME = 0.96f;
     constexpr float BOSS_ENRAGE_SPEED_SCALE = 1.35f;
     constexpr float BOSS_ENRAGE_DAMAGE_SCALE = 1.25f;
     constexpr float BOSS_ENRAGE_PACE_SCALE = 0.7f;
     constexpr float BOSS_MUZZLE_DISTANCE = 40.f;
     inline const sf::Color BOSS_HEALTH_BAR_COLOR = {215, 60, 55};
     inline const sf::Color BOSS_ENRAGED_BAR_COLOR = {235, 140, 40};
+    inline const sf::Color BOSS_CAST_MARK_COLOR = {235, 90, 60, 90};
 
     constexpr float HIT_FLASH_DURATION = 0.12f;
     constexpr auto HIT_FLASH_UNIFORM = "amount";
@@ -213,6 +214,7 @@ namespace RoguelikeGame
     constexpr auto PARTICLES_OBJECT_NAME = "Particles";
     constexpr auto UI_ROOT_OBJECT_NAME = "Ui";
     constexpr auto LEVEL_EXIT_OBJECT_NAME = "LevelExit";
+    constexpr auto CAST_MARK_OBJECT_NAME = "CastMark";
 
     constexpr auto PLAYER_TEXTURE = "player";
     constexpr auto WEAPONS_TEXTURE = "weapons";

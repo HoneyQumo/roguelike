@@ -1,9 +1,14 @@
 #include "BossEffects.h"
+#include "CastMark.h"
 #include "Enemy.h"
 #include "EnemyCatalog.h"
 #include "Fx.h"
 #include "GameSettings.h"
+#include "ParticleCatalog.h"
 #include "Projectile.h"
+#include <GameObject.h>
+#include <ParticleSystem.h>
+#include <TransformComponent.h>
 #include <LoggerRegistry.h>
 
 namespace RoguelikeGame
@@ -47,9 +52,12 @@ namespace RoguelikeGame
         });
     }
 
-    void PlayEffectsOnBossRage(BossBrainComponent* brain, HitFlashComponent* hitFlash, HealthBarComponent* healthBar)
+    void PlayEffectsOnBossRage(BossBrainComponent* brain, HitFlashComponent* hitFlash, HealthBarComponent* healthBar,
+        XYZEngine::ParticleEmitterComponent* rageAura)
     {
-        brain->SubscribeEnraged([hitFlash, healthBar]()
+        XYZEngine::GameObject* boss = brain->GetGameObject();
+
+        brain->SubscribeEnraged([hitFlash, healthBar, rageAura, boss]()
         {
             if (hitFlash != nullptr)
             {
@@ -61,7 +69,33 @@ namespace RoguelikeGame
                 healthBar->SetColors(BOSS_ENRAGED_BAR_COLOR, VITALS_HUD_BACK_COLOR);
             }
 
+            if (rageAura != nullptr)
+            {
+                rageAura->SetEnabled(true);
+            }
+
+            if (const XYZEngine::ParticleSpec* burst = FindParticleSpec(ParticleEffect::BossRageBurst))
+            {
+                XYZEngine::ParticleSystem::Instance()->Emit(*burst, boss->GetTransform()->GetWorldPosition(), {0.f, 1.f});
+            }
+
             Fx::ShakeCamera(CAMERA_SHAKE_HEAVY);
+        });
+
+        brain->SubscribeStateChanged([rageAura](BossState, BossState next)
+        {
+            if (next == BossState::Death && rageAura != nullptr)
+            {
+                rageAura->SetEnabled(false);
+            }
+        });
+    }
+
+    void ShowMarkOnBossCast(BossBrainComponent* brain)
+    {
+        brain->SubscribeCastMark([](const XYZEngine::Vector2Df& point, float radius, float lifeTime)
+        {
+            CreateCastMark(point, radius, lifeTime);
         });
     }
 }

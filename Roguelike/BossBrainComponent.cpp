@@ -45,7 +45,9 @@ namespace RoguelikeGame
         XYZEngine::GameObject* target = FindTarget();
         if (target != nullptr)
         {
-            XYZEngine::Vector2Df toTarget = target->GetTransform()->GetWorldPosition() - transform->GetWorldPosition();
+            targetPosition = target->GetTransform()->GetWorldPosition();
+
+            XYZEngine::Vector2Df toTarget = targetPosition - transform->GetWorldPosition();
             aimDirection = toTarget.Normalized(aimDirection);
 
             float distance = toTarget.GetLength();
@@ -200,7 +202,13 @@ namespace RoguelikeGame
             }
             else
             {
-                actionTimer.Start((spec->windup + spec->duration) * PaceScale());
+                actionTimer.Start(spec->windup + spec->duration * PaceScale());
+                castPoint = IsAimedAtPoint(currentAbility) ? targetPosition : transform->GetWorldPosition();
+
+                if (IsAimedAtPoint(currentAbility))
+                {
+                    castMarkEvent.Invoke(castPoint, spec->radius, spec->windup);
+                }
 
                 if (definition != nullptr)
                 {
@@ -374,9 +382,8 @@ namespace RoguelikeGame
             animation->PlayMelee();
         }
 
-        XYZEngine::Vector2Df center = transform->GetWorldPosition();
-        DealAreaDamage(center, spec.radius, config.attackDamage * spec.damageScale * DamageScale());
-        blastEvent.Invoke(center, spec.radius);
+        DealAreaDamage(castPoint, spec.radius, config.attackDamage * spec.damageScale * DamageScale());
+        blastEvent.Invoke(castPoint, spec.radius);
     }
 
     void BossBrainComponent::BeginDash(const BossAbilitySpec& spec)
@@ -477,6 +484,11 @@ namespace RoguelikeGame
         return isEnraged;
     }
 
+    XYZEngine::Vector2Df BossBrainComponent::GetCastPoint() const
+    {
+        return castPoint;
+    }
+
     int BossBrainComponent::GetAbilityUses(BossAbility ability) const
     {
         if (definition == nullptr)
@@ -529,6 +541,12 @@ namespace RoguelikeGame
     XYZEngine::SubscriptionId BossBrainComponent::SubscribeBlast(std::function<void(const XYZEngine::Vector2Df&, float)> onBlast)
     {
         return blastEvent.Subscribe(std::move(onBlast));
+    }
+
+    XYZEngine::SubscriptionId BossBrainComponent::SubscribeCastMark(
+        std::function<void(const XYZEngine::Vector2Df&, float, float)> onCastMark)
+    {
+        return castMarkEvent.Subscribe(std::move(onCastMark));
     }
 
     XYZEngine::SubscriptionId BossBrainComponent::SubscribeMinionSpawned(std::function<void(XYZEngine::GameObject*)> onMinionSpawned)

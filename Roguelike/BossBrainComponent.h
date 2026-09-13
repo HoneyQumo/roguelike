@@ -41,6 +41,7 @@ namespace RoguelikeGame
         BossAbility GetCurrentAbility() const;
         bool IsEnraged() const;
         int GetAbilityUses(BossAbility ability) const;
+        XYZEngine::Vector2Df GetCastPoint() const;
         void RegisterMinion(XYZEngine::GameObject* minion);
 
         XYZEngine::SubscriptionId SubscribeStateChanged(std::function<void(BossState, BossState)> onStateChanged);
@@ -49,6 +50,7 @@ namespace RoguelikeGame
         XYZEngine::SubscriptionId SubscribeShot(std::function<void(const XYZEngine::Vector2Df&, const XYZEngine::Vector2Df&, float, float)> onShot);
         XYZEngine::SubscriptionId SubscribeSummon(std::function<void(const XYZEngine::Vector2Df&)> onSummon);
         XYZEngine::SubscriptionId SubscribeBlast(std::function<void(const XYZEngine::Vector2Df&, float)> onBlast);
+        XYZEngine::SubscriptionId SubscribeCastMark(std::function<void(const XYZEngine::Vector2Df&, float, float)> onCastMark);
         XYZEngine::SubscriptionId SubscribeMinionSpawned(std::function<void(XYZEngine::GameObject*)> onMinionSpawned);
 
     private:
@@ -71,6 +73,8 @@ namespace RoguelikeGame
         float baseSpeed = 0.f;
         XYZEngine::Vector2Df dashDirection = {1.f, 0.f};
         XYZEngine::Vector2Df aimDirection = {1.f, 0.f};
+        XYZEngine::Vector2Df targetPosition = {0.f, 0.f};
+        XYZEngine::Vector2Df castPoint = {0.f, 0.f};
         std::vector<XYZEngine::GameObject*> minions;
         int abilityUses[BOSS_ABILITY_SLOTS] = {0, 0};
 
@@ -85,6 +89,7 @@ namespace RoguelikeGame
         XYZEngine::EventList<const XYZEngine::Vector2Df&, const XYZEngine::Vector2Df&, float, float> shotEvent;
         XYZEngine::EventList<const XYZEngine::Vector2Df&> summonEvent;
         XYZEngine::EventList<const XYZEngine::Vector2Df&, float> blastEvent;
+        XYZEngine::EventList<const XYZEngine::Vector2Df&, float, float> castMarkEvent;
         XYZEngine::EventList<XYZEngine::GameObject*> minionSpawnedEvent;
 
         XYZEngine::GameObject* FindTarget() const;

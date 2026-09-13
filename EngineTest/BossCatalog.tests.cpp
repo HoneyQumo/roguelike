@@ -357,7 +357,7 @@ TEST(BossAbilityTest, SecondSlotIsTakenWhenFirstIsOutOfRange)
 	const BossDefinition* boss = FindBoss("gravedigger");
 	ASSERT_NE(boss, nullptr);
 
-	EXPECT_EQ(RoguelikeGame::ChooseBossAbility(*boss, 400.f, 260.f, true, true), BossAbility::Dash);
+	EXPECT_EQ(RoguelikeGame::ChooseBossAbility(*boss, 500.f, 260.f, true, true), BossAbility::Dash);
 }
 
 TEST(BossAbilityTest, BasicIsTheFallbackInsideAttackRange)

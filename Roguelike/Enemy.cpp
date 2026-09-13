@@ -1,6 +1,7 @@
 #include "Enemy.h"
 #include "BossBrainComponent.h"
 #include "BossEffects.h"
+#include "ParticleCatalog.h"
 #include "CharacterFactory.h"
 #include "GameSettings.h"
 #include "GameResources.h"
@@ -165,10 +166,15 @@ namespace RoguelikeGame
         brain->SetTargetName(PLAYER_OBJECT_NAME);
         brain->SetBasicAttack(gameObject->GetComponent<EnemyAttackComponent>());
 
+        auto rageAura = gameObject->AddComponent<XYZEngine::ParticleEmitterComponent>();
+        rageAura->SetSpec(FindParticleSpec(ParticleEffect::BossRage));
+        rageAura->SetEnabled(false);
+
         SpawnProjectilesOnBossVolley(brain, gameObject, config.weapon);
         SummonMinionsOnBossCall(brain);
         PlayEffectsOnBossBlast(brain);
-        PlayEffectsOnBossRage(brain, gameObject->GetComponent<HitFlashComponent>(), healthBar);
+        ShowMarkOnBossCast(brain);
+        PlayEffectsOnBossRage(brain, gameObject->GetComponent<HitFlashComponent>(), healthBar, rageAura);
 
         LOG_INFO(std::string("Boss ") + definition.id + " created with health " + std::to_string(static_cast<int>(config.maxHealth)));
         return gameObject;

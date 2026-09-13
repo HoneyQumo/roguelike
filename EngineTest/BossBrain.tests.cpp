@@ -233,7 +233,7 @@ TEST_F(BossBrainTest, SummonAsksForMinionsAroundTheBoss)
 TEST_F(BossBrainTest, MinionLimitStopsTheSummon)
 {
 	CreateBoss("puppeteer");
-	CreatePlayer(400.f, 0.f);
+	CreatePlayer(480.f, 0.f);
 
 	for (int index = 0; index < 4; index++)
 	{
@@ -278,6 +278,74 @@ TEST_F(BossBrainTest, BlastHurtsThePlayerNearby)
 	EXPECT_FLOAT_EQ(PlayerHealth(), 100.f - config.attackDamage * 1.5f);
 }
 
+TEST_F(BossBrainTest, BlastLandsWhereThePlayerStoodAtTheWindup)
+{
+	CreateBoss("gravedigger");
+	CreatePlayer(300.f, 0.f);
+
+	Vector2Df center = {0.f, 0.f};
+	brain->SubscribeBlast([&center](const Vector2Df& point, float) { center = point; });
+
+	Step(2);
+	ASSERT_EQ(brain->GetCurrentAbility(), BossAbility::Blast);
+	EXPECT_FLOAT_EQ(brain->GetCastPoint().x, 300.f);
+
+	Step(8);
+
+	EXPECT_FLOAT_EQ(center.x, 300.f);
+	EXPECT_LT(PlayerHealth(), 100.f);
+}
+
+TEST_F(BossBrainTest, LeavingTheMarkSavesThePlayer)
+{
+	CreateBoss("gravedigger");
+	CreatePlayer(300.f, 0.f);
+	Step(2);
+	ASSERT_EQ(brain->GetCurrentAbility(), BossAbility::Blast);
+
+	MovePlayerTo(300.f, 400.f);
+	Step(8);
+
+	EXPECT_FLOAT_EQ(PlayerHealth(), 100.f);
+}
+
+TEST_F(BossBrainTest, MarkIsShownForTheWindup)
+{
+	CreateBoss("gravedigger");
+	CreatePlayer(300.f, 0.f);
+
+	std::vector<Vector2Df> marks;
+	float shownFor = 0.f;
+	float shownRadius = 0.f;
+	brain->SubscribeCastMark([&](const Vector2Df& point, float radius, float lifeTime)
+	{
+		marks.push_back(point);
+		shownRadius = radius;
+		shownFor = lifeTime;
+	});
+
+	Step(2);
+
+	ASSERT_EQ(marks.size(), 1u);
+	EXPECT_FLOAT_EQ(marks[0].x, 300.f);
+	EXPECT_FLOAT_EQ(shownRadius, 190.f);
+	EXPECT_FLOAT_EQ(shownFor, 0.6f);
+}
+
+TEST_F(BossBrainTest, SelfCenteredAbilitiesDoNotShowAMark)
+{
+	CreateBoss("puppeteer");
+	CreatePlayer(400.f, 0.f);
+
+	int marks = 0;
+	brain->SubscribeCastMark([&marks](const Vector2Df&, float, float) { marks++; });
+
+	Step(12);
+
+	ASSERT_GE(brain->GetAbilityUses(BossAbility::Summon), 1);
+	EXPECT_EQ(marks, 0);
+}
+
 TEST_F(BossBrainTest, BlastSparesDistantPlayers)
 {
 	CreateBoss("gravedigger");
@@ -293,7 +361,7 @@ TEST_F(BossBrainTest, BlastSparesDistantPlayers)
 
 TEST_F(BossBrainTest, DashCarriesTheBossTowardsThePlayer)
 {
-	CreateBoss("gravedigger");
+	CreateBoss("colossus");
 	CreatePlayer(400.f, 0.f);
 
 	Step(2);
@@ -307,7 +375,7 @@ TEST_F(BossBrainTest, DashCarriesTheBossTowardsThePlayer)
 
 TEST_F(BossBrainTest, DashEndsWithASlamAndRestoresSpeed)
 {
-	CreateBoss("gravedigger");
+	CreateBoss("colossus");
 	CreatePlayer(265.f, 0.f);
 
 	int blasts = 0;
@@ -368,7 +436,7 @@ TEST_F(BossBrainTest, EnrageEndsInChase)
 	Step();
 	ASSERT_EQ(brain->GetState(), BossState::Enraged);
 
-	Step(9);
+	Step(11);
 
 	EXPECT_NE(brain->GetState(), BossState::Enraged);
 }
@@ -390,6 +458,47 @@ TEST_F(BossBrainTest, EnragedBossHitsHarder)
 	Step(8);
 
 	EXPECT_FLOAT_EQ(PlayerHealth(), 100.f - config.attackDamage * 1.5f * 1.25f);
+}
+
+TEST_F(BossBrainTest, RageDoesNotShortenTheWindup)
+{
+	CreateBoss("gravedigger");
+	CreatePlayer(2000.f, 0.f);
+
+	float shownFor = 0.f;
+	brain->SubscribeCastMark([&shownFor](const Vector2Df&, float, float lifeTime) { shownFor = lifeTime; });
+
+	Step(2);
+	health->TakeDamage(config.maxHealth * 0.7f);
+	Step();
+	ASSERT_TRUE(brain->IsEnraged());
+
+	MovePlayerTo(300.f, 0.f);
+	StepUntil(BossState::Attack);
+	ASSERT_EQ(brain->GetCurrentAbility(), BossAbility::Blast);
+
+	EXPECT_FLOAT_EQ(shownFor, 0.6f);
+}
+
+TEST_F(BossBrainTest, RageKeepsTheTelegraphAndShortensTheRest)
+{
+	CreateBoss("gravedigger");
+	CreatePlayer(2000.f, 0.f);
+
+	int blasts = 0;
+	brain->SubscribeBlast([&blasts](const Vector2Df&, float) { blasts++; });
+
+	Step(2);
+	health->TakeDamage(config.maxHealth * 0.7f);
+	Step();
+	MovePlayerTo(300.f, 0.f);
+	StepUntil(BossState::Attack);
+
+	Step(5, 0.1f);
+	EXPECT_EQ(blasts, 0);
+
+	Step(2, 0.1f);
+	EXPECT_EQ(blasts, 1);
 }
 
 TEST_F(BossBrainTest, BothAbilitiesAreUsedInOneFight)

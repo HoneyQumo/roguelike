@@ -3,6 +3,7 @@
 #include "GameResources.h"
 #include "LevelBuilder.h"
 #include "LevelLoader.h"
+#include "LevelProgression.h"
 #include "Player.h"
 #include "Music.h"
 #include "Crosshair.h"
@@ -18,6 +19,7 @@
 #include <MusicComponent.h>
 #include "HealthComponent.h"
 #include <LoggerRegistry.h>
+#include <string>
 
 using namespace XYZEngine;
 
@@ -31,7 +33,7 @@ namespace RoguelikeGame
         gameOverDelay.Stop();
 
         currentLevelIndex = 0;
-        pendingLevelId.clear();
+        pendingLevelIndex = -1;
 
         LoadLevel(currentLevelIndex);
 
@@ -75,6 +77,8 @@ namespace RoguelikeGame
         inventoryScreen = std::make_unique<InventoryScreen>();
         messageScreen = std::make_unique<MessageScreen>();
         uiRoot = CreateUiRoot(*hudScreen, *inventoryScreen, *messageScreen);
+
+        ShowLevelTitle();
     }
 
     bool DeveloperLevel::LoadLevel(int levelIndex)
@@ -115,33 +119,32 @@ namespace RoguelikeGame
     void DeveloperLevel::RequestNextLevel()
     {
         const LevelCatalog& levels = GameResources::GetLevels();
-        const std::string& nextId = level.GetInfo().nextLevelId;
+        LevelStep step = ResolveNextLevel(levels, currentLevelIndex, level.GetInfo().nextLevelId);
 
-        int nextIndex = nextId.empty() ? currentLevelIndex + 1 : levels.IndexOf(nextId);
-        if (nextIndex < 0)
+        if (step.kind == LevelStepKind::Unknown)
         {
-            LOG_ERROR("Unknown next level: " + nextId);
+            LOG_ERROR("Unknown next level: " + level.GetInfo().nextLevelId);
             return;
         }
 
-        const LevelEntry* entry = levels.GetAt(nextIndex);
-        if (entry == nullptr)
+        if (step.kind == LevelStepKind::Finished)
         {
             LOG_INFO("No more levels, the run is complete");
             state = State::Victory;
+            UpdateOverlay();
             return;
         }
 
-        pendingLevelId = entry->id;
+        pendingLevelIndex = step.index;
     }
 
     void DeveloperLevel::GoToPendingLevel()
     {
-        const LevelCatalog& levels = GameResources::GetLevels();
-        int nextIndex = levels.IndexOf(pendingLevelId);
-        pendingLevelId.clear();
+        int nextIndex = pendingLevelIndex;
+        pendingLevelIndex = -1;
 
-        if (nextIndex < 0)
+        const LevelEntry* entry = GameResources::GetLevels().GetAt(nextIndex);
+        if (entry == nullptr)
         {
             return;
         }
@@ -160,14 +163,33 @@ namespace RoguelikeGame
         }
 
         SubscribeExit();
+        ShowLevelTitle();
 
-        LOG_INFO("Level changed to " + levels.GetAt(nextIndex)->id + ", objects in world "
+        LOG_INFO("Level changed to " + entry->id + ", objects in world "
             + std::to_string(GameWorld::Instance()->GetObjectsCount()));
+    }
+
+    void DeveloperLevel::ShowLevelTitle()
+    {
+        if (hudScreen == nullptr)
+        {
+            return;
+        }
+
+        const LevelEntry* entry = GameResources::GetLevels().GetAt(currentLevelIndex);
+        const std::string& title = level.GetInfo().title.empty() && entry != nullptr
+            ? entry->title
+            : level.GetInfo().title;
+
+        if (!title.empty())
+        {
+            hudScreen->ShowNotice(title.c_str());
+        }
     }
 
     void DeveloperLevel::Update(float deltaTime)
     {
-        if (!pendingLevelId.empty())
+        if (pendingLevelIndex >= 0)
         {
             GoToPendingLevel();
         }
@@ -198,7 +220,7 @@ namespace RoguelikeGame
                 ShowGameOver();
             }
         }
-        else if (state == State::GameOver && input->WasKeyPressed(RESTART_KEY))
+        else if ((state == State::GameOver || state == State::Victory) && input->WasKeyPressed(RESTART_KEY))
         {
             Restart();
         }
@@ -287,6 +309,10 @@ namespace RoguelikeGame
         else if (state == State::GameOver)
         {
             messageScreen->Show(GAME_OVER_TITLE, GAME_OVER_HINT);
+        }
+        else if (state == State::Victory)
+        {
+            messageScreen->Show(VICTORY_TITLE, VICTORY_HINT);
         }
         else
         {

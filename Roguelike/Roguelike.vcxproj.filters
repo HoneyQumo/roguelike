@@ -105,6 +105,7 @@
     <ClCompile Include="InteractionComponent.cpp" />
     <ClCompile Include="InventoryScreen.cpp" />
     <ClCompile Include="LevelCatalog.cpp" />
+    <ClCompile Include="LevelProgression.cpp" />
     <ClCompile Include="LevelExit.cpp" />
     <ClCompile Include="LevelExitComponent.cpp" />
     <ClCompile Include="HudScreen.cpp" />
@@ -152,6 +153,7 @@
     <ClInclude Include="InteractionComponent.h" />
     <ClInclude Include="InventoryScreen.h" />
     <ClInclude Include="LevelCatalog.h" />
+    <ClInclude Include="LevelProgression.h" />
     <ClInclude Include="LevelExit.h" />
     <ClInclude Include="LevelExitComponent.h" />
     <ClInclude Include="Faction.h" />

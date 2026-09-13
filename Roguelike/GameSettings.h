@@ -170,6 +170,8 @@ namespace RoguelikeGame
     constexpr float GAME_OVER_DELAY = 1.5f;
     constexpr auto PAUSE_TITLE = u8"ПАУЗА";
     constexpr auto PAUSE_HINT = u8"Esc — продолжить";
+    constexpr auto VICTORY_TITLE = u8"ПОБЕДА";
+    constexpr auto VICTORY_HINT = u8"R — заново";
     constexpr auto GAME_OVER_TITLE = u8"ВЫ ПОГИБЛИ";
     constexpr auto GAME_OVER_HINT = u8"R — заново";
 

@@ -126,3 +126,26 @@ TEST_F(LevelTest, MovedLevelKeepsItsData)
 	EXPECT_EQ(source.GetObjectsCount(), 0u);
 	EXPECT_FALSE(source.GetEntrance().has_value());
 }
+
+TEST_F(LevelTest, RepeatedTransitionsLeaveNoObjectsBehind)
+{
+	GameObject* player = GameWorld::Instance()->CreateGameObject("Player");
+
+	for (int transition = 0; transition < 3; transition++)
+	{
+		Level level;
+		for (int index = 0; index < 50; index++)
+		{
+			level.Add(GameWorld::Instance()->CreateGameObject("Wall"));
+		}
+
+		EXPECT_EQ(GameWorld::Instance()->GetObjectsCount(), 51u);
+
+		level.Clear();
+		GameWorld::Instance()->LateUpdate();
+
+		EXPECT_EQ(GameWorld::Instance()->GetObjectsCount(), 1u);
+	}
+
+	EXPECT_EQ(GameWorld::Instance()->FindGameObject("Player"), player);
+}

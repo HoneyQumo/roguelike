@@ -14,6 +14,8 @@ namespace RoguelikeGame
         loadout = nullptr;
         health = nullptr;
         stamina = nullptr;
+        inventory = nullptr;
+        interaction = nullptr;
     }
 
     void PlayerHudBinderComponent::SetScreen(HudScreen* newScreen)
@@ -65,6 +67,30 @@ namespace RoguelikeGame
         loadout = target->GetComponent<PlayerLoadoutComponent>();
         health = target->GetComponent<HealthComponent>();
         stamina = target->GetComponent<StaminaComponent>();
+
+        interaction = target->GetComponent<InteractionComponent>();
+        if (interaction != nullptr)
+        {
+            interaction->SubscribePromptChanged([this](const std::string& prompt)
+            {
+                if (screen != nullptr)
+                {
+                    screen->SetPrompt(prompt);
+                }
+            });
+        }
+
+        inventory = target->GetComponent<InventoryComponent>();
+        if (inventory != nullptr)
+        {
+            inventory->SubscribeRejected([this](const ItemDefinition&)
+            {
+                if (screen != nullptr)
+                {
+                    screen->ShowNotice(INVENTORY_FULL_NOTICE);
+                }
+            });
+        }
     }
 
     VitalsHudState PlayerHudBinderComponent::ReadVitalsState() const

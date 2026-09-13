@@ -4,6 +4,8 @@
 #include <Component.h>
 #include "HudScreen.h"
 #include "HealthComponent.h"
+#include "InteractionComponent.h"
+#include "InventoryComponent.h"
 #include "PlayerLoadoutComponent.h"
 #include "StaminaComponent.h"
 #include "WeaponComponent.h"
@@ -27,6 +29,8 @@ namespace RoguelikeGame
         PlayerLoadoutComponent* loadout = nullptr;
         HealthComponent* health = nullptr;
         StaminaComponent* stamina = nullptr;
+        InventoryComponent* inventory = nullptr;
+        InteractionComponent* interaction = nullptr;
 
         std::string targetName;
 

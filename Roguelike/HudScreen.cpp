@@ -2,6 +2,7 @@
 #include "GameSettings.h"
 #include "WeaponComponent.h"
 #include <ResourceSystem.h>
+#include <TextUtils.h>
 #include <UiWidget.h>
 
 namespace RoguelikeGame
@@ -54,6 +55,74 @@ namespace RoguelikeGame
         staminaBar->SetPivot(XYZEngine::UiAnchor::BottomLeft);
         staminaBar->SetSize({VITALS_HUD_WIDTH, VITALS_HUD_STAMINA_HEIGHT});
         staminaBar->SetColors(VITALS_HUD_STAMINA_COLOR, VITALS_HUD_BACK_COLOR);
+
+        noticeLabel = GetRoot().AddChild<XYZEngine::UiLabel>();
+        noticeLabel->SetAnchor(XYZEngine::UiAnchor::Bottom);
+        noticeLabel->SetPivot(XYZEngine::UiAnchor::Bottom);
+        noticeLabel->SetOffset({0.f, -HUD_NOTICE_MARGIN_Y});
+        noticeLabel->SetSize({OVERLAY_LINE_WIDTH, HUD_NOTICE_FONT_SIZE * AMMO_HUD_LINE_HEIGHT});
+        noticeLabel->SetAlign(XYZEngine::UiAnchor::Center);
+        noticeLabel->SetCharacterSize(HUD_NOTICE_FONT_SIZE);
+        noticeLabel->SetColor(AMMO_HUD_LOW_COLOR);
+        noticeLabel->SetOutline(AMMO_HUD_OUTLINE, AMMO_HUD_OUTLINE_COLOR);
+        noticeLabel->SetFont(font);
+        noticeLabel->SetVisible(false);
+
+        promptLabel = GetRoot().AddChild<XYZEngine::UiLabel>();
+        promptLabel->SetAnchor(XYZEngine::UiAnchor::Bottom);
+        promptLabel->SetPivot(XYZEngine::UiAnchor::Bottom);
+        promptLabel->SetOffset({0.f, -HUD_PROMPT_MARGIN_Y});
+        promptLabel->SetSize({OVERLAY_LINE_WIDTH, HUD_PROMPT_FONT_SIZE * AMMO_HUD_LINE_HEIGHT});
+        promptLabel->SetAlign(XYZEngine::UiAnchor::Center);
+        promptLabel->SetCharacterSize(HUD_PROMPT_FONT_SIZE);
+        promptLabel->SetColor(AMMO_HUD_COLOR);
+        promptLabel->SetOutline(AMMO_HUD_OUTLINE, AMMO_HUD_OUTLINE_COLOR);
+        promptLabel->SetFont(font);
+        promptLabel->SetVisible(false);
+    }
+
+    void HudScreen::SetPrompt(const std::string& text)
+    {
+        if (text.empty())
+        {
+            promptLabel->SetVisible(false);
+            return;
+        }
+
+        promptLabel->SetText(XYZEngine::FromUtf8(text.c_str()));
+        promptLabel->SetVisible(true);
+    }
+
+    const XYZEngine::UiLabel& HudScreen::GetPromptLabel() const
+    {
+        return *promptLabel;
+    }
+
+    void HudScreen::ShowNotice(const char* text)
+    {
+        noticeLabel->SetUtf8Text(text);
+        noticeLabel->SetVisible(true);
+        noticeTimeLeft = HUD_NOTICE_TIME;
+    }
+
+    void HudScreen::Update(float deltaTime)
+    {
+        if (noticeTimeLeft <= 0.f)
+        {
+            return;
+        }
+
+        noticeTimeLeft -= deltaTime;
+        if (noticeTimeLeft <= 0.f)
+        {
+            noticeTimeLeft = 0.f;
+            noticeLabel->SetVisible(false);
+        }
+    }
+
+    bool HudScreen::IsNoticeShown() const
+    {
+        return noticeLabel->IsVisible();
     }
 
     void HudScreen::SetVitals(const VitalsHudState& state)

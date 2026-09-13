@@ -89,6 +89,8 @@
     <ClCompile Include="StaminaComponent.tests.cpp" />
     <ClCompile Include="HudScreen.tests.cpp" />
     <ClCompile Include="ItemCatalog.tests.cpp" />
+    <ClCompile Include="InventoryComponent.tests.cpp" />
+    <ClCompile Include="Interaction.tests.cpp" />
     <ClCompile Include="..\Roguelike\LevelLoader.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
@@ -114,6 +116,15 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\Roguelike\ItemCatalogLoader.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Roguelike\InventoryComponent.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Roguelike\InteractionComponent.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Roguelike\ItemPickupComponent.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\Roguelike\FactionComponent.cpp">

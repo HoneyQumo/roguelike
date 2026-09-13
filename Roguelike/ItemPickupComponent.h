@@ -39,7 +39,9 @@ namespace RoguelikeGame
 
         XYZEngine::EventList<const ItemDefinition&, XYZEngine::GameObject*> pickedUpEvent;
 
-        void OnTrigger(const XYZEngine::Trigger& trigger);
+        void OnTriggerEnter(const XYZEngine::Trigger& trigger);
+        void OnTriggerExit(const XYZEngine::Trigger& trigger);
+        static XYZEngine::GameObject* GetPlayerOf(const XYZEngine::Trigger& trigger, XYZEngine::ColliderComponent* self);
         void Hide();
     };
 }

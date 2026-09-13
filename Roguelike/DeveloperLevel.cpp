@@ -7,6 +7,7 @@
 #include "Music.h"
 #include "Crosshair.h"
 #include "Particles.h"
+#include "LevelExitComponent.h"
 #include "UiRoot.h"
 #include <Engine.h>
 #include <GameWorld.h>
@@ -29,27 +30,17 @@ namespace RoguelikeGame
         state = State::Playing;
         gameOverDelay.Stop();
 
-        try
-        {
-            const LevelEntry* entry = GameResources::GetLevels().GetFirst();
-            std::string levelFile = entry != nullptr ? entry->filePath : TEST_LEVEL_FILE;
+        currentLevelIndex = 0;
+        pendingLevelId.clear();
 
-            level = LevelBuilder::Build(LevelLoader::Load(levelFile), GameResources::GetItems());
-        }
-        catch (const std::exception& exception)
-        {
-            LOG_ERROR(std::string("Level is not loaded: ") + exception.what());
-            LOG_WARN("Game continues with an empty level");
-        }
+        LoadLevel(currentLevelIndex);
 
         particles = CreateParticles();
 
-        auto playerSpawn = level.GetPlayerSpawn();
-        if (playerSpawn.has_value())
         {
             try
             {
-                player = CreatePlayer(*playerSpawn);
+                player = CreatePlayer(level.GetStartPosition());
 
                 auto health = player->GetComponent<HealthComponent>();
                 if (health != nullptr)
@@ -66,10 +57,8 @@ namespace RoguelikeGame
                 LOG_ERROR(std::string("Player is not created: ") + exception.what());
             }
         }
-        else
-        {
-            LOG_WARN("Level has no player spawn point");
-        }
+
+        SubscribeExit();
 
         music = CreateMusic(MAIN_THEME_MUSIC, MUSIC_VOLUME);
 
@@ -88,8 +77,101 @@ namespace RoguelikeGame
         uiRoot = CreateUiRoot(*hudScreen, *inventoryScreen, *messageScreen);
     }
 
+    bool DeveloperLevel::LoadLevel(int levelIndex)
+    {
+        const LevelEntry* entry = GameResources::GetLevels().GetAt(levelIndex);
+        std::string levelFile = entry != nullptr ? entry->filePath : TEST_LEVEL_FILE;
+
+        try
+        {
+            level = LevelBuilder::Build(LevelLoader::Load(levelFile), GameResources::GetItems());
+        }
+        catch (const std::exception& exception)
+        {
+            LOG_ERROR(std::string("Level is not loaded: ") + exception.what());
+            LOG_WARN("Game continues with an empty level");
+            return false;
+        }
+
+        currentLevelIndex = levelIndex;
+        return true;
+    }
+
+    void DeveloperLevel::SubscribeExit()
+    {
+        XYZEngine::GameObject* exitObject = level.GetExit();
+        if (exitObject == nullptr)
+        {
+            return;
+        }
+
+        auto exitComponent = exitObject->GetComponent<LevelExitComponent>();
+        if (exitComponent != nullptr)
+        {
+            exitComponent->SubscribeEntered([this]() { RequestNextLevel(); });
+        }
+    }
+
+    void DeveloperLevel::RequestNextLevel()
+    {
+        const LevelCatalog& levels = GameResources::GetLevels();
+        const std::string& nextId = level.GetInfo().nextLevelId;
+
+        int nextIndex = nextId.empty() ? currentLevelIndex + 1 : levels.IndexOf(nextId);
+        if (nextIndex < 0)
+        {
+            LOG_ERROR("Unknown next level: " + nextId);
+            return;
+        }
+
+        const LevelEntry* entry = levels.GetAt(nextIndex);
+        if (entry == nullptr)
+        {
+            LOG_INFO("No more levels, the run is complete");
+            state = State::Victory;
+            return;
+        }
+
+        pendingLevelId = entry->id;
+    }
+
+    void DeveloperLevel::GoToPendingLevel()
+    {
+        const LevelCatalog& levels = GameResources::GetLevels();
+        int nextIndex = levels.IndexOf(pendingLevelId);
+        pendingLevelId.clear();
+
+        if (nextIndex < 0)
+        {
+            return;
+        }
+
+        level.Clear();
+        GameWorld::Instance()->LateUpdate();
+
+        if (!LoadLevel(nextIndex))
+        {
+            return;
+        }
+
+        if (player != nullptr)
+        {
+            player->GetTransform()->SetWorldPosition(level.GetStartPosition());
+        }
+
+        SubscribeExit();
+
+        LOG_INFO("Level changed to " + levels.GetAt(nextIndex)->id + ", objects in world "
+            + std::to_string(GameWorld::Instance()->GetObjectsCount()));
+    }
+
     void DeveloperLevel::Update(float deltaTime)
     {
+        if (!pendingLevelId.empty())
+        {
+            GoToPendingLevel();
+        }
+
         auto input = InputSystem::Instance();
         bool isPaused = Engine::Instance()->IsPaused();
 

@@ -6,6 +6,7 @@
 #include "InventoryScreen.h"
 #include "MessageScreen.h"
 #include <memory>
+#include <string>
 #include <GameObject.h>
 #include <Cooldown.h>
 
@@ -24,7 +25,8 @@ namespace RoguelikeGame
         {
             Playing,
             PlayerDied,
-            GameOver
+            GameOver,
+            Victory
         };
 
         Level level;
@@ -39,9 +41,16 @@ namespace RoguelikeGame
 
         State state = State::Playing;
         XYZEngine::Cooldown gameOverDelay;
+        int currentLevelIndex = 0;
+        std::string pendingLevelId;
 
         void SetPaused(bool isPaused);
         void ShowGameOver();
         void UpdateOverlay();
+
+        bool LoadLevel(int levelIndex);
+        void SubscribeExit();
+        void RequestNextLevel();
+        void GoToPendingLevel();
     };
 }

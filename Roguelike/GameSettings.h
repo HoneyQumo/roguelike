@@ -194,6 +194,11 @@ namespace RoguelikeGame
     constexpr float BOSS_ENRAGE_DAMAGE_SCALE = 1.25f;
     constexpr float BOSS_ENRAGE_PACE_SCALE = 0.7f;
     constexpr float BOSS_MUZZLE_DISTANCE = 40.f;
+    constexpr float BOSS_MARK_SPEED = 260.f;
+    constexpr float BOSS_MARK_TOUCH_RADIUS = 34.f;
+    constexpr float BOSS_MARK_FLIGHT_TIME = 4.f;
+    constexpr float BOSS_MARK_FUSE_TIME = 0.9f;
+    constexpr int BOSS_MARK_FLIGHT_SIZE = 40;
     constexpr float RAGE_AURA_RADIUS = 34.f;
     constexpr float BOSS_RIFT_RADIUS = 48.f;
     constexpr float BOSS_MINION_RIFT_RADIUS = 26.f;

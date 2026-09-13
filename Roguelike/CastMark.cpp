@@ -1,15 +1,21 @@
 #include "CastMark.h"
 #include "BossSpriteAtlas.h"
 #include "GameSettings.h"
+#include "HealthComponent.h"
 #include <GameObject.h>
 #include <GameWorld.h>
 #include <ResourceSystem.h>
 #include <SpriteRendererComponent.h>
+#include <TransformComponent.h>
 #include <algorithm>
 
 namespace RoguelikeGame
 {
-    CastMarkComponent::CastMarkComponent(XYZEngine::GameObject* gameObject) : Component(gameObject) {}
+    CastMarkComponent::CastMarkComponent(XYZEngine::GameObject* gameObject) : Component(gameObject)
+    {
+        transform = gameObject->GetTransform();
+        flightLeft = BOSS_MARK_FLIGHT_TIME;
+    }
 
     void CastMarkComponent::Start()
     {
@@ -23,31 +29,102 @@ namespace RoguelikeGame
             return;
         }
 
-        timeLeft = std::max(0.f, timeLeft - deltaTime);
-        frameTime += deltaTime;
+        if (isFlying)
+        {
+            flightLeft -= deltaTime;
+            if (flightLeft <= 0.f || FindAlive(ownerName) == nullptr)
+            {
+                Cancel();
+                return;
+            }
 
+            XYZEngine::GameObject* target = FindAlive(targetName);
+            if (target == nullptr)
+            {
+                Cancel();
+                return;
+            }
+
+            XYZEngine::Vector2Df toTarget = target->GetTransform()->GetWorldPosition() - transform->GetWorldPosition();
+            if (toTarget.GetLength() <= BOSS_MARK_TOUCH_RADIUS)
+            {
+                Land();
+                return;
+            }
+
+            transform->SetWorldPosition(transform->GetWorldPosition()
+                + toTarget.Normalized({1.f, 0.f}) * BOSS_MARK_SPEED * deltaTime);
+            return;
+        }
+
+        frameTime += deltaTime;
         if (frameTime >= FX_PUPPETEER_MARK.secondsPerFrame)
         {
             frameTime -= FX_PUPPETEER_MARK.secondsPerFrame;
-            frame = frame + 1 >= FX_PUPPETEER_MARK.frames ? FX_PUPPETEER_MARK_LOOP_FIRST : frame + 1;
-
-            if (frame > FX_PUPPETEER_MARK_LOOP_LAST)
-            {
-                frame = FX_PUPPETEER_MARK_LOOP_FIRST;
-            }
-
+            frame = frame + 1 > FX_PUPPETEER_MARK_LOOP_LAST ? FX_PUPPETEER_MARK_LOOP_FIRST : frame + 1;
             ShowFrame();
         }
 
-        if (timeLeft <= 0.f)
+        fuseLeft = std::max(0.f, fuseLeft - deltaTime);
+        if (fuseLeft <= 0.f)
         {
-            isFinished = true;
-            XYZEngine::GameWorld::Instance()->DestroyGameObject(gameObject);
+            Detonate();
         }
     }
 
     void CastMarkComponent::Render()
     {
+    }
+
+    XYZEngine::GameObject* CastMarkComponent::FindAlive(const std::string& name) const
+    {
+        if (name.empty())
+        {
+            return nullptr;
+        }
+
+        XYZEngine::GameObject* found = XYZEngine::GameWorld::Instance()->FindGameObject(name);
+        if (found == nullptr)
+        {
+            return nullptr;
+        }
+
+        auto health = found->GetComponent<HealthComponent>();
+
+        return health == nullptr || health->IsAlive() ? found : nullptr;
+    }
+
+    void CastMarkComponent::Land()
+    {
+        isFlying = false;
+        fuseLeft = fuseTime;
+        frame = 0;
+        frameTime = 0.f;
+
+        if (renderer != nullptr && renderer->GetSprite() != nullptr && renderer->GetSprite()->getTexture() != nullptr)
+        {
+            renderer->SetPixelSize(static_cast<int>(2.f * radius), static_cast<int>(2.f * radius));
+        }
+
+        ShowFrame();
+    }
+
+    void CastMarkComponent::Detonate()
+    {
+        isFinished = true;
+
+        if (onDetonate != nullptr)
+        {
+            onDetonate(transform->GetWorldPosition());
+        }
+
+        XYZEngine::GameWorld::Instance()->DestroyGameObject(gameObject);
+    }
+
+    void CastMarkComponent::Cancel()
+    {
+        isFinished = true;
+        XYZEngine::GameWorld::Instance()->DestroyGameObject(gameObject);
     }
 
     void CastMarkComponent::ShowFrame()
@@ -64,15 +141,40 @@ namespace RoguelikeGame
         }
     }
 
-    void CastMarkComponent::SetLifeTime(float newLifeTime)
+    void CastMarkComponent::SetRadius(float newRadius)
     {
-        lifeTime = std::max(0.f, newLifeTime);
-        timeLeft = lifeTime;
+        radius = std::max(0.f, newRadius);
     }
 
-    float CastMarkComponent::GetPart() const
+    void CastMarkComponent::SetFuseTime(float newFuseTime)
     {
-        return lifeTime <= 0.f ? 0.f : timeLeft / lifeTime;
+        fuseTime = std::max(0.f, newFuseTime);
+        fuseLeft = fuseTime;
+    }
+
+    void CastMarkComponent::SetTargetName(const std::string& newTargetName)
+    {
+        targetName = newTargetName;
+    }
+
+    void CastMarkComponent::SetOwnerName(const std::string& newOwnerName)
+    {
+        ownerName = newOwnerName;
+    }
+
+    void CastMarkComponent::SetOnDetonate(std::function<void(const XYZEngine::Vector2Df&)> newOnDetonate)
+    {
+        onDetonate = std::move(newOnDetonate);
+    }
+
+    bool CastMarkComponent::IsFlying() const
+    {
+        return isFlying;
+    }
+
+    float CastMarkComponent::GetFusePart() const
+    {
+        return fuseTime <= 0.f ? 0.f : fuseLeft / fuseTime;
     }
 
     int CastMarkComponent::GetFrame() const
@@ -80,7 +182,7 @@ namespace RoguelikeGame
         return frame;
     }
 
-    XYZEngine::GameObject* CreateCastMark(const XYZEngine::Vector2Df& position, float radius, float lifeTime)
+    XYZEngine::GameObject* CreateCastMark(const XYZEngine::Vector2Df& position, float radius, float fuseTime)
     {
         auto gameObject = XYZEngine::GameWorld::Instance()->CreateGameObject(CAST_MARK_OBJECT_NAME);
         gameObject->SetRenderLayer(GROUND_RENDER_LAYER);
@@ -92,10 +194,12 @@ namespace RoguelikeGame
         if (texture != nullptr)
         {
             renderer->SetTexture(*texture);
-            renderer->SetPixelSize(static_cast<int>(2.f * radius), static_cast<int>(2.f * radius));
+            renderer->SetPixelSize(BOSS_MARK_FLIGHT_SIZE, BOSS_MARK_FLIGHT_SIZE);
         }
 
-        gameObject->AddComponent<CastMarkComponent>()->SetLifeTime(lifeTime);
+        auto mark = gameObject->AddComponent<CastMarkComponent>();
+        mark->SetRadius(radius);
+        mark->SetFuseTime(fuseTime);
 
         return gameObject;
     }

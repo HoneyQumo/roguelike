@@ -203,12 +203,7 @@ namespace RoguelikeGame
             else
             {
                 actionTimer.Start(spec->windup + spec->duration * PaceScale());
-                castPoint = IsAimedAtPoint(currentAbility) ? targetPosition : transform->GetWorldPosition();
-
-                if (IsAimedAtPoint(currentAbility))
-                {
-                    castMarkEvent.Invoke(castPoint, spec->radius, spec->windup);
-                }
+                castPoint = transform->GetWorldPosition();
 
                 if (definition != nullptr)
                 {
@@ -382,8 +377,20 @@ namespace RoguelikeGame
             animation->PlayMelee();
         }
 
-        DealAreaDamage(castPoint, spec.radius, config.attackDamage * spec.damageScale * DamageScale());
-        blastEvent.Invoke(castPoint, spec.radius);
+        castPoint = transform->GetWorldPosition();
+        castMarkEvent.Invoke(castPoint, spec.radius, BOSS_MARK_FUSE_TIME);
+    }
+
+    void BossBrainComponent::DetonateBlast(const XYZEngine::Vector2Df& center)
+    {
+        const BossAbilitySpec* spec = FindBossAbility(BossAbility::Blast);
+        if (spec == nullptr || (health != nullptr && !health->IsAlive()))
+        {
+            return;
+        }
+
+        DealAreaDamage(center, spec->radius, config.attackDamage * spec->damageScale * DamageScale());
+        blastEvent.Invoke(center, spec->radius);
     }
 
     void BossBrainComponent::BeginDash(const BossAbilitySpec& spec)

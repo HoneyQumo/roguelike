@@ -42,6 +42,7 @@ namespace RoguelikeGame
         bool IsEnraged() const;
         int GetAbilityUses(BossAbility ability) const;
         XYZEngine::Vector2Df GetCastPoint() const;
+        void DetonateBlast(const XYZEngine::Vector2Df& center);
         void RegisterMinion(XYZEngine::GameObject* minion);
 
         XYZEngine::SubscriptionId SubscribeStateChanged(std::function<void(BossState, BossState)> onStateChanged);

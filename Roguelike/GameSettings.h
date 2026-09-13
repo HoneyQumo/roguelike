@@ -75,8 +75,33 @@ namespace RoguelikeGame
     constexpr auto INVENTORY_TITLE = u8"ИНВЕНТАРЬ";
 
     constexpr int PLAYER_WEAPON_SLOTS = 3;
-    constexpr int PLAYER_START_WEAPON_SLOT = 0;
-    constexpr WeaponId PLAYER_LOADOUT[PLAYER_WEAPON_SLOTS] = {WeaponId::Rpg, WeaponId::ShotgunPump, WeaponId::Bat};
+    constexpr int PLAYER_START_WEAPON_SLOT = 2;
+
+    struct StartingSlot
+    {
+        bool hasWeapon;
+        WeaponId id;
+    };
+
+    constexpr StartingSlot PLAYER_LOADOUT[PLAYER_WEAPON_SLOTS] = {
+        {false, WeaponId::Ak47},
+        {false, WeaponId::Glock},
+        {true, WeaponId::Knife}
+    };
+
+    constexpr auto EMPTY_SLOT_NAME = u8"—";
+
+    constexpr int PreferredWeaponSlot(WeaponId id)
+    {
+        if (IsMelee(id))
+        {
+            return PLAYER_WEAPON_SLOTS - 1;
+        }
+
+        AmmoKind ammo = GetWeapon(id).ammo;
+
+        return ammo == AmmoKind::Rifle || ammo == AmmoKind::Rocket ? 0 : 1;
+    }
 
     constexpr int NO_WEAPON_SLOT = -1;
 
@@ -87,11 +112,11 @@ namespace RoguelikeGame
     };
 
     constexpr AmmoReserve PLAYER_START_AMMO[] = {
-        {AmmoKind::Rifle, 300},
-        {AmmoKind::Smg, 200},
-        {AmmoKind::Pistol, 120},
-        {AmmoKind::Shell, 48},
-        {AmmoKind::Rocket, 6}
+        {AmmoKind::Rifle, 0},
+        {AmmoKind::Smg, 0},
+        {AmmoKind::Pistol, 0},
+        {AmmoKind::Shell, 0},
+        {AmmoKind::Rocket, 0}
     };
 
     constexpr float ReloadFrameSeconds(float reloadTime)

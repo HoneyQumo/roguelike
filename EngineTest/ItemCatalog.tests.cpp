@@ -148,3 +148,23 @@ TEST(ItemCatalogTests, FieldOutsideOfBlockIsRejected)
 {
 	EXPECT_THROW(ParseText("name Lost\n[item x]\nname X\ntype Key\nicon a.png 0 0 8 8\n"), std::runtime_error);
 }
+
+TEST(ItemCatalogTest, AmmoEffectIsParsed)
+{
+	std::istringstream input(
+		"[item ammo_pistol]\n"
+		"name Pistol ammo\n"
+		"type Consumable\n"
+		"icon Resources/Textures/fx.png 0 288 24 8\n"
+		"stackable true\n"
+		"maxStack 8\n"
+		"effect AddAmmo 24 pistol\n");
+
+	RoguelikeGame::ItemCatalog catalog = RoguelikeGame::ItemCatalogLoader::Parse(input, "items.config");
+	const RoguelikeGame::ItemDefinition* item = catalog.Find("ammo_pistol");
+
+	ASSERT_NE(item, nullptr);
+	EXPECT_EQ(item->effect.kind, RoguelikeGame::ItemEffectKind::AddAmmo);
+	EXPECT_FLOAT_EQ(item->effect.amount, 24.f);
+	EXPECT_EQ(item->effect.target, "pistol");
+}

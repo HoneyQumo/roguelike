@@ -136,6 +136,12 @@ namespace RoguelikeGame
     AmmoHudState PlayerHudBinderComponent::ReadAmmoState() const
     {
         AmmoHudState state;
+        if (!loadout->HasWeapon())
+        {
+            state.weaponName = EMPTY_SLOT_NAME;
+            return state;
+        }
+
         state.weaponName = GetWeapon(loadout->GetCurrentWeapon()).name;
 
         if (weapon == nullptr || !weapon->HasMagazine())

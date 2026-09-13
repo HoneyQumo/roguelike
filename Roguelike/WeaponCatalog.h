@@ -167,6 +167,34 @@ namespace RoguelikeGame
         float cooldown;
     };
 
+    struct AmmoKindName
+    {
+        const char* name;
+        AmmoKind kind;
+    };
+
+    constexpr AmmoKindName AMMO_KIND_NAMES[] = {
+        {"rifle", AmmoKind::Rifle},
+        {"smg", AmmoKind::Smg},
+        {"pistol", AmmoKind::Pistol},
+        {"shell", AmmoKind::Shell},
+        {"rocket", AmmoKind::Rocket}
+    };
+
+    constexpr bool TryGetAmmoKind(std::string_view name, AmmoKind& outKind)
+    {
+        for (const AmmoKindName& ammo : AMMO_KIND_NAMES)
+        {
+            if (name == ammo.name)
+            {
+                outKind = ammo.kind;
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     constexpr bool TryGetWeaponId(std::string_view id, WeaponId& outId)
     {
         for (int index = 0; index < WEAPON_COUNT; index++)

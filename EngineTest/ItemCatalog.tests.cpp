@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "ItemCatalogLoader.h"
+#include "GameSettings.h"
 #include <sstream>
 
 using RoguelikeGame::ItemCatalog;
@@ -167,4 +168,32 @@ TEST(ItemCatalogTest, AmmoEffectIsParsed)
 	EXPECT_EQ(item->effect.kind, RoguelikeGame::ItemEffectKind::AddAmmo);
 	EXPECT_FLOAT_EQ(item->effect.amount, 24.f);
 	EXPECT_EQ(item->effect.target, "pistol");
+}
+
+TEST(ItemCatalogTest, IconScaleIsATuningNotASizeSource)
+{
+	std::istringstream input(
+		"[item weapon_glock]\n"
+		"name Glock\n"
+		"type Weapon\n"
+		"icon Resources/Textures/weapons_side.png 0 160 112 32\n"
+		"scale 1\n"
+		"[item ammo_pistol]\n"
+		"name Ammo\n"
+		"type Consumable\n"
+		"icon Resources/Textures/fx.png 0 288 24 8\n"
+		"scale 0.9\n");
+
+	RoguelikeGame::ItemCatalog catalog = RoguelikeGame::ItemCatalogLoader::Parse(input, "items.config");
+
+	const RoguelikeGame::ItemDefinition* gun = catalog.Find("weapon_glock");
+	const RoguelikeGame::ItemDefinition* ammo = catalog.Find("ammo_pistol");
+
+	ASSERT_NE(gun, nullptr);
+	ASSERT_NE(ammo, nullptr);
+
+	float gunSize = RoguelikeGame::ITEM_WORLD_SIZE * gun->icon.worldScale;
+	float ammoSize = RoguelikeGame::ITEM_WORLD_SIZE * ammo->icon.worldScale;
+
+	EXPECT_NEAR(gunSize, ammoSize, RoguelikeGame::ITEM_WORLD_SIZE * 0.25f);
 }

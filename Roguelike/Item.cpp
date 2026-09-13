@@ -6,9 +6,20 @@
 #include <LoggerRegistry.h>
 #include <ResourceSystem.h>
 #include <SpriteRendererComponent.h>
+#include <algorithm>
 
 namespace RoguelikeGame
 {
+    namespace
+    {
+        float IconScale(const ItemIcon& icon)
+        {
+            float longest = static_cast<float>(std::max(icon.rect.width, icon.rect.height));
+
+            return longest > 0.f ? ITEM_WORLD_SIZE / longest * icon.worldScale : icon.worldScale;
+        }
+    }
+
     std::string ItemTextureName(const std::string& itemId)
     {
         return "item_" + itemId;
@@ -32,8 +43,8 @@ namespace RoguelikeGame
 
         auto renderer = gameObject->AddComponent<XYZEngine::SpriteRendererComponent>();
         renderer->SetTexture(*texture);
-        renderer->SetPixelSize(static_cast<int>(definition.icon.rect.width * definition.icon.worldScale),
-            static_cast<int>(definition.icon.rect.height * definition.icon.worldScale));
+        renderer->SetPixelSize(static_cast<int>(definition.icon.rect.width * IconScale(definition.icon)),
+            static_cast<int>(definition.icon.rect.height * IconScale(definition.icon)));
         renderer->SetColor(definition.icon.tint);
 
         auto collider = gameObject->AddComponent<XYZEngine::BoxColliderComponent>();

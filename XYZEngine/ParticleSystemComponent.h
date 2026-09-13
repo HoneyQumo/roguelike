@@ -33,6 +33,7 @@ namespace XYZEngine
 		void SetTexture(const sf::Texture* newTexture);
 
 		void Emit(const ParticleSpec& spec, const Vector2Df& position, const Vector2Df& direction);
+		void Clear();
 		void EmitCount(const ParticleSpec& spec, const Vector2Df& position, const Vector2Df& direction, int count);
 
 		std::size_t GetActiveCount() const;

@@ -99,6 +99,19 @@ namespace XYZEngine
 	{
 		markedToDestroyGameObjects.push_back(gameObject);
 	}
+	void GameWorld::DestroyGameObjects(const std::string& name)
+	{
+		auto found = gameObjectsByName.find(name);
+		if (found == gameObjectsByName.end())
+		{
+			return;
+		}
+
+		for (GameObject* gameObject : found->second)
+		{
+			DestroyGameObject(gameObject);
+		}
+	}
 	void GameWorld::InvalidateRenderOrder()
 	{
 		isRenderOrderDirty = true;

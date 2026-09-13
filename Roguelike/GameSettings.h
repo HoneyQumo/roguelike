@@ -218,6 +218,10 @@ namespace RoguelikeGame
     constexpr auto UI_ROOT_OBJECT_NAME = "Ui";
     constexpr auto LEVEL_EXIT_OBJECT_NAME = "LevelExit";
     constexpr auto CAST_MARK_OBJECT_NAME = "CastMark";
+    constexpr auto BLOOD_POOL_OBJECT_NAME = "BloodPool";
+    constexpr auto FX_OBJECT_NAME = "Fx";
+    constexpr auto PROJECTILE_OBJECT_NAME = "Projectile";
+    constexpr auto ROCKET_OBJECT_NAME = "Rocket";
 
     constexpr auto PLAYER_TEXTURE = "player";
     constexpr auto WEAPONS_TEXTURE = "weapons";

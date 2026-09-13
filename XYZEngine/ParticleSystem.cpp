@@ -49,6 +49,14 @@ namespace XYZEngine
 		active->Emit(spec, position, direction);
 	}
 
+	void ParticleSystem::Clear()
+	{
+		if (active != nullptr)
+		{
+			active->Clear();
+		}
+	}
+
 	void ParticleSystem::EmitCount(const ParticleSpec& spec, const Vector2Df& position, const Vector2Df& direction, int count)
 	{
 		if (active == nullptr)

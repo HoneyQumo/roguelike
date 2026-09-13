@@ -32,6 +32,7 @@ namespace XYZEngine
 
 		std::size_t GetObjectsCount() const;
 		void DestroyGameObject(GameObject* gameObject);
+		void DestroyGameObjects(const std::string& name);
 		void Clear();
 
 		void InvalidateRenderOrder();

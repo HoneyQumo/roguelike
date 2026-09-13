@@ -207,6 +207,11 @@ namespace RoguelikeGame
         }
 
         const ItemDefinition& item = *slot.item;
+        if (useHandler != nullptr && !useHandler(item))
+        {
+            return false;
+        }
+
         usedEvent.Invoke(item);
 
         return Remove(slotIndex, 1);
@@ -215,6 +220,11 @@ namespace RoguelikeGame
     bool InventoryComponent::UseSelected()
     {
         return Use(selectedSlot);
+    }
+
+    void InventoryComponent::SetUseHandler(std::function<bool(const ItemDefinition&)> newUseHandler)
+    {
+        useHandler = std::move(newUseHandler);
     }
 
     void InventoryComponent::SelectSlot(int index)

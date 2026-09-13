@@ -102,6 +102,7 @@
     <ClCompile Include="Item.cpp" />
     <ClCompile Include="ItemPickupComponent.cpp" />
     <ClCompile Include="InventoryComponent.cpp" />
+    <ClCompile Include="ItemEffectComponent.cpp" />
     <ClCompile Include="InteractionComponent.cpp" />
     <ClCompile Include="InventoryScreen.cpp" />
     <ClCompile Include="BossAnimationComponent.cpp" />
@@ -156,6 +157,7 @@
     <ClInclude Include="Item.h" />
     <ClInclude Include="ItemPickupComponent.h" />
     <ClInclude Include="InventoryComponent.h" />
+    <ClInclude Include="ItemEffectComponent.h" />
     <ClInclude Include="InteractionComponent.h" />
     <ClInclude Include="InventoryScreen.h" />
     <ClInclude Include="BossAnimationComponent.h" />

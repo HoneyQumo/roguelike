@@ -101,6 +101,18 @@ namespace RoguelikeGame
                 }
             });
         }
+
+        auto effects = target->GetComponent<ItemEffectComponent>();
+        if (effects != nullptr)
+        {
+            effects->SubscribeRefused([this](const ItemDefinition&)
+            {
+                if (screen != nullptr)
+                {
+                    screen->ShowNotice(ITEM_REFUSED_NOTICE);
+                }
+            });
+        }
     }
 
     VitalsHudState PlayerHudBinderComponent::ReadVitalsState() const

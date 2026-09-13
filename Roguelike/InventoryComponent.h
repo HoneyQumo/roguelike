@@ -33,6 +33,7 @@ namespace RoguelikeGame
         bool TryAdd(const ItemDefinition& item, int count = 1);
         bool Remove(int slotIndex, int count = 1);
         bool Use(int slotIndex);
+        void SetUseHandler(std::function<bool(const ItemDefinition&)> newUseHandler);
         bool UseSelected();
 
         void SelectSlot(int index);
@@ -54,6 +55,7 @@ namespace RoguelikeGame
     private:
         std::vector<InventorySlot> slots;
         int selectedSlot = 0;
+        std::function<bool(const ItemDefinition&)> useHandler;
 
         XYZEngine::EventList<const ItemDefinition&, int> addedEvent;
         XYZEngine::EventList<const ItemDefinition&, int> removedEvent;

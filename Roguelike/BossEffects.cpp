@@ -53,7 +53,7 @@ namespace RoguelikeGame
     }
 
     void PlayEffectsOnBossRage(BossBrainComponent* brain, HitFlashComponent* hitFlash, HealthBarComponent* healthBar,
-        XYZEngine::ParticleEmitterComponent* rageAura)
+        XYZEngine::ParticleAuraComponent* rageAura)
     {
         XYZEngine::GameObject* boss = brain->GetGameObject();
 
@@ -71,10 +71,10 @@ namespace RoguelikeGame
 
             if (rageAura != nullptr)
             {
-                rageAura->SetEnabled(true);
+                rageAura->SetActive(true);
             }
 
-            if (const XYZEngine::ParticleSpec* burst = FindParticleSpec(ParticleEffect::BossRageBurst))
+            if (const XYZEngine::ParticleSpec* burst = FindParticleSpec(ParticleEffect::RageBurst))
             {
                 XYZEngine::ParticleSystem::Instance()->Emit(*burst, boss->GetTransform()->GetWorldPosition(), {0.f, 1.f});
             }
@@ -86,7 +86,7 @@ namespace RoguelikeGame
         {
             if (next == BossState::Death && rageAura != nullptr)
             {
-                rageAura->SetEnabled(false);
+                rageAura->SetActive(false);
             }
         });
     }

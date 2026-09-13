@@ -69,6 +69,9 @@
     <ClInclude Include="ParticleSystemComponent.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
+    <ClInclude Include="ParticleAuraComponent.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
     <ClInclude Include="ParticleEmitterComponent.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
@@ -234,6 +237,9 @@
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="ParticleSystemComponent.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleAuraComponent.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="ParticleEmitterComponent.cpp">

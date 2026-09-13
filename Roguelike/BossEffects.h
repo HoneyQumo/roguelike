@@ -1,7 +1,7 @@
 #pragma once
 
 #include "BossBrainComponent.h"
-#include <ParticleEmitterComponent.h>
+#include <ParticleAuraComponent.h>
 #include "HealthBarComponent.h"
 #include "HitFlashComponent.h"
 #include "LevelData.h"
@@ -16,6 +16,6 @@ namespace RoguelikeGame
     void SummonMinionsOnBossCall(BossBrainComponent* brain);
     void PlayEffectsOnBossBlast(BossBrainComponent* brain);
     void PlayEffectsOnBossRage(BossBrainComponent* brain, HitFlashComponent* hitFlash, HealthBarComponent* healthBar,
-        XYZEngine::ParticleEmitterComponent* rageAura);
+        XYZEngine::ParticleAuraComponent* rageAura);
     void ShowMarkOnBossCast(BossBrainComponent* brain);
 }

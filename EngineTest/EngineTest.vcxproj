@@ -98,6 +98,7 @@
     <ClCompile Include="LevelExitGate.tests.cpp" />
     <ClCompile Include="BossBrain.tests.cpp" />
     <ClCompile Include="CastMark.tests.cpp" />
+    <ClCompile Include="ParticleAura.tests.cpp" />
     <ClCompile Include="Level.tests.cpp" />
     <ClCompile Include="..\Roguelike\LevelLoader.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>

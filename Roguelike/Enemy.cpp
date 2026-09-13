@@ -166,9 +166,9 @@ namespace RoguelikeGame
         brain->SetTargetName(PLAYER_OBJECT_NAME);
         brain->SetBasicAttack(gameObject->GetComponent<EnemyAttackComponent>());
 
-        auto rageAura = gameObject->AddComponent<XYZEngine::ParticleEmitterComponent>();
-        rageAura->SetSpec(FindParticleSpec(ParticleEffect::BossRage));
-        rageAura->SetEnabled(false);
+        auto rageAura = gameObject->AddComponent<XYZEngine::ParticleAuraComponent>();
+        rageAura->SetSpec(FindParticleSpec(ParticleEffect::RageAura));
+        rageAura->SetRadius(RAGE_AURA_RADIUS);
 
         SpawnProjectilesOnBossVolley(brain, gameObject, config.weapon);
         SummonMinionsOnBossCall(brain);

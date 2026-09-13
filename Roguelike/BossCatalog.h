@@ -115,6 +115,11 @@ namespace RoguelikeGame
 
     constexpr int BOSS_MINION_LIMIT = 4;
 
+    constexpr bool HasWeaponLayer(const BossDefinition& boss)
+    {
+        return boss.textureMapName == nullptr;
+    }
+
     constexpr bool IsAimedAtPoint(BossAbility ability)
     {
         return ability == BossAbility::Blast;

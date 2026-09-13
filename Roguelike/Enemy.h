@@ -7,6 +7,7 @@
 
 namespace RoguelikeGame
 {
-    XYZEngine::GameObject* CreateEnemy(const EnemyConfig& config, const XYZEngine::Vector2Df& position);
+    XYZEngine::GameObject* CreateEnemy(const EnemyConfig& config, const XYZEngine::Vector2Df& position,
+        const BossDefinition* definition = nullptr);
     XYZEngine::GameObject* CreateBoss(const EnemyConfig& config, const BossDefinition& definition, const XYZEngine::Vector2Df& position);
 }

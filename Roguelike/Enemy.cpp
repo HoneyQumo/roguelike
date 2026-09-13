@@ -20,7 +20,8 @@
 
 namespace RoguelikeGame
 {
-    XYZEngine::GameObject* CreateEnemy(const EnemyConfig& config, const XYZEngine::Vector2Df& position)
+    XYZEngine::GameObject* CreateEnemy(const EnemyConfig& config, const XYZEngine::Vector2Df& position,
+        const BossDefinition* definition)
     {
         CharacterSpec spec;
         spec.objectName = config.objectName;
@@ -33,6 +34,7 @@ namespace RoguelikeGame
         spec.faction = Faction::Enemy;
         spec.weapon = config.weapon;
         spec.healthBarColor = {200, 60, 60};
+        spec.hasWeaponLayer = definition == nullptr || HasWeaponLayer(*definition);
 
         ChaseComponent* chase = nullptr;
         CharacterParts parts = CreateCharacter(spec, [&chase, &config](XYZEngine::GameObject* object)
@@ -151,7 +153,7 @@ namespace RoguelikeGame
 
     XYZEngine::GameObject* CreateBoss(const EnemyConfig& config, const BossDefinition& definition, const XYZEngine::Vector2Df& position)
     {
-        auto gameObject = CreateEnemy(config, position);
+        auto gameObject = CreateEnemy(config, position, &definition);
 
         auto healthBar = gameObject->GetComponent<HealthBarComponent>();
         if (healthBar != nullptr)

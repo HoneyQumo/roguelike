@@ -386,3 +386,32 @@ TEST(BossAbilityTest, ChoiceIsDecidedAtCompileTime)
 
 	SUCCEED();
 }
+
+TEST(BossCatalogTest, OnlyBossesWithoutTheirOwnSheetCarryAWeapon)
+{
+	for (const BossDefinition& boss : BOSSES)
+	{
+		EXPECT_EQ(RoguelikeGame::HasWeaponLayer(boss), boss.textureMapName == nullptr) << boss.id;
+	}
+}
+
+TEST(BossCatalogTest, PuppeteerHasNoWeaponAndNoBasicAttack)
+{
+	const BossDefinition* puppeteer = FindBoss("puppeteer");
+	ASSERT_NE(puppeteer, nullptr);
+
+	EXPECT_FALSE(RoguelikeGame::HasWeaponLayer(*puppeteer));
+	EXPECT_FALSE(puppeteer->hasBasicAttack);
+}
+
+TEST(BossCatalogTest, BossesOnTheSharedSheetKeepTheirWeapon)
+{
+	for (const char* id : {"gravedigger", "colossus"})
+	{
+		const BossDefinition* boss = FindBoss(id);
+		ASSERT_NE(boss, nullptr) << id;
+
+		EXPECT_TRUE(RoguelikeGame::HasWeaponLayer(*boss)) << id;
+		EXPECT_TRUE(boss->hasBasicAttack) << id;
+	}
+}

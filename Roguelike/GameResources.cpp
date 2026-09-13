@@ -13,6 +13,7 @@ namespace RoguelikeGame
     namespace
     {
         ItemCatalog items;
+        LevelCatalog levels;
     }
 
     namespace
@@ -50,6 +51,7 @@ namespace RoguelikeGame
                                                                 {0, 0, RELOAD_MAG_FRAME_SIZE, RELOAD_MAG_FRAME_SIZE}, RELOAD_MAG_FRAMES, false);
 
         LoadItems();
+        LoadLevels();
 
         XYZEngine::ResourceSystem::Instance()->LoadShader(HIT_FLASH_SHADER, HIT_FLASH_SHADER_FILE, sf::Shader::Fragment);
 
@@ -147,5 +149,25 @@ namespace RoguelikeGame
     const ItemCatalog& GameResources::GetItems()
     {
         return items;
+    }
+
+    void GameResources::LoadLevels()
+    {
+        try
+        {
+            levels = LevelCatalog::Load(LEVELS_CATALOG_FILE);
+        }
+        catch (const std::exception& exception)
+        {
+            LOG_ERROR(std::string("Level catalog is not loaded: ") + exception.what());
+            return;
+        }
+
+        LOG_INFO("Levels loaded: " + std::to_string(levels.Size()));
+    }
+
+    const LevelCatalog& GameResources::GetLevels()
+    {
+        return levels;
     }
 }

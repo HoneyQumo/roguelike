@@ -31,7 +31,10 @@ namespace RoguelikeGame
 
         try
         {
-            level = LevelBuilder::Build(LevelLoader::Load(TEST_LEVEL_FILE), GameResources::GetItems());
+            const LevelEntry* entry = GameResources::GetLevels().GetFirst();
+            std::string levelFile = entry != nullptr ? entry->filePath : TEST_LEVEL_FILE;
+
+            level = LevelBuilder::Build(LevelLoader::Load(levelFile), GameResources::GetItems());
         }
         catch (const std::exception& exception)
         {

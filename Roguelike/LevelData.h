@@ -16,7 +16,9 @@ namespace RoguelikeGame
         ShieldSpawn,
         HeavySpawn,
         RadioSpawn,
-        BossSpawn
+        BossSpawn,
+        Entrance,
+        Exit
     };
 
     struct TileTypeName
@@ -29,7 +31,9 @@ namespace RoguelikeGame
         {"Empty", TileType::Empty},
         {"Floor", TileType::Floor},
         {"Wall", TileType::Wall},
-        {"PlayerSpawn", TileType::PlayerSpawn}
+        {"PlayerSpawn", TileType::PlayerSpawn},
+        {"Entrance", TileType::Entrance},
+        {"Exit", TileType::Exit}
     };
 
     struct ItemPlacement
@@ -39,12 +43,29 @@ namespace RoguelikeGame
         std::string itemId;
     };
 
+    struct BossSpec
+    {
+        std::string enemyName;
+        float healthScale = 1.f;
+        float damageScale = 1.f;
+
+        bool IsEmpty() const { return enemyName.empty(); }
+    };
+
+    struct LevelInfo
+    {
+        std::string title;
+        std::string nextLevelId;
+        BossSpec boss;
+    };
+
     struct LevelData
     {
         int width = 0;
         int height = 0;
         std::vector<std::vector<TileType>> tiles;
         std::vector<ItemPlacement> items;
+        LevelInfo info;
     };
 
     inline int CountTiles(const LevelData& levelData, TileType tileType)

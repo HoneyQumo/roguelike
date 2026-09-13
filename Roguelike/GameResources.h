@@ -3,6 +3,7 @@
 #include <string>
 #include <SFML/Audio/SoundBuffer.hpp>
 #include "ItemCatalog.h"
+#include "LevelCatalog.h"
 #include "SpriteAtlas.h"
 #include "WeaponCatalog.h"
 
@@ -15,6 +16,7 @@ namespace RoguelikeGame
         static const sf::SoundBuffer* GetWeaponSound(const char* key);
         static const sf::SoundBuffer* GetMeleeHitSound(const MeleeDefinition& melee);
         static const ItemCatalog& GetItems();
+        static const LevelCatalog& GetLevels();
 
     private:
         static void LoadCharacterAtlas(const std::string& name, int framesCount);
@@ -22,5 +24,6 @@ namespace RoguelikeGame
         static void LoadWeaponSounds();
         static void LoadFxStrip(const std::string& name, const FxStrip& strip);
         static void LoadItems();
+        static void LoadLevels();
     };
 }

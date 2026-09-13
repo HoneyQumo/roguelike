@@ -108,6 +108,7 @@
         <ClCompile Include="ItemCatalog.cpp"/>
         <ClCompile Include="ItemCatalogLoader.cpp"/>
         <ClCompile Include="Item.cpp"/>
+        <ClCompile Include="ItemIconLayout.cpp"/>
         <ClCompile Include="ItemPickupComponent.cpp"/>
         <ClCompile Include="InventoryComponent.cpp"/>
         <ClCompile Include="ItemEffectComponent.cpp"/>
@@ -168,6 +169,7 @@
         <ClInclude Include="ItemCatalog.h"/>
         <ClInclude Include="ItemCatalogLoader.h"/>
         <ClInclude Include="Item.h"/>
+        <ClInclude Include="ItemIconLayout.h"/>
         <ClInclude Include="ItemPickupComponent.h"/>
         <ClInclude Include="InventoryComponent.h"/>
         <ClInclude Include="ItemEffectComponent.h"/>

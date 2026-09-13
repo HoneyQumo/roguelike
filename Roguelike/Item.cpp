@@ -1,25 +1,15 @@
-#include "Item.h"
+﻿#include "Item.h"
 #include "GameSettings.h"
+#include "ItemIconLayout.h"
 #include "ItemPickupComponent.h"
 #include <BoxColliderComponent.h>
 #include <GameWorld.h>
 #include <LoggerRegistry.h>
 #include <ResourceSystem.h>
 #include <SpriteRendererComponent.h>
-#include <algorithm>
 
 namespace RoguelikeGame
 {
-    namespace
-    {
-        float IconScale(const ItemIcon& icon)
-        {
-            float longest = static_cast<float>(std::max(icon.rect.width, icon.rect.height));
-
-            return longest > 0.f ? ITEM_WORLD_SIZE / longest * icon.worldScale : icon.worldScale;
-        }
-    }
-
     std::string ItemTextureName(const std::string& itemId)
     {
         return "item_" + itemId;
@@ -43,8 +33,8 @@ namespace RoguelikeGame
 
         auto renderer = gameObject->AddComponent<XYZEngine::SpriteRendererComponent>();
         renderer->SetTexture(*texture);
-        renderer->SetPixelSize(static_cast<int>(definition.icon.rect.width * IconScale(definition.icon)),
-            static_cast<int>(definition.icon.rect.height * IconScale(definition.icon)));
+        sf::Vector2f iconSize = IconWorldSize(definition.icon);
+        renderer->SetPixelSize(static_cast<int>(iconSize.x), static_cast<int>(iconSize.y));
         renderer->SetColor(definition.icon.tint);
 
         auto collider = gameObject->AddComponent<XYZEngine::BoxColliderComponent>();

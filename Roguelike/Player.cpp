@@ -8,6 +8,7 @@
 #include "BloodPool.h"
 #include "InteractionComponent.h"
 #include "InventoryComponent.h"
+#include "ItemEffectComponent.h"
 #include "StaminaComponent.h"
 #include "Fx.h"
 #include <FrameClock.h>
@@ -155,6 +156,18 @@ namespace RoguelikeGame
 
         gameObject->AddComponent<InventoryComponent>()->SetCapacity(INVENTORY_CAPACITY);
         gameObject->AddComponent<InteractionComponent>();
+
+        auto effects = gameObject->AddComponent<ItemEffectComponent>();
+        effects->SetHandler(ItemEffectKind::Heal, [health](const ItemEffect& effect)
+        {
+            return health->Heal(effect.amount) > 0.f;
+        });
+        effects->SetHandler(ItemEffectKind::EquipWeapon, [loadout](const ItemEffect& effect)
+        {
+            WeaponId id = WeaponId::Knife;
+
+            return TryGetWeaponId(effect.target, id) && loadout->EquipWeapon(id);
+        });
 
         auto stamina = gameObject->AddComponent<StaminaComponent>();
         stamina->SetMaxStamina(PLAYER_MAX_STAMINA);

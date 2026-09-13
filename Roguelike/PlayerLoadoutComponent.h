@@ -31,6 +31,7 @@ namespace RoguelikeGame
         void SetSlots(const WeaponId* newSlots, int newSlotsCount, int startSlot);
 
         bool TrySelectSlot(int slot);
+        bool EquipWeapon(WeaponId id);
         void CancelReload();
         bool IsSwapping() const;
         bool IsMeleeEquipped() const;

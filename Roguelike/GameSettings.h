@@ -163,6 +163,7 @@ namespace RoguelikeGame
     constexpr float HUD_NOTICE_MARGIN_Y = 120.f;
     constexpr float HUD_NOTICE_TIME = 2.f;
     constexpr auto INVENTORY_FULL_NOTICE = u8"Инвентарь полон";
+    constexpr auto ITEM_REFUSED_NOTICE = u8"Сейчас это не пригодится";
     constexpr auto BOSS_GATE_NOTICE = u8"Выход закрыт: сначала победи босса";
     constexpr auto BOSS_DEFEATED_NOTICE = u8"Босс повержен, выход открыт";
     constexpr auto INTERACT_PROMPT_PREFIX = u8"[E] Подобрать: ";

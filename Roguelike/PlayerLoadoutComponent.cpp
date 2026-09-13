@@ -92,6 +92,43 @@ namespace RoguelikeGame
         ApplyWeapon(std::clamp(startSlot, 0, slotsCount - 1));
     }
 
+    bool PlayerLoadoutComponent::EquipWeapon(WeaponId id)
+    {
+        if (slotsCount <= 0)
+        {
+            return false;
+        }
+
+        int slot = IsMelee(id) ? slotsCount - 1 : currentSlot;
+        if (IsMelee(slots[slot]) != IsMelee(id))
+        {
+            for (int index = 0; index < slotsCount; index++)
+            {
+                if (IsMelee(slots[index]) == IsMelee(id))
+                {
+                    slot = index;
+                    break;
+                }
+            }
+        }
+
+        if (slots[slot] == id)
+        {
+            return false;
+        }
+
+        slots[slot] = id;
+        magazineAmmo[slot] = GetWeapon(id).magazineSize;
+
+        if (slot == currentSlot)
+        {
+            ApplyWeapon(slot);
+        }
+
+        LOG_INFO(std::string("Player equips ") + GetWeapon(id).id + " in slot " + std::to_string(slot + 1));
+        return true;
+    }
+
     bool PlayerLoadoutComponent::TrySelectSlot(int slot)
     {
         if (slot == NO_WEAPON_SLOT || slot < 0 || slot >= slotsCount || slot == currentSlot || isSwapping)

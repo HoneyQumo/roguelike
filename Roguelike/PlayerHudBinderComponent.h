@@ -6,6 +6,7 @@
 #include "HealthComponent.h"
 #include "InteractionComponent.h"
 #include "InventoryComponent.h"
+#include "ItemEffectComponent.h"
 #include "InventoryScreen.h"
 #include "PlayerLoadoutComponent.h"
 #include "StaminaComponent.h"

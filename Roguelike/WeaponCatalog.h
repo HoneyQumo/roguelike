@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+#include <string_view>
+
 #include <iterator>
 #include "SpriteAtlas.h"
 
@@ -164,6 +166,20 @@ namespace RoguelikeGame
         float speed;
         float cooldown;
     };
+
+    constexpr bool TryGetWeaponId(std::string_view id, WeaponId& outId)
+    {
+        for (int index = 0; index < WEAPON_COUNT; index++)
+        {
+            if (id == WEAPONS[index].id)
+            {
+                outId = static_cast<WeaponId>(index);
+                return true;
+            }
+        }
+
+        return false;
+    }
 
     constexpr const WeaponDefinition& GetWeapon(WeaponId id)
     {

@@ -1,5 +1,6 @@
-#include "Item.h"
+﻿#include "Item.h"
 #include "GameSettings.h"
+#include "ItemIconLayout.h"
 #include "ItemPickupComponent.h"
 #include <BoxColliderComponent.h>
 #include <GameWorld.h>
@@ -32,8 +33,8 @@ namespace RoguelikeGame
 
         auto renderer = gameObject->AddComponent<XYZEngine::SpriteRendererComponent>();
         renderer->SetTexture(*texture);
-        renderer->SetPixelSize(static_cast<int>(definition.icon.rect.width * definition.icon.worldScale),
-            static_cast<int>(definition.icon.rect.height * definition.icon.worldScale));
+        sf::Vector2f iconSize = IconWorldSize(definition.icon);
+        renderer->SetPixelSize(static_cast<int>(iconSize.x), static_cast<int>(iconSize.y));
         renderer->SetColor(definition.icon.tint);
 
         auto collider = gameObject->AddComponent<XYZEngine::BoxColliderComponent>();

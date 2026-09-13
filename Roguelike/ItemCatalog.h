@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <string>
 #include <vector>
@@ -17,6 +17,9 @@ namespace RoguelikeGame
 
         std::vector<ItemDefinition>::const_iterator begin() const;
         std::vector<ItemDefinition>::const_iterator end() const;
+
+        std::vector<ItemDefinition>::iterator begin();
+        std::vector<ItemDefinition>::iterator end();
 
         static const ItemCatalog& Empty();
 

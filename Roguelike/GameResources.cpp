@@ -6,9 +6,13 @@
 #include "BossCatalog.h"
 #include "BossSpriteAtlas.h"
 #include "EnemyCatalog.h"
+#include <PixelBounds.h>
 #include <ResourceSystem.h>
 #include <randomizer.h>
+#include <LoggerRegistry.h>
+#include <SFML/Graphics/Image.hpp>
 #include <SFML/Graphics/Shader.hpp>
+#include <map>
 
 namespace RoguelikeGame
 {
@@ -22,6 +26,31 @@ namespace RoguelikeGame
 
     namespace
     {
+        void TrimItemIcons(ItemCatalog& catalog)
+        {
+            std::map<std::string, sf::Image> sources;
+
+            for (ItemDefinition& item : catalog)
+            {
+                auto source = sources.find(item.icon.texturePath);
+
+                if (source == sources.end())
+                {
+                    sf::Image image;
+
+                    if (!image.loadFromFile(item.icon.texturePath))
+                    {
+                        LOG_ERROR("Item icon texture is not read: " + item.icon.texturePath);
+                        continue;
+                    }
+
+                    source = sources.emplace(item.icon.texturePath, std::move(image)).first;
+                }
+
+                item.icon.rect = XYZEngine::OpaqueBounds(source->second, item.icon.rect, ITEM_ICON_ALPHA_THRESHOLD);
+            }
+        }
+
         std::string MeleeHitSoundKey(const MeleeDefinition& melee, int variant)
         {
             return std::string(melee.hitSound) + "_" + std::to_string(variant);
@@ -162,6 +191,8 @@ namespace RoguelikeGame
             LOG_ERROR(std::string("Item catalog is not loaded: ") + exception.what());
             return;
         }
+
+        TrimItemIcons(items);
 
         for (const ItemDefinition& item : items)
         {

@@ -93,6 +93,7 @@
     <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="ParticleSystemComponent.h" />
     <ClInclude Include="ParticleAuraComponent.h" />
+    <ClInclude Include="PixelBounds.h" />
     <ClInclude Include="ParticleEmitterComponent.h" />
     <ClInclude Include="AudioComponent.h" />
     <ClInclude Include="BoxColliderComponent.h" />
@@ -153,6 +154,7 @@
     <ClCompile Include="ParticleSystem.cpp" />
     <ClCompile Include="ParticleSystemComponent.cpp" />
     <ClCompile Include="ParticleAuraComponent.cpp" />
+    <ClCompile Include="PixelBounds.cpp" />
     <ClCompile Include="ParticleEmitterComponent.cpp" />
     <ClCompile Include="AudioComponent.cpp" />
     <ClCompile Include="BoxColliderComponent.cpp" />

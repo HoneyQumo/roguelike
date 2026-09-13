@@ -139,7 +139,7 @@ namespace RoguelikeGame
 
     constexpr int GROUND_RENDER_LAYER = 0;
     constexpr int BLOOD_RENDER_LAYER = 10;
-    constexpr int ITEM_RENDER_LAYER = 15;
+    constexpr int ITEM_RENDER_LAYER = 25;
     constexpr int CORPSE_RENDER_LAYER = 20;
     constexpr int ENEMY_RENDER_LAYER = 30;
     constexpr int STOWED_WEAPON_RENDER_LAYER = 40;
@@ -295,6 +295,8 @@ namespace RoguelikeGame
     constexpr auto TEST_LEVEL_FILE = "Resources/Levels/test_level.config";
     constexpr auto LEVELS_CATALOG_FILE = "Resources/Levels/levels.config";
     constexpr float LOOT_DROP_SPREAD = 26.f;
+    constexpr float ITEM_WORLD_SIZE = 40.f;
+    constexpr unsigned char ITEM_ICON_ALPHA_THRESHOLD = 8;
     constexpr auto LOOT_CATALOG_FILE = "Resources/Loot/loot.config";
     constexpr auto PROPS_CATALOG_FILE = "Resources/Props/props.config";
     constexpr auto PROP_OBJECT_PREFIX = "Prop_";

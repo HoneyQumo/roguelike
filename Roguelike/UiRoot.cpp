@@ -7,7 +7,7 @@
 
 namespace RoguelikeGame
 {
-    XYZEngine::GameObject* CreateUiRoot(HudScreen& hud, InventoryScreen& inventory, MessageScreen& message)
+    XYZEngine::GameObject* CreateUiRoot(HudScreen& hud, InventoryScreen& inventory, MessageScreen& message, FadeScreen& fade)
     {
         auto gameObject = XYZEngine::GameWorld::Instance()->CreateGameObject(UI_ROOT_OBJECT_NAME);
         gameObject->SetRenderLayer(UI_RENDER_LAYER);
@@ -15,6 +15,7 @@ namespace RoguelikeGame
         XYZEngine::UiManager::Instance()->Push(&hud);
         XYZEngine::UiManager::Instance()->Push(&inventory);
         XYZEngine::UiManager::Instance()->Push(&message);
+        XYZEngine::UiManager::Instance()->Push(&fade);
 
         auto binder = gameObject->AddComponent<PlayerHudBinderComponent>();
         binder->SetScreen(&hud);

@@ -169,6 +169,9 @@ namespace RoguelikeGame
     constexpr int HUD_PROMPT_FONT_SIZE = 24;
     constexpr float HUD_PROMPT_MARGIN_Y = 170.f;
     constexpr sf::Keyboard::Key RESTART_KEY = sf::Keyboard::R;
+    constexpr float LEVEL_FADE_OUT_TIME = 0.35f;
+    constexpr float LEVEL_FADE_IN_TIME = 0.45f;
+    inline const sf::Color LEVEL_FADE_COLOR = {8, 8, 10, 255};
     constexpr float GAME_OVER_DELAY = 1.5f;
     constexpr auto PAUSE_TITLE = u8"ПАУЗА";
     constexpr auto PAUSE_HINT = u8"Esc — продолжить";

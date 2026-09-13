@@ -3,9 +3,10 @@
 #include <GameObject.h>
 #include "HudScreen.h"
 #include "InventoryScreen.h"
+#include "FadeScreen.h"
 #include "MessageScreen.h"
 
 namespace RoguelikeGame
 {
-    XYZEngine::GameObject* CreateUiRoot(HudScreen& hud, InventoryScreen& inventory, MessageScreen& message);
+    XYZEngine::GameObject* CreateUiRoot(HudScreen& hud, InventoryScreen& inventory, MessageScreen& message, FadeScreen& fade);
 }

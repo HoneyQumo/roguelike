@@ -112,6 +112,7 @@
     <ClCompile Include="LevelProgression.cpp" />
     <ClCompile Include="LevelExit.cpp" />
     <ClCompile Include="LevelExitComponent.cpp" />
+    <ClCompile Include="FadeScreen.cpp" />
     <ClCompile Include="HudScreen.cpp" />
     <ClCompile Include="MessageScreen.cpp" />
     <ClCompile Include="PlayerHudBinderComponent.cpp" />
@@ -142,6 +143,7 @@
     <ClInclude Include="AreaDamage.h" />
     <ClInclude Include="DamageInfo.h" />
     <ClInclude Include="ParticleCatalog.h" />
+    <ClInclude Include="FadeScreen.h" />
     <ClInclude Include="HudScreen.h" />
     <ClInclude Include="MessageScreen.h" />
     <ClInclude Include="PlayerHudBinderComponent.h" />

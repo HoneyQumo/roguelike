@@ -81,7 +81,11 @@ namespace RoguelikeGame
         hudScreen = std::make_unique<HudScreen>();
         inventoryScreen = std::make_unique<InventoryScreen>();
         messageScreen = std::make_unique<MessageScreen>();
-        uiRoot = CreateUiRoot(*hudScreen, *inventoryScreen, *messageScreen);
+        fadeScreen = std::make_unique<FadeScreen>();
+        uiRoot = CreateUiRoot(*hudScreen, *inventoryScreen, *messageScreen, *fadeScreen);
+
+        fadeScreen->Blackout();
+        fadeScreen->FadeIn(LEVEL_FADE_IN_TIME);
 
         ShowLevelTitle();
     }
@@ -200,6 +204,11 @@ namespace RoguelikeGame
         }
 
         pendingLevelIndex = step.index;
+
+        if (fadeScreen != nullptr)
+        {
+            fadeScreen->FadeOut(LEVEL_FADE_OUT_TIME);
+        }
     }
 
     void DeveloperLevel::GoToPendingLevel()
@@ -262,9 +271,14 @@ namespace RoguelikeGame
 
     void DeveloperLevel::Update(float deltaTime)
     {
-        if (pendingLevelIndex >= 0)
+        if (pendingLevelIndex >= 0 && (fadeScreen == nullptr || fadeScreen->IsCovered()))
         {
             GoToPendingLevel();
+
+            if (fadeScreen != nullptr)
+            {
+                fadeScreen->FadeIn(LEVEL_FADE_IN_TIME);
+            }
         }
 
         auto input = InputSystem::Instance();
@@ -342,6 +356,7 @@ namespace RoguelikeGame
         hudScreen.reset();
         inventoryScreen.reset();
         messageScreen.reset();
+        fadeScreen.reset();
     }
 
     void DeveloperLevel::SetPaused(bool isPaused)

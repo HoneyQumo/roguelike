@@ -21,6 +21,7 @@ namespace RoguelikeGame
 
         static void SpawnBloodHit(const XYZEngine::Vector2Df& position, const XYZEngine::Vector2Df& direction);
         static void SpawnImpact(const XYZEngine::Vector2Df& position, const XYZEngine::Vector2Df& direction);
+        static void SpawnHit(const std::string& effect, const XYZEngine::Vector2Df& position, const XYZEngine::Vector2Df& direction);
         static void SpawnExplosion(const XYZEngine::Vector2Df& position, float radius);
 
         static void SpawnPuppeteerRift(const XYZEngine::Vector2Df& position, float radius);

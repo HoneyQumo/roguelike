@@ -108,6 +108,7 @@ namespace RoguelikeGame
         health->SubscribeDamage([animation, hurtAudio, hitFlash, meleeComponent](const DamageInfo& damage)
         {
             Fx::SpawnHitBurst(damage.source.position, damage.source.direction);
+            Fx::SpawnBloodHit(damage.source.position, damage.source.direction);
 
             if (meleeComponent != nullptr)
             {

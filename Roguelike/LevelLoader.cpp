@@ -11,6 +11,7 @@ namespace RoguelikeGame
     const std::string MAP_SECTION = "map";
     const std::string LEVEL_SECTION = "level";
     const std::string ITEM_PREFIX = "Item:";
+    const std::string PROP_PREFIX = "Prop:";
     constexpr char COMMENT_SYMBOL = ';';
     constexpr char EMPTY_SYMBOL = ' ';
     const std::string WHITESPACE = " \t";
@@ -197,7 +198,20 @@ namespace RoguelikeGame
                 throw std::runtime_error("Level legend line has no item id");
             }
 
-            legend[symbol] = {TileType::Floor, itemId};
+            legend[symbol] = {TileType::Floor, itemId, ""};
+            return;
+        }
+
+        if (name.compare(0, PROP_PREFIX.size(), PROP_PREFIX) == 0)
+        {
+            std::string propId = Trim(name.substr(PROP_PREFIX.size()));
+            if (propId.empty())
+            {
+                LOG_ERROR("Level legend line " + std::to_string(lineNumber) + " has no prop id");
+                throw std::runtime_error("Level legend line has no prop id");
+            }
+
+            legend[symbol] = {TileType::Floor, "", propId};
             return;
         }
 
@@ -208,7 +222,7 @@ namespace RoguelikeGame
             throw std::runtime_error("Unknown tile type in level legend: " + name);
         }
 
-        legend[symbol] = {tileType, ""};
+        legend[symbol] = {tileType, "", ""};
     }
 
     void LevelLoader::ReadMapLine(const std::string& line, const Legend& legend, LevelData& levelData)
@@ -228,6 +242,11 @@ namespace RoguelikeGame
                 if (!tile->second.itemId.empty())
                 {
                     levelData.items.push_back({column, row, tile->second.itemId});
+                }
+
+                if (!tile->second.propId.empty())
+                {
+                    levelData.props.push_back({column, row, tile->second.propId});
                 }
 
                 tiles.push_back(tile->second.tile);

@@ -81,8 +81,6 @@ namespace RoguelikeGame
             {
                 if (isCharacterHit)
                 {
-                    Fx::SpawnBloodHit(hitPosition, hitDirection);
-
                     if (isPlayerShot)
                     {
                         Fx::ShakeCamera(CAMERA_SHAKE_LIGHT);
@@ -116,10 +114,7 @@ namespace RoguelikeGame
             Fx::SpawnExplosion(blastPosition, blastRadius);
             Fx::ShakeCamera(CAMERA_SHAKE_BLAST);
         });
-        blast->SubscribeHit([](const XYZEngine::Vector2Df& targetPosition, const XYZEngine::Vector2Df& hitDirection)
-        {
-            Fx::SpawnBloodHit(targetPosition, hitDirection);
-        });
+
 
         projectile->SubscribeHit([blast, bodyOffset](const XYZEngine::Vector2Df& hitPosition, const XYZEngine::Vector2Df& hitDirection, bool isCharacterHit)
         {

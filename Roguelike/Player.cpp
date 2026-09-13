@@ -197,6 +197,7 @@ namespace RoguelikeGame
         health->SubscribeDamage([animation, hurtAudio, hitFlash, meleeWeapon](const DamageInfo& damage)
         {
             Fx::ShakeCamera(CAMERA_SHAKE_HEAVY);
+            Fx::SpawnBloodHit(damage.source.position, damage.source.direction);
             meleeWeapon->CancelAttack();
             animation->PlayHurt();
             hurtAudio->Play();

@@ -4,6 +4,7 @@
 #include "Enemy.h"
 #include "EnemyCatalog.h"
 #include "Item.h"
+#include "Prop.h"
 #include "LevelExit.h"
 #include "LevelExitComponent.h"
 #include "Wall.h"
@@ -15,7 +16,7 @@
 
 namespace RoguelikeGame
 {
-    Level LevelBuilder::Build(const LevelData& levelData, const ItemCatalog& items)
+    Level LevelBuilder::Build(const LevelData& levelData, const ItemCatalog& items, const PropCatalog& props)
     {
         Level level;
 
@@ -117,11 +118,13 @@ namespace RoguelikeGame
         LockExit(level);
 
         int itemsCount = BuildItems(levelData, items, level);
+        int propsCount = BuildProps(levelData, props, level);
 
         LOG_INFO("Level built: tiles " + std::to_string(tilesCount)
             + ", walls " + std::to_string(wallsCount)
             + ", enemies " + std::to_string(enemiesCount)
-            + ", items " + std::to_string(itemsCount));
+            + ", items " + std::to_string(itemsCount)
+            + ", props " + std::to_string(propsCount));
 
         return level;
     }
@@ -199,6 +202,37 @@ namespace RoguelikeGame
         }
 
         return itemsCount;
+    }
+
+    int LevelBuilder::BuildProps(const LevelData& levelData, const PropCatalog& props, Level& level)
+    {
+        int propsCount = 0;
+
+        for (const PropPlacement& placement : levelData.props)
+        {
+            const PropDefinition* definition = props.Find(placement.propId);
+            if (definition == nullptr)
+            {
+                LOG_ERROR("Unknown prop id on level: " + placement.propId);
+                continue;
+            }
+
+            auto position = TileToWorldPosition(placement.column, placement.row, levelData.height);
+
+            try
+            {
+                if (level.Add(CreateProp(*definition, position)))
+                {
+                    propsCount++;
+                }
+            }
+            catch (const std::exception& exception)
+            {
+                LOG_ERROR("Can't spawn prop " + placement.propId + ": " + exception.what());
+            }
+        }
+
+        return propsCount;
     }
 
     int LevelBuilder::BuildTiles(const LevelData& levelData, Level& level)

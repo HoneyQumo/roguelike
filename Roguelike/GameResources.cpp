@@ -17,6 +17,7 @@ namespace RoguelikeGame
         ItemCatalog items;
         LevelCatalog levels;
         LootCatalog loot;
+        PropCatalog props;
     }
 
     namespace
@@ -69,6 +70,7 @@ namespace RoguelikeGame
         LoadItems();
         LoadLevels();
         LoadLoot();
+        LoadProps();
 
         XYZEngine::ResourceSystem::Instance()->LoadShader(HIT_FLASH_SHADER, HIT_FLASH_SHADER_FILE, sf::Shader::Fragment);
 
@@ -205,6 +207,23 @@ namespace RoguelikeGame
     const LootCatalog& GameResources::GetLoot()
     {
         return loot;
+    }
+
+    void GameResources::LoadProps()
+    {
+        try
+        {
+            props = PropCatalog::Load(PROPS_CATALOG_FILE);
+        }
+        catch (const std::exception& exception)
+        {
+            LOG_ERROR(std::string("Prop catalog is not loaded: ") + exception.what());
+        }
+    }
+
+    const PropCatalog& GameResources::GetProps()
+    {
+        return props;
     }
 
     const LevelCatalog& GameResources::GetLevels()

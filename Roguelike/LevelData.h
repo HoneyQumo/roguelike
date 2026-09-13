@@ -37,6 +37,13 @@ namespace RoguelikeGame
         {"Exit", TileType::Exit}
     };
 
+    struct PropPlacement
+    {
+        int column = 0;
+        int row = 0;
+        std::string propId;
+    };
+
     struct ItemPlacement
     {
         int column = 0;
@@ -66,6 +73,7 @@ namespace RoguelikeGame
         int height = 0;
         std::vector<std::vector<TileType>> tiles;
         std::vector<ItemPlacement> items;
+        std::vector<PropPlacement> props;
         LevelInfo info;
     };
 

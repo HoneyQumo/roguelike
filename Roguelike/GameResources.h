@@ -5,6 +5,7 @@
 #include "ItemCatalog.h"
 #include "LevelCatalog.h"
 #include "LootCatalog.h"
+#include "PropCatalog.h"
 #include "SpriteAtlas.h"
 #include "WeaponCatalog.h"
 
@@ -19,6 +20,7 @@ namespace RoguelikeGame
         static const ItemCatalog& GetItems();
         static const LevelCatalog& GetLevels();
         static const LootCatalog& GetLoot();
+        static const PropCatalog& GetProps();
 
     private:
         static void LoadCharacterAtlas(const std::string& name, int framesCount, int frameSize = CHARACTER_FRAME_SIZE);
@@ -29,5 +31,6 @@ namespace RoguelikeGame
         static void LoadItems();
         static void LoadLevels();
         static void LoadLoot();
+        static void LoadProps();
     };
 }

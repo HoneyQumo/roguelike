@@ -105,6 +105,9 @@
     <ClInclude Include="Enemies\RouteFollower.h">
       <Filter>Enemies</Filter>
     </ClInclude>
+    <ClInclude Include="Enemies\SightMemory.h">
+      <Filter>Enemies</Filter>
+    </ClInclude>
     <ClInclude Include="Enemies\ChaseRules.h">
       <Filter>Enemies</Filter>
     </ClInclude>

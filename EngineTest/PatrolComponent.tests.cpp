@@ -18,6 +18,7 @@ using RoguelikeGame::LevelGrid;
 using RoguelikeGame::LevelLoader;
 using RoguelikeGame::PatrolComponent;
 using RoguelikeGame::PathService;
+using RoguelikeGame::PatrolStop;
 
 namespace
 {
@@ -34,6 +35,7 @@ namespace
 		"########\n";
 
 	constexpr float STEP = 0.05f;
+	constexpr float LOOK_TIME = 2.f;
 
 	class PatrolComponentTest : public ::testing::Test
 	{
@@ -60,7 +62,7 @@ namespace
 			return LevelGrid::Current().ToWorld(column, row);
 		}
 
-		PatrolComponent* CreateGuard(int column, int row, std::vector<Vector2Df> points)
+		PatrolComponent* CreateGuard(int column, int row, std::vector<PatrolStop> points)
 		{
 			GameObject* guard = GameWorld::Instance()->CreateGameObject("Guard");
 			guard->GetTransform()->SetWorldPosition(At(column, row));
@@ -78,6 +80,7 @@ namespace
 			chase->SetSearchTime(3.f);
 
 			auto patrol = guard->AddComponent<PatrolComponent>();
+			patrol->SetLook(LOOK_TIME, 40.f);
 			patrol->SetPoints(std::move(points));
 
 			return patrol;
@@ -123,7 +126,7 @@ namespace
 
 TEST_F(PatrolComponentTest, GuardWalksToTheNextPoint)
 {
-	PatrolComponent* patrol = CreateGuard(1, 1, {At(1, 1), At(6, 1)});
+	PatrolComponent* patrol = CreateGuard(1, 1, {{At(1, 1), false}, {At(6, 1), false}});
 	GameObject* guard = patrol->GetGameObject();
 
 	float before = (At(6, 1) - guard->GetTransform()->GetWorldPosition()).GetLength();
@@ -135,7 +138,7 @@ TEST_F(PatrolComponentTest, GuardWalksToTheNextPoint)
 
 TEST_F(PatrolComponentTest, GuardTurnsTowardsWhereItWalks)
 {
-	PatrolComponent* patrol = CreateGuard(6, 1, {At(6, 1), At(1, 1)});
+	PatrolComponent* patrol = CreateGuard(6, 1, {{At(6, 1), false}, {At(1, 1), false}});
 	GameObject* guard = patrol->GetGameObject();
 
 	Run(0.5f);
@@ -146,7 +149,7 @@ TEST_F(PatrolComponentTest, GuardTurnsTowardsWhereItWalks)
 
 TEST_F(PatrolComponentTest, RouteLoopsRoundAndRound)
 {
-	PatrolComponent* patrol = CreateGuard(1, 1, {At(1, 1), At(6, 1)});
+	PatrolComponent* patrol = CreateGuard(1, 1, {{At(1, 1), false}, {At(6, 1), false}});
 
 	Run(0.2f);
 	ASSERT_EQ(patrol->GetPointIndex(), 1u);
@@ -157,7 +160,7 @@ TEST_F(PatrolComponentTest, RouteLoopsRoundAndRound)
 
 TEST_F(PatrolComponentTest, GuardWithOnePointStandsAndLooksAtIt)
 {
-	PatrolComponent* patrol = CreateGuard(3, 2, {At(3, 1)});
+	PatrolComponent* patrol = CreateGuard(3, 2, {{At(3, 1), false}});
 	GameObject* guard = patrol->GetGameObject();
 	Vector2Df before = guard->GetTransform()->GetWorldPosition();
 
@@ -188,7 +191,7 @@ TEST_F(PatrolComponentTest, ChaseStopsThePatrol)
 	GameObject* hero = GameWorld::Instance()->CreateGameObject("Hero");
 	hero->GetTransform()->SetWorldPosition(At(3, 1));
 
-	PatrolComponent* patrol = CreateGuard(1, 1, {At(1, 1), At(6, 1)});
+	PatrolComponent* patrol = CreateGuard(1, 1, {{At(1, 1), false}, {At(6, 1), false}});
 	Run(0.2f);
 
 	EXPECT_FALSE(patrol->IsWalking());
@@ -196,7 +199,7 @@ TEST_F(PatrolComponentTest, ChaseStopsThePatrol)
 
 TEST_F(PatrolComponentTest, GuardReturnsToTheNearestPointAfterTheChase)
 {
-	PatrolComponent* patrol = CreateGuard(1, 1, {At(1, 1), At(6, 1), At(6, 3)});
+	PatrolComponent* patrol = CreateGuard(1, 1, {{At(1, 1), false}, {At(6, 1), false}, {At(6, 3), false}});
 	Run(0.5f);
 	ASSERT_EQ(patrol->GetPointIndex(), 1u);
 
@@ -211,4 +214,82 @@ TEST_F(PatrolComponentTest, GuardReturnsToTheNearestPointAfterTheChase)
 
 	ASSERT_TRUE(WaitForPatrol(patrol));
 	EXPECT_EQ(patrol->GetPointIndex(), 2u);
+}
+
+TEST_F(PatrolComponentTest, GuardStopsAtAWatchPoint)
+{
+	PatrolComponent* patrol = CreateGuard(1, 1, {{At(1, 1), true}, {At(6, 1), false}});
+
+	Run(0.2f);
+
+	EXPECT_TRUE(patrol->IsLooking());
+	EXPECT_FALSE(patrol->IsWalking());
+	EXPECT_EQ(patrol->GetPointIndex(), 0u);
+}
+
+TEST_F(PatrolComponentTest, GuardDoesNotStopAtAPlainPoint)
+{
+	PatrolComponent* patrol = CreateGuard(1, 1, {{At(1, 1), false}, {At(6, 1), false}});
+
+	Run(0.2f);
+
+	EXPECT_FALSE(patrol->IsLooking());
+	EXPECT_EQ(patrol->GetPointIndex(), 1u);
+}
+
+TEST_F(PatrolComponentTest, GuardTurnsBothWaysWhileLooking)
+{
+	PatrolComponent* patrol = CreateGuard(1, 1, {{At(1, 1), true}, {At(6, 1), false}});
+	GameObject* guard = patrol->GetGameObject();
+	Run(0.2f);
+	ASSERT_TRUE(patrol->IsLooking());
+
+	float least = guard->GetTransform()->GetWorldRotation();
+	float most = least;
+	for (int step = 0; step < 40; step++)
+	{
+		Run(STEP);
+		float angle = guard->GetTransform()->GetWorldRotation();
+		least = std::min(least, angle);
+		most = std::max(most, angle);
+	}
+
+	EXPECT_GT(most - least, 30.f);
+}
+
+TEST_F(PatrolComponentTest, LookEndsAndTheGuardWalksOn)
+{
+	PatrolComponent* patrol = CreateGuard(1, 1, {{At(1, 1), true}, {At(6, 1), false}});
+	Run(0.2f);
+	ASSERT_TRUE(patrol->IsLooking());
+
+	Run(LOOK_TIME + 0.2f);
+
+	EXPECT_FALSE(patrol->IsLooking());
+	EXPECT_EQ(patrol->GetPointIndex(), 1u);
+	EXPECT_TRUE(patrol->IsWalking());
+}
+
+TEST_F(PatrolComponentTest, SeeingTheTargetBreaksTheLook)
+{
+	PatrolComponent* patrol = CreateGuard(1, 1, {{At(1, 1), true}, {At(6, 1), false}});
+	Run(0.2f);
+	ASSERT_TRUE(patrol->IsLooking());
+
+	GameObject* hero = GameWorld::Instance()->CreateGameObject("Hero");
+	hero->GetTransform()->SetWorldPosition(At(3, 1));
+	Run(0.2f);
+
+	EXPECT_FALSE(patrol->IsLooking());
+}
+
+TEST_F(PatrolComponentTest, GuardWithoutLookTimeWalksThroughWatchPoints)
+{
+	PatrolComponent* patrol = CreateGuard(1, 1, {{At(1, 1), true}, {At(6, 1), false}});
+	patrol->SetLook(0.f, 40.f);
+
+	Run(0.2f);
+
+	EXPECT_FALSE(patrol->IsLooking());
+	EXPECT_EQ(patrol->GetPointIndex(), 1u);
 }

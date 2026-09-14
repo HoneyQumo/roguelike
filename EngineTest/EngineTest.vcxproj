@@ -106,6 +106,7 @@
     <ClCompile Include="ChaseComponent.tests.cpp" />
     <ClCompile Include="PatrolRules.tests.cpp" />
     <ClCompile Include="ProgressWatch.tests.cpp" />
+    <ClCompile Include="LookAround.tests.cpp" />
     <ClCompile Include="Navigator.tests.cpp" />
     <ClCompile Include="PatrolRoutes.tests.cpp" />
     <ClCompile Include="PatrolComponent.tests.cpp" />

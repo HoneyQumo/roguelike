@@ -57,6 +57,7 @@ namespace RoguelikeGame
             }
 
             auto patrol = object->AddComponent<PatrolComponent>();
+            patrol->SetLook(config.lookTime, config.lookHalfSweep);
             const PatrolRoute* route = PatrolRoutes::Current().Nearest(position, PATROL_JOIN_DISTANCE);
             if (route != nullptr)
             {

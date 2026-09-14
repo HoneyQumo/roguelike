@@ -5,6 +5,7 @@
 #include "PathService.h"
 #include <AimRotationComponent.h>
 #include <DebugDraw.h>
+#include <MathUtils.h>
 #include <GameObject.h>
 
 using namespace XYZEngine;
@@ -23,21 +24,55 @@ namespace RoguelikeGame
         chase = gameObject->GetComponent<ChaseComponent>();
     }
 
-    void PatrolComponent::SetPoints(std::vector<Vector2Df> newPoints)
+    void PatrolComponent::SetPoints(std::vector<PatrolStop> newPoints)
     {
         points = std::move(newPoints);
         index = 0u;
+        isLooking = false;
         navigator.Reset();
     }
 
-    const std::vector<Vector2Df>& PatrolComponent::GetPoints() const
+    const std::vector<PatrolStop>& PatrolComponent::GetPoints() const
     {
         return points;
     }
 
     bool PatrolComponent::IsWalking() const
     {
-        return points.size() > 1u && (chase == nullptr || !chase->IsEngaged());
+        return points.size() > 1u && !isLooking && (chase == nullptr || !chase->IsEngaged());
+    }
+
+    bool PatrolComponent::IsLooking() const
+    {
+        return isLooking;
+    }
+
+    void PatrolComponent::SetLook(float newLookTime, float newHalfSweep)
+    {
+        lookTime = newLookTime;
+        lookHalfSweep = newHalfSweep;
+    }
+
+    void PatrolComponent::StartLook()
+    {
+        isLooking = true;
+        lookElapsed = 0.f;
+        lookPlan.baseAngle = transform->GetWorldRotation();
+        lookPlan.halfSweep = lookHalfSweep;
+        lookPlan.duration = lookTime;
+
+        movement->SetDirection({0.f, 0.f});
+        navigator.Reset();
+    }
+
+    void PatrolComponent::AimAtAngle(float degrees)
+    {
+        if (aim == nullptr)
+        {
+            return;
+        }
+
+        aim->AimAtPoint(transform->GetWorldPosition() + DirectionFromDegrees(degrees) * LOOK_AIM_DISTANCE);
     }
 
     std::size_t PatrolComponent::GetPointIndex() const
@@ -55,6 +90,7 @@ namespace RoguelikeGame
         if (chase != nullptr && chase->IsEngaged())
         {
             wasEngaged = true;
+            isLooking = false;
             navigator.Reset();
             return;
         }
@@ -72,24 +108,46 @@ namespace RoguelikeGame
         {
             if (aim != nullptr)
             {
-                aim->AimAtPoint(points[0]);
+                aim->AimAtPoint(points[0].position);
             }
 
             return;
         }
 
-        if (HasReachedPatrolPoint(points[index], position, ENEMY_ROUTE_ARRIVE_DISTANCE))
+        if (isLooking)
         {
+            lookElapsed += deltaTime;
+            AimAtAngle(LookAngleAt(lookPlan, lookElapsed));
+            movement->SetDirection({0.f, 0.f});
+
+            if (IsLookDone(lookPlan, lookElapsed))
+            {
+                isLooking = false;
+                index = NextPatrolIndex(index, points.size());
+                navigator.Reset();
+            }
+
+            return;
+        }
+
+        if (HasReachedPatrolPoint(points[index].position, position, ENEMY_ROUTE_ARRIVE_DISTANCE))
+        {
+            if (points[index].isWatch && lookTime > 0.f)
+            {
+                StartLook();
+                return;
+            }
+
             index = NextPatrolIndex(index, points.size());
             navigator.Reset();
         }
 
         if (aim != nullptr)
         {
-            aim->AimAtPoint(points[index]);
+            aim->AimAtPoint(points[index].position);
         }
 
-        WalkTo(points[index], deltaTime);
+        WalkTo(points[index].position, deltaTime);
     }
 
     void PatrolComponent::WalkTo(const Vector2Df& goal, float deltaTime)
@@ -107,8 +165,8 @@ namespace RoguelikeGame
 
         for (std::size_t step = 0u; step < points.size(); step++)
         {
-            const Vector2Df& from = points[step];
-            const Vector2Df& to = points[NextPatrolIndex(step, points.size())];
+            const Vector2Df& from = points[step].position;
+            const Vector2Df& to = points[NextPatrolIndex(step, points.size())].position;
 
             DebugDraw::Instance()->DrawLine(from, to, DEBUG_PATROL_COLOR);
         }

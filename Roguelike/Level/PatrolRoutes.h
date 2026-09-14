@@ -8,10 +8,16 @@
 
 namespace RoguelikeGame
 {
+    struct PatrolStop
+    {
+        XYZEngine::Vector2Df position;
+        bool isWatch = false;
+    };
+
     struct PatrolRoute
     {
         std::string id;
-        std::vector<XYZEngine::Vector2Df> points;
+        std::vector<PatrolStop> points;
     };
 
     class PatrolRoutes

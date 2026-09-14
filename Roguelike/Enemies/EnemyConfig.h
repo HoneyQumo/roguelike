@@ -27,5 +27,7 @@ namespace RoguelikeGame
         float visionHalfAngle = 180.f;
         float alertHalfAngle = 180.f;
         float searchTime = 0.f;
+        float lookTime = 0.f;
+        float lookHalfSweep = 0.f;
     };
 }

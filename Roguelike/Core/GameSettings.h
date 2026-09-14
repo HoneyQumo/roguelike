@@ -37,6 +37,7 @@ namespace RoguelikeGame
     constexpr float NAVIGATION_MIN_PROGRESS = 0.4f;
     constexpr float ENEMY_ROUTE_ARRIVE_DISTANCE = 0.5f * TILE_SIZE;
     constexpr float PATROL_JOIN_DISTANCE = 4.f * TILE_SIZE;
+    constexpr float LOOK_AIM_DISTANCE = 200.f;
 
     constexpr int CHARACTER_SPRITE_SIZE = CHARACTER_FRAME_SIZE;
 

@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "PatrolRules.h"
 
+using RoguelikeGame::PatrolStop;
+
 using RoguelikeGame::HasReachedPatrolPoint;
 using RoguelikeGame::NearestPatrolIndex;
 using RoguelikeGame::NextPatrolIndex;
@@ -8,7 +10,7 @@ using XYZEngine::Vector2Df;
 
 namespace
 {
-	const std::vector<Vector2Df> SQUARE = {{0.f, 0.f}, {100.f, 0.f}, {100.f, 100.f}, {0.f, 100.f}};
+	const std::vector<PatrolStop> SQUARE = {{{0.f, 0.f}, false}, {{100.f, 0.f}, true}, {{100.f, 100.f}, false}, {{0.f, 100.f}, true}};
 }
 
 TEST(PatrolRulesTest, RouteLoopsBackToTheStart)

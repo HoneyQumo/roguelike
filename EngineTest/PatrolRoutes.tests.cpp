@@ -71,10 +71,10 @@ TEST(PatrolRoutesTest, RouteKeepsTheLegendOrder)
 	ASSERT_NE(route, nullptr);
 	ASSERT_EQ(route->points.size(), 3u);
 
-	EXPECT_EQ(route->points[0].y, grid.ToWorld(5, 3).y);
-	EXPECT_EQ(route->points[1].y, grid.ToWorld(5, 1).y);
-	EXPECT_EQ(route->points[2].y, grid.ToWorld(1, 1).y);
-	EXPECT_EQ(route->points[2].x, grid.ToWorld(1, 1).x);
+	EXPECT_EQ(route->points[0].position.y, grid.ToWorld(5, 3).y);
+	EXPECT_EQ(route->points[1].position.y, grid.ToWorld(5, 1).y);
+	EXPECT_EQ(route->points[2].position.y, grid.ToWorld(1, 1).y);
+	EXPECT_EQ(route->points[2].position.x, grid.ToWorld(1, 1).x);
 }
 
 TEST(PatrolRoutesTest, RoutesAreToldApart)

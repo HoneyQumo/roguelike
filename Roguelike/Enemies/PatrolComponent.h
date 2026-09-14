@@ -6,6 +6,7 @@
 #include <Cooldown.h>
 #include <TransformComponent.h>
 #include <MovementComponent.h>
+#include "LookAround.h"
 #include "PatrolRules.h"
 #include "Navigator.h"
 
@@ -27,10 +28,13 @@ namespace RoguelikeGame
         void Update(float deltaTime) override;
         void Render() override;
 
-        void SetPoints(std::vector<XYZEngine::Vector2Df> newPoints);
-        const std::vector<XYZEngine::Vector2Df>& GetPoints() const;
+        void SetPoints(std::vector<PatrolStop> newPoints);
+        const std::vector<PatrolStop>& GetPoints() const;
+
+        void SetLook(float newLookTime, float newHalfSweep);
 
         bool IsWalking() const;
+        bool IsLooking() const;
         std::size_t GetPointIndex() const;
 
     private:
@@ -39,13 +43,21 @@ namespace RoguelikeGame
         XYZEngine::AimRotationComponent* aim = nullptr;
         ChaseComponent* chase = nullptr;
 
-        std::vector<XYZEngine::Vector2Df> points;
+        std::vector<PatrolStop> points;
         std::size_t index = 0u;
         bool wasEngaged = false;
+
+        float lookTime = 0.f;
+        float lookHalfSweep = 0.f;
+        float lookElapsed = 0.f;
+        bool isLooking = false;
+        LookPlan lookPlan;
 
         Navigator navigator;
 
         void WalkTo(const XYZEngine::Vector2Df& goal, float deltaTime);
+        void StartLook();
+        void AimAtAngle(float degrees);
         void DrawRoute() const;
     };
 }

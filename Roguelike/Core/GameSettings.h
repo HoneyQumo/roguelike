@@ -289,6 +289,7 @@ namespace RoguelikeGame
     constexpr float HEAVY_CHARGED_GLOW_PERIOD = 0.18f;
 
     constexpr auto PLAYER_OBJECT_NAME = "Player";
+    constexpr auto DOOR_OBJECT_PREFIX = "Door_";
     constexpr auto PARTICLES_OBJECT_NAME = "Particles";
     constexpr auto UI_ROOT_OBJECT_NAME = "Ui";
     constexpr auto LEVEL_EXIT_OBJECT_NAME = "LevelExit";
@@ -372,5 +373,7 @@ namespace RoguelikeGame
     inline const sf::Color DEBUG_BLAST_COLOR = {230, 80, 230};
     inline const sf::Color DEBUG_ROUTE_COLOR = {80, 220, 220};
     inline const sf::Color DEBUG_PATROL_COLOR = {90, 160, 240};
+    inline const sf::Color DOOR_LOCKED_COLOR = {150, 120, 45};
+    inline const sf::Color DOOR_OPEN_COLOR = {70, 60, 35};
     constexpr int DEBUG_VISION_CONE_STEPS = 12;
 }

@@ -12,7 +12,8 @@ namespace RoguelikeGame
         Floor,
         Wall,
         Gap,
-        Blocked
+        Blocked,
+        Door
     };
 
     class LevelGrid

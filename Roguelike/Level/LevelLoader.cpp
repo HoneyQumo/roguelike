@@ -14,6 +14,7 @@ namespace RoguelikeGame
     const std::string PROP_PREFIX = "Prop:";
     const std::string PATROL_PREFIX = "Patrol:";
     const std::string WATCH_PREFIX = "Watch:";
+    const std::string DOOR_PREFIX = "Door:";
     constexpr char COMMENT_SYMBOL = ';';
     constexpr char EMPTY_SYMBOL = ' ';
     const std::string WHITESPACE = " \t";
@@ -224,7 +225,7 @@ namespace RoguelikeGame
                 throw std::runtime_error("Level legend line has no item id");
             }
 
-            legend[symbol] = {TileType::Floor, itemId, "", "", 0, false};
+            legend[symbol] = {TileType::Floor, itemId, "", "", 0, false, ""};
             return;
         }
 
@@ -237,7 +238,20 @@ namespace RoguelikeGame
                 throw std::runtime_error("Level legend line has no prop id");
             }
 
-            legend[symbol] = {TileType::Floor, "", propId, "", 0, false};
+            legend[symbol] = {TileType::Floor, "", propId, "", 0, false, ""};
+            return;
+        }
+
+        if (name.compare(0, DOOR_PREFIX.size(), DOOR_PREFIX) == 0)
+        {
+            std::string doorId = Trim(name.substr(DOOR_PREFIX.size()));
+            if (doorId.empty())
+            {
+                LOG_ERROR("Level legend line " + std::to_string(lineNumber) + " has no door id");
+                throw std::runtime_error("Level legend line has no door id");
+            }
+
+            legend[symbol] = {TileType::Door, "", "", "", 0, false, doorId};
             return;
         }
 
@@ -260,7 +274,7 @@ namespace RoguelikeGame
                 }
             }
 
-            legend[symbol] = {TileType::Floor, "", "", routeId, order, isWatch};
+            legend[symbol] = {TileType::Floor, "", "", routeId, order, isWatch, ""};
             return;
         }
 
@@ -271,7 +285,7 @@ namespace RoguelikeGame
             throw std::runtime_error("Unknown tile type in level legend: " + name);
         }
 
-        legend[symbol] = {tileType, "", "", "", 0, false};
+        legend[symbol] = {tileType, "", "", "", 0, false, ""};
     }
 
     void LevelLoader::ReadMapLine(const std::string& line, const Legend& legend, LevelData& levelData)
@@ -301,6 +315,11 @@ namespace RoguelikeGame
                 if (!tile->second.patrolId.empty())
                 {
                     levelData.patrols.push_back({column, row, tile->second.patrolId, tile->second.patrolOrder, tile->second.patrolWatch});
+                }
+
+                if (!tile->second.doorId.empty())
+                {
+                    levelData.doors.push_back({column, row, tile->second.doorId});
                 }
 
                 tiles.push_back(tile->second.tile);

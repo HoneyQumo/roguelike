@@ -19,7 +19,8 @@ namespace RoguelikeGame
         RadioSpawn,
         BossSpawn,
         Entrance,
-        Exit
+        Exit,
+        Door
     };
 
     struct TileTypeName
@@ -49,6 +50,13 @@ namespace RoguelikeGame
         int column = 0;
         int row = 0;
         std::string itemId;
+    };
+
+    struct DoorPlacement
+    {
+        int column = 0;
+        int row = 0;
+        std::string doorId;
     };
 
     struct PatrolPoint
@@ -88,6 +96,7 @@ namespace RoguelikeGame
         std::vector<ItemPlacement> items;
         std::vector<PropPlacement> props;
         std::vector<PatrolPoint> patrols;
+        std::vector<DoorPlacement> doors;
         LevelInfo info;
     };
 

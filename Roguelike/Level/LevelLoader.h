@@ -22,6 +22,7 @@ namespace RoguelikeGame
             std::string patrolId;
             int patrolOrder = 0;
             bool patrolWatch = false;
+            std::string doorId;
         };
 
         using Legend = std::map<char, LegendEntry>;

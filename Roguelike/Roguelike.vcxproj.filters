@@ -150,6 +150,21 @@
     <ClInclude Include="Level\ActPlan.h">
       <Filter>Level</Filter>
     </ClInclude>
+    <ClInclude Include="Level\Door.h">
+      <Filter>Level</Filter>
+    </ClInclude>
+    <ClCompile Include="Level\Door.cpp">
+      <Filter>Level</Filter>
+    </ClCompile>
+    <ClInclude Include="Level\DoorComponent.h">
+      <Filter>Level</Filter>
+    </ClInclude>
+    <ClCompile Include="Level\DoorComponent.cpp">
+      <Filter>Level</Filter>
+    </ClCompile>
+    <ClInclude Include="Items\DoorRules.h">
+      <Filter>Items</Filter>
+    </ClInclude>
     <ClCompile Include="Level\ActPlan.cpp">
       <Filter>Level</Filter>
     </ClCompile>

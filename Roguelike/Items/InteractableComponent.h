@@ -7,7 +7,7 @@ namespace XYZEngine
 {
     class ColliderComponent;
     class GameObject;
-    class Trigger;
+    struct Trigger;
 }
 
 namespace RoguelikeGame

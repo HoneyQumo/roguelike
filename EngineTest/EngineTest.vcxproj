@@ -102,6 +102,7 @@
     <ClCompile Include="ActPlan.tests.cpp" />
     <ClCompile Include="DoorRules.tests.cpp" />
     <ClCompile Include="Door.tests.cpp" />
+    <ClCompile Include="DoorHinge.tests.cpp" />
     <ClCompile Include="ActAssembler.tests.cpp" />
     <ClCompile Include="PathField.tests.cpp" />
     <ClCompile Include="PathService.tests.cpp" />
@@ -152,6 +153,9 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\Roguelike\Level\DoorComponent.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Roguelike\Level\DoorHinge.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\Roguelike\Level\ActAssembler.cpp">

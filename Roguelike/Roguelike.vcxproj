@@ -158,6 +158,7 @@
         <ClCompile Include="Level\ActPlan.cpp"/>
         <ClCompile Include="Level\Door.cpp"/>
         <ClCompile Include="Level\DoorComponent.cpp"/>
+        <ClCompile Include="Level\DoorHinge.cpp"/>
         <ClCompile Include="Level\ActAssembler.cpp"/>
         <ClCompile Include="Enemies\PatrolComponent.cpp"/>
         <ClCompile Include="Enemies\Navigator.cpp"/>
@@ -230,6 +231,7 @@
         <ClInclude Include="Level\ActPlan.h"/>
         <ClInclude Include="Level\Door.h"/>
         <ClInclude Include="Level\DoorComponent.h"/>
+        <ClInclude Include="Level\DoorHinge.h"/>
         <ClInclude Include="Items\DoorRules.h"/>
         <ClInclude Include="Level\ActAssembler.h"/>
         <ClInclude Include="Enemies\ChaseComponent.h"/>

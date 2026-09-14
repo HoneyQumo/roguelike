@@ -233,6 +233,9 @@ namespace RoguelikeGame
     constexpr auto INTERACT_PROMPT_PREFIX = u8"[E] Подобрать: ";
     constexpr auto CONTAINER_OPEN_PREFIX = u8"[E] Открыть: ";
     constexpr auto CONTAINER_LOCKED_PREFIX = u8"Заперто: нужен ";
+    constexpr auto DOOR_OPEN_PROMPT = u8"[E] Открыть дверь";
+    constexpr auto DOOR_LOCKED_PREFIX = u8"Дверь заперта: нужен ";
+    constexpr auto DOOR_UNKNOWN_KEY_NAME = u8"ключ";
     constexpr int HUD_PROMPT_FONT_SIZE = 24;
     constexpr float HUD_PROMPT_MARGIN_Y = 170.f;
     constexpr sf::Keyboard::Key RESTART_KEY = sf::Keyboard::R;
@@ -317,6 +320,8 @@ namespace RoguelikeGame
     constexpr auto PUPPETEER_SNAP_TEXTURE = "fx_puppeteer_snap";
     constexpr auto PUPPETEER_MARK_TEXTURE = "fx_puppeteer_mark";
     constexpr auto RELOAD_MAG_TEXTURE = "reload_mag";
+    constexpr auto DOOR_LOCKED_TEXTURE = "door_locked";
+    constexpr auto DOOR_OPEN_TEXTURE = "door_open";
     constexpr auto HIT_FLASH_SHADER = "hit_flash";
     constexpr auto HUD_FONT = "hud";
     constexpr auto SHOT_SOUND = "shot";
@@ -332,6 +337,7 @@ namespace RoguelikeGame
     constexpr auto RELOAD_MAG_FILE = "Resources/Textures/reload_mag.png";
     constexpr auto FX_ATLAS_FILE = "Resources/Textures/fx.png";
     constexpr auto TILES_ATLAS_FILE = "Resources/Textures/tiles.png";
+    constexpr auto DOORS_ATLAS_FILE = "Resources/Textures/doors.png";
     constexpr auto HIT_FLASH_SHADER_FILE = "Resources/Shaders/hit_flash.frag";
     constexpr auto SHOT_SOUND_FILE = "Resources/Audio/shot.wav";
     constexpr auto HURT_SOUND_FILE = "Resources/Audio/hurt.wav";
@@ -375,5 +381,9 @@ namespace RoguelikeGame
     inline const sf::Color DEBUG_PATROL_COLOR = {90, 160, 240};
     inline const sf::Color DOOR_LOCKED_COLOR = {150, 120, 45};
     inline const sf::Color DOOR_OPEN_COLOR = {70, 60, 35};
+    constexpr float DOOR_SWING_ANGLE = 90.f;
+    constexpr float DOOR_SWING_TIME = 0.5f;
+    constexpr float DOOR_REACH_MARGIN = 28.f;
+    constexpr auto DOOR_LEAF_OBJECT_NAME = "Leaf";
     constexpr int DEBUG_VISION_CONE_STEPS = 12;
 }

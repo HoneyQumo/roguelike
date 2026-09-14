@@ -7,6 +7,7 @@
 #include "ChaseComponent.h"
 #include "FactionComponent.h"
 #include "HealthComponent.h"
+#include "DamageInfo.h"
 
 using RoguelikeGame::BossAbility;
 using RoguelikeGame::BossBrainComponent;
@@ -519,16 +520,42 @@ TEST_F(BossBrainTest, AbilityWaitsForItsCooldown)
 	EXPECT_EQ(brain->GetAbilityUses(BossAbility::Blast), 1);
 }
 
-TEST_F(BossBrainTest, LostPlayerReturnsBossToIdle)
+TEST_F(BossBrainTest, LostPlayerDoesNotEndTheFight)
 {
 	CreateBoss("puppeteer");
 	CreatePlayer(400.f, 0.f);
 	Step(2);
 
 	MovePlayerTo(3000.f, 0.f);
-	StepUntil(BossState::Idle);
+	Step(30);
+
+	EXPECT_NE(brain->GetState(), BossState::Idle);
+	EXPECT_GT(boss->GetComponent<MovementComponent>()->GetDirection().GetLengthSquared(), 0.f);
+}
+
+TEST_F(BossBrainTest, BossThatNeverSawThePlayerStaysIdle)
+{
+	CreateBoss("puppeteer");
+	CreatePlayer(3000.f, 0.f);
+	Step(10);
 
 	EXPECT_EQ(brain->GetState(), BossState::Idle);
+}
+
+TEST_F(BossBrainTest, DamageFromOutsideTheRadiusStartsTheFight)
+{
+	CreateBoss("puppeteer");
+	CreatePlayer(3000.f, 0.f);
+	Step(2);
+	ASSERT_EQ(brain->GetState(), BossState::Idle);
+
+	RoguelikeGame::DamageSource source;
+	source.attackerName = "Player";
+	source.attackerFaction = Faction::Player;
+	boss->GetComponent<HealthComponent>()->TakeDamage(10.f, source);
+	Step(2);
+
+	EXPECT_NE(brain->GetState(), BossState::Idle);
 }
 
 TEST_F(BossBrainTest, DeadPlayerIsNotChased)

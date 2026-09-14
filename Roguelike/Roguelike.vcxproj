@@ -198,6 +198,7 @@
         <ClInclude Include="Level\LevelExitComponent.h"/>
         <ClInclude Include="Core\Faction.h"/>
         <ClInclude Include="Core\FactionComponent.h"/>
+        <ClInclude Include="Enemies\ChaseRules.h"/>
         <ClInclude Include="Enemies\ChaseComponent.h"/>
         <ClInclude Include="Characters\AmmoPouchComponent.h"/>
         <ClInclude Include="Characters\HealthBarComponent.h"/>

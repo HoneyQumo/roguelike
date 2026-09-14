@@ -1,6 +1,8 @@
 #include "BossBrainComponent.h"
 #include "AreaDamage.h"
 #include "ChaseComponent.h"
+#include "DamageInfo.h"
+#include "FactionComponent.h"
 #include "HealthComponent.h"
 #include "GameSettings.h"
 #include <GameObject.h>
@@ -23,11 +25,37 @@ namespace RoguelikeGame
         movement = gameObject->GetComponent<XYZEngine::MovementComponent>();
         chase = gameObject->GetComponent<ChaseComponent>();
         health = gameObject->GetComponent<HealthComponent>();
+
+        if (health != nullptr)
+        {
+            health->SubscribeDamage([this](const DamageInfo& damage)
+            {
+                if (CanDamage(damage.source.attackerFaction, GetFactionOf(gameObject)))
+                {
+                    Provoke();
+                }
+            });
+        }
         animation = gameObject->GetComponent<XYZEngine::SpriteMovementAnimationComponent>();
 
         baseSpeed = movement != nullptr ? movement->GetSpeed() : config.speed;
 
         EnterState(state);
+    }
+
+    void BossBrainComponent::Provoke()
+    {
+        if (isProvoked)
+        {
+            return;
+        }
+
+        isProvoked = true;
+
+        if (chase != nullptr)
+        {
+            chase->SetForcedChase(true);
+        }
     }
 
     void BossBrainComponent::Update(float deltaTime)
@@ -53,7 +81,12 @@ namespace RoguelikeGame
             float distance = toTarget.GetLength();
             input.isTargetDetected = distance <= config.detectionRadius;
 
-            if (state == BossState::Chase && input.isTargetDetected)
+            if (input.isTargetDetected)
+            {
+                Provoke();
+            }
+
+            if (state == BossState::Chase && (input.isTargetDetected || isProvoked))
             {
                 input.chosen = ChooseAction(distance);
             }
@@ -63,6 +96,8 @@ namespace RoguelikeGame
         {
             UpdateAttack();
         }
+
+        input.isProvoked = isProvoked && target != nullptr;
 
         BossState next = NextBossState(state, input);
         if (next == state)

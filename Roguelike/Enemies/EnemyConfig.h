@@ -23,5 +23,6 @@ namespace RoguelikeGame
         float projectileSpeed = 0.f;
 
         const char* lootTable = nullptr;
+        float alertTime = 0.f;
     };
 }

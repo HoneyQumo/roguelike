@@ -10,6 +10,11 @@
 
 namespace RoguelikeGame
 {
+    class ChaseComponent;
+}
+
+namespace RoguelikeGame
+{
     // Отвечает за аттаку. За направление отвечает AimRotationComponent.
     class EnemyAttackComponent : public XYZEngine::Component
     {
@@ -28,6 +33,7 @@ namespace RoguelikeGame
         WeaponComponent* weapon = nullptr;
         MeleeWeaponComponent* meleeWeapon = nullptr;
         HealthComponent* health = nullptr;
+        ChaseComponent* chase = nullptr;
 
         std::string targetName;
         float attackRange = 0.f;

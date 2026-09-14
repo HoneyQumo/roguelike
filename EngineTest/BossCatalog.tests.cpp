@@ -415,3 +415,49 @@ TEST(BossCatalogTest, BossesOnTheSharedSheetKeepTheirWeapon)
 		EXPECT_TRUE(boss->hasBasicAttack) << id;
 	}
 }
+
+TEST(BossCatalogTest, ProvokedBossDoesNotForgetTheFight)
+{
+	BossBrainInput input = Alive();
+	input.isTargetDetected = false;
+	input.isProvoked = true;
+
+	EXPECT_EQ(NextBossState(BossState::Chase, input), BossState::Chase);
+}
+
+TEST(BossCatalogTest, WithoutProvocationTheBossStillForgets)
+{
+	BossBrainInput input = Alive();
+	input.isTargetDetected = false;
+	input.isProvoked = false;
+
+	EXPECT_EQ(NextBossState(BossState::Chase, input), BossState::Idle);
+}
+
+TEST(BossCatalogTest, ProvocationStartsTheFightFromIdle)
+{
+	BossBrainInput input = Alive();
+	input.isTargetDetected = false;
+	input.isProvoked = true;
+
+	EXPECT_EQ(NextBossState(BossState::Idle, input), BossState::Chase);
+}
+
+TEST(BossCatalogTest, ProvocationDoesNotSaveADeadBoss)
+{
+	BossBrainInput input = Alive();
+	input.isAlive = false;
+	input.isProvoked = true;
+
+	EXPECT_EQ(NextBossState(BossState::Chase, input), BossState::Death);
+}
+
+TEST(BossCatalogTest, ProvocationDoesNotBlockRage)
+{
+	BossBrainInput input = Alive();
+	input.isEnrageDue = true;
+	input.isProvoked = true;
+	input.isTargetDetected = false;
+
+	EXPECT_EQ(NextBossState(BossState::Chase, input), BossState::Enraged);
+}

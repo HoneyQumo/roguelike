@@ -50,6 +50,8 @@ namespace RoguelikeGame
             chase->SetVisionHalfAngle(config.visionHalfAngle);
             chase->SetAlertHalfAngle(config.alertHalfAngle);
             chase->SetSearchTime(config.searchTime);
+            chase->SetLook(config.lookTime, config.lookHalfSweep);
+            chase->SetSearchSpots(config.searchRadius, config.searchSpotsMin, config.searchSpotsMax);
 
             if (definition != nullptr)
             {

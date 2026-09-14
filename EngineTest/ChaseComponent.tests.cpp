@@ -27,6 +27,7 @@ namespace
 
 	constexpr float SEARCH_TIME = 4.f;
 	constexpr float STEP = 0.05f;
+	constexpr float LOOK_TIME = 1.f;
 
 	class ChaseComponentTest : public ::testing::Test
 	{
@@ -78,6 +79,7 @@ namespace
 			chase->SetAlertHalfAngle(60.f);
 			chase->SetAlertTime(5.f);
 			chase->SetSearchTime(SEARCH_TIME);
+			chase->SetLook(LOOK_TIME, 40.f);
 
 			return chase;
 		}
@@ -242,4 +244,29 @@ TEST_F(ChaseComponentTest, EmptyLastSeenPlaceEndsTheSearchQuickly)
 	Run(SEARCH_TIME - 1.f);
 
 	EXPECT_FALSE(chase->IsAlerted());
+}
+
+TEST_F(ChaseComponentTest, EnemyWithSearchSpotsChecksSeveralPlaces)
+{
+	GameObject* hero = CreateHero(3, 1);
+	ChaseComponent* plain = CreateEnemy(1, 1);
+	Run(0.2f);
+	ASSERT_TRUE(plain->IsChasing());
+
+	hero->GetTransform()->SetWorldPosition(At(5, 1));
+	Run(LOOK_TIME + 0.5f);
+	ASSERT_FALSE(plain->IsAlerted());
+
+	GameWorld::Instance()->Clear();
+	hero = CreateHero(3, 1);
+	ChaseComponent* seeker = CreateEnemy(1, 1);
+	seeker->SetSearchSpots(4, 2, 2);
+	Run(0.2f);
+	ASSERT_TRUE(seeker->IsChasing());
+
+	GameWorld::Instance()->DestroyGameObject(hero);
+	GameWorld::Instance()->LateUpdate();
+	Run(6.f * LOOK_TIME);
+
+	EXPECT_GE(seeker->GetSearchStep(), 2u);
 }

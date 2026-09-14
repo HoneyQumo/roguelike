@@ -5,6 +5,8 @@
 #include <TransformComponent.h>
 #include <MovementComponent.h>
 #include "ChaseRules.h"
+#include "HidingSpots.h"
+#include "LookTurn.h"
 #include "Navigator.h"
 #include "SightMemory.h"
 #include "Vision.h"
@@ -42,11 +44,14 @@ namespace RoguelikeGame
 		void SetVisionHalfAngle(float newHalfAngle);
 		void SetAlertHalfAngle(float newHalfAngle);
 		void SetSearchTime(float newSearchTime);
+		void SetLook(float newLookTime, float newHalfSweep);
+		void SetSearchSpots(int newRadius, int newMin, int newMax);
 		void SetForcedChase(bool newIsForced);
 
 		bool IsChasing() const;
 		bool IsAlerted() const;
 		bool IsEngaged() const;
+		std::size_t GetSearchStep() const;
 
 	private:
 		XYZEngine::TransformComponent* transform = nullptr;
@@ -68,6 +73,17 @@ namespace RoguelikeGame
 		XYZEngine::Vector2Df investigatePoint = {0.f, 0.f};
 		SightMemory memory;
 
+		float lookTime = 0.f;
+		float lookHalfSweep = 0.f;
+		int searchRadius = 0;
+		int searchSpotsMin = 0;
+		int searchSpotsMax = 0;
+
+		LookTurn look;
+		std::vector<XYZEngine::Vector2Df> searchSpots;
+		std::size_t searchSpot = 0u;
+		bool hasSearched = false;
+
 		Navigator navigator;
 
 		void OnDamage(const DamageInfo& damage);
@@ -75,6 +91,10 @@ namespace RoguelikeGame
 		void ApplyAim(const ChaseSense& sense);
 		XYZEngine::Vector2Df Facing() const;
 		void MoveTowards(const XYZEngine::Vector2Df& goal, float deltaTime);
+		void AimAtAngle(float degrees);
+		void PlanSearch();
+		bool TakeNextSpot();
+		void SearchAtTheSpot(float deltaTime);
 		void DrawRoute() const;
 		void DrawVision() const;
 	};

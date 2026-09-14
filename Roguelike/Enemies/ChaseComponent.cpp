@@ -10,6 +10,7 @@
 #include <GameObject.h>
 #include <GameWorld.h>
 #include <MathUtils.h>
+#include <randomizer.h>
 
 using namespace XYZEngine;
 
@@ -154,6 +155,10 @@ namespace RoguelikeGame
 		{
 			investigatePoint = targetPosition;
 			memory = Remember(memory, searchTime);
+			hasSearched = false;
+			searchSpots.clear();
+			searchSpot = 0u;
+			look.Stop();
 		}
 
 		ChaseMove move = ChooseChaseMove(sense);
@@ -177,9 +182,34 @@ namespace RoguelikeGame
 
 		navigator.Reset();
 
-		if (sense.isAlerted && memory.hasPoint && !RoguelikeGame::IsTargetDetected(sense))
+		if (!sense.isAlerted || RoguelikeGame::IsTargetDetected(sense))
 		{
-			memory = GiveUp(memory, ENEMY_LOOK_AROUND_TIME);
+			return;
+		}
+
+		if (look.IsRunning())
+		{
+			SearchAtTheSpot(deltaTime);
+			return;
+		}
+
+		if (memory.hasPoint)
+		{
+			if (!hasSearched)
+			{
+				PlanSearch();
+			}
+
+			if (lookTime > 0.f)
+			{
+				look.Start(transform->GetWorldRotation(), lookHalfSweep, lookTime);
+				return;
+			}
+
+			if (!TakeNextSpot())
+			{
+				memory = GiveUp(memory, 0.f);
+			}
 		}
 	}
 
@@ -297,6 +327,84 @@ namespace RoguelikeGame
 		searchTime = newSearchTime;
 	}
 
+	void ChaseComponent::SetLook(float newLookTime, float newHalfSweep)
+	{
+		lookTime = newLookTime;
+		lookHalfSweep = newHalfSweep;
+	}
+
+	void ChaseComponent::SetSearchSpots(int newRadius, int newMin, int newMax)
+	{
+		searchRadius = newRadius;
+		searchSpotsMin = newMin;
+		searchSpotsMax = newMax;
+	}
+
+	void ChaseComponent::AimAtAngle(float degrees)
+	{
+		if (aim == nullptr)
+		{
+			return;
+		}
+
+		aim->AimAtPoint(transform->GetWorldPosition() + DirectionFromDegrees(degrees) * LOOK_AIM_DISTANCE);
+	}
+
+	void ChaseComponent::PlanSearch()
+	{
+		hasSearched = true;
+		searchSpots.clear();
+		searchSpot = 0u;
+
+		if (searchRadius <= 0 || searchSpotsMax <= 0)
+		{
+			return;
+		}
+
+		const PathField* field = PathService::Current().FieldTo(investigatePoint);
+		if (field == nullptr)
+		{
+			return;
+		}
+
+		int wanted = random<int>(std::max(1, searchSpotsMin), std::max(1, searchSpotsMax));
+		searchSpots = FindHidingSpots(LevelGrid::Current(), *field, investigatePoint,
+			searchRadius, static_cast<std::size_t>(wanted));
+	}
+
+	bool ChaseComponent::TakeNextSpot()
+	{
+		if (searchSpot >= searchSpots.size())
+		{
+			return false;
+		}
+
+		investigatePoint = searchSpots[searchSpot];
+		searchSpot++;
+		memory = Alarm(memory, searchTime);
+
+		return true;
+	}
+
+	void ChaseComponent::SearchAtTheSpot(float deltaTime)
+	{
+		look.Tick(deltaTime);
+		AimAtAngle(look.GetAngle());
+
+		if (!look.IsDone())
+		{
+			return;
+		}
+
+		look.Stop();
+
+		if (!TakeNextSpot())
+		{
+			memory = GiveUp(memory, 0.f);
+			searchSpots.clear();
+		}
+	}
+
 	void ChaseComponent::SetForcedChase(bool newIsForced)
 	{
 		isForced = newIsForced;
@@ -315,5 +423,10 @@ namespace RoguelikeGame
 	bool ChaseComponent::IsEngaged() const
 	{
 		return isEngaged;
+	}
+
+	std::size_t ChaseComponent::GetSearchStep() const
+	{
+		return searchSpot;
 	}
 }

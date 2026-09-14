@@ -117,6 +117,15 @@
     <ClInclude Include="Enemies\LookAround.h">
       <Filter>Enemies</Filter>
     </ClInclude>
+    <ClInclude Include="Enemies\LookTurn.h">
+      <Filter>Enemies</Filter>
+    </ClInclude>
+    <ClInclude Include="Enemies\HidingSpots.h">
+      <Filter>Enemies</Filter>
+    </ClInclude>
+    <ClCompile Include="Enemies\HidingSpots.cpp">
+      <Filter>Enemies</Filter>
+    </ClCompile>
     <ClInclude Include="Enemies\Navigator.h">
       <Filter>Enemies</Filter>
     </ClInclude>

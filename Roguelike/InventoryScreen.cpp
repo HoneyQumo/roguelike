@@ -1,6 +1,7 @@
 #include "InventoryScreen.h"
 #include "GameSettings.h"
 #include "Item.h"
+#include "WeaponCatalog.h"
 #include <InputSystem.h>
 #include <ResourceSystem.h>
 #include <TextUtils.h>
@@ -22,6 +23,32 @@ namespace RoguelikeGame
         }
     }
 
+    std::string InventoryHint(const ItemDefinition* item)
+    {
+        if (item == nullptr)
+        {
+            return {};
+        }
+
+        if (item->effect.kind == ItemEffectKind::EquipWeapon)
+        {
+            WeaponId id = WeaponId::Knife;
+            if (!TryGetWeaponId(item->effect.target, id))
+            {
+                return {};
+            }
+
+            return std::string(INVENTORY_EQUIP_HINT) + std::to_string(PreferredWeaponSlot(id) + 1);
+        }
+
+        if (item->effect.kind == ItemEffectKind::None)
+        {
+            return {};
+        }
+
+        return INVENTORY_USE_HINT;
+    }
+
     InventoryScreen::InventoryScreen()
     {
         const sf::Font* font = XYZEngine::ResourceSystem::Instance()->GetFont(HUD_FONT);
@@ -34,7 +61,7 @@ namespace RoguelikeGame
         window->SetAnchor(XYZEngine::UiAnchor::Center);
         window->SetPivot(XYZEngine::UiAnchor::Center);
         window->SetSize({GridWidth() + 2.f * INVENTORY_WINDOW_PADDING,
-            GridHeight() + INVENTORY_TITLE_HEIGHT + 2.f * INVENTORY_WINDOW_PADDING});
+            GridHeight() + INVENTORY_TITLE_HEIGHT + INVENTORY_HINT_HEIGHT + 2.f * INVENTORY_WINDOW_PADDING});
         window->SetFillColor(INVENTORY_WINDOW_COLOR);
         window->SetOutline(2.f, INVENTORY_SLOT_OUTLINE_COLOR);
 
@@ -51,6 +78,17 @@ namespace RoguelikeGame
         title->SetUtf8Text(INVENTORY_TITLE);
 
         BuildSlots(font);
+
+        hint = window->AddChild<XYZEngine::UiLabel>();
+        hint->SetAnchor(XYZEngine::UiAnchor::Bottom);
+        hint->SetPivot(XYZEngine::UiAnchor::Bottom);
+        hint->SetOffset({0.f, -INVENTORY_WINDOW_PADDING * 0.4f});
+        hint->SetSize({GridWidth(), INVENTORY_HINT_HEIGHT});
+        hint->SetAlign(XYZEngine::UiAnchor::Center);
+        hint->SetCharacterSize(INVENTORY_HINT_FONT_SIZE);
+        hint->SetColor(AMMO_HUD_COLOR);
+        hint->SetOutline(AMMO_HUD_OUTLINE, AMMO_HUD_OUTLINE_COLOR);
+        hint->SetFont(font);
 
         SetVisible(false);
     }
@@ -326,6 +364,25 @@ namespace RoguelikeGame
             widgets.count->SetText(sf::String(std::to_string(slot.count)));
             widgets.panel->SetFillColor(isSelected ? INVENTORY_SLOT_SELECTED_COLOR : INVENTORY_SLOT_FILLED_COLOR);
         }
+
+        RefreshHint();
+    }
+
+    void InventoryScreen::RefreshHint()
+    {
+        const ItemDefinition* item = nullptr;
+
+        if (inventory != nullptr && selectedSlot >= 0 && selectedSlot < inventory->GetCapacity())
+        {
+            item = inventory->GetSlot(selectedSlot).item;
+        }
+
+        hint->SetUtf8Text(InventoryHint(item).c_str());
+    }
+
+    const XYZEngine::UiLabel& InventoryScreen::GetHint() const
+    {
+        return *hint;
     }
 
     const XYZEngine::UiLabel& InventoryScreen::GetSlotName(int index) const

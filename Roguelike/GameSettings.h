@@ -73,6 +73,10 @@ namespace RoguelikeGame
     constexpr float INVENTORY_OPEN_TIME = 0.18f;
     constexpr float INVENTORY_SLIDE_OFFSET = 60.f;
     constexpr auto INVENTORY_TITLE = u8"ИНВЕНТАРЬ";
+    constexpr float INVENTORY_HINT_HEIGHT = 30.f;
+    constexpr int INVENTORY_HINT_FONT_SIZE = 18;
+    constexpr auto INVENTORY_USE_HINT = u8"[Enter] Использовать";
+    constexpr auto INVENTORY_EQUIP_HINT = u8"[Enter] Экипировать в слот ";
 
     constexpr int PLAYER_WEAPON_SLOTS = 3;
     constexpr int PLAYER_START_WEAPON_SLOT = 2;

@@ -16,6 +16,31 @@ namespace RoguelikeGame
         };
     }
 
+    bool IsJustBehindACorner(const LevelGrid& grid, const Vector2Df& from, int column, int row)
+    {
+        if (!grid.IsPassable(column, row) || !grid.HasWallBetween(from, grid.ToWorld(column, row)))
+        {
+            return false;
+        }
+
+        constexpr int STEP_COLUMNS[4] = {1, -1, 0, 0};
+        constexpr int STEP_ROWS[4] = {0, 0, 1, -1};
+
+        for (int side = 0; side < 4; side++)
+        {
+            int neighbourColumn = column + STEP_COLUMNS[side];
+            int neighbourRow = row + STEP_ROWS[side];
+
+            if (grid.IsPassable(neighbourColumn, neighbourRow)
+                && !grid.HasWallBetween(from, grid.ToWorld(neighbourColumn, neighbourRow)))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     std::vector<Vector2Df> FindHidingSpots(const LevelGrid& grid, const PathField& field,
         const Vector2Df& from, int radius, std::size_t wanted, int minGap)
     {
@@ -34,13 +59,7 @@ namespace RoguelikeGame
         {
             for (int column = centreColumn - radius; column <= centreColumn + radius; column++)
             {
-                if (!grid.IsPassable(column, row) || !field.IsReachable(column, row))
-                {
-                    continue;
-                }
-
-                Vector2Df spot = grid.ToWorld(column, row);
-                if (!grid.HasWallBetween(from, spot))
+                if (!field.IsReachable(column, row) || !IsJustBehindACorner(grid, from, column, row))
                 {
                     continue;
                 }

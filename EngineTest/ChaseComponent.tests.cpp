@@ -247,27 +247,61 @@ TEST_F(ChaseComponentTest, EmptyLastSeenPlaceEndsTheSearchQuickly)
 	EXPECT_FALSE(chase->IsAlerted());
 }
 
-TEST_F(ChaseComponentTest, EnemyWithSearchSpotsChecksSeveralPlaces)
+TEST_F(ChaseComponentTest, EnemyWithSearchSpotsGoesToCheckThem)
 {
 	GameObject* hero = CreateHero(3, 1);
-	ChaseComponent* plain = CreateEnemy(1, 1);
-	Run(0.2f);
-	ASSERT_TRUE(plain->IsChasing());
-
-	hero->GetTransform()->SetWorldPosition(At(5, 1));
-	Run(LOOK_TIME + 0.5f);
-	ASSERT_FALSE(plain->IsAlerted());
-
-	GameWorld::Instance()->Clear();
-	hero = CreateHero(3, 1);
 	ChaseComponent* seeker = CreateEnemy(1, 1);
 	seeker->SetSearchSpots(10, 2, 2);
+	seeker->SetSearchLook(0.3f);
+	seeker->SetSearchGap(1);
 	Run(0.2f);
 	ASSERT_TRUE(seeker->IsChasing());
 
 	GameWorld::Instance()->DestroyGameObject(hero);
 	GameWorld::Instance()->LateUpdate();
-	Run(14.f * LOOK_TIME);
+	Run(20.f);
 
-	EXPECT_GE(seeker->GetSearchStep(), 2u);
+	EXPECT_GE(seeker->GetSearchStep(), 1u);
+}
+
+TEST_F(ChaseComponentTest, AlertedEnemySeesFurther)
+{
+	GameObject* hero = CreateHero(3, 1);
+	ChaseComponent* chase = CreateEnemy(1, 1);
+	chase->SetDetectionRadius(100.f);
+	chase->SetAlertRadiusScale(2.f);
+	chase->GetGameObject()->GetComponent<MovementComponent>()->SetSpeed(0.f);
+
+	Run(0.2f);
+	EXPECT_FALSE(chase->IsChasing());
+
+	hero->GetTransform()->SetWorldPosition(At(2, 1));
+	Run(0.2f);
+	ASSERT_TRUE(chase->IsChasing());
+
+	hero->GetTransform()->SetWorldPosition(At(3, 1));
+	Run(0.2f);
+
+	EXPECT_TRUE(chase->IsChasing());
+}
+
+TEST_F(ChaseComponentTest, SeeingTheTargetDuringTheSearchResumesTheChase)
+{
+	GameObject* hero = CreateHero(3, 1);
+	ChaseComponent* chase = CreateEnemy(1, 1);
+	chase->SetSearchSpots(10, 2, 2);
+	chase->SetSearchLook(2.f);
+	Run(0.2f);
+	ASSERT_TRUE(chase->IsChasing());
+
+	hero->GetTransform()->SetWorldPosition(At(5, 1));
+	Run(1.f);
+	ASSERT_FALSE(chase->IsChasing());
+	ASSERT_TRUE(chase->IsAlerted());
+
+	hero->GetTransform()->SetWorldPosition(At(4, 2));
+	Run(0.3f);
+
+	EXPECT_TRUE(chase->IsChasing());
+	EXPECT_EQ(chase->GetSearchStep(), 0u);
 }

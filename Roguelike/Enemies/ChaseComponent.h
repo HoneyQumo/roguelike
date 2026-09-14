@@ -46,6 +46,9 @@ namespace RoguelikeGame
 		void SetSearchTime(float newSearchTime);
 		void SetLook(float newLookTime, float newHalfSweep);
 		void SetSearchSpots(int newRadius, int newMin, int newMax);
+		void SetSearchLook(float newLookTime);
+		void SetSearchGap(int newGap);
+		void SetAlertRadiusScale(float newScale);
 		void SetForcedChase(bool newIsForced);
 
 		bool IsChasing() const;
@@ -78,6 +81,9 @@ namespace RoguelikeGame
 		int searchRadius = 0;
 		int searchSpotsMin = 0;
 		int searchSpotsMax = 0;
+		float searchLookTime = 0.f;
+		int searchGap = 3;
+		float alertRadiusScale = 1.f;
 
 		LookTurn look;
 		std::vector<XYZEngine::Vector2Df> searchSpots;
@@ -95,6 +101,7 @@ namespace RoguelikeGame
 		void PlanSearch();
 		bool TakeNextSpot();
 		void SearchAtTheSpot(float deltaTime);
+		void StartSearchLook();
 		void DrawRoute() const;
 		void DrawVision() const;
 	};

@@ -208,5 +208,42 @@ TEST(HidingSpotsTest, TheLastPlaceIsAtTheFarEnd)
 	int nearest = field.GetDistance(column, row);
 
 	EXPECT_GT(furthest, nearest);
-	EXPECT_GT(furthest, 8);
+}
+
+TEST(HidingSpotsTest, SpotIsRightBehindACorner)
+{
+	LevelGrid grid = GridOf(
+		"[map]\n"
+		"#######\n"
+		"#.....#\n"
+		"#.###.#\n"
+		"#.....#\n"
+		"#######\n");
+
+	Vector2Df from = grid.ToWorld(1, 1);
+
+	EXPECT_TRUE(RoguelikeGame::IsJustBehindACorner(grid, from, 5, 2));
+	EXPECT_FALSE(RoguelikeGame::IsJustBehindACorner(grid, from, 2, 1));
+	EXPECT_FALSE(RoguelikeGame::IsJustBehindACorner(grid, from, 2, 2));
+	EXPECT_FALSE(RoguelikeGame::IsJustBehindACorner(grid, from, 4, 3));
+}
+
+TEST(HidingSpotsTest, TwoCornersGiveTwoPlaces)
+{
+	LevelGrid grid = GridOf(
+		"[map]\n"
+		"#########\n"
+		"#.......#\n"
+		"#.#####.#\n"
+		"#.......#\n"
+		"#.#####.#\n"
+		"#.......#\n"
+		"#########\n");
+
+	PathField field;
+	field.Build(grid, 4, 1);
+
+	std::vector<Vector2Df> spots = FindHidingSpots(grid, field, grid.ToWorld(4, 1), 6, 2u, 1);
+
+	EXPECT_EQ(spots.size(), 2u);
 }

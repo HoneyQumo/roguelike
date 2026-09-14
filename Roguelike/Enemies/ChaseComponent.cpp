@@ -72,7 +72,7 @@ namespace RoguelikeGame
 		ChaseSense sense;
 		sense.detectionRadius = detectionRadius;
 		sense.stopDistance = stopDistance;
-		sense.arriveDistance = ENEMY_ALERT_ARRIVE_DISTANCE;
+		sense.arriveDistance = SEARCH_ARRIVE_DISTANCE;
 		sense.isAlerted = IsSearching(memory);
 		sense.isForced = isForced && hasTarget;
 		sense.hasPoint = memory.hasPoint;
@@ -86,7 +86,7 @@ namespace RoguelikeGame
 		if (hasTarget)
 		{
 			VisionRange range;
-			range.maxDistance = detectionRadius;
+			range.maxDistance = detectionRadius * (sense.isAlerted ? alertRadiusScale : 1.f);
 			range.calmHalfAngle = visionHalfAngle;
 			range.alertHalfAngle = alertHalfAngle;
 
@@ -200,9 +200,9 @@ namespace RoguelikeGame
 				PlanSearch();
 			}
 
-			if (lookTime > 0.f)
+			if (searchLookTime > 0.f || lookTime > 0.f)
 			{
-				look.Start(transform->GetWorldRotation(), lookHalfSweep, lookTime);
+				StartSearchLook();
 				return;
 			}
 
@@ -340,6 +340,30 @@ namespace RoguelikeGame
 		searchSpotsMax = newMax;
 	}
 
+	void ChaseComponent::SetSearchLook(float newLookTime)
+	{
+		searchLookTime = newLookTime;
+	}
+
+	void ChaseComponent::SetSearchGap(int newGap)
+	{
+		searchGap = newGap;
+	}
+
+	void ChaseComponent::SetAlertRadiusScale(float newScale)
+	{
+		alertRadiusScale = newScale;
+	}
+
+	void ChaseComponent::StartSearchLook()
+	{
+		float base = searchLookTime > 0.f ? searchLookTime : lookTime;
+		float duration = random<float>(base, base * SEARCH_LOOK_SPREAD);
+
+		look.Start(transform->GetWorldRotation(), lookHalfSweep, duration);
+		memory = Alarm(memory, searchTime + duration);
+	}
+
 	void ChaseComponent::AimAtAngle(float degrees)
 	{
 		if (aim == nullptr)
@@ -369,7 +393,7 @@ namespace RoguelikeGame
 
 		int wanted = random<int>(std::max(1, searchSpotsMin), std::max(1, searchSpotsMax));
 		searchSpots = FindHidingSpots(LevelGrid::Current(), *field, investigatePoint,
-			searchRadius, static_cast<std::size_t>(wanted), SEARCH_SPOT_GAP);
+			searchRadius, static_cast<std::size_t>(wanted), searchGap);
 	}
 
 	bool ChaseComponent::TakeNextSpot()

@@ -6,7 +6,6 @@
 #include "PathService.h"
 #include "PropVisualComponent.h"
 #include <ColliderComponent.h>
-#include <Collision.h>
 #include <GameObject.h>
 #include <LoggerRegistry.h>
 #include <TransformComponent.h>
@@ -52,10 +51,7 @@ namespace RoguelikeGame
         if (collider == nullptr)
         {
             LOG_ERROR("Door needs a collider on " + gameObject->GetName());
-            return;
         }
-
-        collider->SubscribeCollision([this](const XYZEngine::Collision& collision) { OnCollision(collision); });
     }
 
     void DoorComponent::Update(float deltaTime)
@@ -170,20 +166,6 @@ namespace RoguelikeGame
     bool DoorComponent::HasKey(XYZEngine::GameObject* actor) const
     {
         return CarriedKey(actor, doorId) != nullptr;
-    }
-
-    void DoorComponent::OnCollision(const XYZEngine::Collision& collision)
-    {
-        XYZEngine::ColliderComponent* other = collision.GetFirst();
-        if (other == collider)
-        {
-            other = collision.GetSecond();
-        }
-
-        if (other != nullptr)
-        {
-            TryOpenFor(other->GetGameObject());
-        }
     }
 
     bool DoorComponent::TryOpenFor(XYZEngine::GameObject* actor)

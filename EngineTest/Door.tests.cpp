@@ -8,6 +8,7 @@
 #include "PathService.h"
 #include <BoxColliderComponent.h>
 #include <GameWorld.h>
+#include <RigidbodyComponent.h>
 #include <sstream>
 
 using namespace XYZEngine;
@@ -101,6 +102,23 @@ namespace
 		{
 			GameObject* hero = GameWorld::Instance()->CreateGameObject("Hero");
 			hero->AddComponent<InventoryComponent>()->SetCapacity(4);
+
+			return hero;
+		}
+
+		GameObject* PushHeroIntoTheDoor()
+		{
+			GameObject* hero = CreateHeroWithKey();
+			Vector2Df doorPlace = LevelGrid::Current().ToWorld(2, 1);
+			hero->GetTransform()->SetWorldPosition({doorPlace.x - 30.f, doorPlace.y});
+			hero->AddComponent<RigidbodyComponent>();
+			hero->AddComponent<BoxColliderComponent>()->SetSize(40.f, 40.f);
+
+			for (int step = 0; step < 5; step++)
+			{
+				GameWorld::Instance()->Update(0.016f);
+				GameWorld::Instance()->UpdatePhysics();
+			}
 
 			return hero;
 		}
@@ -356,4 +374,31 @@ TEST_F(DoorTest, LeafStopsAtTheOpenAngle)
 	}
 
 	EXPECT_NEAR(door->GetLeafAngle(), -90.f, 0.01f);
+}
+
+TEST_F(DoorTest, WalkingIntoTheDoorPushesTheHeroBack)
+{
+	CreateDoor();
+	GameObject* hero = PushHeroIntoTheDoor();
+
+	EXPECT_LT(hero->GetTransform()->GetWorldPosition().x, LevelGrid::Current().ToWorld(2, 1).x - 30.f);
+}
+
+TEST_F(DoorTest, WalkingIntoTheDoorDoesNotSpendTheKey)
+{
+	DoorComponent* door = CreateDoor();
+	GameObject* hero = PushHeroIntoTheDoor();
+
+	EXPECT_FALSE(door->IsOpen());
+	EXPECT_TRUE(hero->GetComponent<InventoryComponent>()->Contains("key_rusty"));
+}
+
+TEST_F(DoorTest, DoorOpensOnlyWhenAsked)
+{
+	DoorComponent* door = CreateDoor();
+	GameObject* hero = PushHeroIntoTheDoor();
+	ASSERT_FALSE(door->IsOpen());
+
+	EXPECT_TRUE(door->Interact(hero));
+	EXPECT_TRUE(door->IsOpen());
 }

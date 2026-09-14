@@ -10,7 +10,6 @@
 namespace XYZEngine
 {
     class ColliderComponent;
-    struct Collision;
     class TransformComponent;
 }
 
@@ -53,7 +52,6 @@ namespace RoguelikeGame
         XYZEngine::SubscriptionId SubscribeRefused(std::function<void(const XYZEngine::Vector2Df&)> onRefused);
 
     private:
-        void OnCollision(const XYZEngine::Collision& collision);
         void TurnLeaf();
 
         XYZEngine::ColliderComponent* collider = nullptr;

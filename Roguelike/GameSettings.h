@@ -294,6 +294,7 @@ namespace RoguelikeGame
     constexpr auto ROCKET_TEXTURE = "fx_rocket";
     constexpr auto EXPLOSION_TEXTURE = "fx_explosion";
     constexpr auto FX_ATLAS_TEXTURE = "fx_atlas";
+    constexpr auto TILES_TEXTURE = "tiles";
     constexpr auto BOSS_FX_ATLAS_FILE = "Resources/Textures/boss_puppeteer_fx.png";
     constexpr auto PUPPETEER_RIFT_TEXTURE = "fx_puppeteer_rift";
     constexpr auto PUPPETEER_CLOUD_TEXTURE = "fx_puppeteer_cloud";
@@ -314,6 +315,7 @@ namespace RoguelikeGame
     constexpr auto WEAPONS_ATLAS_FILE = "Resources/Textures/weapons.png";
     constexpr auto RELOAD_MAG_FILE = "Resources/Textures/reload_mag.png";
     constexpr auto FX_ATLAS_FILE = "Resources/Textures/fx.png";
+    constexpr auto TILES_ATLAS_FILE = "Resources/Textures/tiles.png";
     constexpr auto HIT_FLASH_SHADER_FILE = "Resources/Shaders/hit_flash.frag";
     constexpr auto SHOT_SOUND_FILE = "Resources/Audio/shot.wav";
     constexpr auto HURT_SOUND_FILE = "Resources/Audio/hurt.wav";

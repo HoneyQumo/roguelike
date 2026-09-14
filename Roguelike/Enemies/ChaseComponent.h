@@ -5,6 +5,7 @@
 #include <TransformComponent.h>
 #include <MovementComponent.h>
 #include "ChaseRules.h"
+#include "Vision.h"
 
 namespace XYZEngine
 {
@@ -35,6 +36,7 @@ namespace RoguelikeGame
 		float GetStopDistance() const;
 
 		void SetAlertTime(float newAlertTime);
+		void SetVisionHalfAngle(float newHalfAngle);
 		void SetForcedChase(bool newIsForced);
 
 		bool IsChasing() const;
@@ -51,6 +53,7 @@ namespace RoguelikeGame
 		float detectionRadius = 0.f;
 		float stopDistance = 0.f;
 		float alertTime = 0.f;
+		float visionHalfAngle = 180.f;
 		float alertLeft = 0.f;
 		bool isForced = false;
 		bool isChasing = false;
@@ -62,5 +65,6 @@ namespace RoguelikeGame
 		void OnDamage(const DamageInfo& damage);
 		ChaseSense ReadSense(const XYZEngine::Vector2Df& targetPosition, bool hasTarget) const;
 		void ApplyAim(const ChaseSense& sense);
+		XYZEngine::Vector2Df Facing() const;
 	};
 }

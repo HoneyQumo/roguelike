@@ -2,11 +2,13 @@
 #include "DamageInfo.h"
 #include "FactionComponent.h"
 #include "GameSettings.h"
+#include "LevelGrid.h"
 #include "HealthComponent.h"
 #include <AimRotationComponent.h>
 #include <DebugDraw.h>
 #include <GameObject.h>
 #include <GameWorld.h>
+#include <MathUtils.h>
 
 using namespace XYZEngine;
 
@@ -74,17 +76,29 @@ namespace RoguelikeGame
 		sense.isAlerted = alertLeft > 0.f;
 		sense.isForced = isForced && hasTarget;
 		sense.hasPoint = hasPoint;
-		sense.distanceToTarget = hasTarget
-			? (targetPosition - transform->GetWorldPosition()).GetLength()
-			: detectionRadius + 1.f;
-		sense.distanceToPoint = hasPoint ? (investigatePoint - transform->GetWorldPosition()).GetLength() : 0.f;
 
-		if (!hasTarget)
+		Vector2Df position = transform->GetWorldPosition();
+		Vector2Df toTarget = targetPosition - position;
+
+		sense.distanceToTarget = hasTarget ? toTarget.GetLength() : detectionRadius + 1.f;
+		sense.distanceToPoint = hasPoint ? (investigatePoint - position).GetLength() : 0.f;
+
+		if (hasTarget)
 		{
-			sense.detectionRadius = 0.f;
+			VisionCone cone;
+			cone.maxDistance = detectionRadius;
+			cone.halfAngleDegrees = sense.isAlerted ? 180.f : visionHalfAngle;
+
+			bool isBlocked = LevelGrid::Current().HasWallBetween(position, targetPosition);
+			sense.isVisible = CanSeeTarget(cone, Facing(), toTarget, isBlocked);
 		}
 
 		return sense;
+	}
+
+	Vector2Df ChaseComponent::Facing() const
+	{
+		return DirectionFromDegrees(transform->GetWorldRotation());
 	}
 
 	void ChaseComponent::ApplyAim(const ChaseSense& sense)
@@ -97,7 +111,7 @@ namespace RoguelikeGame
 		if (RoguelikeGame::IsTargetDetected(sense))
 		{
 			aim->AimAtGameObject(targetName);
-			aim->SetMaxDistance(sense.isForced || sense.isAlerted ? 0.f : detectionRadius);
+			aim->SetMaxDistance(0.f);
 			return;
 		}
 
@@ -105,7 +119,10 @@ namespace RoguelikeGame
 		{
 			aim->AimAtPoint(investigatePoint);
 			aim->SetMaxDistance(0.f);
+			return;
 		}
+
+		aim->StopAiming();
 	}
 
 	void ChaseComponent::Update(float deltaTime)
@@ -195,6 +212,11 @@ namespace RoguelikeGame
 	void ChaseComponent::SetAlertTime(float newAlertTime)
 	{
 		alertTime = newAlertTime;
+	}
+
+	void ChaseComponent::SetVisionHalfAngle(float newHalfAngle)
+	{
+		visionHalfAngle = newHalfAngle;
 	}
 
 	void ChaseComponent::SetForcedChase(bool newIsForced)

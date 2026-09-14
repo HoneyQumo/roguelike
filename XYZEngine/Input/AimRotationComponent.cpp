@@ -65,6 +65,13 @@ namespace XYZEngine
         aimPoint = point;
     }
 
+    void AimRotationComponent::StopAiming()
+    {
+        isCursorAim = false;
+        isPointAim = false;
+        targetName.clear();
+    }
+
     void AimRotationComponent::SetMaxDistance(float newMaxDistance)
     {
         maxDistance = newMaxDistance;

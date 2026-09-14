@@ -96,6 +96,8 @@
     <ClCompile Include="PropVisual.tests.cpp" />
     <ClCompile Include="TileAtlas.tests.cpp" />
     <ClCompile Include="ChaseRules.tests.cpp" />
+    <ClCompile Include="LevelGrid.tests.cpp" />
+    <ClCompile Include="Vision.tests.cpp" />
     <ClCompile Include="InventoryComponent.tests.cpp" />
     <ClCompile Include="Interaction.tests.cpp" />
     <ClCompile Include="InventoryScreen.tests.cpp" />
@@ -112,6 +114,9 @@
     <ClCompile Include="PropCatalog.tests.cpp" />
     <ClCompile Include="Destructible.tests.cpp" />
     <ClCompile Include="Level.tests.cpp" />
+    <ClCompile Include="..\Roguelike\Level\LevelGrid.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\Roguelike\Level\LevelLoader.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>

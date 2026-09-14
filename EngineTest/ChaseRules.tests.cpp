@@ -7,13 +7,14 @@ using RoguelikeGame::ChooseChaseMove;
 
 namespace
 {
-	ChaseSense Enemy(float distanceToTarget)
+	ChaseSense Enemy(float distanceToTarget, bool isVisible = false)
 	{
 		ChaseSense sense;
 		sense.detectionRadius = 300.f;
 		sense.stopDistance = 40.f;
 		sense.arriveDistance = 48.f;
 		sense.distanceToTarget = distanceToTarget;
+		sense.isVisible = isVisible;
 
 		return sense;
 	}
@@ -21,17 +22,18 @@ namespace
 
 TEST(ChaseRulesTest, TargetInsideTheRadiusIsChased)
 {
-	EXPECT_EQ(ChooseChaseMove(Enemy(200.f)), ChaseMove::Approach);
+	EXPECT_EQ(ChooseChaseMove(Enemy(200.f, true)), ChaseMove::Approach);
 }
 
 TEST(ChaseRulesTest, ChaseStopsAtTheStopDistance)
 {
-	EXPECT_EQ(ChooseChaseMove(Enemy(30.f)), ChaseMove::Hold);
+	EXPECT_EQ(ChooseChaseMove(Enemy(30.f, true)), ChaseMove::Hold);
 }
 
-TEST(ChaseRulesTest, QuietEnemyIgnoresATargetBeyondTheRadius)
+TEST(ChaseRulesTest, UnseenTargetIsIgnored)
 {
 	EXPECT_EQ(ChooseChaseMove(Enemy(900.f)), ChaseMove::Hold);
+	EXPECT_EQ(ChooseChaseMove(Enemy(100.f)), ChaseMove::Hold);
 }
 
 TEST(ChaseRulesTest, AlertedEnemyWalksToThePointWhileTheTargetIsUnseen)
@@ -56,7 +58,7 @@ TEST(ChaseRulesTest, ArrivingAtThePointEndsTheWalk)
 
 TEST(ChaseRulesTest, SeeingTheTargetWinsOverThePoint)
 {
-	ChaseSense sense = Enemy(200.f);
+	ChaseSense sense = Enemy(200.f, true);
 	sense.isAlerted = true;
 	sense.hasPoint = true;
 	sense.distanceToPoint = 500.f;
@@ -83,7 +85,7 @@ TEST(ChaseRulesTest, ForcedChaseIgnoresTheRadius)
 
 TEST(ChaseRulesTest, EngagementCoversBothSightAndAlert)
 {
-	ChaseSense seen = Enemy(100.f);
+	ChaseSense seen = Enemy(100.f, true);
 	ChaseSense alerted = Enemy(900.f);
 	alerted.isAlerted = true;
 	ChaseSense quiet = Enemy(900.f);

@@ -37,6 +37,7 @@ namespace RoguelikeGame
 
         bool HasWallBetween(const XYZEngine::Vector2Df& from, const XYZEngine::Vector2Df& to) const;
         bool HasObstacleBetween(const XYZEngine::Vector2Df& from, const XYZEngine::Vector2Df& to) const;
+        bool FindFreeSpot(const XYZEngine::Vector2Df& position, XYZEngine::Vector2Df& spot) const;
 
     private:
         bool IsCrossed(const XYZEngine::Vector2Df& from, const XYZEngine::Vector2Df& to, bool sightOnly) const;

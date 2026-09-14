@@ -27,7 +27,7 @@ namespace RoguelikeGame
     {
         points = std::move(newPoints);
         index = 0u;
-        route.Clear();
+        navigator.Reset();
     }
 
     const std::vector<Vector2Df>& PatrolComponent::GetPoints() const
@@ -55,7 +55,7 @@ namespace RoguelikeGame
         if (chase != nullptr && chase->IsEngaged())
         {
             wasEngaged = true;
-            route.Clear();
+            navigator.Reset();
             return;
         }
 
@@ -65,7 +65,7 @@ namespace RoguelikeGame
         {
             wasEngaged = false;
             index = NearestPatrolIndex(points, position);
-            route.Clear();
+            navigator.Reset();
         }
 
         if (points.size() == 1u)
@@ -81,7 +81,7 @@ namespace RoguelikeGame
         if (HasReachedPatrolPoint(points[index], position, ENEMY_ROUTE_ARRIVE_DISTANCE))
         {
             index = NextPatrolIndex(index, points.size());
-            route.Clear();
+            navigator.Reset();
         }
 
         if (aim != nullptr)
@@ -95,26 +95,7 @@ namespace RoguelikeGame
     void PatrolComponent::WalkTo(const Vector2Df& goal, float deltaTime)
     {
         Vector2Df position = transform->GetWorldPosition();
-
-        if (!LevelGrid::Current().HasObstacleBetween(position, goal))
-        {
-            route.Clear();
-            repath.Stop();
-            movement->SetDirection(goal - position);
-            return;
-        }
-
-        repath.Tick(deltaTime);
-        if (!route.HasPoint() || repath.IsReady())
-        {
-            std::vector<Vector2Df> points;
-            PathService::Current().RouteTo(position, goal, points);
-            route.SetRoute(std::move(points));
-            repath.Start(ENEMY_REPATH_INTERVAL);
-        }
-
-        route.Advance(position, ENEMY_ROUTE_ARRIVE_DISTANCE);
-        movement->SetDirection(route.HasPoint() ? route.GetPoint() - position : goal - position);
+        movement->SetDirection(navigator.Steer(position, goal, movement->GetSpeed(), deltaTime));
     }
 
     void PatrolComponent::DrawRoute() const

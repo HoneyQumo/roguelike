@@ -10,6 +10,7 @@ namespace RoguelikeGame
         LevelGrid current;
 
         constexpr float FAR_AHEAD = 1e9f;
+        constexpr int FREE_SPOT_RINGS = 3;
 
         LevelCell CellOf(TileType tile)
         {
@@ -138,6 +139,46 @@ namespace RoguelikeGame
     {
         column = static_cast<int>(std::lround(position.x / TILE_SIZE));
         row = height - 1 - static_cast<int>(std::lround(position.y / TILE_SIZE));
+    }
+
+    bool LevelGrid::FindFreeSpot(const XYZEngine::Vector2Df& position, XYZEngine::Vector2Df& spot) const
+    {
+        if (IsEmpty())
+        {
+            return false;
+        }
+
+        int column = 0;
+        int row = 0;
+        ToCell(position, column, row);
+
+        if (IsPassable(column, row))
+        {
+            spot = ToWorld(column, row);
+            return true;
+        }
+
+        for (int ring = 1; ring <= FREE_SPOT_RINGS; ring++)
+        {
+            for (int offsetRow = -ring; offsetRow <= ring; offsetRow++)
+            {
+                for (int offsetColumn = -ring; offsetColumn <= ring; offsetColumn++)
+                {
+                    if (std::max(std::abs(offsetRow), std::abs(offsetColumn)) != ring)
+                    {
+                        continue;
+                    }
+
+                    if (IsPassable(column + offsetColumn, row + offsetRow))
+                    {
+                        spot = ToWorld(column + offsetColumn, row + offsetRow);
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
     }
 
     bool LevelGrid::HasWallBetween(const XYZEngine::Vector2Df& from, const XYZEngine::Vector2Df& to) const

@@ -7,7 +7,7 @@
 #include <TransformComponent.h>
 #include <MovementComponent.h>
 #include "PatrolRules.h"
-#include "RouteFollower.h"
+#include "Navigator.h"
 
 namespace XYZEngine
 {
@@ -43,8 +43,7 @@ namespace RoguelikeGame
         std::size_t index = 0u;
         bool wasEngaged = false;
 
-        RouteFollower route;
-        XYZEngine::Cooldown repath;
+        Navigator navigator;
 
         void WalkTo(const XYZEngine::Vector2Df& goal, float deltaTime);
         void DrawRoute() const;

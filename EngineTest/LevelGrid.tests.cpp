@@ -292,6 +292,62 @@ TEST(LevelGridTest, WallStopsBothTheViewAndTheWay)
 	EXPECT_TRUE(grid.HasObstacleBetween(left, right));
 }
 
+TEST(LevelGridTest, FreeSpotIsTheCellItselfWhenItIsFree)
+{
+	LevelGrid grid = GridOf(ROOMS);
+
+	Vector2Df spot = {0.f, 0.f};
+	ASSERT_TRUE(grid.FindFreeSpot(grid.ToWorld(1, 1), spot));
+
+	EXPECT_EQ(spot.x, grid.ToWorld(1, 1).x);
+	EXPECT_EQ(spot.y, grid.ToWorld(1, 1).y);
+}
+
+TEST(LevelGridTest, FreeSpotIsFoundNextToAWall)
+{
+	LevelGrid grid = GridOf(ROOMS);
+
+	Vector2Df spot = {0.f, 0.f};
+	ASSERT_TRUE(grid.FindFreeSpot(grid.ToWorld(0, 0), spot));
+
+	int column = 0;
+	int row = 0;
+	grid.ToCell(spot, column, row);
+
+	EXPECT_TRUE(grid.IsPassable(column, row));
+}
+
+TEST(LevelGridTest, FreeSpotIsFoundNextToACrate)
+{
+	LevelGrid grid = GridOf(
+		"[legend]\n"
+		"# Wall\n"
+		". Floor\n"
+		"c Prop:crate_ammo\n"
+		"[map]\n"
+		"#####\n"
+		"#.c.#\n"
+		"#...#\n"
+		"#####\n");
+
+	Vector2Df spot = {0.f, 0.f};
+	ASSERT_TRUE(grid.FindFreeSpot(grid.ToWorld(2, 1), spot));
+
+	int column = 0;
+	int row = 0;
+	grid.ToCell(spot, column, row);
+
+	EXPECT_TRUE(grid.IsPassable(column, row));
+}
+
+TEST(LevelGridTest, WithoutALevelThereIsNoFreeSpot)
+{
+	LevelGrid grid;
+
+	Vector2Df spot = {0.f, 0.f};
+	EXPECT_FALSE(grid.FindFreeSpot({0.f, 0.f}, spot));
+}
+
 TEST(LevelGridTest, EmptyGridHidesNothing)
 {
 	LevelGrid grid;

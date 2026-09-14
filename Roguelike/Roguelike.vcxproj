@@ -155,6 +155,7 @@
         <ClCompile Include="Level\PathService.cpp"/>
         <ClCompile Include="Level\PatrolRoutes.cpp"/>
         <ClCompile Include="Enemies\PatrolComponent.cpp"/>
+        <ClCompile Include="Enemies\Navigator.cpp"/>
         <ClCompile Include="Level\LevelBuilder.cpp"/>
         <ClCompile Include="Level\LevelLoader.cpp"/>
         <ClCompile Include="Level\Wall.cpp"/>
@@ -211,6 +212,8 @@
         <ClInclude Include="Enemies\RouteFollower.h"/>
         <ClInclude Include="Enemies\SightMemory.h"/>
         <ClInclude Include="Enemies\PatrolRules.h"/>
+        <ClInclude Include="Enemies\ProgressWatch.h"/>
+        <ClInclude Include="Enemies\Navigator.h"/>
         <ClInclude Include="Enemies\PatrolComponent.h"/>
         <ClInclude Include="Level\PatrolRoutes.h"/>
         <ClInclude Include="Enemies\ChaseComponent.h"/>

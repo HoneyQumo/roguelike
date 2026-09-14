@@ -111,6 +111,15 @@
     <ClInclude Include="Enemies\PatrolRules.h">
       <Filter>Enemies</Filter>
     </ClInclude>
+    <ClInclude Include="Enemies\ProgressWatch.h">
+      <Filter>Enemies</Filter>
+    </ClInclude>
+    <ClInclude Include="Enemies\Navigator.h">
+      <Filter>Enemies</Filter>
+    </ClInclude>
+    <ClCompile Include="Enemies\Navigator.cpp">
+      <Filter>Enemies</Filter>
+    </ClCompile>
     <ClInclude Include="Enemies\PatrolComponent.h">
       <Filter>Enemies</Filter>
     </ClInclude>

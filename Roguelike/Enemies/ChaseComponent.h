@@ -56,6 +56,7 @@ namespace RoguelikeGame
 		bool IsEngaged() const;
 		bool CanSeeTarget() const;
 		std::size_t GetSearchStep() const;
+		const XYZEngine::Vector2Df& GetEscapeDirection() const;
 
 	private:
 		XYZEngine::TransformComponent* transform = nullptr;
@@ -76,6 +77,8 @@ namespace RoguelikeGame
 		bool isTargetVisible = false;
 
 		XYZEngine::Vector2Df investigatePoint = {0.f, 0.f};
+		XYZEngine::Vector2Df escapeFrom = {0.f, 0.f};
+		XYZEngine::Vector2Df escapeDirection = {0.f, 0.f};
 		SightMemory memory;
 
 		float lookTime = 0.f;

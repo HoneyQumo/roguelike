@@ -47,7 +47,7 @@ TEST(HidingSpotsTest, SpotsAreOutOfSightFromThePoint)
 	PathField field;
 	field.Build(grid, 4, 1);
 
-	std::vector<Vector2Df> spots = FindHidingSpots(grid, field, grid.ToWorld(4, 1), 5, 4u, 1);
+	std::vector<Vector2Df> spots = FindHidingSpots(grid, field, grid.ToWorld(4, 1), {0.f, 0.f}, 5, 4u, 1);
 
 	ASSERT_FALSE(spots.empty());
 	for (const Vector2Df& spot : spots)
@@ -62,7 +62,7 @@ TEST(HidingSpotsTest, SpotsAreWalkable)
 	PathField field;
 	field.Build(grid, 4, 1);
 
-	std::vector<Vector2Df> spots = FindHidingSpots(grid, field, grid.ToWorld(4, 1), 5, 4u, 1);
+	std::vector<Vector2Df> spots = FindHidingSpots(grid, field, grid.ToWorld(4, 1), {0.f, 0.f}, 5, 4u, 1);
 
 	ASSERT_FALSE(spots.empty());
 	for (const Vector2Df& spot : spots)
@@ -82,7 +82,7 @@ TEST(HidingSpotsTest, NearestSpotsComeFirst)
 	PathField field;
 	field.Build(grid, 4, 1);
 
-	std::vector<Vector2Df> spots = FindHidingSpots(grid, field, grid.ToWorld(4, 1), 5, 4u, 1);
+	std::vector<Vector2Df> spots = FindHidingSpots(grid, field, grid.ToWorld(4, 1), {0.f, 0.f}, 5, 4u, 1);
 	ASSERT_GT(spots.size(), 1u);
 
 	int previous = -1;
@@ -103,8 +103,8 @@ TEST(HidingSpotsTest, NoMoreSpotsThanAsked)
 	PathField field;
 	field.Build(grid, 4, 1);
 
-	EXPECT_LE(FindHidingSpots(grid, field, grid.ToWorld(4, 1), 5, 1u, 1).size(), 1u);
-	EXPECT_LE(FindHidingSpots(grid, field, grid.ToWorld(4, 1), 5, 2u, 1).size(), 2u);
+	EXPECT_LE(FindHidingSpots(grid, field, grid.ToWorld(4, 1), {0.f, 0.f}, 5, 1u, 1).size(), 1u);
+	EXPECT_LE(FindHidingSpots(grid, field, grid.ToWorld(4, 1), {0.f, 0.f}, 5, 2u, 1).size(), 2u);
 }
 
 TEST(HidingSpotsTest, OpenRoomHasNowhereToHide)
@@ -113,7 +113,7 @@ TEST(HidingSpotsTest, OpenRoomHasNowhereToHide)
 	PathField field;
 	field.Build(grid, 3, 1);
 
-	EXPECT_TRUE(FindHidingSpots(grid, field, grid.ToWorld(3, 1), 5, 4u, 1).empty());
+	EXPECT_TRUE(FindHidingSpots(grid, field, grid.ToWorld(3, 1), {0.f, 0.f}, 5, 4u, 1).empty());
 }
 
 TEST(HidingSpotsTest, SmallRadiusFindsNothingFarAway)
@@ -122,7 +122,7 @@ TEST(HidingSpotsTest, SmallRadiusFindsNothingFarAway)
 	PathField field;
 	field.Build(grid, 4, 1);
 
-	EXPECT_TRUE(FindHidingSpots(grid, field, grid.ToWorld(4, 1), 0, 4u, 1).empty());
+	EXPECT_TRUE(FindHidingSpots(grid, field, grid.ToWorld(4, 1), {0.f, 0.f}, 0, 4u, 1).empty());
 }
 
 TEST(HidingSpotsTest, AskingForNothingGivesNothing)
@@ -131,7 +131,7 @@ TEST(HidingSpotsTest, AskingForNothingGivesNothing)
 	PathField field;
 	field.Build(grid, 4, 1);
 
-	EXPECT_TRUE(FindHidingSpots(grid, field, grid.ToWorld(4, 1), 5, 0u, 1).empty());
+	EXPECT_TRUE(FindHidingSpots(grid, field, grid.ToWorld(4, 1), {0.f, 0.f}, 5, 0u, 1).empty());
 }
 
 TEST(HidingSpotsTest, WithoutALevelThereAreNoSpots)
@@ -139,7 +139,7 @@ TEST(HidingSpotsTest, WithoutALevelThereAreNoSpots)
 	LevelGrid grid;
 	PathField field;
 
-	EXPECT_TRUE(FindHidingSpots(grid, field, {0.f, 0.f}, 5, 4u, 1).empty());
+	EXPECT_TRUE(FindHidingSpots(grid, field, {0.f, 0.f}, {0.f, 0.f}, 5, 4u, 1).empty());
 }
 
 TEST(HidingSpotsTest, SpotsAreSpreadApart)
@@ -159,7 +159,7 @@ TEST(HidingSpotsTest, SpotsAreSpreadApart)
 	PathField field;
 	field.Build(grid, 4, 1);
 
-	std::vector<Vector2Df> spots = FindHidingSpots(grid, field, grid.ToWorld(4, 1), 8, 3u, 3);
+	std::vector<Vector2Df> spots = FindHidingSpots(grid, field, grid.ToWorld(4, 1), {0.f, 0.f}, 8, 3u, 3);
 	ASSERT_GT(spots.size(), 1u);
 
 	for (std::size_t first = 0u; first < spots.size(); first++)
@@ -196,7 +196,7 @@ TEST(HidingSpotsTest, TheLastPlaceIsAtTheFarEnd)
 	PathField field;
 	field.Build(grid, 4, 1);
 
-	std::vector<Vector2Df> spots = FindHidingSpots(grid, field, grid.ToWorld(4, 1), 8, 2u, 3);
+	std::vector<Vector2Df> spots = FindHidingSpots(grid, field, grid.ToWorld(4, 1), {0.f, 0.f}, 8, 2u, 3);
 	ASSERT_EQ(spots.size(), 2u);
 
 	int column = 0;
@@ -243,7 +243,67 @@ TEST(HidingSpotsTest, TwoCornersGiveTwoPlaces)
 	PathField field;
 	field.Build(grid, 4, 1);
 
-	std::vector<Vector2Df> spots = FindHidingSpots(grid, field, grid.ToWorld(4, 1), 6, 2u, 1);
+	std::vector<Vector2Df> spots = FindHidingSpots(grid, field, grid.ToWorld(4, 1), {0.f, 0.f}, 6, 2u, 1);
 
 	EXPECT_EQ(spots.size(), 2u);
+}
+
+TEST(HidingSpotsTest, SearchFollowsTheWayTheTargetRan)
+{
+	LevelGrid grid = GridOf(
+		"[map]\n"
+		"###########\n"
+		"#.........#\n"
+		"#.#######.#\n"
+		"#.........#\n"
+		"###########\n");
+
+	PathField field;
+	field.Build(grid, 5, 1);
+	Vector2Df from = grid.ToWorld(5, 1);
+
+	std::vector<Vector2Df> toTheRight = FindHidingSpots(grid, field, from, {1.f, 0.f}, 8, 3u, 1);
+	ASSERT_FALSE(toTheRight.empty());
+
+	for (const Vector2Df& spot : toTheRight)
+	{
+		EXPECT_GT(spot.x, from.x) << "spot at " << spot.x << ";" << spot.y;
+	}
+
+	std::vector<Vector2Df> toTheLeft = FindHidingSpots(grid, field, from, {-1.f, 0.f}, 8, 3u, 1);
+	ASSERT_FALSE(toTheLeft.empty());
+
+	for (const Vector2Df& spot : toTheLeft)
+	{
+		EXPECT_LT(spot.x, from.x) << "spot at " << spot.x << ";" << spot.y;
+	}
+}
+
+TEST(HidingSpotsTest, WithoutADirectionBothSidesAreChecked)
+{
+	LevelGrid grid = GridOf(
+		"[map]\n"
+		"###########\n"
+		"#.........#\n"
+		"#.#######.#\n"
+		"#.........#\n"
+		"###########\n");
+
+	PathField field;
+	field.Build(grid, 5, 1);
+	Vector2Df from = grid.ToWorld(5, 1);
+
+	std::vector<Vector2Df> spots = FindHidingSpots(grid, field, from, {0.f, 0.f}, 8, 6u, 1);
+	ASSERT_GT(spots.size(), 1u);
+
+	bool hasLeft = false;
+	bool hasRight = false;
+	for (const Vector2Df& spot : spots)
+	{
+		hasLeft = hasLeft || spot.x < from.x;
+		hasRight = hasRight || spot.x > from.x;
+	}
+
+	EXPECT_TRUE(hasLeft);
+	EXPECT_TRUE(hasRight);
 }

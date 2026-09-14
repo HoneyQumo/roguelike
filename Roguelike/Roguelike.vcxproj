@@ -56,7 +56,7 @@
     <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
         <ClCompile>
             <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-            <AdditionalIncludeDirectories>$(SolutionDir)XYZEngine;$(ProjectDir)Boss;$(ProjectDir)Characters;$(ProjectDir)Core;$(ProjectDir)Enemies;$(ProjectDir)Fx;$(ProjectDir)Items;$(ProjectDir)Level;$(ProjectDir)Player;$(ProjectDir)Ui;$(ProjectDir)Weapons;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+            <AdditionalIncludeDirectories>$(SolutionDir)XYZEngine;$(SolutionDir)XYZEngine\Animation;$(SolutionDir)XYZEngine\Audio;$(SolutionDir)XYZEngine\Core;$(SolutionDir)XYZEngine\Input;$(SolutionDir)XYZEngine\Logging;$(SolutionDir)XYZEngine\Math;$(SolutionDir)XYZEngine\Particles;$(SolutionDir)XYZEngine\Physics;$(SolutionDir)XYZEngine\Rendering;$(SolutionDir)XYZEngine\Resources;$(SolutionDir)XYZEngine\Ui;$(ProjectDir)Boss;$(ProjectDir)Characters;$(ProjectDir)Core;$(ProjectDir)Enemies;$(ProjectDir)Fx;$(ProjectDir)Items;$(ProjectDir)Level;$(ProjectDir)Player;$(ProjectDir)Ui;$(ProjectDir)Weapons;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
         </ClCompile>
         <Link>
             <SubSystem>Windows</SubSystem>
@@ -73,7 +73,7 @@
             <FunctionLevelLinking>true</FunctionLevelLinking>
             <IntrinsicFunctions>true</IntrinsicFunctions>
             <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-            <AdditionalIncludeDirectories>$(SolutionDir)XYZEngine;$(ProjectDir)Boss;$(ProjectDir)Characters;$(ProjectDir)Core;$(ProjectDir)Enemies;$(ProjectDir)Fx;$(ProjectDir)Items;$(ProjectDir)Level;$(ProjectDir)Player;$(ProjectDir)Ui;$(ProjectDir)Weapons;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+            <AdditionalIncludeDirectories>$(SolutionDir)XYZEngine;$(SolutionDir)XYZEngine\Animation;$(SolutionDir)XYZEngine\Audio;$(SolutionDir)XYZEngine\Core;$(SolutionDir)XYZEngine\Input;$(SolutionDir)XYZEngine\Logging;$(SolutionDir)XYZEngine\Math;$(SolutionDir)XYZEngine\Particles;$(SolutionDir)XYZEngine\Physics;$(SolutionDir)XYZEngine\Rendering;$(SolutionDir)XYZEngine\Resources;$(SolutionDir)XYZEngine\Ui;$(ProjectDir)Boss;$(ProjectDir)Characters;$(ProjectDir)Core;$(ProjectDir)Enemies;$(ProjectDir)Fx;$(ProjectDir)Items;$(ProjectDir)Level;$(ProjectDir)Player;$(ProjectDir)Ui;$(ProjectDir)Weapons;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
         </ClCompile>
         <Link>
             <SubSystem>Windows</SubSystem>

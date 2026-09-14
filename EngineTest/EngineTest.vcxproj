@@ -104,6 +104,9 @@
     <ClCompile Include="Vision.tests.cpp" />
     <ClCompile Include="SightMemory.tests.cpp" />
     <ClCompile Include="ChaseComponent.tests.cpp" />
+    <ClCompile Include="PatrolRules.tests.cpp" />
+    <ClCompile Include="PatrolRoutes.tests.cpp" />
+    <ClCompile Include="PatrolComponent.tests.cpp" />
     <ClCompile Include="InventoryComponent.tests.cpp" />
     <ClCompile Include="Interaction.tests.cpp" />
     <ClCompile Include="InventoryScreen.tests.cpp" />
@@ -127,6 +130,12 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\Roguelike\Level\PathService.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Roguelike\Level\PatrolRoutes.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Roguelike\Enemies\PatrolComponent.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\Roguelike\Level\LevelLoader.cpp">

@@ -51,6 +51,14 @@ namespace RoguelikeGame
         std::string itemId;
     };
 
+    struct PatrolPoint
+    {
+        int column = 0;
+        int row = 0;
+        std::string routeId;
+        int order = 0;
+    };
+
     struct BossSpec
     {
         std::string bossId;
@@ -74,6 +82,7 @@ namespace RoguelikeGame
         std::vector<std::vector<TileType>> tiles;
         std::vector<ItemPlacement> items;
         std::vector<PropPlacement> props;
+        std::vector<PatrolPoint> patrols;
         LevelInfo info;
     };
 

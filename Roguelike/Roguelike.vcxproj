@@ -153,6 +153,8 @@
         <ClCompile Include="Level\LevelGrid.cpp"/>
         <ClCompile Include="Level\PathField.cpp"/>
         <ClCompile Include="Level\PathService.cpp"/>
+        <ClCompile Include="Level\PatrolRoutes.cpp"/>
+        <ClCompile Include="Enemies\PatrolComponent.cpp"/>
         <ClCompile Include="Level\LevelBuilder.cpp"/>
         <ClCompile Include="Level\LevelLoader.cpp"/>
         <ClCompile Include="Level\Wall.cpp"/>
@@ -208,6 +210,9 @@
         <ClInclude Include="Level\PathService.h"/>
         <ClInclude Include="Enemies\RouteFollower.h"/>
         <ClInclude Include="Enemies\SightMemory.h"/>
+        <ClInclude Include="Enemies\PatrolRules.h"/>
+        <ClInclude Include="Enemies\PatrolComponent.h"/>
+        <ClInclude Include="Level\PatrolRoutes.h"/>
         <ClInclude Include="Enemies\ChaseComponent.h"/>
         <ClInclude Include="Characters\AmmoPouchComponent.h"/>
         <ClInclude Include="Characters\HealthBarComponent.h"/>

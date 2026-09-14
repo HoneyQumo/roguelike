@@ -19,6 +19,8 @@ namespace RoguelikeGame
             TileType tile = TileType::Floor;
             std::string itemId;
             std::string propId;
+            std::string patrolId;
+            int patrolOrder = 0;
         };
 
         using Legend = std::map<char, LegendEntry>;

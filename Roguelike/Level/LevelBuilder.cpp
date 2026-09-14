@@ -2,6 +2,7 @@
 #include "TileAtlas.h"
 #include "LevelGrid.h"
 #include "PathService.h"
+#include "PatrolRoutes.h"
 #include <ResourceSystem.h>
 #include "BossCatalog.h"
 #include "GameSettings.h"
@@ -24,6 +25,7 @@ namespace RoguelikeGame
     {
         LevelGrid::SetCurrent(LevelGrid::Build(levelData));
         PathService::Reset();
+        PatrolRoutes::SetCurrent(PatrolRoutes::Build(levelData, LevelGrid::Current()));
 
         Level level;
 

@@ -108,6 +108,21 @@
     <ClInclude Include="Enemies\SightMemory.h">
       <Filter>Enemies</Filter>
     </ClInclude>
+    <ClInclude Include="Enemies\PatrolRules.h">
+      <Filter>Enemies</Filter>
+    </ClInclude>
+    <ClInclude Include="Enemies\PatrolComponent.h">
+      <Filter>Enemies</Filter>
+    </ClInclude>
+    <ClCompile Include="Enemies\PatrolComponent.cpp">
+      <Filter>Enemies</Filter>
+    </ClCompile>
+    <ClInclude Include="Level\PatrolRoutes.h">
+      <Filter>Level</Filter>
+    </ClInclude>
+    <ClCompile Include="Level\PatrolRoutes.cpp">
+      <Filter>Level</Filter>
+    </ClCompile>
     <ClInclude Include="Enemies\ChaseRules.h">
       <Filter>Enemies</Filter>
     </ClInclude>

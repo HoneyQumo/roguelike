@@ -32,6 +32,7 @@ namespace RoguelikeGame
     constexpr float ENEMY_ALERT_POINT_DISTANCE = 420.f;
     constexpr float ENEMY_REPATH_INTERVAL = 0.4f;
     constexpr float ENEMY_ROUTE_ARRIVE_DISTANCE = 0.5f * TILE_SIZE;
+    constexpr float PATROL_JOIN_DISTANCE = 4.f * TILE_SIZE;
 
     constexpr int CHARACTER_SPRITE_SIZE = CHARACTER_FRAME_SIZE;
 
@@ -360,5 +361,6 @@ namespace RoguelikeGame
     inline const sf::Color DEBUG_ATTACK_RANGE_COLOR = {255, 140, 40};
     inline const sf::Color DEBUG_BLAST_COLOR = {230, 80, 230};
     inline const sf::Color DEBUG_ROUTE_COLOR = {80, 220, 220};
+    inline const sf::Color DEBUG_PATROL_COLOR = {90, 160, 240};
     constexpr int DEBUG_VISION_CONE_STEPS = 12;
 }

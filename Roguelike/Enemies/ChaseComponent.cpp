@@ -93,7 +93,7 @@ namespace RoguelikeGame
 			VisionCone cone = ConeFor(range, sense.isAlerted);
 
 			bool isBlocked = LevelGrid::Current().HasWallBetween(position, targetPosition);
-			sense.isVisible = CanSeeTarget(cone, Facing(), toTarget, isBlocked);
+			sense.isVisible = RoguelikeGame::CanSeeTarget(cone, Facing(), toTarget, isBlocked);
 		}
 
 		return sense;
@@ -139,6 +139,7 @@ namespace RoguelikeGame
 
 		isChasing = false;
 		isEngaged = false;
+		isTargetVisible = false;
 		movement->SetDirection({ 0.f, 0.f });
 
 		if (targetName.empty() || detectionRadius <= 0.f)
@@ -165,6 +166,7 @@ namespace RoguelikeGame
 
 		isEngaged = RoguelikeGame::IsEngaged(sense);
 		isChasing = RoguelikeGame::IsTargetDetected(sense);
+		isTargetVisible = sense.isVisible;
 
 		ApplyAim(sense);
 
@@ -447,6 +449,11 @@ namespace RoguelikeGame
 	bool ChaseComponent::IsEngaged() const
 	{
 		return isEngaged;
+	}
+
+	bool ChaseComponent::CanSeeTarget() const
+	{
+		return isTargetVisible;
 	}
 
 	std::size_t ChaseComponent::GetSearchStep() const

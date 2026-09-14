@@ -120,6 +120,9 @@
     <ClInclude Include="Enemies\LookTurn.h">
       <Filter>Enemies</Filter>
     </ClInclude>
+    <ClInclude Include="Enemies\AttackRules.h">
+      <Filter>Enemies</Filter>
+    </ClInclude>
     <ClInclude Include="Enemies\HidingSpots.h">
       <Filter>Enemies</Filter>
     </ClInclude>

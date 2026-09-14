@@ -216,6 +216,7 @@
         <ClInclude Include="Enemies\ProgressWatch.h"/>
         <ClInclude Include="Enemies\LookAround.h"/>
         <ClInclude Include="Enemies\LookTurn.h"/>
+        <ClInclude Include="Enemies\AttackRules.h"/>
         <ClInclude Include="Enemies\HidingSpots.h"/>
         <ClInclude Include="Enemies\Navigator.h"/>
         <ClInclude Include="Enemies\PatrolComponent.h"/>

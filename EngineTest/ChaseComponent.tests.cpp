@@ -7,6 +7,7 @@
 #include <AimRotationComponent.h>
 #include <GameWorld.h>
 #include <MovementComponent.h>
+#include "EnemyAttackComponent.h"
 #include <sstream>
 
 using namespace XYZEngine;
@@ -304,4 +305,44 @@ TEST_F(ChaseComponentTest, SeeingTheTargetDuringTheSearchResumesTheChase)
 
 	EXPECT_TRUE(chase->IsChasing());
 	EXPECT_EQ(chase->GetSearchStep(), 0u);
+}
+
+TEST_F(ChaseComponentTest, AlertedEnemyBehindAWallCannotSeeTheTarget)
+{
+	GameObject* hero = CreateHero(3, 1);
+	ChaseComponent* chase = CreateEnemy(1, 1);
+	chase->SetSearchSpots(10, 2, 2);
+	chase->SetSearchLook(2.f);
+	Run(0.2f);
+	ASSERT_TRUE(chase->CanSeeTarget());
+
+	hero->GetTransform()->SetWorldPosition(At(5, 1));
+	Run(0.5f);
+
+	EXPECT_TRUE(chase->IsAlerted());
+	EXPECT_FALSE(chase->CanSeeTarget());
+}
+
+TEST_F(ChaseComponentTest, AlertedEnemyDoesNotAttackThroughAWall)
+{
+	GameObject* hero = CreateHero(3, 1);
+	ChaseComponent* chase = CreateEnemy(1, 1);
+	chase->SetSearchSpots(10, 2, 2);
+	chase->SetSearchLook(2.f);
+
+	GameObject* enemy = chase->GetGameObject();
+	auto attack = enemy->AddComponent<RoguelikeGame::EnemyAttackComponent>();
+	attack->SetTargetName("Hero");
+	attack->SetAttackRange(1000.f);
+
+	Run(0.2f);
+	ASSERT_TRUE(chase->CanSeeTarget());
+	EXPECT_TRUE(attack->IsAttacking());
+
+	hero->GetTransform()->SetWorldPosition(At(5, 1));
+	Run(0.5f);
+
+	ASSERT_TRUE(chase->IsAlerted());
+	ASSERT_FALSE(chase->CanSeeTarget());
+	EXPECT_FALSE(attack->IsAttacking());
 }

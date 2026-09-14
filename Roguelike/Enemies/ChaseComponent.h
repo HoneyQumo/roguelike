@@ -54,6 +54,7 @@ namespace RoguelikeGame
 		bool IsChasing() const;
 		bool IsAlerted() const;
 		bool IsEngaged() const;
+		bool CanSeeTarget() const;
 		std::size_t GetSearchStep() const;
 
 	private:
@@ -72,6 +73,7 @@ namespace RoguelikeGame
 		bool isForced = false;
 		bool isChasing = false;
 		bool isEngaged = false;
+		bool isTargetVisible = false;
 
 		XYZEngine::Vector2Df investigatePoint = {0.f, 0.f};
 		SightMemory memory;

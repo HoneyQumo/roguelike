@@ -27,6 +27,7 @@ namespace RoguelikeGame
 
         void SetTargetName(const std::string& newTargetName);
         void SetAttackRange(float newAttackRange);
+        bool IsAttacking() const;
 
     private:
         XYZEngine::TransformComponent* transform = nullptr;
@@ -37,5 +38,6 @@ namespace RoguelikeGame
 
         std::string targetName;
         float attackRange = 0.f;
+        bool isAttacking = false;
     };
 }

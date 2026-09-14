@@ -29,5 +29,10 @@ namespace RoguelikeGame
         float searchTime = 0.f;
         float lookTime = 0.f;
         float lookHalfSweep = 0.f;
+        int searchRadius = 0;
+        int searchSpotsMin = 0;
+        int searchSpotsMax = 0;
+        float searchLookTime = 0.f;
+        float alertRadiusScale = 1.f;
     };
 }

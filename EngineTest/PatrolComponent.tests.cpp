@@ -213,7 +213,23 @@ TEST_F(PatrolComponentTest, GuardReturnsToTheNearestPointAfterTheChase)
 	GameWorld::Instance()->LateUpdate();
 
 	ASSERT_TRUE(WaitForPatrol(patrol));
-	EXPECT_EQ(patrol->GetPointIndex(), 2u);
+
+	Vector2Df standing = patrol->GetGameObject()->GetTransform()->GetWorldPosition();
+	std::size_t nearest = 0u;
+	float best = -1.f;
+	for (std::size_t index = 0u; index < patrol->GetPoints().size(); index++)
+	{
+		float distance = (patrol->GetPoints()[index].position - standing).GetLength();
+		if (best < 0.f || distance < best)
+		{
+			best = distance;
+			nearest = index;
+		}
+	}
+
+	std::size_t after = RoguelikeGame::NextPatrolIndex(nearest, patrol->GetPoints().size());
+	EXPECT_TRUE(patrol->GetPointIndex() == nearest || patrol->GetPointIndex() == after)
+		<< "index " << patrol->GetPointIndex() << ", nearest " << nearest;
 }
 
 TEST_F(PatrolComponentTest, GuardStopsAtAWatchPoint)

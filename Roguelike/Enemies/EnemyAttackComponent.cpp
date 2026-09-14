@@ -1,4 +1,5 @@
 #include "EnemyAttackComponent.h"
+#include "AttackRules.h"
 #include "ChaseComponent.h"
 #include "GameSettings.h"
 #include <DebugDraw.h>
@@ -23,45 +24,44 @@ namespace RoguelikeGame
         if (weapon == nullptr && meleeWeapon == nullptr)
         {
             LOG_ERROR("Enemy attack needs a weapon component on " + gameObject->GetName());
-            gameObject->DestroyComponent(this);
         }
+    }
+
+    bool EnemyAttackComponent::IsAttacking() const
+    {
+        return isAttacking;
     }
 
     void EnemyAttackComponent::Update(float deltaTime)
     {
+        isAttacking = false;
 
-        if (health != nullptr && !health->IsAlive())
-        {
-            return;
-        }
-
-        if (targetName.empty() || attackRange <= 0.f)
-        {
-            return;
-        }
-
-        if (chase != nullptr && !chase->IsEngaged())
+        if (targetName.empty())
         {
             return;
         }
 
         XYZEngine::GameObject* target = XYZEngine::GameWorld::Instance()->FindGameObject(targetName);
-        if (target == nullptr)
+        auto targetHealth = target != nullptr ? target->GetComponent<HealthComponent>() : nullptr;
+
+        AttackSense sense;
+        sense.isAlive = health == nullptr || health->IsAlive();
+        sense.hasTarget = target != nullptr;
+        sense.isTargetAlive = targetHealth == nullptr || targetHealth->IsAlive();
+        sense.canSeeTarget = chase != nullptr && chase->CanSeeTarget();
+        sense.attackRange = attackRange;
+
+        XYZEngine::Vector2Df targetPosition = target != nullptr
+            ? target->GetTransform()->GetWorldPosition()
+            : XYZEngine::Vector2Df{0.f, 0.f};
+        sense.distanceToTarget = (targetPosition - transform->GetWorldPosition()).GetLength();
+
+        if (!MayAttack(sense))
         {
             return;
         }
 
-        auto targetHealth = target->GetComponent<HealthComponent>();
-        if (targetHealth != nullptr && !targetHealth->IsAlive())
-        {
-            return;
-        }
-
-        XYZEngine::Vector2Df targetPosition = target->GetTransform()->GetWorldPosition();
-        if ((targetPosition - transform->GetWorldPosition()).GetLength() > attackRange)
-        {
-            return;
-        }
+        isAttacking = true;
 
         if (meleeWeapon != nullptr)
         {
@@ -69,7 +69,10 @@ namespace RoguelikeGame
             return;
         }
 
-        weapon->TryShootAt(targetPosition);
+        if (weapon != nullptr)
+        {
+            weapon->TryShootAt(targetPosition);
+        }
     }
 
     void EnemyAttackComponent::Render()

@@ -156,6 +156,7 @@
         <ClCompile Include="Level\PatrolRoutes.cpp"/>
         <ClCompile Include="Enemies\PatrolComponent.cpp"/>
         <ClCompile Include="Enemies\Navigator.cpp"/>
+        <ClCompile Include="Enemies\HidingSpots.cpp"/>
         <ClCompile Include="Level\LevelBuilder.cpp"/>
         <ClCompile Include="Level\LevelLoader.cpp"/>
         <ClCompile Include="Level\Wall.cpp"/>
@@ -214,6 +215,9 @@
         <ClInclude Include="Enemies\PatrolRules.h"/>
         <ClInclude Include="Enemies\ProgressWatch.h"/>
         <ClInclude Include="Enemies\LookAround.h"/>
+        <ClInclude Include="Enemies\LookTurn.h"/>
+        <ClInclude Include="Enemies\AttackRules.h"/>
+        <ClInclude Include="Enemies\HidingSpots.h"/>
         <ClInclude Include="Enemies\Navigator.h"/>
         <ClInclude Include="Enemies\PatrolComponent.h"/>
         <ClInclude Include="Level\PatrolRoutes.h"/>

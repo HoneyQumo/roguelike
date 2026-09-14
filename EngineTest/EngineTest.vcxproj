@@ -107,6 +107,8 @@
     <ClCompile Include="PatrolRules.tests.cpp" />
     <ClCompile Include="ProgressWatch.tests.cpp" />
     <ClCompile Include="LookAround.tests.cpp" />
+    <ClCompile Include="AttackRules.tests.cpp" />
+    <ClCompile Include="HidingSpots.tests.cpp" />
     <ClCompile Include="Navigator.tests.cpp" />
     <ClCompile Include="PatrolRoutes.tests.cpp" />
     <ClCompile Include="PatrolComponent.tests.cpp" />
@@ -142,6 +144,21 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\Roguelike\Enemies\Navigator.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Roguelike\Enemies\HidingSpots.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Roguelike\Enemies\EnemyAttackComponent.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Roguelike\Weapons\WeaponComponent.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Roguelike\Weapons\MeleeWeaponComponent.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Roguelike\Characters\AmmoPouchComponent.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\Roguelike\Level\LevelLoader.cpp">

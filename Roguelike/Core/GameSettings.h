@@ -38,6 +38,9 @@ namespace RoguelikeGame
     constexpr float ENEMY_ROUTE_ARRIVE_DISTANCE = 0.5f * TILE_SIZE;
     constexpr float PATROL_JOIN_DISTANCE = 4.f * TILE_SIZE;
     constexpr float LOOK_AIM_DISTANCE = 200.f;
+    constexpr int SEARCH_SPOT_GAP = 3;
+    constexpr float SEARCH_ARRIVE_DISTANCE = 20.f;
+    constexpr float SEARCH_LOOK_SPREAD = 1.6f;
 
     constexpr int CHARACTER_SPRITE_SIZE = CHARACTER_FRAME_SIZE;
 

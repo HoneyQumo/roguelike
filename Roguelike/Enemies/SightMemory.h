@@ -48,4 +48,12 @@ namespace RoguelikeGame
 
         return memory;
     }
+
+    constexpr SightMemory GiveUp(SightMemory memory, float lookAround)
+    {
+        memory.hasPoint = false;
+        memory.alertLeft = std::min(memory.alertLeft, std::max(0.f, lookAround));
+
+        return memory;
+    }
 }

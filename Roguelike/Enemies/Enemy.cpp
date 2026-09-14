@@ -15,6 +15,8 @@
 #include "Fx.h"
 #include <GameWorld.h>
 #include "ChaseComponent.h"
+#include "PatrolComponent.h"
+#include "PatrolRoutes.h"
 #include "WeaponComponent.h"
 #include "MeleeWeaponComponent.h"
 #include <LoggerRegistry.h>
@@ -38,7 +40,7 @@ namespace RoguelikeGame
         spec.hasWeaponLayer = definition == nullptr || HasWeaponLayer(*definition);
 
         ChaseComponent* chase = nullptr;
-        CharacterParts parts = CreateCharacter(spec, [&chase, &config](XYZEngine::GameObject* object)
+        CharacterParts parts = CreateCharacter(spec, [&chase, &config, &position, definition](XYZEngine::GameObject* object)
         {
             chase = object->AddComponent<ChaseComponent>();
             chase->SetTargetName(PLAYER_OBJECT_NAME);
@@ -48,6 +50,18 @@ namespace RoguelikeGame
             chase->SetVisionHalfAngle(config.visionHalfAngle);
             chase->SetAlertHalfAngle(config.alertHalfAngle);
             chase->SetSearchTime(config.searchTime);
+
+            if (definition != nullptr)
+            {
+                return;
+            }
+
+            auto patrol = object->AddComponent<PatrolComponent>();
+            const PatrolRoute* route = PatrolRoutes::Current().Nearest(position, PATROL_JOIN_DISTANCE);
+            if (route != nullptr)
+            {
+                patrol->SetPoints(route->points);
+            }
         });
 
         auto gameObject = parts.gameObject;

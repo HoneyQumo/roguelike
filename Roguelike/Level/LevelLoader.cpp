@@ -12,6 +12,7 @@ namespace RoguelikeGame
     const std::string LEVEL_SECTION = "level";
     const std::string ITEM_PREFIX = "Item:";
     const std::string PROP_PREFIX = "Prop:";
+    const std::string PATROL_PREFIX = "Patrol:";
     constexpr char COMMENT_SYMBOL = ';';
     constexpr char EMPTY_SYMBOL = ' ';
     const std::string WHITESPACE = " \t";
@@ -198,7 +199,7 @@ namespace RoguelikeGame
                 throw std::runtime_error("Level legend line has no item id");
             }
 
-            legend[symbol] = {TileType::Floor, itemId, ""};
+            legend[symbol] = {TileType::Floor, itemId, "", "", 0};
             return;
         }
 
@@ -211,7 +212,29 @@ namespace RoguelikeGame
                 throw std::runtime_error("Level legend line has no prop id");
             }
 
-            legend[symbol] = {TileType::Floor, "", propId};
+            legend[symbol] = {TileType::Floor, "", propId, "", 0};
+            return;
+        }
+
+        if (name.compare(0, PATROL_PREFIX.size(), PATROL_PREFIX) == 0)
+        {
+            std::string routeId = Trim(name.substr(PATROL_PREFIX.size()));
+            if (routeId.empty())
+            {
+                LOG_ERROR("Level legend line " + std::to_string(lineNumber) + " has no patrol route id");
+                throw std::runtime_error("Level legend line has no patrol route id");
+            }
+
+            int order = 0;
+            for (const auto& entry : legend)
+            {
+                if (!entry.second.patrolId.empty())
+                {
+                    order++;
+                }
+            }
+
+            legend[symbol] = {TileType::Floor, "", "", routeId, order};
             return;
         }
 
@@ -222,7 +245,7 @@ namespace RoguelikeGame
             throw std::runtime_error("Unknown tile type in level legend: " + name);
         }
 
-        legend[symbol] = {tileType, "", ""};
+        legend[symbol] = {tileType, "", "", "", 0};
     }
 
     void LevelLoader::ReadMapLine(const std::string& line, const Legend& legend, LevelData& levelData)
@@ -247,6 +270,11 @@ namespace RoguelikeGame
                 if (!tile->second.propId.empty())
                 {
                     levelData.props.push_back({column, row, tile->second.propId});
+                }
+
+                if (!tile->second.patrolId.empty())
+                {
+                    levelData.patrols.push_back({column, row, tile->second.patrolId, tile->second.patrolOrder});
                 }
 
                 tiles.push_back(tile->second.tile);

@@ -10,6 +10,7 @@ namespace RoguelikeGame
         LevelGrid current;
 
         constexpr float FAR_AHEAD = 1e9f;
+        constexpr int FREE_SPOT_RINGS = 3;
 
         LevelCell CellOf(TileType tile)
         {
@@ -47,7 +48,39 @@ namespace RoguelikeGame
             }
         }
 
+        for (const PropPlacement& prop : levelData.props)
+        {
+            if (prop.column < 0 || prop.row < 0 || prop.column >= grid.width || prop.row >= grid.height)
+            {
+                continue;
+            }
+
+            std::size_t index = static_cast<std::size_t>(prop.row) * grid.width + prop.column;
+            if (grid.cells[index] == LevelCell::Floor)
+            {
+                grid.cells[index] = LevelCell::Blocked;
+            }
+        }
+
         return grid;
+    }
+
+    void LevelGrid::OpenCell(const XYZEngine::Vector2Df& position)
+    {
+        int column = 0;
+        int row = 0;
+        current.ToCell(position, column, row);
+
+        if (column < 0 || row < 0 || column >= current.width || row >= current.height)
+        {
+            return;
+        }
+
+        std::size_t index = static_cast<std::size_t>(row) * current.width + column;
+        if (current.cells[index] == LevelCell::Blocked)
+        {
+            current.cells[index] = LevelCell::Floor;
+        }
     }
 
     const LevelGrid& LevelGrid::Current()
@@ -108,7 +141,57 @@ namespace RoguelikeGame
         row = height - 1 - static_cast<int>(std::lround(position.y / TILE_SIZE));
     }
 
+    bool LevelGrid::FindFreeSpot(const XYZEngine::Vector2Df& position, XYZEngine::Vector2Df& spot) const
+    {
+        if (IsEmpty())
+        {
+            return false;
+        }
+
+        int column = 0;
+        int row = 0;
+        ToCell(position, column, row);
+
+        if (IsPassable(column, row))
+        {
+            spot = ToWorld(column, row);
+            return true;
+        }
+
+        for (int ring = 1; ring <= FREE_SPOT_RINGS; ring++)
+        {
+            for (int offsetRow = -ring; offsetRow <= ring; offsetRow++)
+            {
+                for (int offsetColumn = -ring; offsetColumn <= ring; offsetColumn++)
+                {
+                    if (std::max(std::abs(offsetRow), std::abs(offsetColumn)) != ring)
+                    {
+                        continue;
+                    }
+
+                    if (IsPassable(column + offsetColumn, row + offsetRow))
+                    {
+                        spot = ToWorld(column + offsetColumn, row + offsetRow);
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
     bool LevelGrid::HasWallBetween(const XYZEngine::Vector2Df& from, const XYZEngine::Vector2Df& to) const
+    {
+        return IsCrossed(from, to, true);
+    }
+
+    bool LevelGrid::HasObstacleBetween(const XYZEngine::Vector2Df& from, const XYZEngine::Vector2Df& to) const
+    {
+        return IsCrossed(from, to, false);
+    }
+
+    bool LevelGrid::IsCrossed(const XYZEngine::Vector2Df& from, const XYZEngine::Vector2Df& to, bool sightOnly) const
     {
         if (IsEmpty())
         {
@@ -166,7 +249,8 @@ namespace RoguelikeGame
                 return false;
             }
 
-            if (BlocksSight(column, row))
+            bool isBlocking = sightOnly ? BlocksSight(column, row) : !IsPassable(column, row);
+            if (isBlocking)
             {
                 return true;
             }

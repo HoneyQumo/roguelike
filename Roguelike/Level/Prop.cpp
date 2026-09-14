@@ -8,6 +8,8 @@
 #include "LootDrop.h"
 #include "PropVisualComponent.h"
 #include <BoxColliderComponent.h>
+#include "LevelGrid.h"
+#include "PathService.h"
 #include <GameWorld.h>
 #include <RectangleRendererComponent.h>
 #include <ResourceSystem.h>
@@ -128,6 +130,15 @@ namespace RoguelikeGame
         {
             visual->SetSpentColor(definition.brokenColor);
             AddDestructible(gameObject, definition, visual);
+
+            if (auto destructible = gameObject->GetComponent<DestructibleComponent>())
+            {
+                destructible->SubscribeBroken([](const XYZEngine::Vector2Df& where)
+                {
+                    LevelGrid::OpenCell(where);
+                    PathService::Reset();
+                });
+            }
         }
 
         LOG_INFO("Prop " + definition.id + " created at " + std::to_string(static_cast<int>(position.x)) + ";"

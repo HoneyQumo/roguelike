@@ -11,7 +11,8 @@ namespace RoguelikeGame
         Outside,
         Floor,
         Wall,
-        Gap
+        Gap,
+        Blocked
     };
 
     class LevelGrid
@@ -21,6 +22,7 @@ namespace RoguelikeGame
 
         static const LevelGrid& Current();
         static void SetCurrent(LevelGrid grid);
+        static void OpenCell(const XYZEngine::Vector2Df& position);
 
         int GetWidth() const;
         int GetHeight() const;
@@ -34,8 +36,12 @@ namespace RoguelikeGame
         void ToCell(const XYZEngine::Vector2Df& position, int& column, int& row) const;
 
         bool HasWallBetween(const XYZEngine::Vector2Df& from, const XYZEngine::Vector2Df& to) const;
+        bool HasObstacleBetween(const XYZEngine::Vector2Df& from, const XYZEngine::Vector2Df& to) const;
+        bool FindFreeSpot(const XYZEngine::Vector2Df& position, XYZEngine::Vector2Df& spot) const;
 
     private:
+        bool IsCrossed(const XYZEngine::Vector2Df& from, const XYZEngine::Vector2Df& to, bool sightOnly) const;
+
         int width = 0;
         int height = 0;
         std::vector<LevelCell> cells;

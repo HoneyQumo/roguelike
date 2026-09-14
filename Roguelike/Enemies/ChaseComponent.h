@@ -5,7 +5,7 @@
 #include <TransformComponent.h>
 #include <MovementComponent.h>
 #include "ChaseRules.h"
-#include "RouteFollower.h"
+#include "Navigator.h"
 #include "SightMemory.h"
 #include "Vision.h"
 #include <Cooldown.h>
@@ -68,17 +68,13 @@ namespace RoguelikeGame
 		XYZEngine::Vector2Df investigatePoint = {0.f, 0.f};
 		SightMemory memory;
 
-		RouteFollower route;
-		XYZEngine::Cooldown repath;
-		int routeGoalColumn = -1;
-		int routeGoalRow = -1;
+		Navigator navigator;
 
 		void OnDamage(const DamageInfo& damage);
 		ChaseSense ReadSense(const XYZEngine::Vector2Df& targetPosition, bool hasTarget) const;
 		void ApplyAim(const ChaseSense& sense);
 		XYZEngine::Vector2Df Facing() const;
 		void MoveTowards(const XYZEngine::Vector2Df& goal, float deltaTime);
-		void RefreshRoute(const XYZEngine::Vector2Df& position, const XYZEngine::Vector2Df& goal);
 		void DrawRoute() const;
 		void DrawVision() const;
 	};

@@ -4,6 +4,7 @@
 using RoguelikeGame::Alarm;
 using RoguelikeGame::Fade;
 using RoguelikeGame::Forget;
+using RoguelikeGame::GiveUp;
 using RoguelikeGame::IsSearching;
 using RoguelikeGame::Remember;
 using RoguelikeGame::SightMemory;
@@ -105,4 +106,31 @@ TEST(SightMemoryTest, FadeDoesNotGoBelowZero)
 	memory = Fade(memory, 10.f);
 
 	EXPECT_FLOAT_EQ(memory.alertLeft, 0.f);
+}
+
+TEST(SightMemoryTest, GivingUpLeavesOnlyAShortLookAround)
+{
+	SightMemory memory = Remember(SightMemory(), 8.f);
+	memory = GiveUp(memory, 1.5f);
+
+	EXPECT_FALSE(memory.hasPoint);
+	EXPECT_FLOAT_EQ(memory.alertLeft, 1.5f);
+	EXPECT_TRUE(IsSearching(memory));
+}
+
+TEST(SightMemoryTest, GivingUpDoesNotStretchAShortAlarm)
+{
+	SightMemory memory = Remember(SightMemory(), 0.5f);
+	memory = GiveUp(memory, 1.5f);
+
+	EXPECT_FLOAT_EQ(memory.alertLeft, 0.5f);
+}
+
+TEST(SightMemoryTest, GivingUpWithoutLookAroundEndsTheSearch)
+{
+	SightMemory memory = Remember(SightMemory(), 8.f);
+	memory = GiveUp(memory, 0.f);
+
+	EXPECT_FALSE(IsSearching(memory));
+	EXPECT_FALSE(memory.hasPoint);
 }

@@ -1,6 +1,6 @@
 # Атлас объектов - Resources/Textures/props.png
 
-Полоса из двенадцати кадров 64x64, всего 768x64. Основа - CC0-набор Kenney
+Полоса из четырнадцати кадров 64x64, всего 896x64. Основа - CC0-набор Kenney
 "Top-down Shooter" (`Docs/Sprites/vendor/README.md`).
 
 Вид ящика говорит, что внутри: зелёный военный - оружие, деревянный с гильзами -
@@ -12,6 +12,8 @@
 | 64 | обломки патронного | `tile_292`, палитра дерева | `crate_ammo.spentFrame` |
 | 128 | бочка | `tile_132` | `barrel_rusty.frame` |
 | 704 | обломки бочки | `tile_292`, палитра песка, перевёрнуто | `barrel_rusty.spentFrame` |
+| 768 | бронеящик | `tile_158`, корпус в сталь, + щит | `crate_armor.frame` |
+| 832 | обломки бронеящика | `tile_292`, палитра стали | `crate_armor.spentFrame` |
 | 192 | склад заперт | `tile_131` | `chest_supply.frame` |
 | 256 | склад открыт | `tile_180` | `chest_supply.spentFrame` |
 | 320 | малый ящик | `tile_130` | `crate_empty.frame` |

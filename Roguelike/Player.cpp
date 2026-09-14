@@ -180,7 +180,20 @@ namespace RoguelikeGame
             return TryGetWeaponId(effect.target, id) && loadout->EquipWeapon(id);
         });
 
+        effects->SetHandler(ItemEffectKind::AddArmor, [health](const ItemEffect& effect)
+        {
+            float taken = ArmorAfterPlate(health->GetArmor(), effect.amount, PLAYER_ARMOR_CAP);
+            if (taken <= health->GetArmor())
+            {
+                return false;
+            }
+
+            health->SetArmor(taken);
+            return true;
+        });
+
         effects->SetPickupRule(ItemEffectKind::AddAmmo, [](const ItemEffect& effect) { return true; });
+        effects->SetPickupRule(ItemEffectKind::AddArmor, [](const ItemEffect& effect) { return true; });
         effects->SetPickupRule(ItemEffectKind::EquipWeapon, [loadout](const ItemEffect& effect)
         {
             WeaponId id = WeaponId::Knife;

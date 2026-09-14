@@ -37,6 +37,23 @@ namespace RoguelikeGame
     constexpr float PLAYER_RUN_SPEED_MULTIPLIER = 1.5f;
     constexpr float PLAYER_MAX_HEALTH = 100.f;
     constexpr float PLAYER_ARMOR = 5.f;
+    constexpr float PLAYER_ARMOR_CAP = 20.f;
+
+    constexpr bool CanTakeArmor(float current, float cap)
+    {
+        return current < cap;
+    }
+
+    constexpr float ArmorAfterPlate(float current, float amount, float cap)
+    {
+        if (amount <= 0.f || current >= cap)
+        {
+            return current;
+        }
+
+        return current + amount > cap ? cap : current + amount;
+    }
+
     constexpr float PLAYER_ATTACK_DAMAGE = 25.f;
     constexpr float PLAYER_ATTACK_COOLDOWN = 0.3f;
     constexpr float PLAYER_PROJECTILE_SPEED = 800.f;
@@ -171,6 +188,7 @@ namespace RoguelikeGame
     constexpr float VITALS_HUD_WIDTH = 280.f;
     constexpr float VITALS_HUD_HEALTH_HEIGHT = 20.f;
     constexpr float VITALS_HUD_STAMINA_HEIGHT = 10.f;
+    constexpr float VITALS_HUD_ARMOR_HEIGHT = 8.f;
     constexpr float VITALS_HUD_GAP = 6.f;
     constexpr float VITALS_HUD_CRITICAL_PART = 0.25f;
     constexpr float VITALS_HUD_LOW_PART = 0.5f;
@@ -180,6 +198,7 @@ namespace RoguelikeGame
     inline const sf::Color VITALS_HUD_HEALTH_CRITICAL_COLOR = {215, 60, 55};
     inline const sf::Color VITALS_HUD_STAMINA_COLOR = {80, 170, 230};
     inline const sf::Color VITALS_HUD_STAMINA_EMPTY_COLOR = {120, 120, 130};
+    inline const sf::Color VITALS_HUD_ARMOR_COLOR = {170, 180, 200};
     constexpr float AMMO_HUD_HEIGHT = AMMO_HUD_NAME_HEIGHT + AMMO_HUD_AMMO_HEIGHT;
 
     // Красная зона обоймы

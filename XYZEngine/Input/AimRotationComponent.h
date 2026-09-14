@@ -20,6 +20,7 @@ namespace XYZEngine
 
 		void AimAtCursor();
 		void AimAtGameObject(const std::string& newTargetName);
+		void AimAtPoint(const Vector2Df& point);
 		void SetMaxDistance(float newMaxDistance);
 
 		const Vector2Df& GetAimDirection() const;
@@ -28,7 +29,9 @@ namespace XYZEngine
 		InputComponent* input = nullptr;
 
 		std::string targetName;
+		Vector2Df aimPoint = { 0.f, 0.f };
 		bool isCursorAim = false;
+		bool isPointAim = false;
 		float maxDistance = 0.f;
 
 		Vector2Df aimDirection = { 1.f, 0.f };

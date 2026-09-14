@@ -18,43 +18,43 @@ namespace RoguelikeGame
             TileType::GruntSpawn, 'g', "GruntSpawn",
             {"Grunt", "enemy_grunt", WeaponId::Knife,
              150.f, 300.f, 40.f, 50.f, 0.f,
-             50.f, 30.f, 0.9f, 0.f, "grunt"}
+             50.f, 30.f, 0.9f, 0.f, "grunt", 5.f}
         },
         {
             TileType::MarauderSpawn, 'm', "MarauderSpawn",
             {"Marauder", "enemy_assault", WeaponId::Glock,
              120.f, 160.f, 140.f, 45.f, 0.f,
-             240.f, 10.f, 0.8f, 620.f, "marauder"}
+             240.f, 10.f, 0.8f, 620.f, "marauder", 5.f}
         },
         {
             TileType::AssaultSpawn, 'a', "AssaultSpawn",
             {"Assault", "enemy_assault", WeaponId::Ak47,
              110.f, 420.f, 220.f, 70.f, 5.f,
-             360.f, 12.f, 1.4f, 700.f, "assault"}
+             360.f, 12.f, 1.4f, 700.f, "assault", 5.f}
         },
         {
             TileType::ShieldSpawn, 's', "ShieldSpawn",
             {"Shield", "enemy_shield", WeaponId::Glock,
              95.f, 380.f, 150.f, 120.f, 14.f,
-             300.f, 9.f, 1.1f, 650.f, "shield"}
+             300.f, 9.f, 1.1f, 650.f, "shield", 5.f}
         },
         {
             TileType::HeavySpawn, 'h', "HeavySpawn",
             {"Heavy", "enemy_heavy", WeaponId::M16,
              80.f, 400.f, 200.f, 150.f, 10.f,
-             340.f, 6.f, 0.3f, 720.f, "heavy"}
+             340.f, 6.f, 0.3f, 720.f, "heavy", 5.f}
         },
         {
             TileType::RadioSpawn, 'r', "RadioSpawn",
             {"Radio", "enemy_radio", WeaponId::SmgSuppressed,
              165.f, 460.f, 260.f, 55.f, 2.f,
-             300.f, 5.f, 0.45f, 680.f, "radio"}
+             300.f, 5.f, 0.45f, 680.f, "radio", 5.f}
         },
         {
             TileType::BossSpawn, 'b', "BossSpawn",
             {"Boss", "enemy_boss", WeaponId::ShotgunPump,
              90.f, 500.f, 170.f, 260.f, 18.f,
-             260.f, 16.f, 1.0f, 900.f, "boss"}
+             260.f, 16.f, 1.0f, 900.f, "boss", 5.f}
         }
     };
 

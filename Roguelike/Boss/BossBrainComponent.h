@@ -59,6 +59,9 @@ namespace RoguelikeGame
         XYZEngine::MovementComponent* movement = nullptr;
         XYZEngine::SpriteMovementAnimationComponent* animation = nullptr;
         ChaseComponent* chase = nullptr;
+        bool isProvoked = false;
+
+        void Provoke();
         HealthComponent* health = nullptr;
         XYZEngine::Component* basicAttack = nullptr;
 

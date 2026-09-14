@@ -90,6 +90,9 @@
     <ClCompile Include="Enemies\ChaseComponent.cpp">
       <Filter>Enemies</Filter>
     </ClCompile>
+    <ClInclude Include="Enemies\ChaseRules.h">
+      <Filter>Enemies</Filter>
+    </ClInclude>
     <ClInclude Include="Enemies\ChaseComponent.h">
       <Filter>Enemies</Filter>
     </ClInclude>

@@ -28,6 +28,8 @@ namespace RoguelikeGame
     constexpr XYZEngine::CameraShake CAMERA_SHAKE_BLAST = {24.f, 0.45f, 14.f};
 
     constexpr float TILE_SIZE = 64.f;
+    constexpr float ENEMY_ALERT_ARRIVE_DISTANCE = 48.f;
+    constexpr float ENEMY_ALERT_POINT_DISTANCE = 420.f;
 
     constexpr int CHARACTER_SPRITE_SIZE = CHARACTER_FRAME_SIZE;
 

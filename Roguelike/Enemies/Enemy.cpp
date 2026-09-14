@@ -1,4 +1,4 @@
-#include "Enemy.h"
+﻿#include "Enemy.h"
 #include "BossBrainComponent.h"
 #include "BossAnimationComponent.h"
 #include "BossEffects.h"
@@ -44,6 +44,7 @@ namespace RoguelikeGame
             chase->SetTargetName(PLAYER_OBJECT_NAME);
             chase->SetDetectionRadius(config.detectionRadius);
             chase->SetStopDistance(config.stopDistance);
+            chase->SetAlertTime(config.alertTime);
         });
 
         auto gameObject = parts.gameObject;

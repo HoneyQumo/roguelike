@@ -1,5 +1,9 @@
 #include "ChaseComponent.h"
+#include "DamageInfo.h"
+#include "FactionComponent.h"
 #include "GameSettings.h"
+#include "HealthComponent.h"
+#include <AimRotationComponent.h>
 #include <DebugDraw.h>
 #include <GameObject.h>
 #include <GameWorld.h>
@@ -16,6 +20,92 @@ namespace RoguelikeGame
 	void ChaseComponent::Start()
 	{
 		movement = gameObject->GetComponent<MovementComponent>();
+		aim = gameObject->GetComponent<AimRotationComponent>();
+		health = gameObject->GetComponent<HealthComponent>();
+
+		if (health != nullptr)
+		{
+			health->SubscribeDamage([this](const DamageInfo& damage) { OnDamage(damage); });
+		}
+	}
+
+	void ChaseComponent::OnDamage(const DamageInfo& damage)
+	{
+		if (detectionRadius <= 0.f || alertTime <= 0.f)
+		{
+			return;
+		}
+
+		if (!CanDamage(damage.source.attackerFaction, GetFactionOf(gameObject)))
+		{
+			return;
+		}
+
+		alertLeft = alertTime;
+
+		GameObject* attacker = damage.source.attackerName.empty()
+			? nullptr
+			: GameWorld::Instance()->FindGameObject(damage.source.attackerName);
+
+		if (attacker != nullptr)
+		{
+			investigatePoint = attacker->GetTransform()->GetWorldPosition();
+			hasPoint = true;
+			return;
+		}
+
+		Vector2Df back = damage.source.direction;
+		if (back.GetLengthSquared() <= 0.f)
+		{
+			hasPoint = false;
+			return;
+		}
+
+		investigatePoint = transform->GetWorldPosition() - back.Normalized() * ENEMY_ALERT_POINT_DISTANCE;
+		hasPoint = true;
+	}
+
+	ChaseSense ChaseComponent::ReadSense(const Vector2Df& targetPosition, bool hasTarget) const
+	{
+		ChaseSense sense;
+		sense.detectionRadius = detectionRadius;
+		sense.stopDistance = stopDistance;
+		sense.arriveDistance = ENEMY_ALERT_ARRIVE_DISTANCE;
+		sense.isAlerted = alertLeft > 0.f;
+		sense.isForced = isForced && hasTarget;
+		sense.hasPoint = hasPoint;
+		sense.distanceToTarget = hasTarget
+			? (targetPosition - transform->GetWorldPosition()).GetLength()
+			: detectionRadius + 1.f;
+		sense.distanceToPoint = hasPoint ? (investigatePoint - transform->GetWorldPosition()).GetLength() : 0.f;
+
+		if (!hasTarget)
+		{
+			sense.detectionRadius = 0.f;
+		}
+
+		return sense;
+	}
+
+	void ChaseComponent::ApplyAim(const ChaseSense& sense)
+	{
+		if (aim == nullptr)
+		{
+			return;
+		}
+
+		if (RoguelikeGame::IsTargetDetected(sense))
+		{
+			aim->AimAtGameObject(targetName);
+			aim->SetMaxDistance(sense.isForced || sense.isAlerted ? 0.f : detectionRadius);
+			return;
+		}
+
+		if (sense.isAlerted && hasPoint)
+		{
+			aim->AimAtPoint(investigatePoint);
+			aim->SetMaxDistance(0.f);
+		}
 	}
 
 	void ChaseComponent::Update(float deltaTime)
@@ -25,7 +115,13 @@ namespace RoguelikeGame
 			return;
 		}
 
+		if (alertLeft > 0.f)
+		{
+			alertLeft -= deltaTime;
+		}
+
 		isChasing = false;
+		isEngaged = false;
 		movement->SetDirection({ 0.f, 0.f });
 
 		if (targetName.empty() || detectionRadius <= 0.f)
@@ -33,39 +129,44 @@ namespace RoguelikeGame
 			return;
 		}
 
-		// Searching every frame instead of caching the pointer: the target may be destroyed at any moment.
 		GameObject* target = GameWorld::Instance()->FindGameObject(targetName);
-		if (target == nullptr)
+		Vector2Df targetPosition = target != nullptr ? target->GetTransform()->GetWorldPosition() : Vector2Df{ 0.f, 0.f };
+
+		ChaseSense sense = ReadSense(targetPosition, target != nullptr);
+		ChaseMove move = ChooseChaseMove(sense);
+
+		isEngaged = RoguelikeGame::IsEngaged(sense);
+		isChasing = RoguelikeGame::IsTargetDetected(sense);
+
+		ApplyAim(sense);
+
+		if (move == ChaseMove::Approach)
 		{
+			movement->SetDirection(targetPosition - transform->GetWorldPosition());
 			return;
 		}
 
-		Vector2Df toTarget = target->GetTransform()->GetWorldPosition() - transform->GetWorldPosition();
-		float distance = toTarget.GetLength();
-		if (distance > detectionRadius)
+		if (move == ChaseMove::Investigate)
 		{
+			movement->SetDirection(investigatePoint - transform->GetWorldPosition());
 			return;
 		}
 
-		isChasing = true;
-
-		if (distance > stopDistance)
+		if (sense.isAlerted && hasPoint && !RoguelikeGame::IsTargetDetected(sense))
 		{
-			movement->SetDirection(toTarget);
+			hasPoint = false;
 		}
 	}
+
 	void ChaseComponent::Render()
 	{
-		if (DebugDraw::Instance()->IsEnabled() && detectionRadius > 0.f)
-		{
-			DebugDraw::Instance()->DrawCircle(transform->GetWorldPosition(), detectionRadius, isChasing ? DEBUG_CHASING_COLOR : DEBUG_DETECTION_COLOR);
-		}
 	}
 
 	void ChaseComponent::SetTargetName(const std::string& newTargetName)
 	{
 		targetName = newTargetName;
 	}
+
 	const std::string& ChaseComponent::GetTargetName() const
 	{
 		return targetName;
@@ -75,6 +176,7 @@ namespace RoguelikeGame
 	{
 		detectionRadius = newDetectionRadius;
 	}
+
 	float ChaseComponent::GetDetectionRadius() const
 	{
 		return detectionRadius;
@@ -84,13 +186,34 @@ namespace RoguelikeGame
 	{
 		stopDistance = newStopDistance;
 	}
+
 	float ChaseComponent::GetStopDistance() const
 	{
 		return stopDistance;
 	}
 
+	void ChaseComponent::SetAlertTime(float newAlertTime)
+	{
+		alertTime = newAlertTime;
+	}
+
+	void ChaseComponent::SetForcedChase(bool newIsForced)
+	{
+		isForced = newIsForced;
+	}
+
 	bool ChaseComponent::IsChasing() const
 	{
 		return isChasing;
+	}
+
+	bool ChaseComponent::IsAlerted() const
+	{
+		return alertLeft > 0.f;
+	}
+
+	bool ChaseComponent::IsEngaged() const
+	{
+		return isEngaged;
 	}
 }

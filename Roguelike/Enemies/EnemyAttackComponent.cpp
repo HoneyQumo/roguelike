@@ -1,4 +1,5 @@
 #include "EnemyAttackComponent.h"
+#include "ChaseComponent.h"
 #include "GameSettings.h"
 #include <DebugDraw.h>
 #include <GameObject.h>
@@ -17,6 +18,7 @@ namespace RoguelikeGame
         weapon = gameObject->GetComponent<WeaponComponent>();
         meleeWeapon = gameObject->GetComponent<MeleeWeaponComponent>();
         health = gameObject->GetComponent<HealthComponent>();
+        chase = gameObject->GetComponent<ChaseComponent>();
 
         if (weapon == nullptr && meleeWeapon == nullptr)
         {
@@ -34,6 +36,11 @@ namespace RoguelikeGame
         }
 
         if (targetName.empty() || attackRange <= 0.f)
+        {
+            return;
+        }
+
+        if (chase != nullptr && !chase->IsEngaged())
         {
             return;
         }

@@ -166,6 +166,7 @@ namespace RoguelikeGame
         bool isAlive = true;
         bool isEnrageDue = false;
         bool isTargetDetected = false;
+        bool isProvoked = false;
         bool isActionDone = false;
         bool isRecoveryDone = false;
         bool isRoarDone = false;
@@ -187,10 +188,10 @@ namespace RoguelikeGame
         switch (current)
         {
         case BossState::Idle:
-            return input.isTargetDetected ? BossState::Chase : BossState::Idle;
+            return input.isTargetDetected || input.isProvoked ? BossState::Chase : BossState::Idle;
 
         case BossState::Chase:
-            if (!input.isTargetDetected)
+            if (!input.isTargetDetected && !input.isProvoked)
             {
                 return BossState::Idle;
             }

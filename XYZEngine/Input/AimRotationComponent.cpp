@@ -46,13 +46,23 @@ namespace XYZEngine
     void AimRotationComponent::AimAtCursor()
     {
         isCursorAim = true;
+        isPointAim = false;
         targetName.clear();
     }
 
     void AimRotationComponent::AimAtGameObject(const std::string& newTargetName)
     {
         isCursorAim = false;
+        isPointAim = false;
         targetName = newTargetName;
+    }
+
+    void AimRotationComponent::AimAtPoint(const Vector2Df& point)
+    {
+        isCursorAim = false;
+        isPointAim = true;
+        targetName.clear();
+        aimPoint = point;
     }
 
     void AimRotationComponent::SetMaxDistance(float newMaxDistance)
@@ -75,6 +85,12 @@ namespace XYZEngine
             }
 
             aimPosition = input->GetMouseWorldPosition();
+            return true;
+        }
+
+        if (isPointAim)
+        {
+            aimPosition = aimPoint;
             return true;
         }
 

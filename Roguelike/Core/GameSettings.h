@@ -359,4 +359,6 @@ namespace RoguelikeGame
     inline const sf::Color DEBUG_CHASING_COLOR = {240, 80, 60};
     inline const sf::Color DEBUG_ATTACK_RANGE_COLOR = {255, 140, 40};
     inline const sf::Color DEBUG_BLAST_COLOR = {230, 80, 230};
+    inline const sf::Color DEBUG_ROUTE_COLOR = {80, 220, 220};
+    constexpr int DEBUG_VISION_CONE_STEPS = 12;
 }

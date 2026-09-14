@@ -2,6 +2,7 @@
 
 #include <MathUtils.h>
 #include <Vector.h>
+#include <algorithm>
 
 namespace RoguelikeGame
 {
@@ -10,6 +11,22 @@ namespace RoguelikeGame
         float maxDistance = 0.f;
         float halfAngleDegrees = 180.f;
     };
+
+    struct VisionRange
+    {
+        float maxDistance = 0.f;
+        float calmHalfAngle = 180.f;
+        float alertHalfAngle = 180.f;
+    };
+
+    inline VisionCone ConeFor(const VisionRange& range, bool isAlerted)
+    {
+        VisionCone cone;
+        cone.maxDistance = range.maxDistance;
+        cone.halfAngleDegrees = isAlerted ? std::max(range.calmHalfAngle, range.alertHalfAngle) : range.calmHalfAngle;
+
+        return cone;
+    }
 
     inline bool IsWithinCone(const XYZEngine::Vector2Df& facing, const XYZEngine::Vector2Df& toTarget, float halfAngleDegrees)
     {

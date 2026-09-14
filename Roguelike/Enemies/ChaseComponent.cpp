@@ -86,9 +86,12 @@ namespace RoguelikeGame
 
 		if (hasTarget)
 		{
-			VisionCone cone;
-			cone.maxDistance = detectionRadius;
-			cone.halfAngleDegrees = sense.isAlerted ? 180.f : visionHalfAngle;
+			VisionRange range;
+			range.maxDistance = detectionRadius;
+			range.calmHalfAngle = visionHalfAngle;
+			range.alertHalfAngle = alertHalfAngle;
+
+			VisionCone cone = ConeFor(range, sense.isAlerted);
 
 			bool isBlocked = LevelGrid::Current().HasWallBetween(position, targetPosition);
 			sense.isVisible = CanSeeTarget(cone, Facing(), toTarget, isBlocked);
@@ -228,13 +231,50 @@ namespace RoguelikeGame
 		Vector2Df from = transform->GetWorldPosition();
 		for (std::size_t i = route.GetIndex(); i < route.GetRoute().size(); i++)
 		{
-			DebugDraw::Instance()->DrawLine(from, route.GetRoute()[i], sf::Color::Cyan);
+			DebugDraw::Instance()->DrawLine(from, route.GetRoute()[i], DEBUG_ROUTE_COLOR);
 			from = route.GetRoute()[i];
 		}
 	}
 
+	void ChaseComponent::DrawVision() const
+	{
+		if (!DebugDraw::Instance()->IsEnabled() || detectionRadius <= 0.f)
+		{
+			return;
+		}
+
+		VisionRange range;
+		range.maxDistance = detectionRadius;
+		range.calmHalfAngle = visionHalfAngle;
+		range.alertHalfAngle = alertHalfAngle;
+
+		bool isAlerted = alertLeft > 0.f;
+		VisionCone cone = ConeFor(range, isAlerted);
+		const sf::Color& color = isAlerted ? DEBUG_CHASING_COLOR : DEBUG_DETECTION_COLOR;
+
+		Vector2Df position = transform->GetWorldPosition();
+		float facing = transform->GetWorldRotation();
+		float edge = facing - cone.halfAngleDegrees;
+		float span = 2.f * cone.halfAngleDegrees;
+
+		Vector2Df previous = position + DirectionFromDegrees(edge) * cone.maxDistance;
+		DebugDraw::Instance()->DrawLine(position, previous, color);
+
+		for (int step = 1; step <= DEBUG_VISION_CONE_STEPS; step++)
+		{
+			float angle = edge + span * static_cast<float>(step) / DEBUG_VISION_CONE_STEPS;
+			Vector2Df point = position + DirectionFromDegrees(angle) * cone.maxDistance;
+
+			DebugDraw::Instance()->DrawLine(previous, point, color);
+			previous = point;
+		}
+
+		DebugDraw::Instance()->DrawLine(previous, position, color);
+	}
+
 	void ChaseComponent::Render()
 	{
+		DrawVision();
 		DrawRoute();
 	}
 
@@ -276,6 +316,11 @@ namespace RoguelikeGame
 	void ChaseComponent::SetVisionHalfAngle(float newHalfAngle)
 	{
 		visionHalfAngle = newHalfAngle;
+	}
+
+	void ChaseComponent::SetAlertHalfAngle(float newHalfAngle)
+	{
+		alertHalfAngle = newHalfAngle;
 	}
 
 	void ChaseComponent::SetForcedChase(bool newIsForced)

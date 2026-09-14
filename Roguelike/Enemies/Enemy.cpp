@@ -46,6 +46,7 @@ namespace RoguelikeGame
             chase->SetStopDistance(config.stopDistance);
             chase->SetAlertTime(config.alertTime);
             chase->SetVisionHalfAngle(config.visionHalfAngle);
+            chase->SetAlertHalfAngle(config.alertHalfAngle);
         });
 
         auto gameObject = parts.gameObject;

@@ -96,7 +96,7 @@ namespace RoguelikeGame
     {
         Vector2Df position = transform->GetWorldPosition();
 
-        if (!LevelGrid::Current().HasWallBetween(position, goal))
+        if (!LevelGrid::Current().HasObstacleBetween(position, goal))
         {
             route.Clear();
             repath.Stop();

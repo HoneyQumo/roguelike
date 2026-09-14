@@ -179,7 +179,7 @@ namespace RoguelikeGame
 
 		if (sense.isAlerted && memory.hasPoint && !RoguelikeGame::IsTargetDetected(sense))
 		{
-			memory = Forget(memory);
+			memory = GiveUp(memory, ENEMY_LOOK_AROUND_TIME);
 		}
 	}
 
@@ -187,7 +187,7 @@ namespace RoguelikeGame
 	{
 		Vector2Df position = transform->GetWorldPosition();
 
-		if (!LevelGrid::Current().HasWallBetween(position, goal))
+		if (!LevelGrid::Current().HasObstacleBetween(position, goal))
 		{
 			route.Clear();
 			repath.Stop();

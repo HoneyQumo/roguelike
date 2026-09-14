@@ -47,7 +47,39 @@ namespace RoguelikeGame
             }
         }
 
+        for (const PropPlacement& prop : levelData.props)
+        {
+            if (prop.column < 0 || prop.row < 0 || prop.column >= grid.width || prop.row >= grid.height)
+            {
+                continue;
+            }
+
+            std::size_t index = static_cast<std::size_t>(prop.row) * grid.width + prop.column;
+            if (grid.cells[index] == LevelCell::Floor)
+            {
+                grid.cells[index] = LevelCell::Blocked;
+            }
+        }
+
         return grid;
+    }
+
+    void LevelGrid::OpenCell(const XYZEngine::Vector2Df& position)
+    {
+        int column = 0;
+        int row = 0;
+        current.ToCell(position, column, row);
+
+        if (column < 0 || row < 0 || column >= current.width || row >= current.height)
+        {
+            return;
+        }
+
+        std::size_t index = static_cast<std::size_t>(row) * current.width + column;
+        if (current.cells[index] == LevelCell::Blocked)
+        {
+            current.cells[index] = LevelCell::Floor;
+        }
     }
 
     const LevelGrid& LevelGrid::Current()
@@ -110,6 +142,16 @@ namespace RoguelikeGame
 
     bool LevelGrid::HasWallBetween(const XYZEngine::Vector2Df& from, const XYZEngine::Vector2Df& to) const
     {
+        return IsCrossed(from, to, true);
+    }
+
+    bool LevelGrid::HasObstacleBetween(const XYZEngine::Vector2Df& from, const XYZEngine::Vector2Df& to) const
+    {
+        return IsCrossed(from, to, false);
+    }
+
+    bool LevelGrid::IsCrossed(const XYZEngine::Vector2Df& from, const XYZEngine::Vector2Df& to, bool sightOnly) const
+    {
         if (IsEmpty())
         {
             return false;
@@ -166,7 +208,8 @@ namespace RoguelikeGame
                 return false;
             }
 
-            if (BlocksSight(column, row))
+            bool isBlocking = sightOnly ? BlocksSight(column, row) : !IsPassable(column, row);
+            if (isBlocking)
             {
                 return true;
             }

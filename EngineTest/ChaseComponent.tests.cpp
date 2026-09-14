@@ -191,20 +191,23 @@ TEST_F(ChaseComponentTest, EnemyThatNeverSawAnyoneStaysPut)
 	EXPECT_FLOAT_EQ(after.y, before.y);
 }
 
-TEST_F(ChaseComponentTest, SeeingTheTargetAgainRestartsTheSearchWindow)
+TEST_F(ChaseComponentTest, SeeingTheTargetAgainStartsANewSearch)
 {
 	GameObject* hero = CreateHero(3, 1);
 	ChaseComponent* chase = CreateEnemy(1, 1);
 	Run(0.2f);
+	ASSERT_TRUE(chase->IsChasing());
 
 	hero->GetTransform()->SetWorldPosition(At(5, 1));
-	Run(SEARCH_TIME - 1.f);
-	ASSERT_TRUE(chase->IsAlerted());
+	Run(SEARCH_TIME);
+	ASSERT_FALSE(chase->IsAlerted());
 
 	hero->GetTransform()->SetWorldPosition(At(3, 1));
 	Run(0.2f);
+	ASSERT_TRUE(chase->IsChasing());
+
 	hero->GetTransform()->SetWorldPosition(At(5, 1));
-	Run(SEARCH_TIME - 1.f);
+	Run(0.2f);
 
 	EXPECT_TRUE(chase->IsAlerted());
 }
@@ -219,6 +222,24 @@ TEST_F(ChaseComponentTest, EnemyWithoutSearchTimeForgetsAtOnce)
 
 	hero->GetTransform()->SetWorldPosition(At(5, 1));
 	Run(0.2f);
+
+	EXPECT_FALSE(chase->IsAlerted());
+}
+
+TEST_F(ChaseComponentTest, EmptyLastSeenPlaceEndsTheSearchQuickly)
+{
+	GameObject* hero = CreateHero(3, 1);
+	ChaseComponent* chase = CreateEnemy(1, 1);
+	Run(0.2f);
+	ASSERT_TRUE(chase->IsChasing());
+
+	GameWorld::Instance()->DestroyGameObject(hero);
+	GameWorld::Instance()->LateUpdate();
+
+	Run(0.2f);
+	ASSERT_TRUE(chase->IsAlerted());
+
+	Run(SEARCH_TIME - 1.f);
 
 	EXPECT_FALSE(chase->IsAlerted());
 }

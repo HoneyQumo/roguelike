@@ -221,6 +221,38 @@ TEST(PathFieldTest, ClearedFieldForgetsEverything)
 	EXPECT_FALSE(field.IsReachable(1, 1));
 }
 
+TEST(PathFieldTest, RouteGoesAroundACrate)
+{
+	LevelGrid grid = GridOf(
+		"[legend]\n"
+		"# Wall\n"
+		". Floor\n"
+		"c Prop:crate_ammo\n"
+		"[map]\n"
+		"#######\n"
+		"#..c..#\n"
+		"#..c..#\n"
+		"#.....#\n"
+		"#######\n");
+
+	PathField field;
+	field.Build(grid, 5, 1);
+
+	std::vector<Vector2Df> route;
+	ASSERT_TRUE(field.BuildRoute(grid, 1, 1, route));
+
+	for (const Vector2Df& point : route)
+	{
+		int column = 0;
+		int row = 0;
+		grid.ToCell(point, column, row);
+
+		EXPECT_TRUE(grid.IsPassable(column, row)) << "cell " << column << ":" << row;
+	}
+
+	EXPECT_GT(route.size(), 4u);
+}
+
 TEST(PathFieldTest, BenchmarkOnActSizedGrid)
 {
 	constexpr int COLUMNS = 64;

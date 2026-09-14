@@ -31,6 +31,7 @@ namespace RoguelikeGame
     constexpr float ENEMY_ALERT_ARRIVE_DISTANCE = 48.f;
     constexpr float ENEMY_ALERT_POINT_DISTANCE = 420.f;
     constexpr float ENEMY_REPATH_INTERVAL = 0.4f;
+    constexpr float ENEMY_LOOK_AROUND_TIME = 1.5f;
     constexpr float ENEMY_ROUTE_ARRIVE_DISTANCE = 0.5f * TILE_SIZE;
     constexpr float PATROL_JOIN_DISTANCE = 4.f * TILE_SIZE;
 

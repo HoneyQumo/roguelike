@@ -2,15 +2,9 @@
 
 #include <functional>
 #include <string>
-#include <SFML/Graphics/Color.hpp>
 #include <EventList.h>
 #include <Vector.h>
 #include "InteractableComponent.h"
-
-namespace XYZEngine
-{
-    class RectangleRendererComponent;
-}
 
 namespace RoguelikeGame
 {
@@ -25,7 +19,6 @@ namespace RoguelikeGame
 
         void SetTitle(std::string newTitle);
         void SetKeyItem(std::string itemId, std::string keyName);
-        void SetOpenedColor(const sf::Color& newOpenedColor);
         void SetReach(XYZEngine::ColliderComponent* reach);
 
         bool IsLocked() const;
@@ -43,10 +36,7 @@ namespace RoguelikeGame
         std::string title;
         std::string keyItem;
         std::string keyName;
-        sf::Color openedColor = {90, 80, 55};
         bool isOpen = false;
-
-        XYZEngine::RectangleRendererComponent* renderer = nullptr;
 
         XYZEngine::EventList<const XYZEngine::Vector2Df&> openedEvent;
     };

@@ -104,6 +104,7 @@
     <ClCompile Include="ItemPickupComponent.cpp" />
     <ClCompile Include="InteractableComponent.cpp" />
     <ClCompile Include="ContainerComponent.cpp" />
+    <ClCompile Include="PropVisualComponent.cpp" />
     <ClCompile Include="InventoryComponent.cpp" />
     <ClCompile Include="ItemEffectComponent.cpp" />
     <ClCompile Include="InteractionComponent.cpp" />
@@ -167,6 +168,7 @@
     <ClInclude Include="ItemPickupComponent.h" />
     <ClInclude Include="InteractableComponent.h" />
     <ClInclude Include="ContainerComponent.h" />
+    <ClInclude Include="PropVisualComponent.h" />
     <ClInclude Include="InventoryComponent.h" />
     <ClInclude Include="ItemEffectComponent.h" />
     <ClInclude Include="InteractionComponent.h" />

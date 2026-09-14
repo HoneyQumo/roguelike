@@ -7,6 +7,8 @@
 
 namespace RoguelikeGame
 {
+    std::string PropTextureName(const std::string& propId, bool spent);
+
     XYZEngine::GameObject* CreateProp(const PropDefinition& definition, const XYZEngine::Vector2Df& position,
         const ItemCatalog& items = ItemCatalog::Empty());
 }

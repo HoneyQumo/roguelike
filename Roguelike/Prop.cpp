@@ -6,9 +6,12 @@
 #include "HealthComponent.h"
 #include "ItemCatalog.h"
 #include "LootDrop.h"
+#include "PropVisualComponent.h"
 #include <BoxColliderComponent.h>
 #include <GameWorld.h>
 #include <RectangleRendererComponent.h>
+#include <ResourceSystem.h>
+#include <SpriteRendererComponent.h>
 #include <LoggerRegistry.h>
 
 namespace RoguelikeGame
@@ -22,7 +25,38 @@ namespace RoguelikeGame
             return key != nullptr ? key->name : keyItem;
         }
 
-        void AddContainer(XYZEngine::GameObject* gameObject, const PropDefinition& definition, const ItemCatalog& items)
+        PropVisualComponent* AddVisual(XYZEngine::GameObject* gameObject, const PropDefinition& definition)
+        {
+            const sf::Texture* frame = definition.HasFrame()
+                ? XYZEngine::ResourceSystem::Instance()->GetTextureShared(PropTextureName(definition.id, false))
+                : nullptr;
+
+            if (frame != nullptr)
+            {
+                auto renderer = gameObject->AddComponent<XYZEngine::SpriteRendererComponent>();
+                renderer->SetTexture(*frame);
+                renderer->SetPixelSize(static_cast<int>(definition.size), static_cast<int>(definition.size));
+            }
+            else
+            {
+                auto renderer = gameObject->AddComponent<XYZEngine::RectangleRendererComponent>();
+                renderer->SetSize(definition.size, definition.size);
+                renderer->SetColor(definition.color);
+            }
+
+            auto visual = gameObject->AddComponent<PropVisualComponent>();
+            visual->SetSize(definition.size);
+
+            if (definition.HasSpentFrame())
+            {
+                visual->SetSpentTexture(XYZEngine::ResourceSystem::Instance()->GetTextureShared(PropTextureName(definition.id, true)));
+            }
+
+            return visual;
+        }
+
+        void AddContainer(XYZEngine::GameObject* gameObject, const PropDefinition& definition, const ItemCatalog& items,
+            PropVisualComponent* visual)
         {
             auto reach = gameObject->AddComponent<XYZEngine::BoxColliderComponent>();
             reach->SetSize(definition.size + CONTAINER_REACH_MARGIN, definition.size + CONTAINER_REACH_MARGIN);
@@ -31,18 +65,18 @@ namespace RoguelikeGame
 
             auto container = gameObject->AddComponent<ContainerComponent>();
             container->SetTitle(definition.name);
-            container->SetOpenedColor(definition.openedColor);
             container->SetKeyItem(definition.keyItem, KeyNameOf(definition.keyItem, items));
             container->SetReach(reach);
 
             std::string lootTable = definition.lootTable;
-            container->SubscribeOpened([gameObject, lootTable](const XYZEngine::Vector2Df& place)
+            container->SubscribeOpened([gameObject, lootTable, visual](const XYZEngine::Vector2Df& place)
             {
+                visual->ShowSpent();
                 DropLoot(lootTable, gameObject, place);
             });
         }
 
-        void AddDestructible(XYZEngine::GameObject* gameObject, const PropDefinition& definition)
+        void AddDestructible(XYZEngine::GameObject* gameObject, const PropDefinition& definition, PropVisualComponent* visual)
         {
             auto health = gameObject->AddComponent<HealthComponent>();
             health->SetMaxHealth(definition.health);
@@ -54,15 +88,20 @@ namespace RoguelikeGame
             });
 
             auto destructible = gameObject->AddComponent<DestructibleComponent>();
-            destructible->SetBrokenColor(definition.brokenColor);
 
             std::string lootTable = definition.lootTable;
-            destructible->SubscribeBroken([gameObject, lootTable](const XYZEngine::Vector2Df& place)
+            destructible->SubscribeBroken([gameObject, lootTable, visual](const XYZEngine::Vector2Df& place)
             {
+                visual->ShowSpent();
                 Fx::SpawnImpact(place, {0.f, 1.f});
                 DropLoot(lootTable, gameObject, place);
             });
         }
+    }
+
+    std::string PropTextureName(const std::string& propId, bool spent)
+    {
+        return "prop_" + propId + (spent ? "_spent" : "");
     }
 
     XYZEngine::GameObject* CreateProp(const PropDefinition& definition, const XYZEngine::Vector2Df& position,
@@ -72,21 +111,21 @@ namespace RoguelikeGame
         gameObject->SetRenderLayer(ITEM_RENDER_LAYER);
         gameObject->GetTransform()->SetWorldPosition(position);
 
-        auto renderer = gameObject->AddComponent<XYZEngine::RectangleRendererComponent>();
-        renderer->SetSize(definition.size, definition.size);
-        renderer->SetColor(definition.color);
+        PropVisualComponent* visual = AddVisual(gameObject, definition);
 
         auto collider = gameObject->AddComponent<XYZEngine::BoxColliderComponent>();
         collider->SetSize(definition.size, definition.size);
 
         if (definition.IsOpenable())
         {
-            AddContainer(gameObject, definition, items);
+            visual->SetSpentColor(definition.openedColor);
+            AddContainer(gameObject, definition, items, visual);
         }
 
         if (definition.IsDestructible())
         {
-            AddDestructible(gameObject, definition);
+            visual->SetSpentColor(definition.brokenColor);
+            AddDestructible(gameObject, definition, visual);
         }
 
         LOG_INFO("Prop " + definition.id + " created at " + std::to_string(static_cast<int>(position.x)) + ";"

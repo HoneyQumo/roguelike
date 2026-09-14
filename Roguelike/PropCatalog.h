@@ -2,6 +2,7 @@
 
 #include <istream>
 #include <string>
+#include <SFML/Graphics/Rect.hpp>
 #include <vector>
 #include <SFML/Graphics/Color.hpp>
 
@@ -19,10 +20,15 @@ namespace RoguelikeGame
         sf::Color brokenColor = {80, 60, 35};
         sf::Color openedColor = {90, 80, 55};
         std::string keyItem;
+        std::string texturePath;
+        sf::IntRect frame;
+        sf::IntRect spentFrame;
         bool openable = false;
 
         bool IsDestructible() const;
         bool IsOpenable() const;
+        bool HasFrame() const;
+        bool HasSpentFrame() const;
     };
 
     class PropCatalog

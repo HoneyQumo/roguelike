@@ -40,6 +40,16 @@ namespace RoguelikeGame
         return openable;
     }
 
+    bool PropDefinition::HasFrame() const
+    {
+        return !texturePath.empty() && frame.width > 0 && frame.height > 0;
+    }
+
+    bool PropDefinition::HasSpentFrame() const
+    {
+        return HasFrame() && spentFrame.width > 0 && spentFrame.height > 0;
+    }
+
     PropCatalog PropCatalog::Load(const std::string& filePath)
     {
         std::ifstream file(filePath);
@@ -175,6 +185,25 @@ namespace RoguelikeGame
                     current.openedColor = color;
                 }
 
+                continue;
+            }
+
+            if (key == "frame" || key == "spentFrame")
+            {
+                std::string path;
+                int x = 0;
+                int y = 0;
+                int width = 0;
+                int height = 0;
+
+                if (!(stream >> path >> x >> y >> width >> height) || width <= 0 || height <= 0)
+                {
+                    LOG_ERROR("Prop frame needs a path and four numbers, line " + std::to_string(lineNumber) + " in " + sourceName);
+                    throw std::runtime_error("Prop frame needs a path and four numbers in " + sourceName);
+                }
+
+                current.texturePath = path;
+                (key == "frame" ? current.frame : current.spentFrame) = {x, y, width, height};
                 continue;
             }
 

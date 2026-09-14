@@ -2,6 +2,7 @@
 #include "GameSettings.h"
 #include "GameResources.h"
 #include "LevelBuilder.h"
+#include "ActAssembler.h"
 #include "LevelLoader.h"
 #include "LevelProgression.h"
 #include "Player.h"
@@ -97,7 +98,9 @@ namespace RoguelikeGame
 
         try
         {
-            level = LevelBuilder::Build(LevelLoader::Load(levelFile), GameResources::GetItems(), GameResources::GetProps());
+            bool isAct = entry != nullptr && entry->isAct;
+            LevelData levelData = isAct ? LoadAct(levelFile) : LevelLoader::Load(levelFile);
+            level = LevelBuilder::Build(levelData, GameResources::GetItems(), GameResources::GetProps());
         }
         catch (const std::exception& exception)
         {

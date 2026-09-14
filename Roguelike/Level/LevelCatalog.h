@@ -11,6 +11,7 @@ namespace RoguelikeGame
         std::string id;
         std::string title;
         std::string filePath;
+        bool isAct = false;
     };
 
     class LevelCatalog

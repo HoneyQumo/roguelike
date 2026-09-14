@@ -73,6 +73,10 @@ namespace RoguelikeGame
     {
         std::string title;
         std::string nextLevelId;
+        std::string kind;
+        std::string tileset;
+        std::string music;
+        std::string ambient;
         BossSpec boss;
     };
 

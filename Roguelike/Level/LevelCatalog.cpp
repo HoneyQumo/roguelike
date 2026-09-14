@@ -108,6 +108,14 @@ namespace RoguelikeGame
             if (key == "file")
             {
                 stream >> current.filePath;
+                current.isAct = false;
+                continue;
+            }
+
+            if (key == "act")
+            {
+                stream >> current.filePath;
+                current.isAct = true;
                 continue;
             }
 

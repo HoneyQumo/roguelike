@@ -98,6 +98,9 @@
     <ClCompile Include="TileAtlas.tests.cpp" />
     <ClCompile Include="ChaseRules.tests.cpp" />
     <ClCompile Include="LevelGrid.tests.cpp" />
+    <ClCompile Include="RoomTransform.tests.cpp" />
+    <ClCompile Include="ActPlan.tests.cpp" />
+    <ClCompile Include="ActAssembler.tests.cpp" />
     <ClCompile Include="PathField.tests.cpp" />
     <ClCompile Include="PathService.tests.cpp" />
     <ClCompile Include="RouteFollower.tests.cpp" />
@@ -138,6 +141,15 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\Roguelike\Level\PatrolRoutes.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Roguelike\Level\RoomTransform.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Roguelike\Level\ActPlan.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Roguelike\Level\ActAssembler.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\Roguelike\Enemies\PatrolComponent.cpp">

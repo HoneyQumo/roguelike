@@ -122,6 +122,30 @@ namespace RoguelikeGame
             return;
         }
 
+        if (key == "kind")
+        {
+            stream >> info.kind;
+            return;
+        }
+
+        if (key == "tileset")
+        {
+            stream >> info.tileset;
+            return;
+        }
+
+        if (key == "music")
+        {
+            stream >> info.music;
+            return;
+        }
+
+        if (key == "ambient")
+        {
+            stream >> info.ambient;
+            return;
+        }
+
         if (key == "boss")
         {
             if (!(stream >> info.boss.bossId))

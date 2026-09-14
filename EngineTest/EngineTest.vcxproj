@@ -102,6 +102,8 @@
     <ClCompile Include="PathService.tests.cpp" />
     <ClCompile Include="RouteFollower.tests.cpp" />
     <ClCompile Include="Vision.tests.cpp" />
+    <ClCompile Include="SightMemory.tests.cpp" />
+    <ClCompile Include="ChaseComponent.tests.cpp" />
     <ClCompile Include="InventoryComponent.tests.cpp" />
     <ClCompile Include="Interaction.tests.cpp" />
     <ClCompile Include="InventoryScreen.tests.cpp" />

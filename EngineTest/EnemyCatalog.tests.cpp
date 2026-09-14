@@ -155,3 +155,24 @@ TEST(EnemyCatalogTest, EveryEnemyCanBeApproachedFromBehind)
 		EXPECT_FALSE(RoguelikeGame::CanSeeTarget(RoguelikeGame::ConeFor(range, true), facing, behind, false)) << enemy.tileName;
 	}
 }
+
+TEST(EnemyCatalogTest, StrongerEnemySearchesLonger)
+{
+	float previous = 0.f;
+	for (RoguelikeGame::TileType tile : BY_STRENGTH)
+	{
+		const RoguelikeGame::EnemyConfig* config = RoguelikeGame::FindEnemyConfig(tile);
+		ASSERT_NE(config, nullptr);
+
+		EXPECT_GT(config->searchTime, previous);
+		previous = config->searchTime;
+	}
+}
+
+TEST(EnemyCatalogTest, EveryEnemyLooksForALostTarget)
+{
+	for (const RoguelikeGame::EnemyDefinition& enemy : RoguelikeGame::ENEMIES)
+	{
+		EXPECT_GT(enemy.config.searchTime, 0.f) << enemy.tileName;
+	}
+}

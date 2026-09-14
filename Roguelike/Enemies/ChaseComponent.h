@@ -6,6 +6,7 @@
 #include <MovementComponent.h>
 #include "ChaseRules.h"
 #include "RouteFollower.h"
+#include "SightMemory.h"
 #include "Vision.h"
 #include <Cooldown.h>
 
@@ -40,6 +41,7 @@ namespace RoguelikeGame
 		void SetAlertTime(float newAlertTime);
 		void SetVisionHalfAngle(float newHalfAngle);
 		void SetAlertHalfAngle(float newHalfAngle);
+		void SetSearchTime(float newSearchTime);
 		void SetForcedChase(bool newIsForced);
 
 		bool IsChasing() const;
@@ -58,13 +60,13 @@ namespace RoguelikeGame
 		float alertTime = 0.f;
 		float visionHalfAngle = 180.f;
 		float alertHalfAngle = 180.f;
-		float alertLeft = 0.f;
+		float searchTime = 0.f;
 		bool isForced = false;
 		bool isChasing = false;
 		bool isEngaged = false;
 
 		XYZEngine::Vector2Df investigatePoint = {0.f, 0.f};
-		bool hasPoint = false;
+		SightMemory memory;
 
 		RouteFollower route;
 		XYZEngine::Cooldown repath;

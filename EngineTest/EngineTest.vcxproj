@@ -34,7 +34,7 @@
       <PreprocessorDefinitions>X64;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(SolutionDir)XYZEngine;$(SolutionDir)Roguelike;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)XYZEngine;$(SolutionDir)Roguelike;$(SolutionDir)Roguelike\Boss;$(SolutionDir)Roguelike\Characters;$(SolutionDir)Roguelike\Core;$(SolutionDir)Roguelike\Enemies;$(SolutionDir)Roguelike\Fx;$(SolutionDir)Roguelike\Items;$(SolutionDir)Roguelike\Level;$(SolutionDir)Roguelike\Player;$(SolutionDir)Roguelike\Ui;$(SolutionDir)Roguelike\Weapons;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -48,7 +48,7 @@
       <PreprocessorDefinitions>X64;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(SolutionDir)XYZEngine;$(SolutionDir)Roguelike;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)XYZEngine;$(SolutionDir)Roguelike;$(SolutionDir)Roguelike\Boss;$(SolutionDir)Roguelike\Characters;$(SolutionDir)Roguelike\Core;$(SolutionDir)Roguelike\Enemies;$(SolutionDir)Roguelike\Fx;$(SolutionDir)Roguelike\Items;$(SolutionDir)Roguelike\Level;$(SolutionDir)Roguelike\Player;$(SolutionDir)Roguelike\Ui;$(SolutionDir)Roguelike\Weapons;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -111,97 +111,97 @@
     <ClCompile Include="PropCatalog.tests.cpp" />
     <ClCompile Include="Destructible.tests.cpp" />
     <ClCompile Include="Level.tests.cpp" />
-    <ClCompile Include="..\Roguelike\LevelLoader.cpp">
+    <ClCompile Include="..\Roguelike\Level\LevelLoader.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\Roguelike\ProjectileComponent.cpp">
+    <ClCompile Include="..\Roguelike\Weapons\ProjectileComponent.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\Roguelike\HealthComponent.cpp">
+    <ClCompile Include="..\Roguelike\Characters\HealthComponent.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\Roguelike\AreaDamage.cpp">
+    <ClCompile Include="..\Roguelike\Weapons\AreaDamage.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\Roguelike\ExplosiveComponent.cpp">
+    <ClCompile Include="..\Roguelike\Weapons\ExplosiveComponent.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\Roguelike\StaminaComponent.cpp">
+    <ClCompile Include="..\Roguelike\Characters\StaminaComponent.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\Roguelike\HudScreen.cpp">
+    <ClCompile Include="..\Roguelike\Ui\HudScreen.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\Roguelike\ItemCatalog.cpp">
+    <ClCompile Include="..\Roguelike\Items\ItemCatalog.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\Roguelike\ItemCatalogLoader.cpp">
+    <ClCompile Include="..\Roguelike\Items\ItemCatalogLoader.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\Roguelike\ItemEffectComponent.cpp">
+    <ClCompile Include="..\Roguelike\Items\ItemEffectComponent.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\Roguelike\InventoryComponent.cpp">
+    <ClCompile Include="..\Roguelike\Items\InventoryComponent.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\Roguelike\InteractionComponent.cpp">
+    <ClCompile Include="..\Roguelike\Items\InteractionComponent.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\Roguelike\InventoryScreen.cpp">
+    <ClCompile Include="..\Roguelike\Ui\InventoryScreen.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\Roguelike\PropCatalog.cpp">
+    <ClCompile Include="..\Roguelike\Level\PropCatalog.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\Roguelike\DestructibleComponent.cpp">
+    <ClCompile Include="..\Roguelike\Level\DestructibleComponent.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\Roguelike\LootCatalog.cpp">
+    <ClCompile Include="..\Roguelike\Items\LootCatalog.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\Roguelike\LevelCatalog.cpp">
+    <ClCompile Include="..\Roguelike\Level\LevelCatalog.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\Roguelike\LevelProgression.cpp">
+    <ClCompile Include="..\Roguelike\Level\LevelProgression.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\Roguelike\Level.cpp">
+    <ClCompile Include="..\Roguelike\Level\Level.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\Roguelike\Item.cpp">
+    <ClCompile Include="..\Roguelike\Items\Item.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\Roguelike\ItemIconLayout.cpp">
+    <ClCompile Include="..\Roguelike\Items\ItemIconLayout.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\Roguelike\ItemPickupComponent.cpp">
+    <ClCompile Include="..\Roguelike\Items\ItemPickupComponent.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\Roguelike\InteractableComponent.cpp">
+    <ClCompile Include="..\Roguelike\Items\InteractableComponent.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\Roguelike\ContainerComponent.cpp">
+    <ClCompile Include="..\Roguelike\Items\ContainerComponent.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\Roguelike\PropVisualComponent.cpp">
+    <ClCompile Include="..\Roguelike\Level\PropVisualComponent.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\Roguelike\FadeScreen.cpp">
+    <ClCompile Include="..\Roguelike\Ui\FadeScreen.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\Roguelike\CastMark.cpp">
+    <ClCompile Include="..\Roguelike\Boss\CastMark.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\Roguelike\BossBrainComponent.cpp">
+    <ClCompile Include="..\Roguelike\Boss\BossBrainComponent.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\Roguelike\ChaseComponent.cpp">
+    <ClCompile Include="..\Roguelike\Enemies\ChaseComponent.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\Roguelike\LevelExitComponent.cpp">
+    <ClCompile Include="..\Roguelike\Level\LevelExitComponent.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\Roguelike\FactionComponent.cpp">
+    <ClCompile Include="..\Roguelike\Core\FactionComponent.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="pch.cpp">

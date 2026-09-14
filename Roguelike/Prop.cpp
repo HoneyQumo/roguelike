@@ -87,6 +87,8 @@ namespace RoguelikeGame
                 Fx::SpawnHit(hitEffect, damage.source.position, damage.source.direction);
             });
 
+            visual->SetSpentLayer(PROP_DEBRIS_RENDER_LAYER);
+
             auto destructible = gameObject->AddComponent<DestructibleComponent>();
 
             std::string lootTable = definition.lootTable;

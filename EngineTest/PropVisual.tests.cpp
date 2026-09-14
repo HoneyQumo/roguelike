@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "GameWorld.h"
+#include "GameSettings.h"
 #include "PropCatalog.h"
 #include "PropVisualComponent.h"
 #include "RectangleRendererComponent.h"
@@ -128,4 +129,64 @@ TEST(PropCatalogFrameTest, BrokenFrameLineIsRejected)
 {
 	EXPECT_THROW(ParseProps("[prop crate]\nframe Resources/Textures/props.png 0 0 64\n"), std::runtime_error);
 	EXPECT_THROW(ParseProps("[prop crate]\nframe Resources/Textures/props.png 0 0 0 64\n"), std::runtime_error);
+}
+
+TEST_F(PropVisualTest, WithoutASpentLayerTheObjectKeepsItsPlaceInTheOrder)
+{
+	prop->SetRenderLayer(RoguelikeGame::ITEM_RENDER_LAYER);
+
+	visual->ShowSpent();
+
+	EXPECT_EQ(prop->GetRenderLayer(), RoguelikeGame::ITEM_RENDER_LAYER);
+}
+
+TEST_F(PropVisualTest, DebrisDropsUnderTheActors)
+{
+	prop->SetRenderLayer(RoguelikeGame::ITEM_RENDER_LAYER);
+	visual->SetSpentLayer(RoguelikeGame::PROP_DEBRIS_RENDER_LAYER);
+
+	visual->ShowSpent();
+
+	EXPECT_EQ(prop->GetRenderLayer(), RoguelikeGame::PROP_DEBRIS_RENDER_LAYER);
+	EXPECT_LT(prop->GetRenderLayer(), RoguelikeGame::CORPSE_RENDER_LAYER);
+	EXPECT_LT(prop->GetRenderLayer(), RoguelikeGame::ITEM_RENDER_LAYER);
+	EXPECT_LT(prop->GetRenderLayer(), RoguelikeGame::ENEMY_RENDER_LAYER);
+	EXPECT_LT(prop->GetRenderLayer(), RoguelikeGame::PLAYER_RENDER_LAYER);
+	EXPECT_GT(prop->GetRenderLayer(), RoguelikeGame::BLOOD_RENDER_LAYER);
+}
+
+TEST_F(PropVisualTest, LayerDropsOnlyOnce)
+{
+	prop->SetRenderLayer(RoguelikeGame::ITEM_RENDER_LAYER);
+	visual->SetSpentLayer(RoguelikeGame::PROP_DEBRIS_RENDER_LAYER);
+	visual->ShowSpent();
+
+	prop->SetRenderLayer(RoguelikeGame::ITEM_RENDER_LAYER);
+	visual->ShowSpent();
+
+	EXPECT_EQ(prop->GetRenderLayer(), RoguelikeGame::ITEM_RENDER_LAYER);
+}
+
+TEST(PropCatalogFrameTest, EveryDestructiblePropInTheCatalogHasItsOwnSpentFrame)
+{
+	PropCatalog catalog = ParseProps(
+		"[prop crate]\n"
+		"health 40\n"
+		"size 48\n"
+		"frame Resources/Textures/props.png 0 0 64 64\n"
+		"spentFrame Resources/Textures/props.png 64 0 64 64\n"
+		"[prop barrel]\n"
+		"health 25\n"
+		"size 44\n"
+		"frame Resources/Textures/props.png 128 0 64 64\n"
+		"spentFrame Resources/Textures/props.png 704 0 64 64\n");
+
+	for (const PropDefinition& prop : catalog)
+	{
+		if (prop.IsDestructible())
+		{
+			EXPECT_TRUE(prop.HasSpentFrame()) << prop.id;
+			EXPECT_NE(prop.spentFrame.left, prop.frame.left) << prop.id;
+		}
+	}
 }

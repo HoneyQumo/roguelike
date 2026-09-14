@@ -34,7 +34,7 @@
       <PreprocessorDefinitions>X64;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(SolutionDir)XYZEngine;$(SolutionDir)Roguelike;$(SolutionDir)Roguelike\Boss;$(SolutionDir)Roguelike\Characters;$(SolutionDir)Roguelike\Core;$(SolutionDir)Roguelike\Enemies;$(SolutionDir)Roguelike\Fx;$(SolutionDir)Roguelike\Items;$(SolutionDir)Roguelike\Level;$(SolutionDir)Roguelike\Player;$(SolutionDir)Roguelike\Ui;$(SolutionDir)Roguelike\Weapons;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)XYZEngine;$(SolutionDir)XYZEngine\Animation;$(SolutionDir)XYZEngine\Audio;$(SolutionDir)XYZEngine\Core;$(SolutionDir)XYZEngine\Input;$(SolutionDir)XYZEngine\Logging;$(SolutionDir)XYZEngine\Math;$(SolutionDir)XYZEngine\Particles;$(SolutionDir)XYZEngine\Physics;$(SolutionDir)XYZEngine\Rendering;$(SolutionDir)XYZEngine\Resources;$(SolutionDir)XYZEngine\Ui;$(SolutionDir)Roguelike;$(SolutionDir)Roguelike\Boss;$(SolutionDir)Roguelike\Characters;$(SolutionDir)Roguelike\Core;$(SolutionDir)Roguelike\Enemies;$(SolutionDir)Roguelike\Fx;$(SolutionDir)Roguelike\Items;$(SolutionDir)Roguelike\Level;$(SolutionDir)Roguelike\Player;$(SolutionDir)Roguelike\Ui;$(SolutionDir)Roguelike\Weapons;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -48,7 +48,7 @@
       <PreprocessorDefinitions>X64;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(SolutionDir)XYZEngine;$(SolutionDir)Roguelike;$(SolutionDir)Roguelike\Boss;$(SolutionDir)Roguelike\Characters;$(SolutionDir)Roguelike\Core;$(SolutionDir)Roguelike\Enemies;$(SolutionDir)Roguelike\Fx;$(SolutionDir)Roguelike\Items;$(SolutionDir)Roguelike\Level;$(SolutionDir)Roguelike\Player;$(SolutionDir)Roguelike\Ui;$(SolutionDir)Roguelike\Weapons;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)XYZEngine;$(SolutionDir)XYZEngine\Animation;$(SolutionDir)XYZEngine\Audio;$(SolutionDir)XYZEngine\Core;$(SolutionDir)XYZEngine\Input;$(SolutionDir)XYZEngine\Logging;$(SolutionDir)XYZEngine\Math;$(SolutionDir)XYZEngine\Particles;$(SolutionDir)XYZEngine\Physics;$(SolutionDir)XYZEngine\Rendering;$(SolutionDir)XYZEngine\Resources;$(SolutionDir)XYZEngine\Ui;$(SolutionDir)Roguelike;$(SolutionDir)Roguelike\Boss;$(SolutionDir)Roguelike\Characters;$(SolutionDir)Roguelike\Core;$(SolutionDir)Roguelike\Enemies;$(SolutionDir)Roguelike\Fx;$(SolutionDir)Roguelike\Items;$(SolutionDir)Roguelike\Level;$(SolutionDir)Roguelike\Player;$(SolutionDir)Roguelike\Ui;$(SolutionDir)Roguelike\Weapons;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>

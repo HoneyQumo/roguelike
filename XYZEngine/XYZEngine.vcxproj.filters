@@ -1,357 +1,370 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Исходные файлы">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    <Filter Include="Animation">
+      <UniqueIdentifier>{b0000000-aaaa-bbbb-cccc-dddd00000000}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Файлы заголовков">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    <Filter Include="Audio">
+      <UniqueIdentifier>{b000187f-aaaa-bbbb-cccc-dddd00000001}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Файлы ресурсов">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    <Filter Include="Core">
+      <UniqueIdentifier>{b00030fe-aaaa-bbbb-cccc-dddd00000002}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Input">
+      <UniqueIdentifier>{b000497d-aaaa-bbbb-cccc-dddd00000003}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Logging">
+      <UniqueIdentifier>{b00061fc-aaaa-bbbb-cccc-dddd00000004}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Math">
+      <UniqueIdentifier>{b0007a7b-aaaa-bbbb-cccc-dddd00000005}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Particles">
+      <UniqueIdentifier>{b00092fa-aaaa-bbbb-cccc-dddd00000006}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Physics">
+      <UniqueIdentifier>{b000ab79-aaaa-bbbb-cccc-dddd00000007}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering">
+      <UniqueIdentifier>{b000c3f8-aaaa-bbbb-cccc-dddd00000008}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resources">
+      <UniqueIdentifier>{b000dc77-aaaa-bbbb-cccc-dddd00000009}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Ui">
+      <UniqueIdentifier>{b000f4f6-aaaa-bbbb-cccc-dddd0000000a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="framework.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="pch.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="EventList.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="AnimationClip.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="TextUtils.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="UiAnchor.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="UiWidget.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="UiPanel.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="UiLabel.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="UiProgressBar.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="UiIcon.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="UiButton.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="UiManager.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="UiScreen.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="ParticleSpec.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="ParticleSystem.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="ParticleSystemComponent.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="ParticleAuraComponent.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="PixelBounds.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="ParticleEmitterComponent.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="AudioComponent.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="MusicComponent.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="MovementComponent.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="RectangleRendererComponent.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="BoxColliderComponent.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="CameraComponent.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="ColliderComponent.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="Collision.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="Cooldown.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="Component.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="Logger.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="LoggerRegistry.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="ConsoleSink.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="FrameClock.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="DebugDraw.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="DebugOutputSink.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="CursorFollowComponent.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="FileSink.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="GameObject.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="GameWorld.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="InputComponent.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="InputSystem.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="MathUtils.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="Matrix2D.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="PhysicsSystem.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="randomizer.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderSystem.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="ResourceMap.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="ResourceSystem.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="RigidbodyComponent.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="Scene.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="AimRotationComponent.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="SoundSourceComponent.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="SpriteAnimationComponent.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="SpriteRendererComponent.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="SpriteDirectionComponent.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="SpriteMovementAnimationComponent.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="TransformComponent.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="Trigger.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="Vector.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="VertexArrayRendererComponent.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="pch.cpp">
-      <Filter>Исходные файлы</Filter>
+    <ClCompile Include="Input\AimRotationComponent.cpp">
+      <Filter>Input</Filter>
     </ClCompile>
-    <ClCompile Include="Engine.cpp">
-      <Filter>Исходные файлы</Filter>
+    <ClInclude Include="Input\AimRotationComponent.h">
+      <Filter>Input</Filter>
+    </ClInclude>
+    <ClCompile Include="Animation\AnimationClip.cpp">
+      <Filter>Animation</Filter>
     </ClCompile>
-    <ClCompile Include="AnimationClip.cpp">
-      <Filter>Исходные файлы</Filter>
+    <ClInclude Include="Animation\AnimationClip.h">
+      <Filter>Animation</Filter>
+    </ClInclude>
+    <ClCompile Include="Audio\AudioComponent.cpp">
+      <Filter>Audio</Filter>
     </ClCompile>
-    <ClCompile Include="UiWidget.cpp">
-      <Filter>Исходные файлы</Filter>
+    <ClInclude Include="Audio\AudioComponent.h">
+      <Filter>Audio</Filter>
+    </ClInclude>
+    <ClCompile Include="Physics\BoxColliderComponent.cpp">
+      <Filter>Physics</Filter>
     </ClCompile>
-    <ClCompile Include="UiPanel.cpp">
-      <Filter>Исходные файлы</Filter>
+    <ClInclude Include="Physics\BoxColliderComponent.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClCompile Include="Rendering\CameraComponent.cpp">
+      <Filter>Rendering</Filter>
     </ClCompile>
-    <ClCompile Include="UiLabel.cpp">
-      <Filter>Исходные файлы</Filter>
+    <ClInclude Include="Rendering\CameraComponent.h">
+      <Filter>Rendering</Filter>
+    </ClInclude>
+    <ClCompile Include="Physics\ColliderComponent.cpp">
+      <Filter>Physics</Filter>
     </ClCompile>
-    <ClCompile Include="UiProgressBar.cpp">
-      <Filter>Исходные файлы</Filter>
+    <ClInclude Include="Physics\ColliderComponent.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClCompile Include="Physics\Collision.cpp">
+      <Filter>Physics</Filter>
     </ClCompile>
-    <ClCompile Include="UiIcon.cpp">
-      <Filter>Исходные файлы</Filter>
+    <ClInclude Include="Physics\Collision.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClCompile Include="Core\Component.cpp">
+      <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="UiButton.cpp">
-      <Filter>Исходные файлы</Filter>
+    <ClInclude Include="Core\Component.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClCompile Include="Logging\ConsoleSink.cpp">
+      <Filter>Logging</Filter>
     </ClCompile>
-    <ClCompile Include="UiManager.cpp">
-      <Filter>Исходные файлы</Filter>
+    <ClInclude Include="Logging\ConsoleSink.h">
+      <Filter>Logging</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Cooldown.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClCompile Include="Input\CursorFollowComponent.cpp">
+      <Filter>Input</Filter>
     </ClCompile>
-    <ClCompile Include="UiScreen.cpp">
-      <Filter>Исходные файлы</Filter>
+    <ClInclude Include="Input\CursorFollowComponent.h">
+      <Filter>Input</Filter>
+    </ClInclude>
+    <ClCompile Include="Rendering\DebugDraw.cpp">
+      <Filter>Rendering</Filter>
     </ClCompile>
-    <ClCompile Include="ParticleSystem.cpp">
-      <Filter>Исходные файлы</Filter>
+    <ClInclude Include="Rendering\DebugDraw.h">
+      <Filter>Rendering</Filter>
+    </ClInclude>
+    <ClCompile Include="Logging\DebugOutputSink.cpp">
+      <Filter>Logging</Filter>
     </ClCompile>
-    <ClCompile Include="ParticleSystemComponent.cpp">
-      <Filter>Исходные файлы</Filter>
+    <ClInclude Include="Logging\DebugOutputSink.h">
+      <Filter>Logging</Filter>
+    </ClInclude>
+    <ClCompile Include="Core\Engine.cpp">
+      <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="ParticleAuraComponent.cpp">
-      <Filter>Исходные файлы</Filter>
+    <ClInclude Include="Core\Engine.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\EventList.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClCompile Include="Logging\FileSink.cpp">
+      <Filter>Logging</Filter>
     </ClCompile>
-    <ClCompile Include="PixelBounds.cpp">
-      <Filter>Исходные файлы</Filter>
+    <ClInclude Include="Logging\FileSink.h">
+      <Filter>Logging</Filter>
+    </ClInclude>
+    <ClCompile Include="Core\FrameClock.cpp">
+      <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="ParticleEmitterComponent.cpp">
-      <Filter>Исходные файлы</Filter>
+    <ClInclude Include="Core\FrameClock.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClCompile Include="Core\GameObject.cpp">
+      <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="AudioComponent.cpp">
-      <Filter>Исходные файлы</Filter>
+    <ClInclude Include="Core\GameObject.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClCompile Include="Core\GameWorld.cpp">
+      <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="MusicComponent.cpp">
-      <Filter>Исходные файлы</Filter>
+    <ClInclude Include="Core\GameWorld.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClCompile Include="Input\InputComponent.cpp">
+      <Filter>Input</Filter>
     </ClCompile>
-    <ClCompile Include="MovementComponent.cpp">
-      <Filter>Исходные файлы</Filter>
+    <ClInclude Include="Input\InputComponent.h">
+      <Filter>Input</Filter>
+    </ClInclude>
+    <ClCompile Include="Input\InputSystem.cpp">
+      <Filter>Input</Filter>
     </ClCompile>
-    <ClCompile Include="RectangleRendererComponent.cpp">
-      <Filter>Исходные файлы</Filter>
+    <ClInclude Include="Input\InputSystem.h">
+      <Filter>Input</Filter>
+    </ClInclude>
+    <ClCompile Include="Logging\Logger.cpp">
+      <Filter>Logging</Filter>
     </ClCompile>
-    <ClCompile Include="BoxColliderComponent.cpp">
-      <Filter>Исходные файлы</Filter>
+    <ClInclude Include="Logging\Logger.h">
+      <Filter>Logging</Filter>
+    </ClInclude>
+    <ClCompile Include="Logging\LoggerRegistry.cpp">
+      <Filter>Logging</Filter>
     </ClCompile>
-    <ClCompile Include="CameraComponent.cpp">
-      <Filter>Исходные файлы</Filter>
+    <ClInclude Include="Logging\LoggerRegistry.h">
+      <Filter>Logging</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\MathUtils.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClCompile Include="Math\Matrix2D.cpp">
+      <Filter>Math</Filter>
     </ClCompile>
-    <ClCompile Include="ColliderComponent.cpp">
-      <Filter>Исходные файлы</Filter>
+    <ClInclude Include="Math\Matrix2D.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClCompile Include="Physics\MovementComponent.cpp">
+      <Filter>Physics</Filter>
     </ClCompile>
-    <ClCompile Include="Collision.cpp">
-      <Filter>Исходные файлы</Filter>
+    <ClInclude Include="Physics\MovementComponent.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClCompile Include="Audio\MusicComponent.cpp">
+      <Filter>Audio</Filter>
     </ClCompile>
-    <ClCompile Include="Component.cpp">
-      <Filter>Исходные файлы</Filter>
+    <ClInclude Include="Audio\MusicComponent.h">
+      <Filter>Audio</Filter>
+    </ClInclude>
+    <ClCompile Include="Particles\ParticleAuraComponent.cpp">
+      <Filter>Particles</Filter>
     </ClCompile>
-    <ClCompile Include="Logger.cpp">
-      <Filter>Исходные файлы</Filter>
+    <ClInclude Include="Particles\ParticleAuraComponent.h">
+      <Filter>Particles</Filter>
+    </ClInclude>
+    <ClCompile Include="Particles\ParticleEmitterComponent.cpp">
+      <Filter>Particles</Filter>
     </ClCompile>
-    <ClCompile Include="LoggerRegistry.cpp">
-      <Filter>Исходные файлы</Filter>
+    <ClInclude Include="Particles\ParticleEmitterComponent.h">
+      <Filter>Particles</Filter>
+    </ClInclude>
+    <ClInclude Include="Particles\ParticleSpec.h">
+      <Filter>Particles</Filter>
+    </ClInclude>
+    <ClCompile Include="Particles\ParticleSystem.cpp">
+      <Filter>Particles</Filter>
     </ClCompile>
-    <ClCompile Include="ConsoleSink.cpp">
-      <Filter>Исходные файлы</Filter>
+    <ClInclude Include="Particles\ParticleSystem.h">
+      <Filter>Particles</Filter>
+    </ClInclude>
+    <ClCompile Include="Particles\ParticleSystemComponent.cpp">
+      <Filter>Particles</Filter>
     </ClCompile>
-    <ClCompile Include="FrameClock.cpp">
-      <Filter>Исходные файлы</Filter>
+    <ClInclude Include="Particles\ParticleSystemComponent.h">
+      <Filter>Particles</Filter>
+    </ClInclude>
+    <ClCompile Include="Physics\PhysicsSystem.cpp">
+      <Filter>Physics</Filter>
     </ClCompile>
-    <ClCompile Include="DebugDraw.cpp">
-      <Filter>Исходные файлы</Filter>
+    <ClInclude Include="Physics\PhysicsSystem.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClCompile Include="Rendering\PixelBounds.cpp">
+      <Filter>Rendering</Filter>
     </ClCompile>
-    <ClCompile Include="DebugOutputSink.cpp">
-      <Filter>Исходные файлы</Filter>
+    <ClInclude Include="Rendering\PixelBounds.h">
+      <Filter>Rendering</Filter>
+    </ClInclude>
+    <ClCompile Include="Rendering\RectangleRendererComponent.cpp">
+      <Filter>Rendering</Filter>
     </ClCompile>
-    <ClCompile Include="CursorFollowComponent.cpp">
-      <Filter>Исходные файлы</Filter>
+    <ClInclude Include="Rendering\RectangleRendererComponent.h">
+      <Filter>Rendering</Filter>
+    </ClInclude>
+    <ClCompile Include="Rendering\RenderSystem.cpp">
+      <Filter>Rendering</Filter>
     </ClCompile>
-    <ClCompile Include="FileSink.cpp">
-      <Filter>Исходные файлы</Filter>
+    <ClInclude Include="Rendering\RenderSystem.h">
+      <Filter>Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="Resources\ResourceMap.h">
+      <Filter>Resources</Filter>
+    </ClInclude>
+    <ClCompile Include="Resources\ResourceSystem.cpp">
+      <Filter>Resources</Filter>
     </ClCompile>
-    <ClCompile Include="GameObject.cpp">
-      <Filter>Исходные файлы</Filter>
+    <ClInclude Include="Resources\ResourceSystem.h">
+      <Filter>Resources</Filter>
+    </ClInclude>
+    <ClCompile Include="Physics\RigidbodyComponent.cpp">
+      <Filter>Physics</Filter>
     </ClCompile>
-    <ClCompile Include="GameWorld.cpp">
-      <Filter>Исходные файлы</Filter>
+    <ClInclude Include="Physics\RigidbodyComponent.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Scene.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Audio\SoundSourceComponent.h">
+      <Filter>Audio</Filter>
+    </ClInclude>
+    <ClCompile Include="Animation\SpriteAnimationComponent.cpp">
+      <Filter>Animation</Filter>
     </ClCompile>
-    <ClCompile Include="InputComponent.cpp">
-      <Filter>Исходные файлы</Filter>
+    <ClInclude Include="Animation\SpriteAnimationComponent.h">
+      <Filter>Animation</Filter>
+    </ClInclude>
+    <ClCompile Include="Animation\SpriteDirectionComponent.cpp">
+      <Filter>Animation</Filter>
     </ClCompile>
-    <ClCompile Include="InputSystem.cpp">
-      <Filter>Исходные файлы</Filter>
+    <ClInclude Include="Animation\SpriteDirectionComponent.h">
+      <Filter>Animation</Filter>
+    </ClInclude>
+    <ClCompile Include="Animation\SpriteMovementAnimationComponent.cpp">
+      <Filter>Animation</Filter>
     </ClCompile>
-    <ClCompile Include="Matrix2D.cpp">
-      <Filter>Исходные файлы</Filter>
+    <ClInclude Include="Animation\SpriteMovementAnimationComponent.h">
+      <Filter>Animation</Filter>
+    </ClInclude>
+    <ClCompile Include="Rendering\SpriteRendererComponent.cpp">
+      <Filter>Rendering</Filter>
     </ClCompile>
-    <ClCompile Include="PhysicsSystem.cpp">
-      <Filter>Исходные файлы</Filter>
+    <ClInclude Include="Rendering\SpriteRendererComponent.h">
+      <Filter>Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\TextUtils.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClCompile Include="Core\TransformComponent.cpp">
+      <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="RenderSystem.cpp">
-      <Filter>Исходные файлы</Filter>
+    <ClInclude Include="Core\TransformComponent.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClCompile Include="Physics\Trigger.cpp">
+      <Filter>Physics</Filter>
     </ClCompile>
-    <ClCompile Include="ResourceSystem.cpp">
-      <Filter>Исходные файлы</Filter>
+    <ClInclude Include="Physics\Trigger.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="Ui\UiAnchor.h">
+      <Filter>Ui</Filter>
+    </ClInclude>
+    <ClCompile Include="Ui\UiButton.cpp">
+      <Filter>Ui</Filter>
     </ClCompile>
-    <ClCompile Include="RigidbodyComponent.cpp">
-      <Filter>Исходные файлы</Filter>
+    <ClInclude Include="Ui\UiButton.h">
+      <Filter>Ui</Filter>
+    </ClInclude>
+    <ClCompile Include="Ui\UiIcon.cpp">
+      <Filter>Ui</Filter>
     </ClCompile>
-    <ClCompile Include="AimRotationComponent.cpp">
-      <Filter>Исходные файлы</Filter>
+    <ClInclude Include="Ui\UiIcon.h">
+      <Filter>Ui</Filter>
+    </ClInclude>
+    <ClCompile Include="Ui\UiLabel.cpp">
+      <Filter>Ui</Filter>
     </ClCompile>
-    <ClCompile Include="SpriteAnimationComponent.cpp">
-      <Filter>Исходные файлы</Filter>
+    <ClInclude Include="Ui\UiLabel.h">
+      <Filter>Ui</Filter>
+    </ClInclude>
+    <ClCompile Include="Ui\UiManager.cpp">
+      <Filter>Ui</Filter>
     </ClCompile>
-    <ClCompile Include="SpriteRendererComponent.cpp">
-      <Filter>Исходные файлы</Filter>
+    <ClInclude Include="Ui\UiManager.h">
+      <Filter>Ui</Filter>
+    </ClInclude>
+    <ClCompile Include="Ui\UiPanel.cpp">
+      <Filter>Ui</Filter>
     </ClCompile>
-    <ClCompile Include="SpriteDirectionComponent.cpp">
-      <Filter>Исходные файлы</Filter>
+    <ClInclude Include="Ui\UiPanel.h">
+      <Filter>Ui</Filter>
+    </ClInclude>
+    <ClCompile Include="Ui\UiProgressBar.cpp">
+      <Filter>Ui</Filter>
     </ClCompile>
-    <ClCompile Include="SpriteMovementAnimationComponent.cpp">
-      <Filter>Исходные файлы</Filter>
+    <ClInclude Include="Ui\UiProgressBar.h">
+      <Filter>Ui</Filter>
+    </ClInclude>
+    <ClCompile Include="Ui\UiScreen.cpp">
+      <Filter>Ui</Filter>
     </ClCompile>
-    <ClCompile Include="TransformComponent.cpp">
-      <Filter>Исходные файлы</Filter>
+    <ClInclude Include="Ui\UiScreen.h">
+      <Filter>Ui</Filter>
+    </ClInclude>
+    <ClCompile Include="Ui\UiWidget.cpp">
+      <Filter>Ui</Filter>
     </ClCompile>
-    <ClCompile Include="VertexArrayRendererComponent.cpp">
-      <Filter>Исходные файлы</Filter>
+    <ClInclude Include="Ui\UiWidget.h">
+      <Filter>Ui</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\Vector.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClCompile Include="Rendering\VertexArrayRendererComponent.cpp">
+      <Filter>Rendering</Filter>
     </ClCompile>
-    <ClCompile Include="Trigger.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
+    <ClInclude Include="Rendering\VertexArrayRendererComponent.h">
+      <Filter>Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\randomizer.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="framework.h" />
+    <ClCompile Include="pch.cpp" />
   </ItemGroup>
 </Project>

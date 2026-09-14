@@ -41,6 +41,12 @@ namespace XYZEngine
 		return bounds;
 	}
 
+	void ColliderComponent::SetBounds(const sf::FloatRect& newBounds)
+	{
+		bounds = newBounds;
+		PhysicsSystem::Instance()->OnBoundsChanged(this);
+	}
+
 	void ColliderComponent::SetCollisionLayer(unsigned int newCollisionLayer)
 	{
 		collisionLayer = newCollisionLayer;

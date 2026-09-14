@@ -25,7 +25,7 @@ namespace XYZEngine
 		float centerX = position.x + offset.x * worldScale.x;
 		float centerY = position.y + offset.y * worldScale.y;
 
-		bounds = sf::FloatRect(centerX - 0.5f * width, centerY - 0.5f * height, width, height);
+		SetBounds(sf::FloatRect(centerX - 0.5f * width, centerY - 0.5f * height, width, height));
 	}
 	void BoxColliderComponent::Render()
 	{

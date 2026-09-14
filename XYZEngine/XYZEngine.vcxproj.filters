@@ -252,6 +252,9 @@
     <ClCompile Include="Physics\RigidbodyComponent.cpp">
       <Filter>Physics</Filter>
     </ClCompile>
+    <ClInclude Include="Physics\SpatialHashGrid.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
     <ClInclude Include="Physics\RigidbodyComponent.h">
       <Filter>Physics</Filter>
     </ClInclude>

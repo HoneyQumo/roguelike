@@ -131,6 +131,7 @@
     <ClInclude Include="Resources\ResourceMap.h" />
     <ClInclude Include="Resources\ResourceSystem.h" />
     <ClInclude Include="Physics\RigidbodyComponent.h" />
+    <ClInclude Include="Physics\SpatialHashGrid.h" />
     <ClInclude Include="Core\Scene.h" />
     <ClInclude Include="Input\AimRotationComponent.h" />
     <ClInclude Include="Audio\SoundSourceComponent.h" />

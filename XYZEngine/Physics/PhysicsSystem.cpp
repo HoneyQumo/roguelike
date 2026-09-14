@@ -21,30 +21,38 @@ namespace XYZEngine
 				continue;
 			}
 
-			for (int j = 0; j < colliders.size(); j++)
+			ColliderComponent* moving = colliders[i];
+			Collect(moving->bounds, candidates);
+
+			for (ColliderComponent* other : candidates)
 			{
-				if (j == i)
+				if (i >= static_cast<int>(colliders.size()) || colliders[i] != moving)
+				{
+					break;
+				}
+
+				if (other == moving)
 				{
 					continue;
 				}
 
-				if ((colliders[i]->collisionLayer & colliders[j]->ignoredLayers) != 0u
-					|| (colliders[j]->collisionLayer & colliders[i]->ignoredLayers) != 0u)
+				if ((colliders[i]->collisionLayer & other->ignoredLayers) != 0u
+					|| (other->collisionLayer & colliders[i]->ignoredLayers) != 0u)
 				{
 					continue;
 				}
 
 				sf::FloatRect intersection;
-				if (colliders[i]->bounds.intersects(colliders[j]->bounds, intersection))
+				if (colliders[i]->bounds.intersects(other->bounds, intersection))
 				{
-					if (colliders[i]->isTrigger != colliders[j]->isTrigger)
+					if (colliders[i]->isTrigger != other->isTrigger)
 					{
-						TriggerPair enteredPair = MakeTriggerPair(colliders[i], colliders[j]);
+						TriggerPair enteredPair = MakeTriggerPair(colliders[i], other);
 						if (triggersEnteredPair.find(enteredPair) == triggersEnteredPair.end())
 						{
-							Trigger trigger(colliders[i], colliders[j]);
+							Trigger trigger(colliders[i], other);
 							colliders[i]->OnTriggerEnter(trigger);
-							colliders[j]->OnTriggerEnter(trigger);
+							other->OnTriggerEnter(trigger);
 
 							triggersEnteredPair.insert(enteredPair);
 						}
@@ -86,12 +94,14 @@ namespace XYZEngine
 						aTransform->MoveBy(pushOffset);
 
 						// Bounds must follow the push, otherwise the next collider in the loop pushes the object out twice.
-						colliders[i]->bounds.left += pushOffset.x;
-						colliders[i]->bounds.top += pushOffset.y;
+						sf::FloatRect pushedBounds = colliders[i]->bounds;
+						pushedBounds.left += pushOffset.x;
+						pushedBounds.top += pushOffset.y;
+						colliders[i]->SetBounds(pushedBounds);
 
-						Collision collision(colliders[i], colliders[j], intersection);
+						Collision collision(colliders[i], other, intersection);
 						colliders[i]->OnCollision(collision);
-						colliders[j]->OnCollision(collision);
+						other->OnCollision(collision);
 					}
 				}
 			}
@@ -116,16 +126,25 @@ namespace XYZEngine
 		return first < second ? TriggerPair(first, second) : TriggerPair(second, first);
 	}
 
+	bool PhysicsSystem::IsBefore(ColliderComponent* first, ColliderComponent* second)
+	{
+		return first->order < second->order;
+	}
+
+	void PhysicsSystem::Collect(const sf::FloatRect& area, std::vector<ColliderComponent*>& found) const
+	{
+		grid.Query(area, found);
+		std::sort(found.begin(), found.end(), IsBefore);
+	}
+
 	std::vector<ColliderComponent*> PhysicsSystem::Overlap(const sf::FloatRect& area) const
 	{
 		std::vector<ColliderComponent*> found;
-		for (auto collider : colliders)
-		{
-			if (collider != nullptr && collider->bounds.intersects(area))
-			{
-				found.push_back(collider);
-			}
-		}
+		Collect(area, found);
+
+		found.erase(std::remove_if(found.begin(), found.end(),
+			[&area](ColliderComponent* collider) { return collider == nullptr || !collider->bounds.intersects(area); }),
+			found.end());
 
 		return found;
 	}
@@ -135,13 +154,45 @@ namespace XYZEngine
 		return colliders;
 	}
 
+	void PhysicsSystem::SetCellSize(float newCellSize)
+	{
+		if (newCellSize <= 0.f || newCellSize == grid.GetCellSize())
+		{
+			return;
+		}
+
+		grid.SetCellSize(newCellSize);
+
+		for (ColliderComponent* collider : colliders)
+		{
+			collider->gridBounds = collider->bounds;
+			grid.Insert(collider, collider->gridBounds);
+			collider->isInGrid = true;
+		}
+	}
+	float PhysicsSystem::GetCellSize() const
+	{
+		return grid.GetCellSize();
+	}
+
 	void PhysicsSystem::Subscribe(ColliderComponent* collider)
 	{
 		assert(collider != nullptr);
 		colliders.push_back(collider);
+
+		collider->order = nextOrder++;
+		collider->gridBounds = collider->bounds;
+		grid.Insert(collider, collider->gridBounds);
+		collider->isInGrid = true;
 	}
 	void PhysicsSystem::Unsubscribe(ColliderComponent* collider)
 	{
+		if (collider != nullptr && collider->isInGrid)
+		{
+			grid.Remove(collider, collider->gridBounds);
+			collider->isInGrid = false;
+		}
+
 		colliders.erase(std::remove_if(colliders.begin(), colliders.end(), [collider](ColliderComponent* obj) { return obj == collider; }), colliders.end());
 
 		// A destroyed collider must not stay in trigger pairs, they are checked after the object is gone.
@@ -156,5 +207,16 @@ namespace XYZEngine
 				++pair;
 			}
 		}
+	}
+
+	void PhysicsSystem::OnBoundsChanged(ColliderComponent* collider)
+	{
+		if (collider == nullptr || !collider->isInGrid)
+		{
+			return;
+		}
+
+		grid.Move(collider, collider->gridBounds, collider->bounds);
+		collider->gridBounds = collider->bounds;
 	}
 }

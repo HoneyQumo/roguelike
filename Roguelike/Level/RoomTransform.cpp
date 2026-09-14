@@ -1,0 +1,88 @@
+#include "RoomTransform.h"
+
+namespace RoguelikeGame
+{
+    namespace
+    {
+        struct Placement
+        {
+            int column = 0;
+            int row = 0;
+        };
+
+        Placement Mirror(Placement cell, int width)
+        {
+            return {width - 1 - cell.column, cell.row};
+        }
+
+        Placement Turn(Placement cell, int width, int height, int quarters)
+        {
+            for (int turn = 0; turn < quarters; turn++)
+            {
+                Placement turned = {height - 1 - cell.row, cell.column};
+                cell = turned;
+
+                int swapped = width;
+                width = height;
+                height = swapped;
+            }
+
+            return cell;
+        }
+
+        Placement Move(Placement cell, int width, int height, int quarters, bool isMirrored)
+        {
+            if (isMirrored)
+            {
+                cell = Mirror(cell, width);
+            }
+
+            return Turn(cell, width, height, quarters);
+        }
+    }
+
+    LevelData TransformRoom(const LevelData& room, int quarters, bool isMirrored)
+    {
+        int turns = ((quarters % ROOM_QUARTERS) + ROOM_QUARTERS) % ROOM_QUARTERS;
+
+        int width = room.width;
+        int height = room.height > 0 ? room.height : static_cast<int>(room.tiles.size());
+        bool isSideways = turns % 2 != 0;
+
+        LevelData moved;
+        moved.info = room.info;
+        moved.width = isSideways ? height : width;
+        moved.height = isSideways ? width : height;
+        moved.tiles.assign(moved.height, std::vector<TileType>(moved.width, TileType::Empty));
+
+        for (int row = 0; row < height; row++)
+        {
+            int columns = row < static_cast<int>(room.tiles.size()) ? static_cast<int>(room.tiles[row].size()) : 0;
+            for (int column = 0; column < columns; column++)
+            {
+                Placement to = Move({column, row}, width, height, turns, isMirrored);
+                moved.tiles[to.row][to.column] = room.tiles[row][column];
+            }
+        }
+
+        for (const ItemPlacement& item : room.items)
+        {
+            Placement to = Move({item.column, item.row}, width, height, turns, isMirrored);
+            moved.items.push_back({to.column, to.row, item.itemId});
+        }
+
+        for (const PropPlacement& prop : room.props)
+        {
+            Placement to = Move({prop.column, prop.row}, width, height, turns, isMirrored);
+            moved.props.push_back({to.column, to.row, prop.propId});
+        }
+
+        for (const PatrolPoint& point : room.patrols)
+        {
+            Placement to = Move({point.column, point.row}, width, height, turns, isMirrored);
+            moved.patrols.push_back({to.column, to.row, point.routeId, point.order, point.isWatch});
+        }
+
+        return moved;
+    }
+}

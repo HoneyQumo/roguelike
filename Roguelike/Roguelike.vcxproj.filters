@@ -144,6 +144,24 @@
     <ClInclude Include="Level\PatrolRoutes.h">
       <Filter>Level</Filter>
     </ClInclude>
+    <ClInclude Include="Level\RoomTransform.h">
+      <Filter>Level</Filter>
+    </ClInclude>
+    <ClInclude Include="Level\ActPlan.h">
+      <Filter>Level</Filter>
+    </ClInclude>
+    <ClCompile Include="Level\ActPlan.cpp">
+      <Filter>Level</Filter>
+    </ClCompile>
+    <ClInclude Include="Level\ActAssembler.h">
+      <Filter>Level</Filter>
+    </ClInclude>
+    <ClCompile Include="Level\ActAssembler.cpp">
+      <Filter>Level</Filter>
+    </ClCompile>
+    <ClCompile Include="Level\RoomTransform.cpp">
+      <Filter>Level</Filter>
+    </ClCompile>
     <ClCompile Include="Level\PatrolRoutes.cpp">
       <Filter>Level</Filter>
     </ClCompile>

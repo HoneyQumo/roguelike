@@ -9,6 +9,8 @@ namespace RoguelikeGame
     {
         LevelGrid current;
 
+        constexpr float FAR_AHEAD = 1e9f;
+
         LevelCell CellOf(TileType tile)
         {
             if (tile == TileType::Wall)
@@ -113,24 +115,56 @@ namespace RoguelikeGame
             return false;
         }
 
-        int fromColumn = 0;
-        int fromRow = 0;
-        int toColumn = 0;
-        int toRow = 0;
-        ToCell(from, fromColumn, fromRow);
-        ToCell(to, toColumn, toRow);
+        float fromU = from.x / TILE_SIZE + 0.5f;
+        float fromV = height - 0.5f - from.y / TILE_SIZE;
+        float toU = to.x / TILE_SIZE + 0.5f;
+        float toV = height - 0.5f - to.y / TILE_SIZE;
 
-        int steps = std::max(std::abs(toColumn - fromColumn), std::abs(toRow - fromRow));
-        if (steps <= 0)
-        {
-            return false;
-        }
+        int column = static_cast<int>(std::floor(fromU));
+        int row = static_cast<int>(std::floor(fromV));
+        int lastColumn = static_cast<int>(std::floor(toU));
+        int lastRow = static_cast<int>(std::floor(toV));
 
-        for (int step = 1; step < steps; step++)
+        float spanU = toU - fromU;
+        float spanV = toV - fromV;
+
+        int stepColumn = spanU > 0.f ? 1 : -1;
+        int stepRow = spanV > 0.f ? 1 : -1;
+
+        float nextColumn = spanU != 0.f
+            ? ((spanU > 0.f ? column + 1 - fromU : fromU - column) / std::abs(spanU))
+            : FAR_AHEAD;
+        float nextRow = spanV != 0.f
+            ? ((spanV > 0.f ? row + 1 - fromV : fromV - row) / std::abs(spanV))
+            : FAR_AHEAD;
+
+        float overColumn = spanU != 0.f ? 1.f / std::abs(spanU) : FAR_AHEAD;
+        float overRow = spanV != 0.f ? 1.f / std::abs(spanV) : FAR_AHEAD;
+
+        int guard = std::abs(lastColumn - column) + std::abs(lastRow - row) + 2;
+
+        for (int step = 0; step < guard; step++)
         {
-            float part = static_cast<float>(step) / static_cast<float>(steps);
-            int column = fromColumn + static_cast<int>(std::lround((toColumn - fromColumn) * part));
-            int row = fromRow + static_cast<int>(std::lround((toRow - fromRow) * part));
+            if (column == lastColumn && row == lastRow)
+            {
+                return false;
+            }
+
+            if (nextColumn <= nextRow)
+            {
+                column += stepColumn;
+                nextColumn += overColumn;
+            }
+            else
+            {
+                row += stepRow;
+                nextRow += overRow;
+            }
+
+            if (column == lastColumn && row == lastRow)
+            {
+                return false;
+            }
 
             if (BlocksSight(column, row))
             {

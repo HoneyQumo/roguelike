@@ -8,6 +8,7 @@ using RoguelikeGame::LevelCell;
 using RoguelikeGame::LevelData;
 using RoguelikeGame::LevelGrid;
 using RoguelikeGame::LevelLoader;
+using RoguelikeGame::TILE_SIZE;
 using XYZEngine::Vector2Df;
 
 namespace
@@ -129,6 +130,75 @@ TEST(LevelGridTest, NeighbourCellsAreAlwaysVisible)
 
 	EXPECT_FALSE(grid.HasWallBetween(grid.ToWorld(1, 1), grid.ToWorld(2, 1)));
 	EXPECT_FALSE(grid.HasWallBetween(grid.ToWorld(1, 1), grid.ToWorld(1, 1)));
+}
+
+TEST(LevelGridTest, CornerOfAWallIsNotSeenThrough)
+{
+	LevelGrid grid = GridOf(
+		"[map]\n"
+		"#########\n"
+		"#.......#\n"
+		"#.......#\n"
+		"#.#####.#\n"
+		"#.......#\n"
+		"#########\n");
+
+	Vector2Df below = grid.ToWorld(1, 4);
+	Vector2Df above = grid.ToWorld(2, 1);
+
+	EXPECT_TRUE(grid.HasWallBetween(below, above));
+	EXPECT_TRUE(grid.HasWallBetween({below.x + 30.f, below.y}, {above.x - 28.f, above.y}));
+}
+
+TEST(LevelGridTest, WallAcrossTheRowBlocksTheView)
+{
+	LevelGrid grid = GridOf(
+		"[map]\n"
+		"#####\n"
+		"#...#\n"
+		"#.#.#\n"
+		"#...#\n"
+		"#####\n");
+
+	Vector2Df left = grid.ToWorld(1, 2);
+	Vector2Df right = grid.ToWorld(3, 2);
+
+	EXPECT_TRUE(grid.HasWallBetween(left, right));
+	EXPECT_FALSE(grid.HasWallBetween({left.x, left.y + TILE_SIZE}, {right.x, right.y + TILE_SIZE}));
+}
+
+TEST(LevelGridTest, WallRowWithAGapBlocksEverywhereButTheGap)
+{
+	LevelGrid grid = GridOf(
+		"[map]\n"
+		"##########\n"
+		"#........#\n"
+		"#####.####\n"
+		"#........#\n"
+		"##########\n");
+
+	EXPECT_TRUE(grid.HasWallBetween(grid.ToWorld(1, 1), grid.ToWorld(8, 3)));
+	EXPECT_FALSE(grid.HasWallBetween(grid.ToWorld(5, 1), grid.ToWorld(5, 3)));
+}
+
+TEST(LevelGridTest, DiagonalCornerCutIsBlocked)
+{
+	LevelGrid grid = GridOf(
+		"[map]\n"
+		"#####\n"
+		"#.#.#\n"
+		"##.##\n"
+		"#.#.#\n"
+		"#####\n");
+
+	EXPECT_TRUE(grid.HasWallBetween(grid.ToWorld(1, 1), grid.ToWorld(3, 3)));
+}
+
+TEST(LevelGridTest, CellBehindTheTargetIsNotChecked)
+{
+	LevelGrid grid = GridOf(ROOMS);
+
+	EXPECT_FALSE(grid.HasWallBetween(grid.ToWorld(2, 1), grid.ToWorld(2, 0)));
 }
 
 TEST(LevelGridTest, EmptyGridHidesNothing)

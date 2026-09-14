@@ -1,21 +1,30 @@
 # Атлас объектов - Resources/Textures/props.png
 
-Полоса из семи кадров 64x64, всего 448x64. Кадры вырезаны из CC0-набора
-Kenney "Top-down Shooter" (`Docs/Sprites/vendor/README.md`), без изменений.
+Полоса из одиннадцати кадров 64x64, всего 704x64. Основа - CC0-набор Kenney
+"Top-down Shooter" (`Docs/Sprites/vendor/README.md`).
 
-| x | Кадр | Исходный тайл | Где используется |
+Вид ящика говорит, что внутри: зелёный военный - оружие, деревянный с гильзами -
+патроны, белый с крестом - медицина.
+
+| x | Кадр | Откуда | Где используется |
 |---|---|---|---|
-| 0 | ящик | `PNG/Tiles/tile_129.png` | `crate_wood.frame` |
-| 64 | ящик разбит | `PNG/Tiles/tile_156.png` | `crate_wood.spentFrame` |
-| 128 | бочка | `PNG/Tiles/tile_132.png` | `barrel_rusty.frame` |
-| 192 | склад заперт | `PNG/Tiles/tile_131.png` | `chest_supply.frame` |
-| 256 | склад открыт | `PNG/Tiles/tile_180.png` | `chest_supply.spentFrame` |
-| 320 | малый ящик | `PNG/Tiles/tile_130.png` | `crate_empty.frame` |
-| 384 | малый ящик разбит | `PNG/Tiles/tile_157.png` | `crate_empty.spentFrame` |
+| 0 | патронный ящик | `tile_129` + трафарет гильз | `crate_ammo.frame` |
+| 64 | патронный разбит | `tile_156` + трафарет гильз | `crate_ammo.spentFrame` |
+| 128 | бочка | `tile_132` | `barrel_rusty.frame` |
+| 192 | склад заперт | `tile_131` | `chest_supply.frame` |
+| 256 | склад открыт | `tile_180` | `chest_supply.spentFrame` |
+| 320 | малый ящик | `tile_130` | `crate_empty.frame` |
+| 384 | малый ящик разбит | `tile_157` | `crate_empty.spentFrame` |
+| 448 | оружейный ящик | `tile_158` | `crate_weapon.frame` |
+| 512 | оружейный разбит | `tile_156`, перекрашен в зелёный | `crate_weapon.spentFrame` |
+| 576 | медицинский ящик | `tile_133` + красный крест | `crate_medical.frame` |
+| 640 | медицинский разбит | `tile_156` в кремовом + блёклый крест | `crate_medical.spentFrame` |
+
+Перекраска сделана переносом палитры: цвета исходного кадра сопоставлены с
+палитрой целевого ящика по близости, поэтому тени и края остаются на месте.
 
 Кадр тайла совпадает с `TILE_SIZE`, но объект рисуется своим `size` из
 `props.config`, поэтому кадр масштабируется под клетку объекта, а не под тайл.
 
-У бочки нет своего кадра разрушения: `PropVisualComponent` в этом случае
-перекрашивает спрайт в `brokenColor`. Тот же путь работает и для объекта
-без `frame` вообще - тогда он рисуется прямоугольником, как раньше.
+Объект без `spentFrame` перекрашивается в `brokenColor`; объект без `frame`
+рисуется прямоугольником, как до появления атласа.

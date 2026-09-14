@@ -162,6 +162,12 @@
     <ClCompile Include="Level\DoorComponent.cpp">
       <Filter>Level</Filter>
     </ClCompile>
+    <ClInclude Include="Level\DoorHinge.h">
+      <Filter>Level</Filter>
+    </ClInclude>
+    <ClCompile Include="Level\DoorHinge.cpp">
+      <Filter>Level</Filter>
+    </ClCompile>
     <ClInclude Include="Items\DoorRules.h">
       <Filter>Items</Filter>
     </ClInclude>

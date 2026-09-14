@@ -3,6 +3,7 @@
 #include "FactionComponent.h"
 #include "GameSettings.h"
 #include "LevelGrid.h"
+#include "PathService.h"
 #include "HealthComponent.h"
 #include <AimRotationComponent.h>
 #include <DebugDraw.h>
@@ -159,15 +160,17 @@ namespace RoguelikeGame
 
 		if (move == ChaseMove::Approach)
 		{
-			movement->SetDirection(targetPosition - transform->GetWorldPosition());
+			MoveTowards(targetPosition, deltaTime);
 			return;
 		}
 
 		if (move == ChaseMove::Investigate)
 		{
-			movement->SetDirection(investigatePoint - transform->GetWorldPosition());
+			MoveTowards(investigatePoint, deltaTime);
 			return;
 		}
+
+		route.Clear();
 
 		if (sense.isAlerted && hasPoint && !RoguelikeGame::IsTargetDetected(sense))
 		{
@@ -175,8 +178,64 @@ namespace RoguelikeGame
 		}
 	}
 
+	void ChaseComponent::MoveTowards(const Vector2Df& goal, float deltaTime)
+	{
+		Vector2Df position = transform->GetWorldPosition();
+
+		if (!LevelGrid::Current().HasWallBetween(position, goal))
+		{
+			route.Clear();
+			repath.Stop();
+			movement->SetDirection(goal - position);
+			return;
+		}
+
+		repath.Tick(deltaTime);
+		RefreshRoute(position, goal);
+		route.Advance(position, ENEMY_ROUTE_ARRIVE_DISTANCE);
+
+		movement->SetDirection(route.HasPoint() ? route.GetPoint() - position : goal - position);
+	}
+
+	void ChaseComponent::RefreshRoute(const Vector2Df& position, const Vector2Df& goal)
+	{
+		int goalColumn = 0;
+		int goalRow = 0;
+		LevelGrid::Current().ToCell(goal, goalColumn, goalRow);
+
+		bool isGoalMoved = goalColumn != routeGoalColumn || goalRow != routeGoalRow;
+		if (!isGoalMoved && route.HasPoint() && repath.IsRunning())
+		{
+			return;
+		}
+
+		std::vector<Vector2Df> points;
+		PathService::Current().RouteTo(position, goal, points);
+		route.SetRoute(std::move(points));
+
+		routeGoalColumn = goalColumn;
+		routeGoalRow = goalRow;
+		repath.Start(ENEMY_REPATH_INTERVAL);
+	}
+
+	void ChaseComponent::DrawRoute() const
+	{
+		if (!DebugDraw::Instance()->IsEnabled() || !route.HasPoint())
+		{
+			return;
+		}
+
+		Vector2Df from = transform->GetWorldPosition();
+		for (std::size_t i = route.GetIndex(); i < route.GetRoute().size(); i++)
+		{
+			DebugDraw::Instance()->DrawLine(from, route.GetRoute()[i], sf::Color::Cyan);
+			from = route.GetRoute()[i];
+		}
+	}
+
 	void ChaseComponent::Render()
 	{
+		DrawRoute();
 	}
 
 	void ChaseComponent::SetTargetName(const std::string& newTargetName)

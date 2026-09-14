@@ -96,6 +96,15 @@
     <ClInclude Include="Level\LevelGrid.h">
       <Filter>Level</Filter>
     </ClInclude>
+    <ClInclude Include="Level\PathField.h">
+      <Filter>Level</Filter>
+    </ClInclude>
+    <ClInclude Include="Level\PathService.h">
+      <Filter>Level</Filter>
+    </ClInclude>
+    <ClInclude Include="Enemies\RouteFollower.h">
+      <Filter>Enemies</Filter>
+    </ClInclude>
     <ClInclude Include="Enemies\ChaseRules.h">
       <Filter>Enemies</Filter>
     </ClInclude>
@@ -280,6 +289,12 @@
       <Filter>Items</Filter>
     </ClInclude>
     <ClCompile Include="Level\LevelGrid.cpp">
+      <Filter>Level</Filter>
+    </ClCompile>
+    <ClCompile Include="Level\PathField.cpp">
+      <Filter>Level</Filter>
+    </ClCompile>
+    <ClCompile Include="Level\PathService.cpp">
       <Filter>Level</Filter>
     </ClCompile>
     <ClCompile Include="Level\Level.cpp">

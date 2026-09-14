@@ -2,8 +2,10 @@
 #include "Vision.h"
 
 using RoguelikeGame::CanSeeTarget;
+using RoguelikeGame::ConeFor;
 using RoguelikeGame::IsWithinCone;
 using RoguelikeGame::VisionCone;
+using RoguelikeGame::VisionRange;
 using XYZEngine::Vector2Df;
 
 namespace
@@ -67,4 +69,53 @@ TEST(VisionTest, BlindEnemySeesNothing)
 TEST(VisionTest, TargetOnTopOfTheEnemyIsSeen)
 {
 	EXPECT_TRUE(CanSeeTarget(Cone(300.f, 40.f), RIGHT, {0.f, 0.f}, false));
+}
+
+namespace
+{
+	VisionRange Range(float calm, float alert, float distance = 300.f)
+	{
+		VisionRange range;
+		range.maxDistance = distance;
+		range.calmHalfAngle = calm;
+		range.alertHalfAngle = alert;
+
+		return range;
+	}
+}
+
+TEST(VisionTest, CalmEnemyUsesItsOwnAngle)
+{
+	VisionCone cone = ConeFor(Range(45.f, 70.f), false);
+
+	EXPECT_EQ(cone.halfAngleDegrees, 45.f);
+	EXPECT_EQ(cone.maxDistance, 300.f);
+}
+
+TEST(VisionTest, AlertedEnemyWidensButStaysBounded)
+{
+	VisionCone cone = ConeFor(Range(45.f, 70.f), true);
+
+	EXPECT_EQ(cone.halfAngleDegrees, 70.f);
+	EXPECT_LT(cone.halfAngleDegrees, 180.f);
+}
+
+TEST(VisionTest, AlertNeverNarrowsTheCone)
+{
+	VisionCone cone = ConeFor(Range(90.f, 40.f), true);
+
+	EXPECT_EQ(cone.halfAngleDegrees, 90.f);
+}
+
+TEST(VisionTest, AlertKeepsTheDistance)
+{
+	EXPECT_EQ(ConeFor(Range(45.f, 70.f, 420.f), true).maxDistance, 420.f);
+	EXPECT_EQ(ConeFor(Range(45.f, 70.f, 420.f), false).maxDistance, 420.f);
+}
+
+TEST(VisionTest, AlertedEnemyStillDoesNotSeeStraightBehind)
+{
+	VisionCone cone = ConeFor(Range(45.f, 70.f), true);
+
+	EXPECT_FALSE(CanSeeTarget(cone, RIGHT, {-200.f, 0.f}, false));
 }

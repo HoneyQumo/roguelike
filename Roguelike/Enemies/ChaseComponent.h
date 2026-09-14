@@ -39,6 +39,7 @@ namespace RoguelikeGame
 
 		void SetAlertTime(float newAlertTime);
 		void SetVisionHalfAngle(float newHalfAngle);
+		void SetAlertHalfAngle(float newHalfAngle);
 		void SetForcedChase(bool newIsForced);
 
 		bool IsChasing() const;
@@ -56,6 +57,7 @@ namespace RoguelikeGame
 		float stopDistance = 0.f;
 		float alertTime = 0.f;
 		float visionHalfAngle = 180.f;
+		float alertHalfAngle = 180.f;
 		float alertLeft = 0.f;
 		bool isForced = false;
 		bool isChasing = false;
@@ -76,5 +78,6 @@ namespace RoguelikeGame
 		void MoveTowards(const XYZEngine::Vector2Df& goal, float deltaTime);
 		void RefreshRoute(const XYZEngine::Vector2Df& position, const XYZEngine::Vector2Df& goal);
 		void DrawRoute() const;
+		void DrawVision() const;
 	};
 }

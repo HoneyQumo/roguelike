@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "EnemyCatalog.h"
+#include "Vision.h"
 #include <set>
 #include <string>
 
@@ -92,4 +93,65 @@ TEST(EnemyCatalogTest, MarauderIsTheWeakGunman)
 	EXPECT_LT(marauder->config.detectionRadius, grunt->config.detectionRadius);
 	EXPECT_LT(marauder->config.maxHealth, grunt->config.maxHealth);
 	EXPECT_STREQ(marauder->config.lootTable, "marauder");
+}
+
+namespace
+{
+	const RoguelikeGame::TileType BY_STRENGTH[] = {
+		RoguelikeGame::TileType::GruntSpawn,
+		RoguelikeGame::TileType::MarauderSpawn,
+		RoguelikeGame::TileType::ShieldSpawn,
+		RoguelikeGame::TileType::AssaultSpawn,
+		RoguelikeGame::TileType::HeavySpawn,
+		RoguelikeGame::TileType::RadioSpawn,
+		RoguelikeGame::TileType::BossSpawn,
+	};
+}
+
+TEST(EnemyCatalogTest, StrongerEnemySeesWider)
+{
+	float previous = 0.f;
+	for (RoguelikeGame::TileType tile : BY_STRENGTH)
+	{
+		const RoguelikeGame::EnemyConfig* config = RoguelikeGame::FindEnemyConfig(tile);
+		ASSERT_NE(config, nullptr);
+
+		EXPECT_GT(config->visionHalfAngle, previous);
+		previous = config->visionHalfAngle;
+	}
+}
+
+TEST(EnemyCatalogTest, NobodySeesAllAround)
+{
+	for (const RoguelikeGame::EnemyDefinition& enemy : RoguelikeGame::ENEMIES)
+	{
+		EXPECT_LT(enemy.config.visionHalfAngle, 180.f) << enemy.tileName;
+		EXPECT_LT(enemy.config.alertHalfAngle, 180.f) << enemy.tileName;
+	}
+}
+
+TEST(EnemyCatalogTest, AlertWidensTheConeOfEveryEnemy)
+{
+	for (const RoguelikeGame::EnemyDefinition& enemy : RoguelikeGame::ENEMIES)
+	{
+		EXPECT_GT(enemy.config.alertHalfAngle, enemy.config.visionHalfAngle) << enemy.tileName;
+		EXPECT_GT(enemy.config.alertTime, 0.f) << enemy.tileName;
+	}
+}
+
+TEST(EnemyCatalogTest, EveryEnemyCanBeApproachedFromBehind)
+{
+	for (const RoguelikeGame::EnemyDefinition& enemy : RoguelikeGame::ENEMIES)
+	{
+		RoguelikeGame::VisionRange range;
+		range.maxDistance = enemy.config.detectionRadius;
+		range.calmHalfAngle = enemy.config.visionHalfAngle;
+		range.alertHalfAngle = enemy.config.alertHalfAngle;
+
+		XYZEngine::Vector2Df facing = {1.f, 0.f};
+		XYZEngine::Vector2Df behind = {-0.5f * enemy.config.detectionRadius, 0.f};
+
+		EXPECT_FALSE(RoguelikeGame::CanSeeTarget(RoguelikeGame::ConeFor(range, false), facing, behind, false)) << enemy.tileName;
+		EXPECT_FALSE(RoguelikeGame::CanSeeTarget(RoguelikeGame::ConeFor(range, true), facing, behind, false)) << enemy.tileName;
+	}
 }

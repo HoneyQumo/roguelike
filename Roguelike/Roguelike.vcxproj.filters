@@ -90,6 +90,12 @@
     <ClCompile Include="Enemies\ChaseComponent.cpp">
       <Filter>Enemies</Filter>
     </ClCompile>
+    <ClInclude Include="Enemies\Vision.h">
+      <Filter>Enemies</Filter>
+    </ClInclude>
+    <ClInclude Include="Level\LevelGrid.h">
+      <Filter>Level</Filter>
+    </ClInclude>
     <ClInclude Include="Enemies\ChaseRules.h">
       <Filter>Enemies</Filter>
     </ClInclude>
@@ -273,6 +279,9 @@
     <ClInclude Include="Items\ItemPickupComponent.h">
       <Filter>Items</Filter>
     </ClInclude>
+    <ClCompile Include="Level\LevelGrid.cpp">
+      <Filter>Level</Filter>
+    </ClCompile>
     <ClCompile Include="Level\Level.cpp">
       <Filter>Level</Filter>
     </ClCompile>

@@ -1,5 +1,6 @@
 #include "LevelBuilder.h"
 #include "TileAtlas.h"
+#include "LevelGrid.h"
 #include <ResourceSystem.h>
 #include "BossCatalog.h"
 #include "GameSettings.h"
@@ -20,6 +21,8 @@ namespace RoguelikeGame
 {
     Level LevelBuilder::Build(const LevelData& levelData, const ItemCatalog& items, const PropCatalog& props)
     {
+        LevelGrid::SetCurrent(LevelGrid::Build(levelData));
+
         Level level;
 
         if (CountTiles(levelData, TileType::PlayerSpawn) == 0 && CountTiles(levelData, TileType::Entrance) == 0)

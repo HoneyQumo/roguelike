@@ -24,5 +24,6 @@ namespace RoguelikeGame
 
         const char* lootTable = nullptr;
         float alertTime = 0.f;
+        float visionHalfAngle = 180.f;
     };
 }

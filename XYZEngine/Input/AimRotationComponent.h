@@ -21,6 +21,7 @@ namespace XYZEngine
 		void AimAtCursor();
 		void AimAtGameObject(const std::string& newTargetName);
 		void AimAtPoint(const Vector2Df& point);
+		void StopAiming();
 		void SetMaxDistance(float newMaxDistance);
 
 		const Vector2Df& GetAimDirection() const;

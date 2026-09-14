@@ -45,6 +45,7 @@ namespace RoguelikeGame
             chase->SetDetectionRadius(config.detectionRadius);
             chase->SetStopDistance(config.stopDistance);
             chase->SetAlertTime(config.alertTime);
+            chase->SetVisionHalfAngle(config.visionHalfAngle);
         });
 
         auto gameObject = parts.gameObject;
@@ -57,8 +58,7 @@ namespace RoguelikeGame
         auto hurtAudio = parts.hurtAudio;
         auto hitFlash = parts.hitFlash;
 
-        aim->AimAtGameObject(PLAYER_OBJECT_NAME);
-        aim->SetMaxDistance(config.detectionRadius);
+        aim->SetMaxDistance(0.f);
 
         if (config.attackRange <= 0.f)
         {

@@ -19,6 +19,7 @@ namespace RoguelikeGame
         bool isAlerted = false;
         bool isForced = false;
         bool hasPoint = false;
+        bool isVisible = false;
     };
 
     constexpr bool IsTargetDetected(const ChaseSense& sense)
@@ -28,7 +29,7 @@ namespace RoguelikeGame
             return true;
         }
 
-        return sense.detectionRadius > 0.f && sense.distanceToTarget <= sense.detectionRadius;
+        return sense.isVisible;
     }
 
     constexpr bool IsEngaged(const ChaseSense& sense)

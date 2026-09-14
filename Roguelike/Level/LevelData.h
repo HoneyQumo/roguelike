@@ -57,6 +57,7 @@ namespace RoguelikeGame
         int row = 0;
         std::string routeId;
         int order = 0;
+        bool isWatch = false;
     };
 
     struct BossSpec

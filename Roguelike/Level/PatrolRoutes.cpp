@@ -46,7 +46,7 @@ namespace RoguelikeGame
                 route = &built.routes.back();
             }
 
-            route->points.push_back(grid.ToWorld(point.column, point.row));
+            route->points.push_back({grid.ToWorld(point.column, point.row), point.isWatch});
         }
 
         return built;
@@ -92,9 +92,9 @@ namespace RoguelikeGame
 
         for (const PatrolRoute& route : routes)
         {
-            for (const Vector2Df& point : route.points)
+            for (const PatrolStop& point : route.points)
             {
-                float distance = (point - position).GetLengthSquared();
+                float distance = (point.position - position).GetLengthSquared();
                 if (distance <= bestDistance)
                 {
                     bestDistance = distance;

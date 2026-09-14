@@ -114,6 +114,9 @@
     <ClInclude Include="Enemies\ProgressWatch.h">
       <Filter>Enemies</Filter>
     </ClInclude>
+    <ClInclude Include="Enemies\LookAround.h">
+      <Filter>Enemies</Filter>
+    </ClInclude>
     <ClInclude Include="Enemies\Navigator.h">
       <Filter>Enemies</Filter>
     </ClInclude>

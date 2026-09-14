@@ -233,6 +233,7 @@
         <ClInclude Include="Level.h"/>
         <ClInclude Include="LevelBuilder.h"/>
         <ClInclude Include="LevelData.h"/>
+        <ClInclude Include="TileAtlas.h"/>
         <ClInclude Include="LevelLoader.h"/>
         <ClInclude Include="Wall.h"/>
         <ClInclude Include="Music.h"/>

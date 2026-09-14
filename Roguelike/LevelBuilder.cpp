@@ -1,4 +1,6 @@
 #include "LevelBuilder.h"
+#include "TileAtlas.h"
+#include <ResourceSystem.h>
 #include "BossCatalog.h"
 #include "GameSettings.h"
 #include "Enemy.h"
@@ -244,6 +246,9 @@ namespace RoguelikeGame
         auto renderer = tilesObject->AddComponent<XYZEngine::VertexArrayRendererComponent>();
         const XYZEngine::Vector2Df tileSize = {TILE_SIZE, TILE_SIZE};
 
+        const sf::Texture* tiles = XYZEngine::ResourceSystem::Instance()->GetTextureShared(TILES_TEXTURE);
+        renderer->SetTexture(tiles);
+
         for (int row = 0; row < levelData.height; row++)
         {
             for (int column = 0; column < (int)levelData.tiles[row].size(); column++)
@@ -254,8 +259,15 @@ namespace RoguelikeGame
                     continue;
                 }
 
-                const sf::Color& color = tile == TileType::Wall ? WALL_COLOR : FLOOR_COLOR;
-                renderer->AddQuad(TileToWorldPosition(column, row, levelData.height), tileSize, color);
+                auto position = TileToWorldPosition(column, row, levelData.height);
+
+                if (tiles != nullptr)
+                {
+                    renderer->AddQuad(position, tileSize, TileFrameFor(levelData, column, row));
+                    continue;
+                }
+
+                renderer->AddQuad(position, tileSize, tile == TileType::Wall ? WALL_COLOR : FLOOR_COLOR);
             }
         }
 

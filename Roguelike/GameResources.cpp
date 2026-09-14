@@ -80,6 +80,7 @@ namespace RoguelikeGame
                                                              {WEAPON_FRAME_WIDTH, WEAPON_FRAME_HEIGHT}, WEAPON_ATLAS_FRAMES, false);
 
         XYZEngine::ResourceSystem::Instance()->LoadTexture(FX_ATLAS_TEXTURE, FX_ATLAS_FILE, false);
+        XYZEngine::ResourceSystem::Instance()->LoadTexture(TILES_TEXTURE, TILES_ATLAS_FILE, false);
 
         LoadFxStrip(MUZZLE_FLASH_TEXTURE, FX_MUZZLE_FLASH);
         LoadFxStrip(BLOOD_POOL_TEXTURE, FX_BLOOD_POOL);

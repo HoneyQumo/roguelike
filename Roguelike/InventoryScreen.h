@@ -6,9 +6,12 @@
 #include <UiPanel.h>
 #include <UiScreen.h>
 #include "InventoryComponent.h"
+#include "ItemDefinition.h"
 
 namespace RoguelikeGame
 {
+    std::string InventoryHint(const ItemDefinition* item);
+
     class InventoryScreen : public XYZEngine::UiScreen
     {
     public:
@@ -28,6 +31,7 @@ namespace RoguelikeGame
         const XYZEngine::UiLabel& GetSlotName(int index) const;
         const XYZEngine::UiLabel& GetSlotCount(int index) const;
         const XYZEngine::UiPanel& GetSlotPanel(int index) const;
+        const XYZEngine::UiLabel& GetHint() const;
 
     private:
         struct SlotWidgets
@@ -42,6 +46,7 @@ namespace RoguelikeGame
         XYZEngine::UiPanel* dimmer = nullptr;
         XYZEngine::UiPanel* window = nullptr;
         XYZEngine::UiLabel* title = nullptr;
+        XYZEngine::UiLabel* hint = nullptr;
         std::vector<SlotWidgets> slotWidgets;
 
         bool isOpen = false;
@@ -50,6 +55,7 @@ namespace RoguelikeGame
 
         void BuildSlots(const sf::Font* font);
         void Refresh();
+        void RefreshHint();
         void HandleKeyboard();
         void MoveSelection(int columns, int rows);
         void SelectSlot(int index);

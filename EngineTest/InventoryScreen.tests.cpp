@@ -2,7 +2,10 @@
 #include "GameWorld.h"
 #include "InventoryComponent.h"
 #include "InventoryScreen.h"
+#include "GameSettings.h"
 #include "RenderSystem.h"
+#include "WeaponCatalog.h"
+#include "TextUtils.h"
 #include "UiManager.h"
 
 using RoguelikeGame::InventoryComponent;
@@ -148,4 +151,98 @@ TEST_F(InventoryScreenTest, ClosedScreenIgnoresPointer)
 
 	EXPECT_FALSE(screen.HandlePointer({640.f, 360.f}, false, true));
 	EXPECT_EQ(screen.GetSelectedSlot(), 0);
+}
+
+TEST(InventoryHintTest, EmptySlotSaysNothing)
+{
+	EXPECT_TRUE(RoguelikeGame::InventoryHint(nullptr).empty());
+}
+
+TEST(InventoryHintTest, ItemWithoutAnEffectSaysNothing)
+{
+	ItemDefinition item = MakeItem("junk", "Hlam");
+
+	EXPECT_TRUE(RoguelikeGame::InventoryHint(&item).empty());
+}
+
+TEST(InventoryHintTest, ConsumableOffersToUseIt)
+{
+	ItemDefinition potion = MakeItem("potion", "Aptechka");
+	potion.effect.kind = RoguelikeGame::ItemEffectKind::Heal;
+	potion.effect.amount = 35.f;
+
+	EXPECT_EQ(RoguelikeGame::InventoryHint(&potion), std::string(RoguelikeGame::INVENTORY_USE_HINT));
+}
+
+TEST(InventoryHintTest, WeaponNamesTheSlotItGoesTo)
+{
+	ItemDefinition rifle = MakeItem("weapon_ak47", "AK");
+	rifle.effect.kind = RoguelikeGame::ItemEffectKind::EquipWeapon;
+	rifle.effect.target = "ak47";
+
+	ItemDefinition pistol = MakeItem("weapon_deagle", "Deagle");
+	pistol.effect.kind = RoguelikeGame::ItemEffectKind::EquipWeapon;
+	pistol.effect.target = "deagle";
+
+	EXPECT_EQ(RoguelikeGame::InventoryHint(&rifle),
+		std::string(RoguelikeGame::INVENTORY_EQUIP_HINT) + std::to_string(RoguelikeGame::PreferredWeaponSlot(RoguelikeGame::WeaponId::Ak47) + 1));
+	EXPECT_NE(RoguelikeGame::InventoryHint(&rifle), RoguelikeGame::InventoryHint(&pistol));
+}
+
+TEST(InventoryHintTest, UnknownWeaponSaysNothing)
+{
+	ItemDefinition broken = MakeItem("weapon_ghost", "Prizrak");
+	broken.effect.kind = RoguelikeGame::ItemEffectKind::EquipWeapon;
+	broken.effect.target = "no_such_gun";
+
+	EXPECT_TRUE(RoguelikeGame::InventoryHint(&broken).empty());
+}
+
+TEST_F(InventoryScreenTest, HintShowsWhatEnterWillDoToTheSelectedSlot)
+{
+	InventoryComponent* inventory = CreateInventory();
+
+	ItemDefinition potion = MakeItem("potion", "Aptechka");
+	potion.effect.kind = RoguelikeGame::ItemEffectKind::Heal;
+	potion.effect.amount = 35.f;
+
+	ItemDefinition rifle = MakeItem("weapon_ak47", "AK");
+	rifle.effect.kind = RoguelikeGame::ItemEffectKind::EquipWeapon;
+	rifle.effect.target = "ak47";
+
+	ASSERT_TRUE(inventory->TryAdd(rifle));
+	ASSERT_TRUE(inventory->TryAdd(potion));
+
+	InventoryScreen screen;
+	screen.Resize({1280.f, 720.f});
+	screen.SetInventory(inventory);
+	screen.Open();
+
+	ASSERT_EQ(screen.GetSelectedSlot(), 0);
+	EXPECT_EQ(screen.GetHint().GetText(), XYZEngine::FromUtf8(RoguelikeGame::InventoryHint(&rifle).c_str()));
+
+	ASSERT_TRUE(inventory->Remove(0));
+
+	EXPECT_TRUE(screen.GetHint().GetText().isEmpty());
+}
+
+TEST_F(InventoryScreenTest, HintPicksUpTheSlotTheInventoryHasSelected)
+{
+	InventoryComponent* inventory = CreateInventory();
+
+	ItemDefinition potion = MakeItem("potion", "Aptechka");
+	potion.effect.kind = RoguelikeGame::ItemEffectKind::Heal;
+	potion.effect.amount = 35.f;
+
+	ASSERT_TRUE(inventory->TryAdd(MakeItem("junk", "Hlam")));
+	ASSERT_TRUE(inventory->TryAdd(potion));
+	inventory->SelectSlot(1);
+
+	InventoryScreen screen;
+	screen.Resize({1280.f, 720.f});
+	screen.SetInventory(inventory);
+	screen.Open();
+
+	ASSERT_EQ(screen.GetSelectedSlot(), 1);
+	EXPECT_EQ(screen.GetHint().GetText(), XYZEngine::FromUtf8(RoguelikeGame::INVENTORY_USE_HINT));
 }

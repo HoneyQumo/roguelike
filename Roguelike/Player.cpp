@@ -1,4 +1,4 @@
-#include "Player.h"
+﻿#include "Player.h"
 #include "CharacterFactory.h"
 #include "GameSettings.h"
 #include "PlayerAttackComponent.h"
@@ -178,6 +178,14 @@ namespace RoguelikeGame
             WeaponId id = WeaponId::Knife;
 
             return TryGetWeaponId(effect.target, id) && loadout->EquipWeapon(id);
+        });
+
+        effects->SetPickupRule(ItemEffectKind::AddAmmo, [](const ItemEffect& effect) { return true; });
+        effects->SetPickupRule(ItemEffectKind::EquipWeapon, [loadout](const ItemEffect& effect)
+        {
+            WeaponId id = WeaponId::Knife;
+
+            return TryGetWeaponId(effect.target, id) && loadout->CanTakeWeapon(id);
         });
 
         auto stamina = gameObject->AddComponent<StaminaComponent>();

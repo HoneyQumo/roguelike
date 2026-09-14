@@ -33,6 +33,7 @@ namespace RoguelikeGame
         bool TrySelectSlot(int slot);
         bool EquipWeapon(WeaponId id);
         bool IsSlotEmpty(int slot) const;
+        bool CanTakeWeapon(WeaponId id) const;
         bool HasWeapon() const;
         void CancelReload();
         bool IsSwapping() const;

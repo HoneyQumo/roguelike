@@ -65,6 +65,43 @@ namespace RoguelikeGame
         return nullptr;
     }
 
+    void ItemEffectComponent::SetPickupRule(ItemEffectKind kind, ItemPickupRule rule)
+    {
+        if (kind == ItemEffectKind::None)
+        {
+            return;
+        }
+
+        for (RuleEntry& entry : pickupRules)
+        {
+            if (entry.kind == kind)
+            {
+                entry.rule = std::move(rule);
+                return;
+            }
+        }
+
+        pickupRules.push_back({kind, std::move(rule)});
+    }
+
+    bool ItemEffectComponent::AppliesOnPickup(const ItemDefinition& item) const
+    {
+        if (FindHandler(item.effect.kind) == nullptr)
+        {
+            return false;
+        }
+
+        for (const RuleEntry& entry : pickupRules)
+        {
+            if (entry.kind == item.effect.kind && entry.rule != nullptr)
+            {
+                return entry.rule(item.effect);
+            }
+        }
+
+        return false;
+    }
+
     bool ItemEffectComponent::Apply(const ItemDefinition& item)
     {
         const ItemEffectHandler* handler = FindHandler(item.effect.kind);

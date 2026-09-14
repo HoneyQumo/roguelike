@@ -1,5 +1,6 @@
 #include "PropVisualComponent.h"
 #include <GameObject.h>
+#include <TransformComponent.h>
 #include <RectangleRendererComponent.h>
 #include <SpriteRendererComponent.h>
 
@@ -36,6 +37,11 @@ namespace RoguelikeGame
         spentTexture = newSpentTexture;
     }
 
+    void PropVisualComponent::SetSpentLayer(int newSpentLayer)
+    {
+        spentLayer = newSpentLayer;
+    }
+
     bool PropVisualComponent::IsSpent() const
     {
         return isSpent;
@@ -49,6 +55,11 @@ namespace RoguelikeGame
         }
 
         isSpent = true;
+
+        if (spentLayer != KEEP_RENDER_LAYER)
+        {
+            gameObject->SetRenderLayer(spentLayer);
+        }
 
         if (sprite != nullptr && spentTexture != nullptr)
         {

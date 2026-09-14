@@ -143,6 +143,7 @@ namespace RoguelikeGame
 
     constexpr int GROUND_RENDER_LAYER = 0;
     constexpr int BLOOD_RENDER_LAYER = 10;
+    constexpr int PROP_DEBRIS_RENDER_LAYER = 15;
     constexpr int ITEM_RENDER_LAYER = 25;
     constexpr int CORPSE_RENDER_LAYER = 20;
     constexpr int ENEMY_RENDER_LAYER = 30;

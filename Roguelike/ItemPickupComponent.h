@@ -1,20 +1,19 @@
 #pragma once
 
 #include <functional>
-#include <Component.h>
 #include <EventList.h>
+#include "InteractableComponent.h"
 #include "ItemDefinition.h"
 
 namespace XYZEngine
 {
     class ColliderComponent;
     class SpriteRendererComponent;
-    class Trigger;
 }
 
 namespace RoguelikeGame
 {
-    class ItemPickupComponent : public XYZEngine::Component
+    class ItemPickupComponent : public InteractableComponent
     {
     public:
         ItemPickupComponent(XYZEngine::GameObject* gameObject);
@@ -29,6 +28,10 @@ namespace RoguelikeGame
         bool IsPickedUp() const;
         bool TryPickUp(XYZEngine::GameObject* collector);
 
+        std::string GetPrompt(XYZEngine::GameObject* actor) const override;
+        bool IsAvailable() const override;
+        bool Interact(XYZEngine::GameObject* actor) override;
+
         XYZEngine::SubscriptionId SubscribePickedUp(std::function<void(const ItemDefinition&, XYZEngine::GameObject*)> onPickedUp);
 
     private:
@@ -39,9 +42,6 @@ namespace RoguelikeGame
 
         XYZEngine::EventList<const ItemDefinition&, XYZEngine::GameObject*> pickedUpEvent;
 
-        void OnTriggerEnter(const XYZEngine::Trigger& trigger);
-        void OnTriggerExit(const XYZEngine::Trigger& trigger);
-        static XYZEngine::GameObject* GetPlayerOf(const XYZEngine::Trigger& trigger, XYZEngine::ColliderComponent* self);
         void Hide();
     };
 }

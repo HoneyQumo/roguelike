@@ -35,6 +35,11 @@ namespace RoguelikeGame
         return health > 0.f;
     }
 
+    bool PropDefinition::IsOpenable() const
+    {
+        return openable;
+    }
+
     PropCatalog PropCatalog::Load(const std::string& filePath)
     {
         std::ifstream file(filePath);
@@ -148,7 +153,7 @@ namespace RoguelikeGame
                 continue;
             }
 
-            if (key == "color" || key == "brokenColor")
+            if (key == "color" || key == "brokenColor" || key == "openedColor")
             {
                 sf::Color color;
                 if (!ReadColor(stream, color))
@@ -157,7 +162,34 @@ namespace RoguelikeGame
                     throw std::runtime_error("Prop color needs three numbers in " + sourceName);
                 }
 
-                (key == "color" ? current.color : current.brokenColor) = color;
+                if (key == "color")
+                {
+                    current.color = color;
+                }
+                else if (key == "brokenColor")
+                {
+                    current.brokenColor = color;
+                }
+                else
+                {
+                    current.openedColor = color;
+                }
+
+                continue;
+            }
+
+            if (key == "openable")
+            {
+                std::string value;
+                stream >> value;
+                current.openable = value == "true";
+                continue;
+            }
+
+            if (key == "key")
+            {
+                stream >> current.keyItem;
+                current.openable = true;
                 continue;
             }
 

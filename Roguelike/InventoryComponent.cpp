@@ -287,6 +287,26 @@ namespace RoguelikeGame
         return total;
     }
 
+    int InventoryComponent::FindSlot(const std::string& itemId) const
+    {
+        for (int index = 0; index < slots.size(); index++)
+        {
+            if (slots[index].Holds(itemId))
+            {
+                return index;
+            }
+        }
+
+        return -1;
+    }
+
+    bool InventoryComponent::RemoveById(const std::string& itemId, int count)
+    {
+        int index = FindSlot(itemId);
+
+        return index >= 0 && Remove(index, count);
+    }
+
     XYZEngine::SubscriptionId InventoryComponent::SubscribeAdded(std::function<void(const ItemDefinition&, int)> onAdded)
     {
         return addedEvent.Subscribe(std::move(onAdded));

@@ -118,7 +118,7 @@ namespace RoguelikeGame
         LockExit(level);
 
         int itemsCount = BuildItems(levelData, items, level);
-        int propsCount = BuildProps(levelData, props, level);
+        int propsCount = BuildProps(levelData, props, items, level);
 
         LOG_INFO("Level built: tiles " + std::to_string(tilesCount)
             + ", walls " + std::to_string(wallsCount)
@@ -204,7 +204,7 @@ namespace RoguelikeGame
         return itemsCount;
     }
 
-    int LevelBuilder::BuildProps(const LevelData& levelData, const PropCatalog& props, Level& level)
+    int LevelBuilder::BuildProps(const LevelData& levelData, const PropCatalog& props, const ItemCatalog& items, Level& level)
     {
         int propsCount = 0;
 
@@ -221,7 +221,7 @@ namespace RoguelikeGame
 
             try
             {
-                if (level.Add(CreateProp(*definition, position)))
+                if (level.Add(CreateProp(*definition, position, items)))
                 {
                     propsCount++;
                 }

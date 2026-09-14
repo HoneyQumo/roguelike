@@ -14,7 +14,7 @@ namespace XYZEngine
 
 namespace RoguelikeGame
 {
-    class ItemPickupComponent;
+    class InteractableComponent;
 
     class InteractionComponent : public XYZEngine::Component
     {
@@ -25,27 +25,29 @@ namespace RoguelikeGame
         void Update(float deltaTime) override;
         void Render() override;
 
-        void AddCandidate(ItemPickupComponent* candidate);
-        void RemoveCandidate(ItemPickupComponent* candidate);
+        void AddCandidate(InteractableComponent* candidate);
+        void RemoveCandidate(InteractableComponent* candidate);
 
-        ItemPickupComponent* GetTarget() const;
+        InteractableComponent* GetTarget() const;
         std::string GetPrompt() const;
         bool Interact();
 
         XYZEngine::SubscriptionId SubscribePromptChanged(std::function<void(const std::string&)> onPromptChanged);
+        XYZEngine::SubscriptionId SubscribeRefused(std::function<void(const std::string&)> onRefused);
 
     private:
         XYZEngine::InputComponent* input = nullptr;
         XYZEngine::TransformComponent* transform = nullptr;
 
-        std::vector<ItemPickupComponent*> candidates;
-        ItemPickupComponent* target = nullptr;
+        std::vector<InteractableComponent*> candidates;
+        InteractableComponent* target = nullptr;
         std::string prompt;
 
         XYZEngine::EventList<const std::string&> promptChangedEvent;
+        XYZEngine::EventList<const std::string&> refusedEvent;
 
         void UpdateTarget();
-        ItemPickupComponent* FindNearest() const;
-        void SetTarget(ItemPickupComponent* newTarget);
+        InteractableComponent* FindNearest() const;
+        void SetTarget(InteractableComponent* newTarget);
     };
 }

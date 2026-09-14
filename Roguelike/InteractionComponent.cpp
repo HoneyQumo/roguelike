@@ -1,6 +1,6 @@
 #include "InteractionComponent.h"
 #include "GameSettings.h"
-#include "ItemPickupComponent.h"
+#include "InteractableComponent.h"
 #include <GameObject.h>
 #include <InputComponent.h>
 #include <LoggerRegistry.h>
@@ -20,7 +20,7 @@ namespace RoguelikeGame
         input = gameObject->GetComponent<XYZEngine::InputComponent>();
     }
 
-    void InteractionComponent::AddCandidate(ItemPickupComponent* candidate)
+    void InteractionComponent::AddCandidate(InteractableComponent* candidate)
     {
         if (candidate == nullptr || std::find(candidates.begin(), candidates.end(), candidate) != candidates.end())
         {
@@ -30,7 +30,7 @@ namespace RoguelikeGame
         candidates.push_back(candidate);
     }
 
-    void InteractionComponent::RemoveCandidate(ItemPickupComponent* candidate)
+    void InteractionComponent::RemoveCandidate(InteractableComponent* candidate)
     {
         candidates.erase(std::remove(candidates.begin(), candidates.end(), candidate), candidates.end());
 
@@ -57,17 +57,17 @@ namespace RoguelikeGame
     void InteractionComponent::UpdateTarget()
     {
         candidates.erase(std::remove_if(candidates.begin(), candidates.end(),
-            [](ItemPickupComponent* candidate) { return candidate == nullptr || candidate->IsPickedUp(); }), candidates.end());
+            [](InteractableComponent* candidate) { return candidate == nullptr || !candidate->IsAvailable(); }), candidates.end());
 
         SetTarget(FindNearest());
     }
 
-    ItemPickupComponent* InteractionComponent::FindNearest() const
+    InteractableComponent* InteractionComponent::FindNearest() const
     {
-        ItemPickupComponent* nearest = nullptr;
+        InteractableComponent* nearest = nullptr;
         float nearestDistance = 0.f;
 
-        for (ItemPickupComponent* candidate : candidates)
+        for (InteractableComponent* candidate : candidates)
         {
             float distance = (candidate->GetGameObject()->GetTransform()->GetWorldPosition()
                 - transform->GetWorldPosition()).GetLengthSquared();
@@ -82,25 +82,21 @@ namespace RoguelikeGame
         return nearest;
     }
 
-    void InteractionComponent::SetTarget(ItemPickupComponent* newTarget)
+    void InteractionComponent::SetTarget(InteractableComponent* newTarget)
     {
-        if (target == newTarget)
+        target = newTarget;
+
+        std::string wanted = target != nullptr ? target->GetPrompt(gameObject) : std::string();
+        if (wanted == prompt)
         {
             return;
         }
 
-        target = newTarget;
-        prompt.clear();
-
-        if (target != nullptr && target->GetDefinition() != nullptr)
-        {
-            prompt = std::string(INTERACT_PROMPT_PREFIX) + target->GetDefinition()->name;
-        }
-
+        prompt = std::move(wanted);
         promptChangedEvent.Invoke(prompt);
     }
 
-    ItemPickupComponent* InteractionComponent::GetTarget() const
+    InteractableComponent* InteractionComponent::GetTarget() const
     {
         return target;
     }
@@ -117,13 +113,13 @@ namespace RoguelikeGame
             return false;
         }
 
-        ItemPickupComponent* picked = target;
-        if (!picked->TryPickUp(gameObject))
+        InteractableComponent* chosen = target;
+        if (!chosen->Interact(gameObject))
         {
+            refusedEvent.Invoke(chosen->GetRefusal(gameObject));
             return false;
         }
 
-        RemoveCandidate(picked);
         UpdateTarget();
 
         return true;
@@ -132,5 +128,10 @@ namespace RoguelikeGame
     XYZEngine::SubscriptionId InteractionComponent::SubscribePromptChanged(std::function<void(const std::string&)> onPromptChanged)
     {
         return promptChangedEvent.Subscribe(std::move(onPromptChanged));
+    }
+
+    XYZEngine::SubscriptionId InteractionComponent::SubscribeRefused(std::function<void(const std::string&)> onRefused)
+    {
+        return refusedEvent.Subscribe(std::move(onRefused));
     }
 }

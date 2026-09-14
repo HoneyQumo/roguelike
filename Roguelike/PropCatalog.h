@@ -17,8 +17,12 @@ namespace RoguelikeGame
         float size = 48.f;
         sf::Color color = {150, 110, 60};
         sf::Color brokenColor = {80, 60, 35};
+        sf::Color openedColor = {90, 80, 55};
+        std::string keyItem;
+        bool openable = false;
 
         bool IsDestructible() const;
+        bool IsOpenable() const;
     };
 
     class PropCatalog

@@ -1,16 +1,14 @@
 #include "ItemPickupComponent.h"
-#include "FactionComponent.h"
-#include "InteractionComponent.h"
+#include "GameSettings.h"
 #include "InventoryComponent.h"
 #include <ColliderComponent.h>
 #include <GameObject.h>
 #include <LoggerRegistry.h>
 #include <SpriteRendererComponent.h>
-#include <Trigger.h>
 
 namespace RoguelikeGame
 {
-    ItemPickupComponent::ItemPickupComponent(XYZEngine::GameObject* gameObject) : Component(gameObject) {}
+    ItemPickupComponent::ItemPickupComponent(XYZEngine::GameObject* gameObject) : InteractableComponent(gameObject) {}
 
     void ItemPickupComponent::Start()
     {
@@ -24,8 +22,7 @@ namespace RoguelikeGame
             return;
         }
 
-        collider->SubscribeTriggerEnter([this](const XYZEngine::Trigger& trigger) { OnTriggerEnter(trigger); });
-        collider->SubscribeTriggerExit([this](const XYZEngine::Trigger& trigger) { OnTriggerExit(trigger); });
+        BindReach(collider);
     }
 
     void ItemPickupComponent::Update(float deltaTime)
@@ -51,54 +48,24 @@ namespace RoguelikeGame
         return isPickedUp;
     }
 
-    XYZEngine::GameObject* ItemPickupComponent::GetPlayerOf(const XYZEngine::Trigger& trigger, XYZEngine::ColliderComponent* self)
+    std::string ItemPickupComponent::GetPrompt(XYZEngine::GameObject* actor) const
     {
-        XYZEngine::ColliderComponent* other = trigger.GetFirst() == self ? trigger.GetSecond() : trigger.GetFirst();
-        if (other == nullptr)
+        if (definition == nullptr)
         {
-            return nullptr;
+            return {};
         }
 
-        XYZEngine::GameObject* candidate = other->GetGameObject();
-        return GetFactionOf(candidate) == Faction::Player ? candidate : nullptr;
+        return std::string(INTERACT_PROMPT_PREFIX) + definition->name;
     }
 
-    void ItemPickupComponent::OnTriggerEnter(const XYZEngine::Trigger& trigger)
+    bool ItemPickupComponent::IsAvailable() const
     {
-        if (isPickedUp)
-        {
-            return;
-        }
-
-        XYZEngine::GameObject* player = GetPlayerOf(trigger, collider);
-        if (player == nullptr)
-        {
-            return;
-        }
-
-        auto interaction = player->GetComponent<InteractionComponent>();
-        if (interaction != nullptr)
-        {
-            interaction->AddCandidate(this);
-            return;
-        }
-
-        TryPickUp(player);
+        return !isPickedUp;
     }
 
-    void ItemPickupComponent::OnTriggerExit(const XYZEngine::Trigger& trigger)
+    bool ItemPickupComponent::Interact(XYZEngine::GameObject* actor)
     {
-        XYZEngine::GameObject* player = GetPlayerOf(trigger, collider);
-        if (player == nullptr)
-        {
-            return;
-        }
-
-        auto interaction = player->GetComponent<InteractionComponent>();
-        if (interaction != nullptr)
-        {
-            interaction->RemoveCandidate(this);
-        }
+        return TryPickUp(actor);
     }
 
     bool ItemPickupComponent::TryPickUp(XYZEngine::GameObject* collector)

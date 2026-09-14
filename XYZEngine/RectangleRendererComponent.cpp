@@ -39,4 +39,9 @@ namespace XYZEngine
 	{
 		rectangle.setFillColor(newColor);
 	}
+
+	sf::Color RectangleRendererComponent::GetColor() const
+	{
+		return rectangle.getFillColor();
+	}
 }

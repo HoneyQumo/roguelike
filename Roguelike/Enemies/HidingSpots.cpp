@@ -1,5 +1,6 @@
 #include "HidingSpots.h"
 #include <algorithm>
+#include <cstdlib>
 
 using namespace XYZEngine;
 
@@ -16,7 +17,7 @@ namespace RoguelikeGame
     }
 
     std::vector<Vector2Df> FindHidingSpots(const LevelGrid& grid, const PathField& field,
-        const Vector2Df& from, int radius, std::size_t wanted)
+        const Vector2Df& from, int radius, std::size_t wanted, int minGap)
     {
         std::vector<Vector2Df> spots;
         if (radius <= 0 || wanted == 0u || grid.IsEmpty() || field.IsEmpty())
@@ -62,13 +63,63 @@ namespace RoguelikeGame
             return first.column < second.column;
         });
 
-        for (const Candidate& candidate : found)
+        if (found.empty())
         {
-            if (spots.size() >= wanted)
+            return spots;
+        }
+
+        std::vector<Candidate> chosen;
+        auto isFarEnough = [&chosen, minGap](const Candidate& candidate)
+        {
+            for (const Candidate& taken : chosen)
+            {
+                if (std::max(std::abs(taken.column - candidate.column), std::abs(taken.row - candidate.row)) < minGap)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        };
+
+        std::size_t last = found.size() - 1u;
+        for (std::size_t pick = 0u; pick < wanted && chosen.size() < wanted; pick++)
+        {
+            std::size_t target = last * (pick + 1u) / wanted;
+
+            std::size_t taken = found.size();
+            for (std::size_t step = 0u; step <= last; step++)
+            {
+                std::size_t behind = target >= step ? target - step : found.size();
+                std::size_t ahead = target + step <= last ? target + step : found.size();
+
+                if (behind < found.size() && isFarEnough(found[behind]))
+                {
+                    taken = behind;
+                    break;
+                }
+                if (ahead < found.size() && isFarEnough(found[ahead]))
+                {
+                    taken = ahead;
+                    break;
+                }
+            }
+
+            if (taken >= found.size())
             {
                 break;
             }
 
+            chosen.push_back(found[taken]);
+        }
+
+        std::sort(chosen.begin(), chosen.end(), [](const Candidate& first, const Candidate& second)
+        {
+            return first.distance < second.distance;
+        });
+
+        for (const Candidate& candidate : chosen)
+        {
             spots.push_back(grid.ToWorld(candidate.column, candidate.row));
         }
 

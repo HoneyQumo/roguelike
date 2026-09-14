@@ -369,7 +369,7 @@ namespace RoguelikeGame
 
 		int wanted = random<int>(std::max(1, searchSpotsMin), std::max(1, searchSpotsMax));
 		searchSpots = FindHidingSpots(LevelGrid::Current(), *field, investigatePoint,
-			searchRadius, static_cast<std::size_t>(wanted));
+			searchRadius, static_cast<std::size_t>(wanted), SEARCH_SPOT_GAP);
 	}
 
 	bool ChaseComponent::TakeNextSpot()

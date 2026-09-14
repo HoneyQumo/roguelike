@@ -20,10 +20,11 @@ namespace
 {
 	const std::string ROOM =
 		"[map]\n"
-		"#########\n"
-		"#...#...#\n"
-		"#.......#\n"
-		"#########\n";
+		"#############\n"
+		"#...#.......#\n"
+		"#...........#\n"
+		"#...#.......#\n"
+		"#############\n";
 
 	constexpr float SEARCH_TIME = 4.f;
 	constexpr float STEP = 0.05f;
@@ -260,13 +261,13 @@ TEST_F(ChaseComponentTest, EnemyWithSearchSpotsChecksSeveralPlaces)
 	GameWorld::Instance()->Clear();
 	hero = CreateHero(3, 1);
 	ChaseComponent* seeker = CreateEnemy(1, 1);
-	seeker->SetSearchSpots(4, 2, 2);
+	seeker->SetSearchSpots(10, 2, 2);
 	Run(0.2f);
 	ASSERT_TRUE(seeker->IsChasing());
 
 	GameWorld::Instance()->DestroyGameObject(hero);
 	GameWorld::Instance()->LateUpdate();
-	Run(6.f * LOOK_TIME);
+	Run(14.f * LOOK_TIME);
 
 	EXPECT_GE(seeker->GetSearchStep(), 2u);
 }

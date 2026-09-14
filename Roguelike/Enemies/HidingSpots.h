@@ -8,5 +8,5 @@
 namespace RoguelikeGame
 {
     std::vector<XYZEngine::Vector2Df> FindHidingSpots(const LevelGrid& grid, const PathField& field,
-        const XYZEngine::Vector2Df& from, int radius, std::size_t wanted);
+        const XYZEngine::Vector2Df& from, int radius, std::size_t wanted, int minGap);
 }

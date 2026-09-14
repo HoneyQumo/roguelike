@@ -48,7 +48,12 @@ namespace XYZEngine
 		friend class PhysicsSystem;
 
 	protected:
+		void SetBounds(const sf::FloatRect& newBounds);
+
 		sf::FloatRect bounds;
+		sf::FloatRect gridBounds;
+		bool isInGrid = false;
+		unsigned int order = 0u;
 		RigidbodyComponent* body = nullptr;
 		bool isBodyFound = false;
 		bool isTrigger = false;

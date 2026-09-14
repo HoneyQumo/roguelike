@@ -42,13 +42,21 @@ namespace RoguelikeGame
         vitals->SetAnchor(XYZEngine::UiAnchor::TopLeft);
         vitals->SetPivot(XYZEngine::UiAnchor::TopLeft);
         vitals->SetOffset({VITALS_HUD_MARGIN_X, VITALS_HUD_MARGIN_Y});
-        vitals->SetSize({VITALS_HUD_WIDTH, VITALS_HUD_HEALTH_HEIGHT + VITALS_HUD_GAP + VITALS_HUD_STAMINA_HEIGHT});
+        vitals->SetSize({VITALS_HUD_WIDTH, VITALS_HUD_HEALTH_HEIGHT + VITALS_HUD_ARMOR_HEIGHT + VITALS_HUD_STAMINA_HEIGHT
+            + 2.f * VITALS_HUD_GAP});
 
         healthBar = vitals->AddChild<XYZEngine::UiProgressBar>();
         healthBar->SetAnchor(XYZEngine::UiAnchor::TopLeft);
         healthBar->SetPivot(XYZEngine::UiAnchor::TopLeft);
         healthBar->SetSize({VITALS_HUD_WIDTH, VITALS_HUD_HEALTH_HEIGHT});
         healthBar->SetColors(VITALS_HUD_HEALTH_COLOR, VITALS_HUD_BACK_COLOR);
+
+        armorBar = vitals->AddChild<XYZEngine::UiProgressBar>();
+        armorBar->SetAnchor(XYZEngine::UiAnchor::TopLeft);
+        armorBar->SetPivot(XYZEngine::UiAnchor::TopLeft);
+        armorBar->SetOffset({0.f, VITALS_HUD_HEALTH_HEIGHT + VITALS_HUD_GAP});
+        armorBar->SetSize({VITALS_HUD_WIDTH, VITALS_HUD_ARMOR_HEIGHT});
+        armorBar->SetColors(VITALS_HUD_ARMOR_COLOR, VITALS_HUD_BACK_COLOR);
 
         staminaBar = vitals->AddChild<XYZEngine::UiProgressBar>();
         staminaBar->SetAnchor(XYZEngine::UiAnchor::BottomLeft);
@@ -129,6 +137,8 @@ namespace RoguelikeGame
     {
         healthBar->SetValue(state.healthPart);
         staminaBar->SetValue(state.staminaPart);
+        armorBar->SetValue(state.armorPart);
+        armorBar->SetVisible(state.armorPart > 0.f);
 
         if (state.healthPart <= VITALS_HUD_CRITICAL_PART)
         {
@@ -182,6 +192,11 @@ namespace RoguelikeGame
     const XYZEngine::UiProgressBar& HudScreen::GetHealthBar() const
     {
         return *healthBar;
+    }
+
+    const XYZEngine::UiProgressBar& HudScreen::GetArmorBar() const
+    {
+        return *armorBar;
     }
 
     const XYZEngine::UiProgressBar& HudScreen::GetStaminaBar() const

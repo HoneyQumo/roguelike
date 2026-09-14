@@ -3,6 +3,7 @@
 #include "HealthComponent.h"
 #include "InventoryComponent.h"
 #include "ItemEffectComponent.h"
+#include "GameSettings.h"
 
 using RoguelikeGame::HealthComponent;
 using RoguelikeGame::InventoryComponent;
@@ -160,4 +161,52 @@ TEST_F(ItemEffectTest, InventoryWithoutHandlerKeepsWorkingAsBefore)
 
 	EXPECT_TRUE(bag->Use(0));
 	EXPECT_EQ(bag->CountOf("potion"), 0);
+}
+
+TEST(ArmorRulesTest, PlateRaisesArmorUpToTheCap)
+{
+	EXPECT_FLOAT_EQ(RoguelikeGame::ArmorAfterPlate(5.f, 5.f, 20.f), 10.f);
+	EXPECT_FLOAT_EQ(RoguelikeGame::ArmorAfterPlate(18.f, 5.f, 20.f), 20.f);
+}
+
+TEST(ArmorRulesTest, AtTheCapNothingChanges)
+{
+	EXPECT_FLOAT_EQ(RoguelikeGame::ArmorAfterPlate(20.f, 5.f, 20.f), 20.f);
+	EXPECT_FLOAT_EQ(RoguelikeGame::ArmorAfterPlate(25.f, 5.f, 20.f), 25.f);
+	EXPECT_FALSE(RoguelikeGame::CanTakeArmor(20.f, 20.f));
+	EXPECT_TRUE(RoguelikeGame::CanTakeArmor(19.f, 20.f));
+}
+
+TEST(ArmorRulesTest, EmptyPlateChangesNothing)
+{
+	EXPECT_FLOAT_EQ(RoguelikeGame::ArmorAfterPlate(5.f, 0.f, 20.f), 5.f);
+	EXPECT_FLOAT_EQ(RoguelikeGame::ArmorAfterPlate(5.f, -3.f, 20.f), 5.f);
+}
+
+TEST_F(ItemEffectTest, ArmorPlateIsSpentOnlyWhileItHelps)
+{
+	static const ItemDefinition plate = MakeItem("armor_plate", ItemEffectKind::AddArmor, 5.f);
+
+	float armor = 5.f;
+	effects->SetHandler(ItemEffectKind::AddArmor, [&armor](const RoguelikeGame::ItemEffect& effect)
+	{
+		float taken = RoguelikeGame::ArmorAfterPlate(armor, effect.amount, RoguelikeGame::PLAYER_ARMOR_CAP);
+		if (taken <= armor)
+		{
+			return false;
+		}
+
+		armor = taken;
+		return true;
+	});
+
+	ASSERT_TRUE(inventory->TryAdd(plate, 1));
+	EXPECT_TRUE(inventory->Use(0));
+	EXPECT_FLOAT_EQ(armor, 10.f);
+	EXPECT_EQ(inventory->CountOf("armor_plate"), 0);
+
+	armor = RoguelikeGame::PLAYER_ARMOR_CAP;
+	ASSERT_TRUE(inventory->TryAdd(plate, 1));
+	EXPECT_FALSE(inventory->Use(0));
+	EXPECT_EQ(inventory->CountOf("armor_plate"), 1);
 }

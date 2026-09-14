@@ -109,3 +109,36 @@ TEST_F(HudScreenTest, AmmoLineHidesWithoutMagazine)
 
 	EXPECT_TRUE(hud.GetAmmoLabel().IsVisible());
 }
+
+TEST_F(HudScreenTest, ArmorBarIsHiddenWithoutArmor)
+{
+	HudScreen screen;
+	screen.Resize({1280.f, 720.f});
+
+	RoguelikeGame::VitalsHudState state;
+	state.healthPart = 1.f;
+	state.staminaPart = 1.f;
+	state.armorPart = 0.f;
+	screen.SetVitals(state);
+
+	EXPECT_FALSE(screen.GetArmorBar().IsVisible());
+}
+
+TEST_F(HudScreenTest, ArmorBarFollowsTheStat)
+{
+	HudScreen screen;
+	screen.Resize({1280.f, 720.f});
+
+	RoguelikeGame::VitalsHudState state;
+	state.healthPart = 1.f;
+	state.staminaPart = 1.f;
+	state.armorPart = 0.5f;
+	screen.SetVitals(state);
+
+	EXPECT_TRUE(screen.GetArmorBar().IsVisible());
+	EXPECT_FLOAT_EQ(screen.GetArmorBar().GetValue(), 0.5f);
+
+	state.armorPart = 1.f;
+	screen.SetVitals(state);
+	EXPECT_FLOAT_EQ(screen.GetArmorBar().GetValue(), 1.f);
+}

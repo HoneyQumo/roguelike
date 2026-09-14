@@ -1,6 +1,7 @@
 #include "LevelBuilder.h"
 #include "TileAtlas.h"
 #include "LevelGrid.h"
+#include "PathService.h"
 #include <ResourceSystem.h>
 #include "BossCatalog.h"
 #include "GameSettings.h"
@@ -22,6 +23,7 @@ namespace RoguelikeGame
     Level LevelBuilder::Build(const LevelData& levelData, const ItemCatalog& items, const PropCatalog& props)
     {
         LevelGrid::SetCurrent(LevelGrid::Build(levelData));
+        PathService::Reset();
 
         Level level;
 

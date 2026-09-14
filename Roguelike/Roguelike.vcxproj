@@ -151,6 +151,8 @@
         <ClCompile Include="Weapons\Weapon.cpp"/>
         <ClCompile Include="Level\Level.cpp"/>
         <ClCompile Include="Level\LevelGrid.cpp"/>
+        <ClCompile Include="Level\PathField.cpp"/>
+        <ClCompile Include="Level\PathService.cpp"/>
         <ClCompile Include="Level\LevelBuilder.cpp"/>
         <ClCompile Include="Level\LevelLoader.cpp"/>
         <ClCompile Include="Level\Wall.cpp"/>
@@ -202,6 +204,9 @@
         <ClInclude Include="Enemies\ChaseRules.h"/>
         <ClInclude Include="Enemies\Vision.h"/>
         <ClInclude Include="Level\LevelGrid.h"/>
+        <ClInclude Include="Level\PathField.h"/>
+        <ClInclude Include="Level\PathService.h"/>
+        <ClInclude Include="Enemies\RouteFollower.h"/>
         <ClInclude Include="Enemies\ChaseComponent.h"/>
         <ClInclude Include="Characters\AmmoPouchComponent.h"/>
         <ClInclude Include="Characters\HealthBarComponent.h"/>

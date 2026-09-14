@@ -30,6 +30,8 @@ namespace RoguelikeGame
     constexpr float TILE_SIZE = 64.f;
     constexpr float ENEMY_ALERT_ARRIVE_DISTANCE = 48.f;
     constexpr float ENEMY_ALERT_POINT_DISTANCE = 420.f;
+    constexpr float ENEMY_REPATH_INTERVAL = 0.4f;
+    constexpr float ENEMY_ROUTE_ARRIVE_DISTANCE = 0.5f * TILE_SIZE;
 
     constexpr int CHARACTER_SPRITE_SIZE = CHARACTER_FRAME_SIZE;
 

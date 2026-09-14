@@ -42,6 +42,7 @@ namespace RoguelikeGame
 
         XYZEngine::EventList<const ItemDefinition&, XYZEngine::GameObject*> pickedUpEvent;
 
+        bool Take(const ItemDefinition& item, XYZEngine::GameObject* collector);
         void Hide();
     };
 }

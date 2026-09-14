@@ -92,6 +92,7 @@
     <ClCompile Include="PixelBounds.tests.cpp" />
     <ClCompile Include="ItemIconLayout.tests.cpp" />
     <ClCompile Include="Container.tests.cpp" />
+    <ClCompile Include="PickupPolicy.tests.cpp" />
     <ClCompile Include="InventoryComponent.tests.cpp" />
     <ClCompile Include="Interaction.tests.cpp" />
     <ClCompile Include="InventoryScreen.tests.cpp" />

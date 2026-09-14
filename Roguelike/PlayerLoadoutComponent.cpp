@@ -115,6 +115,11 @@ namespace RoguelikeGame
         return slot < 0 || slot >= slotsCount || !slots[slot].hasWeapon;
     }
 
+    bool PlayerLoadoutComponent::CanTakeWeapon(WeaponId id) const
+    {
+        return slotsCount > 0 && IsSlotEmpty(std::clamp(PreferredWeaponSlot(id), 0, slotsCount - 1));
+    }
+
     bool PlayerLoadoutComponent::HasWeapon() const
     {
         return !IsSlotEmpty(currentSlot);

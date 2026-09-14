@@ -1,6 +1,7 @@
 #include "ItemPickupComponent.h"
 #include "GameSettings.h"
 #include "InventoryComponent.h"
+#include "ItemEffectComponent.h"
 #include <ColliderComponent.h>
 #include <GameObject.h>
 #include <LoggerRegistry.h>
@@ -75,8 +76,7 @@ namespace RoguelikeGame
             return false;
         }
 
-        auto inventory = collector->GetComponent<InventoryComponent>();
-        if (inventory != nullptr && !inventory->TryAdd(*definition))
+        if (!Take(*definition, collector))
         {
             return false;
         }
@@ -88,6 +88,19 @@ namespace RoguelikeGame
 
         pickedUpEvent.Invoke(*definition, collector);
         return true;
+    }
+
+    bool ItemPickupComponent::Take(const ItemDefinition& item, XYZEngine::GameObject* collector)
+    {
+        auto effects = collector->GetComponent<ItemEffectComponent>();
+        if (effects != nullptr && effects->AppliesOnPickup(item))
+        {
+            return effects->Apply(item);
+        }
+
+        auto inventory = collector->GetComponent<InventoryComponent>();
+
+        return inventory == nullptr || inventory->TryAdd(item);
     }
 
     void ItemPickupComponent::Hide()

@@ -346,3 +346,35 @@ TEST_F(ChaseComponentTest, AlertedEnemyDoesNotAttackThroughAWall)
 	ASSERT_FALSE(chase->CanSeeTarget());
 	EXPECT_FALSE(attack->IsAttacking());
 }
+
+TEST_F(ChaseComponentTest, EnemyRemembersWhichWayTheTargetRan)
+{
+	GameObject* hero = CreateHero(2, 2);
+	ChaseComponent* chase = CreateEnemy(1, 2);
+	Run(0.2f);
+	ASSERT_TRUE(chase->CanSeeTarget());
+	ASSERT_FLOAT_EQ(chase->GetEscapeDirection().GetLength(), 0.f);
+
+	hero->GetTransform()->SetWorldPosition(At(5, 2));
+	Run(0.2f);
+	ASSERT_TRUE(chase->CanSeeTarget());
+
+	EXPECT_GT(chase->GetEscapeDirection().x, 0.f);
+}
+
+TEST_F(ChaseComponentTest, TargetRunningBackFlipsTheRememberedWay)
+{
+	GameObject* hero = CreateHero(3, 2);
+	ChaseComponent* chase = CreateEnemy(1, 2);
+	Run(0.2f);
+	ASSERT_TRUE(chase->CanSeeTarget());
+
+	hero->GetTransform()->SetWorldPosition(At(6, 2));
+	Run(0.2f);
+	ASSERT_GT(chase->GetEscapeDirection().x, 0.f);
+
+	hero->GetTransform()->SetWorldPosition(At(3, 2));
+	Run(0.2f);
+
+	EXPECT_LT(chase->GetEscapeDirection().x, 0.f);
+}

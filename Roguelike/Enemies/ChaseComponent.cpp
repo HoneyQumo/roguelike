@@ -154,6 +154,19 @@ namespace RoguelikeGame
 
 		if (sense.isVisible)
 		{
+			if (!memory.hasPoint)
+			{
+				escapeFrom = targetPosition;
+				escapeDirection = {0.f, 0.f};
+			}
+
+			Vector2Df moved = targetPosition - escapeFrom;
+			if (moved.GetLength() > SEARCH_ESCAPE_STEP)
+			{
+				escapeDirection = moved;
+				escapeFrom = targetPosition;
+			}
+
 			investigatePoint = targetPosition;
 			memory = Remember(memory, searchTime);
 			hasSearched = false;
@@ -394,7 +407,7 @@ namespace RoguelikeGame
 		}
 
 		int wanted = random<int>(std::max(1, searchSpotsMin), std::max(1, searchSpotsMax));
-		searchSpots = FindHidingSpots(LevelGrid::Current(), *field, investigatePoint,
+		searchSpots = FindHidingSpots(LevelGrid::Current(), *field, investigatePoint, escapeDirection,
 			searchRadius, static_cast<std::size_t>(wanted), searchGap);
 	}
 
@@ -459,5 +472,10 @@ namespace RoguelikeGame
 	std::size_t ChaseComponent::GetSearchStep() const
 	{
 		return searchSpot;
+	}
+
+	const Vector2Df& ChaseComponent::GetEscapeDirection() const
+	{
+		return escapeDirection;
 	}
 }

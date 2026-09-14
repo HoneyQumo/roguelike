@@ -1,4 +1,5 @@
 #include "HidingSpots.h"
+#include "GameSettings.h"
 #include <algorithm>
 #include <cstdlib>
 
@@ -13,6 +14,7 @@ namespace RoguelikeGame
             int distance = 0;
             int column = 0;
             int row = 0;
+            float offAngle = 0.f;
         };
     }
 
@@ -42,7 +44,7 @@ namespace RoguelikeGame
     }
 
     std::vector<Vector2Df> FindHidingSpots(const LevelGrid& grid, const PathField& field,
-        const Vector2Df& from, int radius, std::size_t wanted, int minGap)
+        const Vector2Df& from, const Vector2Df& escape, int radius, std::size_t wanted, int minGap)
     {
         std::vector<Vector2Df> spots;
         if (radius <= 0 || wanted == 0u || grid.IsEmpty() || field.IsEmpty())
@@ -54,6 +56,9 @@ namespace RoguelikeGame
         int centreRow = 0;
         grid.ToCell(from, centreColumn, centreRow);
 
+        bool hasEscape = escape.GetLengthSquared() > 0.f;
+        Vector2Df heading = hasEscape ? escape.Normalized() : Vector2Df{0.f, 0.f};
+
         std::vector<Candidate> found;
         for (int row = centreRow - radius; row <= centreRow + radius; row++)
         {
@@ -64,7 +69,31 @@ namespace RoguelikeGame
                     continue;
                 }
 
-                found.push_back({field.GetDistance(column, row), column, row});
+                Candidate candidate;
+                candidate.distance = field.GetDistance(column, row);
+                candidate.column = column;
+                candidate.row = row;
+                candidate.offAngle = 0.f;
+
+                if (hasEscape)
+                {
+                    Vector2Df toSpot = grid.ToWorld(column, row) - from;
+                    float length = toSpot.GetLength();
+                    if (length <= 0.f)
+                    {
+                        continue;
+                    }
+
+                    float cosine = (heading.x * toSpot.x + heading.y * toSpot.y) / length;
+                    if (cosine < SEARCH_ESCAPE_COSINE)
+                    {
+                        continue;
+                    }
+
+                    candidate.offAngle = 1.f - cosine;
+                }
+
+                found.push_back(candidate);
             }
         }
 
@@ -73,6 +102,10 @@ namespace RoguelikeGame
             if (first.distance != second.distance)
             {
                 return first.distance < second.distance;
+            }
+            if (first.offAngle != second.offAngle)
+            {
+                return first.offAngle < second.offAngle;
             }
             if (first.row != second.row)
             {

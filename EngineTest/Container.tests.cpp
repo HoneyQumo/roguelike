@@ -56,7 +56,6 @@ namespace
 			renderer->SetColor({120, 95, 50});
 			container = chest->AddComponent<ContainerComponent>();
 			container->SetTitle(u8"Ящик");
-			container->SetOpenedColor({70, 55, 30});
 
 			GameWorld::Instance()->Update(0.016f);
 		}
@@ -136,7 +135,7 @@ TEST_F(ContainerTest, OpenedContainerGivesNothingMore)
 	EXPECT_EQ(inventory->CountOf("key_rusty"), 1);
 }
 
-TEST_F(ContainerTest, OpenedContainerChangesColorAndLeavesTheCandidates)
+TEST_F(ContainerTest, OpenedContainerLeavesTheCandidates)
 {
 	interaction->AddCandidate(container);
 	GameWorld::Instance()->Update(0.016f);
@@ -148,7 +147,6 @@ TEST_F(ContainerTest, OpenedContainerChangesColorAndLeavesTheCandidates)
 	EXPECT_FALSE(container->IsAvailable());
 	EXPECT_EQ(interaction->GetTarget(), nullptr);
 	EXPECT_TRUE(interaction->GetPrompt().empty());
-	EXPECT_EQ(renderer->GetColor().r, 70);
 }
 
 TEST_F(ContainerTest, PromptFollowsTheKeyInTheBag)

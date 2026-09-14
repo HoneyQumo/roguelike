@@ -93,6 +93,7 @@
     <ClCompile Include="ItemIconLayout.tests.cpp" />
     <ClCompile Include="Container.tests.cpp" />
     <ClCompile Include="PickupPolicy.tests.cpp" />
+    <ClCompile Include="PropVisual.tests.cpp" />
     <ClCompile Include="InventoryComponent.tests.cpp" />
     <ClCompile Include="Interaction.tests.cpp" />
     <ClCompile Include="InventoryScreen.tests.cpp" />
@@ -179,6 +180,9 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\Roguelike\ContainerComponent.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Roguelike\PropVisualComponent.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\Roguelike\FadeScreen.cpp">

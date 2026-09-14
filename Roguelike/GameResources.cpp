@@ -1,5 +1,6 @@
 ﻿#include "GameResources.h"
 #include "Item.h"
+#include "Prop.h"
 #include "ItemCatalogLoader.h"
 #include "GameSettings.h"
 #include "WeaponCatalog.h"
@@ -249,6 +250,22 @@ namespace RoguelikeGame
         catch (const std::exception& exception)
         {
             LOG_ERROR(std::string("Prop catalog is not loaded: ") + exception.what());
+            return;
+        }
+
+        for (const PropDefinition& prop : props)
+        {
+            if (prop.HasFrame())
+            {
+                XYZEngine::ResourceSystem::Instance()->LoadTexturePart(PropTextureName(prop.id, false), prop.texturePath,
+                                                                       prop.frame, false);
+            }
+
+            if (prop.HasSpentFrame())
+            {
+                XYZEngine::ResourceSystem::Instance()->LoadTexturePart(PropTextureName(prop.id, true), prop.texturePath,
+                                                                       prop.spentFrame, false);
+            }
         }
     }
 

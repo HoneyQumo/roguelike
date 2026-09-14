@@ -2,7 +2,6 @@
 #include "HealthComponent.h"
 #include <ColliderComponent.h>
 #include <GameObject.h>
-#include <RectangleRendererComponent.h>
 #include <TransformComponent.h>
 #include <LoggerRegistry.h>
 
@@ -14,7 +13,6 @@ namespace RoguelikeGame
     {
         health = gameObject->GetComponent<HealthComponent>();
         collider = gameObject->GetComponent<XYZEngine::ColliderComponent>();
-        renderer = gameObject->GetComponent<XYZEngine::RectangleRendererComponent>();
 
         if (health == nullptr)
         {
@@ -48,19 +46,9 @@ namespace RoguelikeGame
             collider->SetTrigger(true);
         }
 
-        if (renderer != nullptr)
-        {
-            renderer->SetColor(brokenColor);
-        }
-
         LOG_INFO(gameObject->GetName() + " is broken");
 
         brokenEvent.Invoke(gameObject->GetTransform()->GetWorldPosition());
-    }
-
-    void DestructibleComponent::SetBrokenColor(const sf::Color& newBrokenColor)
-    {
-        brokenColor = newBrokenColor;
     }
 
     bool DestructibleComponent::IsBroken() const

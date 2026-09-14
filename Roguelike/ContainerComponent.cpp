@@ -3,7 +3,6 @@
 #include "InventoryComponent.h"
 #include <GameObject.h>
 #include <LoggerRegistry.h>
-#include <RectangleRendererComponent.h>
 #include <TransformComponent.h>
 
 namespace RoguelikeGame
@@ -12,7 +11,6 @@ namespace RoguelikeGame
 
     void ContainerComponent::Start()
     {
-        renderer = gameObject->GetComponent<XYZEngine::RectangleRendererComponent>();
     }
 
     void ContainerComponent::Update(float deltaTime)
@@ -37,11 +35,6 @@ namespace RoguelikeGame
         {
             keyName = keyItem;
         }
-    }
-
-    void ContainerComponent::SetOpenedColor(const sf::Color& newOpenedColor)
-    {
-        openedColor = newOpenedColor;
     }
 
     void ContainerComponent::SetReach(XYZEngine::ColliderComponent* reach)
@@ -124,11 +117,6 @@ namespace RoguelikeGame
         }
 
         isOpen = true;
-
-        if (renderer != nullptr)
-        {
-            renderer->SetColor(openedColor);
-        }
 
         LOG_INFO(actor->GetName() + " opens " + gameObject->GetName());
 

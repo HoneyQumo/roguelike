@@ -243,3 +243,38 @@ TEST(LevelLoaderTests, EntranceWorksAsStartPoint)
 
 	EXPECT_EQ(level.tiles[0][1], TileType::Entrance);
 }
+
+TEST(LevelLoaderTests, DoorInTheLegendBecomesADoorTile)
+{
+	std::istringstream input(
+		"[legend]\n"
+		"# Wall\n"
+		". Floor\n"
+		"+ Door:door_exit\n"
+		"[map]\n"
+		"#####\n"
+		"#.+.#\n"
+		"#####\n");
+	RoguelikeGame::LevelData level = RoguelikeGame::LevelLoader::Parse(input, "doors");
+
+	ASSERT_EQ(level.doors.size(), 1u);
+	EXPECT_EQ(level.doors[0].doorId, "door_exit");
+	EXPECT_EQ(level.doors[0].column, 2);
+	EXPECT_EQ(level.doors[0].row, 1);
+	EXPECT_EQ(level.tiles[1][2], RoguelikeGame::TileType::Door);
+}
+
+TEST(LevelLoaderTests, DoorWithoutAnIdIsRefused)
+{
+	std::istringstream input(
+		"[legend]\n"
+		"# Wall\n"
+		". Floor\n"
+		"+ Door:\n"
+		"[map]\n"
+		"#####\n"
+		"#.+.#\n"
+		"#####\n");
+
+	EXPECT_THROW(RoguelikeGame::LevelLoader::Parse(input, "doors"), std::runtime_error);
+}

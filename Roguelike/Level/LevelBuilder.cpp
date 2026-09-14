@@ -13,6 +13,8 @@
 #include "LevelExit.h"
 #include "LevelExitComponent.h"
 #include "Wall.h"
+#include "Door.h"
+#include "DoorComponent.h"
 #include <GameWorld.h>
 #include <RectangleRendererComponent.h>
 #include <VertexArrayRendererComponent.h>
@@ -128,12 +130,14 @@ namespace RoguelikeGame
 
         int itemsCount = BuildItems(levelData, items, level);
         int propsCount = BuildProps(levelData, props, items, level);
+        int doorsCount = BuildDoors(levelData, items, level);
 
         LOG_INFO("Level built: tiles " + std::to_string(tilesCount)
             + ", walls " + std::to_string(wallsCount)
             + ", enemies " + std::to_string(enemiesCount)
             + ", items " + std::to_string(itemsCount)
-            + ", props " + std::to_string(propsCount));
+            + ", props " + std::to_string(propsCount)
+            + ", doors " + std::to_string(doorsCount));
 
         return level;
     }
@@ -211,6 +215,26 @@ namespace RoguelikeGame
         }
 
         return itemsCount;
+    }
+
+    int LevelBuilder::BuildDoors(const LevelData& levelData, const ItemCatalog& items, Level& level)
+    {
+        std::vector<DoorComponent*> doors;
+
+        for (const DoorPlacement& placement : levelData.doors)
+        {
+            auto position = TileToWorldPosition(placement.column, placement.row, levelData.height);
+
+            XYZEngine::GameObject* gameObject = CreateDoor(placement.doorId, position, items);
+            if (level.Add(gameObject))
+            {
+                doors.push_back(gameObject->GetComponent<DoorComponent>());
+            }
+        }
+
+        LinkDoors(doors);
+
+        return static_cast<int>(doors.size());
     }
 
     int LevelBuilder::BuildProps(const LevelData& levelData, const PropCatalog& props, const ItemCatalog& items, Level& level)

@@ -83,6 +83,12 @@ namespace RoguelikeGame
             moved.patrols.push_back({to.column, to.row, point.routeId, point.order, point.isWatch});
         }
 
+        for (const DoorPlacement& door : room.doors)
+        {
+            Placement to = Move({door.column, door.row}, width, height, turns, isMirrored);
+            moved.doors.push_back({to.column, to.row, door.doorId});
+        }
+
         return moved;
     }
 }

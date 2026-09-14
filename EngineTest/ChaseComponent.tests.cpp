@@ -7,11 +7,18 @@
 #include <AimRotationComponent.h>
 #include <GameWorld.h>
 #include <MovementComponent.h>
+#include "DoorComponent.h"
 #include "EnemyAttackComponent.h"
+#include "InventoryComponent.h"
+#include <BoxColliderComponent.h>
 #include <sstream>
 
 using namespace XYZEngine;
 using RoguelikeGame::ChaseComponent;
+using RoguelikeGame::DoorComponent;
+using RoguelikeGame::InventoryComponent;
+using RoguelikeGame::ItemDefinition;
+using RoguelikeGame::ItemEffectKind;
 using RoguelikeGame::LevelData;
 using RoguelikeGame::LevelGrid;
 using RoguelikeGame::LevelLoader;
@@ -27,6 +34,16 @@ namespace
 		"#...#.......#\n"
 		"#############\n";
 
+	const std::string DOORWAY =
+		"[legend]\n"
+		"# Wall\n"
+		". Floor\n"
+		"+ Door:door_exit\n"
+		"[map]\n"
+		"#######\n"
+		"#..+..#\n"
+		"#######\n";
+
 	constexpr float SEARCH_TIME = 4.f;
 	constexpr float STEP = 0.05f;
 	constexpr float LOOK_TIME = 1.f;
@@ -37,8 +54,12 @@ namespace
 		void SetUp() override
 		{
 			GameWorld::Instance()->Clear();
+			LoadMap(ROOM);
+		}
 
-			std::istringstream input(ROOM);
+		void LoadMap(const std::string& map)
+		{
+			std::istringstream input(map);
 			LevelData level = LevelLoader::Parse(input, "chase");
 			LevelGrid::SetCurrent(LevelGrid::Build(level));
 			PathService::Reset();
@@ -85,6 +106,40 @@ namespace
 
 			return chase;
 		}
+
+		GameObject* CreateHeroWithKey(int column, int row)
+		{
+			GameObject* hero = CreateHero(column, row);
+			hero->AddComponent<InventoryComponent>()->SetCapacity(4);
+			hero->GetComponent<InventoryComponent>()->TryAdd(rustyKey);
+
+			return hero;
+		}
+
+		DoorComponent* CreateDoor(int column, int row)
+		{
+			GameObject* door = GameWorld::Instance()->CreateGameObject("Door");
+			door->GetTransform()->SetWorldPosition(At(column, row));
+			door->AddComponent<BoxColliderComponent>()->SetSize(RoguelikeGame::TILE_SIZE, RoguelikeGame::TILE_SIZE);
+
+			auto component = door->AddComponent<DoorComponent>();
+			component->SetDoorId("door_exit");
+
+			return component;
+		}
+
+		ItemDefinition MakeRustyKey() const
+		{
+			ItemDefinition item;
+			item.id = "key_rusty";
+			item.name = "key_rusty";
+			item.effect.kind = ItemEffectKind::Unlock;
+			item.effect.target = "door_exit";
+
+			return item;
+		}
+
+		ItemDefinition rustyKey = MakeRustyKey();
 
 		void Run(float seconds)
 		{
@@ -377,4 +432,50 @@ TEST_F(ChaseComponentTest, TargetRunningBackFlipsTheRememberedWay)
 	Run(0.2f);
 
 	EXPECT_LT(chase->GetEscapeDirection().x, 0.f);
+}
+
+TEST_F(ChaseComponentTest, TargetBehindAClosedDoorIsNotNoticed)
+{
+	LoadMap(DOORWAY);
+	CreateDoor(3, 1);
+	CreateHero(5, 1);
+	ChaseComponent* chase = CreateEnemy(1, 1);
+
+	Run(0.4f);
+
+	EXPECT_FALSE(chase->IsChasing());
+	EXPECT_FALSE(chase->IsEngaged());
+	EXPECT_FALSE(chase->CanSeeTarget());
+}
+
+TEST_F(ChaseComponentTest, OpenedDoorLetsTheEnemySeeTheTarget)
+{
+	LoadMap(DOORWAY);
+	DoorComponent* door = CreateDoor(3, 1);
+	GameObject* hero = CreateHeroWithKey(5, 1);
+	ChaseComponent* chase = CreateEnemy(1, 1);
+
+	Run(0.4f);
+	ASSERT_FALSE(chase->IsChasing());
+
+	ASSERT_TRUE(door->TryOpenFor(hero));
+	Run(0.2f);
+
+	EXPECT_TRUE(chase->IsChasing());
+	EXPECT_TRUE(chase->CanSeeTarget());
+}
+
+TEST_F(ChaseComponentTest, ClosedDoorHidesTheTargetThatWasInSight)
+{
+	LoadMap(DOORWAY);
+	GameObject* hero = CreateHero(2, 1);
+	ChaseComponent* chase = CreateEnemy(1, 1);
+	Run(0.2f);
+	ASSERT_TRUE(chase->CanSeeTarget());
+
+	hero->GetTransform()->SetWorldPosition(At(5, 1));
+	CreateDoor(3, 1);
+	Run(0.2f);
+
+	EXPECT_FALSE(chase->CanSeeTarget());
 }

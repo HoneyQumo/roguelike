@@ -81,6 +81,10 @@ namespace RoguelikeGame
 
         XYZEngine::ResourceSystem::Instance()->LoadTexture(FX_ATLAS_TEXTURE, FX_ATLAS_FILE, false);
         XYZEngine::ResourceSystem::Instance()->LoadTexture(TILES_TEXTURE, TILES_ATLAS_FILE, false);
+        XYZEngine::ResourceSystem::Instance()->LoadTexturePart(DOOR_LOCKED_TEXTURE, DOORS_ATLAS_FILE,
+                                                              {0, 0, static_cast<int>(TILE_SIZE), static_cast<int>(TILE_SIZE)}, false);
+        XYZEngine::ResourceSystem::Instance()->LoadTexturePart(DOOR_OPEN_TEXTURE, DOORS_ATLAS_FILE,
+                                                              {static_cast<int>(TILE_SIZE), 0, static_cast<int>(TILE_SIZE), static_cast<int>(TILE_SIZE)}, false);
 
         LoadFxStrip(MUZZLE_FLASH_TEXTURE, FX_MUZZLE_FLASH);
         LoadFxStrip(BLOOD_POOL_TEXTURE, FX_BLOOD_POOL);

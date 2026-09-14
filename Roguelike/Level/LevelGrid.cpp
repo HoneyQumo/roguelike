@@ -19,6 +19,11 @@ namespace RoguelikeGame
                 return LevelCell::Wall;
             }
 
+            if (tile == TileType::Door)
+            {
+                return LevelCell::Door;
+            }
+
             return tile == TileType::Empty ? LevelCell::Gap : LevelCell::Floor;
         }
     }
@@ -77,7 +82,7 @@ namespace RoguelikeGame
         }
 
         std::size_t index = static_cast<std::size_t>(row) * current.width + column;
-        if (current.cells[index] == LevelCell::Blocked)
+        if (current.cells[index] == LevelCell::Blocked || current.cells[index] == LevelCell::Door)
         {
             current.cells[index] = LevelCell::Floor;
         }
@@ -127,7 +132,7 @@ namespace RoguelikeGame
     {
         LevelCell cell = GetCell(column, row);
 
-        return cell == LevelCell::Wall || cell == LevelCell::Outside;
+        return cell == LevelCell::Wall || cell == LevelCell::Outside || cell == LevelCell::Door;
     }
 
     XYZEngine::Vector2Df LevelGrid::ToWorld(int column, int row) const

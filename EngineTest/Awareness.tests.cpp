@@ -9,15 +9,32 @@ using RoguelikeGame::GainFor;
 using RoguelikeGame::Nearness;
 using RoguelikeGame::NextAwareness;
 using RoguelikeGame::StateOf;
+using RoguelikeGame::VisionBand;
 
 namespace
 {
-	AwarenessSense Seen(float distance, float maxDistance = 400.f)
+	AwarenessSense Beside(float distance, float maxDistance = 400.f)
 	{
 		AwarenessSense sense;
-		sense.isVisible = true;
+		sense.band = VisionBand::Periphery;
 		sense.distance = distance;
 		sense.maxDistance = maxDistance;
+
+		return sense;
+	}
+
+	AwarenessSense Behind(float distance, float maxDistance = 96.f)
+	{
+		AwarenessSense sense = Beside(distance, maxDistance);
+		sense.band = VisionBand::Back;
+
+		return sense;
+	}
+
+	AwarenessSense InFront()
+	{
+		AwarenessSense sense;
+		sense.band = VisionBand::Focus;
 
 		return sense;
 	}
@@ -48,25 +65,25 @@ TEST(AwarenessTest, WatchingLongEnoughGoesThroughAlertToCombat)
 {
 	AwarenessRates rates;
 
-	EXPECT_EQ(StateOf(Watch(rates, Seen(400.f), 0.5f)), AwarenessState::Calm);
-	EXPECT_EQ(StateOf(Watch(rates, Seen(400.f), 1.2f)), AwarenessState::Alerted);
-	EXPECT_EQ(StateOf(Watch(rates, Seen(400.f), 2.2f)), AwarenessState::Provoked);
+	EXPECT_EQ(StateOf(Watch(rates, Beside(400.f), 0.5f)), AwarenessState::Calm);
+	EXPECT_EQ(StateOf(Watch(rates, Beside(400.f), 1.2f)), AwarenessState::Alerted);
+	EXPECT_EQ(StateOf(Watch(rates, Beside(400.f), 2.2f)), AwarenessState::Provoked);
 }
 
 TEST(AwarenessTest, CloserTargetIsNoticedSooner)
 {
 	AwarenessRates rates;
 
-	EXPECT_GT(Watch(rates, Seen(0.f), 1.f), Watch(rates, Seen(400.f), 1.f));
+	EXPECT_GT(Watch(rates, Beside(0.f), 1.f), Watch(rates, Beside(400.f), 1.f));
 }
 
 TEST(AwarenessTest, MovingTargetIsNoticedSooner)
 {
 	AwarenessRates rates;
-	AwarenessSense running = Seen(200.f);
+	AwarenessSense running = Beside(200.f);
 	running.isTargetMoving = true;
 
-	EXPECT_GT(Watch(rates, running, 1.f), Watch(rates, Seen(200.f), 1.f));
+	EXPECT_GT(Watch(rates, running, 1.f), Watch(rates, Beside(200.f), 1.f));
 }
 
 TEST(AwarenessTest, QuickEnemyNoticesSoonerThanSlowOne)
@@ -76,13 +93,13 @@ TEST(AwarenessTest, QuickEnemyNoticesSoonerThanSlowOne)
 	AwarenessRates quick;
 	quick.gain = 1.8f;
 
-	EXPECT_GT(Watch(quick, Seen(200.f), 1.f), Watch(slow, Seen(200.f), 1.f));
+	EXPECT_GT(Watch(quick, Beside(200.f), 1.f), Watch(slow, Beside(200.f), 1.f));
 }
 
 TEST(AwarenessTest, OutOfSightTheLevelFallsBack)
 {
 	AwarenessRates rates;
-	float level = Watch(rates, Seen(0.f), 2.f);
+	float level = Watch(rates, Beside(0.f), 2.f);
 	ASSERT_GT(level, 0.f);
 
 	level = NextAwareness(level, rates, Hidden(), 1.f);
@@ -101,7 +118,7 @@ TEST(AwarenessTest, LevelNeverClimbsAboveCombat)
 {
 	AwarenessRates rates;
 
-	EXPECT_FLOAT_EQ(NextAwareness(0.f, rates, Seen(0.f), 100.f), RoguelikeGame::AWARENESS_PROVOKE_AT);
+	EXPECT_FLOAT_EQ(NextAwareness(0.f, rates, Beside(0.f), 100.f), RoguelikeGame::AWARENESS_PROVOKE_AT);
 }
 
 TEST(AwarenessTest, EnemyThatAlreadySearchesDoesNotCoolDown)
@@ -117,7 +134,7 @@ TEST(AwarenessTest, NoTimeMeansNoChange)
 {
 	AwarenessRates rates;
 
-	EXPECT_FLOAT_EQ(NextAwareness(0.5f, rates, Seen(0.f), 0.f), 0.5f);
+	EXPECT_FLOAT_EQ(NextAwareness(0.5f, rates, Beside(0.f), 0.f), 0.5f);
 }
 
 TEST(AwarenessTest, NearnessIsOneUpCloseAndNothingFarAway)
@@ -136,11 +153,11 @@ TEST(AwarenessTest, WithoutARadiusNothingIsNear)
 TEST(AwarenessTest, GainGrowsWithBothReasons)
 {
 	AwarenessRates rates;
-	AwarenessSense close = Seen(0.f);
-	AwarenessSense closeAndRunning = Seen(0.f);
+	AwarenessSense close = Beside(0.f);
+	AwarenessSense closeAndRunning = Beside(0.f);
 	closeAndRunning.isTargetMoving = true;
 
-	EXPECT_GT(GainFor(rates, close), GainFor(rates, Seen(400.f)));
+	EXPECT_GT(GainFor(rates, close), GainFor(rates, Beside(400.f)));
 	EXPECT_GT(GainFor(rates, closeAndRunning), GainFor(rates, close));
 }
 
@@ -150,4 +167,33 @@ TEST(AwarenessTest, PartShowsHowFullTheScaleIs)
 	EXPECT_FLOAT_EQ(AwarenessPart(RoguelikeGame::AWARENESS_PROVOKE_AT), 1.f);
 	EXPECT_FLOAT_EQ(AwarenessPart(RoguelikeGame::AWARENESS_PROVOKE_AT * 2.f), 1.f);
 	EXPECT_GT(AwarenessPart(RoguelikeGame::AWARENESS_ALERT_AT), 0.f);
+}
+
+TEST(AwarenessTest, TargetInFrontIsSpottedAtOnce)
+{
+	AwarenessRates rates;
+
+	EXPECT_FLOAT_EQ(NextAwareness(0.f, rates, InFront(), 0.01f), RoguelikeGame::AWARENESS_PROVOKE_AT);
+	EXPECT_EQ(StateOf(NextAwareness(0.f, rates, InFront(), 0.01f)), AwarenessState::Provoked);
+}
+
+TEST(AwarenessTest, BehindTheBackIsNoticedSlowerThanFromTheSide)
+{
+	AwarenessRates rates;
+
+	EXPECT_LT(GainFor(rates, Behind(0.f)), GainFor(rates, Beside(0.f)));
+}
+
+TEST(AwarenessTest, NobodySeenMeansNoGainAtAll)
+{
+	AwarenessRates rates;
+
+	EXPECT_FLOAT_EQ(GainFor(rates, Hidden()), 0.f);
+}
+
+TEST(AwarenessTest, BehindTheBackStillFillsTheScale)
+{
+	AwarenessRates rates;
+
+	EXPECT_EQ(StateOf(Watch(rates, Behind(10.f), 3.f)), AwarenessState::Provoked);
 }

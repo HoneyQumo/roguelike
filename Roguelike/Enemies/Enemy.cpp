@@ -58,6 +58,7 @@ namespace RoguelikeGame
             chase->SetSearchLook(config.searchLookTime);
             chase->SetAlertRadiusScale(config.alertRadiusScale);
             chase->SetAwareness(config.awarenessGain, config.awarenessDecay);
+            chase->SetPeripheryHalfAngle(config.peripheryHalfAngle);
 
             object->AddComponent<AwarenessBarComponent>();
 

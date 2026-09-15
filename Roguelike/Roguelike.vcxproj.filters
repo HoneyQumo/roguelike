@@ -168,6 +168,18 @@
     <ClCompile Include="Level\DoorHinge.cpp">
       <Filter>Level</Filter>
     </ClCompile>
+    <ClInclude Include="Level\LevelZones.h">
+      <Filter>Level</Filter>
+    </ClInclude>
+    <ClCompile Include="Level\LevelZones.cpp">
+      <Filter>Level</Filter>
+    </ClCompile>
+    <ClInclude Include="Level\RoomWakeComponent.h">
+      <Filter>Level</Filter>
+    </ClInclude>
+    <ClCompile Include="Level\RoomWakeComponent.cpp">
+      <Filter>Level</Filter>
+    </ClCompile>
     <ClInclude Include="Items\DoorRules.h">
       <Filter>Items</Filter>
     </ClInclude>

@@ -293,6 +293,7 @@ namespace RoguelikeGame
 
     constexpr auto PLAYER_OBJECT_NAME = "Player";
     constexpr auto DOOR_OBJECT_PREFIX = "Door_";
+    constexpr auto ROOMS_OBJECT_NAME = "Rooms";
     constexpr auto PARTICLES_OBJECT_NAME = "Particles";
     constexpr auto UI_ROOT_OBJECT_NAME = "Ui";
     constexpr auto LEVEL_EXIT_OBJECT_NAME = "LevelExit";

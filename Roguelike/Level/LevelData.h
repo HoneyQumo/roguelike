@@ -59,6 +59,13 @@ namespace RoguelikeGame
         std::string doorId;
     };
 
+    struct ZonePlacement
+    {
+        int column = 0;
+        int row = 0;
+        std::string zoneId;
+    };
+
     struct PatrolPoint
     {
         int column = 0;
@@ -97,6 +104,7 @@ namespace RoguelikeGame
         std::vector<PropPlacement> props;
         std::vector<PatrolPoint> patrols;
         std::vector<DoorPlacement> doors;
+        std::vector<ZonePlacement> zones;
         LevelInfo info;
     };
 

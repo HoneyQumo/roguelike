@@ -156,6 +156,20 @@ namespace RoguelikeGame
                 act.patrols.push_back({room.column + point.column, room.row + point.row,
                     room.id + ":" + point.routeId, point.order, point.isWatch});
             }
+
+            std::string place = room.id + "@" + std::to_string(room.column) + ";" + std::to_string(room.row);
+
+            if (room.layout.zones.empty())
+            {
+                act.zones.push_back({room.column, room.row, place});
+                act.zones.push_back({room.Right(), room.Bottom(), place});
+                continue;
+            }
+
+            for (const ZonePlacement& zone : room.layout.zones)
+            {
+                act.zones.push_back({room.column + zone.column, room.row + zone.row, place + ":" + zone.zoneId});
+            }
         }
 
         LOG_INFO("Act assembled: " + std::to_string(placed.size()) + " rooms, size "

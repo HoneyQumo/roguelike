@@ -15,6 +15,7 @@
 #include "Wall.h"
 #include "Door.h"
 #include "DoorComponent.h"
+#include "RoomWakeComponent.h"
 #include <GameWorld.h>
 #include <RectangleRendererComponent.h>
 #include <VertexArrayRendererComponent.h>
@@ -40,6 +41,9 @@ namespace RoguelikeGame
         int tilesCount = BuildTiles(levelData, level);
         int wallsCount = 0;
         int enemiesCount = 0;
+
+        std::vector<LevelZone> zones = BuildZones(levelData);
+        RoomWakeComponent* rooms = CreateRoomWake(zones, level);
 
         for (int row = 0; row < levelData.height; row++)
         {
@@ -99,14 +103,18 @@ namespace RoguelikeGame
                         }
                         else
                         {
-                            level.Add(CreateBossObject(levelData, position, level));
+                            XYZEngine::GameObject* bossObject = CreateBossObject(levelData, position, level);
+                            level.Add(bossObject);
+                            PutToSleep(rooms, zones, column, row, bossObject);
                             enemiesCount++;
                         }
                         break;
                     default:
                         if (const EnemyConfig* config = FindEnemyConfig(tile))
                         {
-                            level.Add(CreateEnemy(*config, position));
+                            XYZEngine::GameObject* enemyObject = CreateEnemy(*config, position);
+                            level.Add(enemyObject);
+                            PutToSleep(rooms, zones, column, row, enemyObject);
                             enemiesCount++;
                         }
                         break;
@@ -137,7 +145,8 @@ namespace RoguelikeGame
             + ", enemies " + std::to_string(enemiesCount)
             + ", items " + std::to_string(itemsCount)
             + ", props " + std::to_string(propsCount)
-            + ", doors " + std::to_string(doorsCount));
+            + ", doors " + std::to_string(doorsCount)
+            + ", asleep " + std::to_string(rooms != nullptr ? rooms->GetSleepingCount() : 0));
 
         return level;
     }
@@ -215,6 +224,39 @@ namespace RoguelikeGame
         }
 
         return itemsCount;
+    }
+
+    RoomWakeComponent* LevelBuilder::CreateRoomWake(const std::vector<LevelZone>& zones, Level& level)
+    {
+        if (zones.empty())
+        {
+            return nullptr;
+        }
+
+        auto gameObject = XYZEngine::GameWorld::Instance()->CreateGameObject(ROOMS_OBJECT_NAME);
+        level.Add(gameObject);
+
+        auto rooms = gameObject->AddComponent<RoomWakeComponent>();
+        rooms->SetTargetName(PLAYER_OBJECT_NAME);
+        rooms->SetZones(zones);
+        rooms->SetAhead(ROOM_WAKE_AHEAD);
+
+        return rooms;
+    }
+
+    void LevelBuilder::PutToSleep(RoomWakeComponent* rooms, const std::vector<LevelZone>& zones, int column, int row,
+        XYZEngine::GameObject* enemy)
+    {
+        if (rooms == nullptr)
+        {
+            return;
+        }
+
+        const LevelZone* zone = FindZoneAt(zones, column, row);
+        if (zone != nullptr)
+        {
+            rooms->AddSleeper(zone->id, enemy);
+        }
     }
 
     int LevelBuilder::BuildDoors(const LevelData& levelData, const ItemCatalog& items, Level& level)

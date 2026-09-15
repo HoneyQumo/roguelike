@@ -85,6 +85,11 @@ namespace XYZEngine
 
 	void GameObject::Update(float deltaTime)
 	{
+		if (!isActive)
+		{
+			return;
+		}
+
 		for (int i = 0; i < components.size(); i++)
 		{
 			if (components[i]->isDestroyed || components[i]->isStarted || !components[i]->isEnabled)
@@ -106,6 +111,11 @@ namespace XYZEngine
 	}
 	void GameObject::Render()
 	{
+		if (!isActive)
+		{
+			return;
+		}
+
 		for (int i = 0; i < components.size(); i++)
 		{
 			if (!components[i]->isDestroyed && components[i]->isEnabled)
@@ -113,6 +123,25 @@ namespace XYZEngine
 				components[i]->Render();
 			}
 		}
+	}
+
+	void GameObject::SetActive(bool newIsActive)
+	{
+		if (isActive == newIsActive)
+		{
+			return;
+		}
+
+		isActive = newIsActive;
+
+		for (GameObject* child : children)
+		{
+			child->SetActive(newIsActive);
+		}
+	}
+	bool GameObject::IsActive() const
+	{
+		return isActive;
 	}
 
 	void GameObject::SetRenderLayer(int newRenderLayer)

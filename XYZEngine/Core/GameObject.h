@@ -27,6 +27,9 @@ namespace XYZEngine
 		void SetRenderLayer(int newRenderLayer);
 		int GetRenderLayer() const;
 
+		void SetActive(bool newIsActive);
+		bool IsActive() const;
+
 		void Update(float deltaTime);
 		void Render();
 
@@ -132,6 +135,7 @@ namespace XYZEngine
 		std::string name;
 		GameObjectId id = NO_GAME_OBJECT;
 		int renderLayer = 0;
+		bool isActive = true;
 		TransformComponent* transform = nullptr;
 
 		std::vector<GameObject*> children = {};

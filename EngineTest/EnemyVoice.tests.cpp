@@ -4,7 +4,7 @@
 
 using RoguelikeGame::AwarenessState;
 using RoguelikeGame::ENEMIES;
-using RoguelikeGame::ShouldSpeakOnSpotting;
+using RoguelikeGame::IsSpottedNow;
 using RoguelikeGame::VoiceFilePath;
 using RoguelikeGame::VoiceKey;
 
@@ -28,25 +28,25 @@ TEST(EnemyVoiceTest, EveryLineHasItsOwnFile)
 
 TEST(EnemyVoiceTest, EnemySpeaksTheMomentItSpotsTheTarget)
 {
-	EXPECT_TRUE(ShouldSpeakOnSpotting(AwarenessState::Calm, AwarenessState::Provoked));
-	EXPECT_TRUE(ShouldSpeakOnSpotting(AwarenessState::Alerted, AwarenessState::Provoked));
+	EXPECT_TRUE(IsSpottedNow(AwarenessState::Calm, AwarenessState::Provoked));
+	EXPECT_TRUE(IsSpottedNow(AwarenessState::Alerted, AwarenessState::Provoked));
 }
 
 TEST(EnemyVoiceTest, EnemyKeepsQuietWhileItOnlySuspects)
 {
-	EXPECT_FALSE(ShouldSpeakOnSpotting(AwarenessState::Calm, AwarenessState::Alerted));
-	EXPECT_FALSE(ShouldSpeakOnSpotting(AwarenessState::Calm, AwarenessState::Calm));
+	EXPECT_FALSE(IsSpottedNow(AwarenessState::Calm, AwarenessState::Alerted));
+	EXPECT_FALSE(IsSpottedNow(AwarenessState::Calm, AwarenessState::Calm));
 }
 
 TEST(EnemyVoiceTest, EnemyDoesNotRepeatItselfWhileChasing)
 {
-	EXPECT_FALSE(ShouldSpeakOnSpotting(AwarenessState::Provoked, AwarenessState::Provoked));
+	EXPECT_FALSE(IsSpottedNow(AwarenessState::Provoked, AwarenessState::Provoked));
 }
 
 TEST(EnemyVoiceTest, LosingAndSpottingAgainSpeaksAgain)
 {
-	EXPECT_FALSE(ShouldSpeakOnSpotting(AwarenessState::Provoked, AwarenessState::Alerted));
-	EXPECT_TRUE(ShouldSpeakOnSpotting(AwarenessState::Alerted, AwarenessState::Provoked));
+	EXPECT_FALSE(IsSpottedNow(AwarenessState::Provoked, AwarenessState::Alerted));
+	EXPECT_TRUE(IsSpottedNow(AwarenessState::Alerted, AwarenessState::Provoked));
 }
 
 TEST(EnemyVoiceTest, EveryEnemyInTheCatalogHasAVoice)

@@ -48,6 +48,12 @@ namespace
 		"#..+..#\n"
 		"#######\n";
 
+	const std::string CORRIDOR =
+		"[map]\n"
+		"###############\n"
+		"#.............#\n"
+		"###############\n";
+
 	constexpr float SEARCH_TIME = 4.f;
 	constexpr float NOTICES_AT_ONCE = 100.f;
 	constexpr float STEP = 0.05f;
@@ -90,11 +96,11 @@ namespace
 			return hero;
 		}
 
-		ChaseComponent* CreateEnemy(int column, int row)
+		ChaseComponent* CreateEnemy(int column, int row, float degrees = 0.f)
 		{
 			GameObject* enemy = GameWorld::Instance()->CreateGameObject("Watcher");
 			enemy->GetTransform()->SetWorldPosition(At(column, row));
-			enemy->GetTransform()->SetWorldRotation(0.f);
+			enemy->GetTransform()->SetWorldRotation(degrees);
 
 			enemy->AddComponent<MovementComponent>()->SetSpeed(120.f);
 			enemy->AddComponent<AimRotationComponent>();
@@ -109,6 +115,16 @@ namespace
 			chase->SetSearchTime(SEARCH_TIME);
 			chase->SetLook(LOOK_TIME, 40.f);
 			chase->SetAwareness(NOTICES_AT_ONCE, NOTICES_AT_ONCE);
+
+			return chase;
+		}
+
+		ChaseComponent* CreateGuard(int column, int row, float degrees, float shoutRadius)
+		{
+			ChaseComponent* chase = CreateEnemy(column, row, degrees);
+			chase->SetShoutRadius(shoutRadius);
+			chase->GetGameObject()->AddComponent<RoguelikeGame::FactionComponent>()
+				->SetFaction(RoguelikeGame::Faction::Enemy);
 
 			return chase;
 		}
@@ -754,4 +770,72 @@ TEST_F(ChaseComponentTest, TheSameNoiseInTheOpenIsHeard)
 	Run(0.1f);
 
 	EXPECT_TRUE(chase->IsEngaged());
+}
+
+TEST_F(ChaseComponentTest, SpottingTheTargetCallsTheNeighbour)
+{
+	LoadMap(CORRIDOR);
+	CreateHero(1, 1);
+	CreateGuard(3, 1, 180.f, RoguelikeGame::SHOUT_RADIUS);
+	ChaseComponent* neighbour = CreateGuard(8, 1, 0.f, 0.f);
+	ChaseComponent* outOfRange = CreateGuard(13, 1, 0.f, 0.f);
+
+	Run(0.2f);
+
+	EXPECT_TRUE(neighbour->IsAlerted());
+	EXPECT_FALSE(outOfRange->IsAlerted());
+}
+
+TEST_F(ChaseComponentTest, ASilentEnemyCallsNobody)
+{
+	LoadMap(CORRIDOR);
+	CreateHero(1, 1);
+	CreateGuard(3, 1, 180.f, 0.f);
+	ChaseComponent* neighbour = CreateGuard(8, 1, 0.f, 0.f);
+
+	Run(0.2f);
+
+	EXPECT_FALSE(neighbour->IsAlerted());
+}
+
+TEST_F(ChaseComponentTest, TheOneWhoOnlyHeardDoesNotCallFurther)
+{
+	LoadMap(CORRIDOR);
+	CreateHero(1, 1);
+	CreateGuard(3, 1, 180.f, RoguelikeGame::SHOUT_RADIUS);
+	ChaseComponent* neighbour = CreateGuard(8, 1, 0.f, RoguelikeGame::SHOUT_RADIUS);
+	ChaseComponent* outOfRange = CreateGuard(13, 1, 0.f, 0.f);
+
+	Run(0.2f);
+
+	EXPECT_TRUE(neighbour->IsAlerted());
+	EXPECT_FALSE(outOfRange->IsAlerted());
+}
+
+TEST_F(ChaseComponentTest, TheCallerItselfKeepsChasingInsteadOfInvestigating)
+{
+	LoadMap(CORRIDOR);
+	CreateHero(1, 1);
+	ChaseComponent* caller = CreateGuard(3, 1, 180.f, RoguelikeGame::SHOUT_RADIUS);
+
+	Run(0.2f);
+
+	EXPECT_TRUE(caller->IsChasing());
+}
+
+TEST_F(ChaseComponentTest, ACallSkipsTheOneWhoMadeIt)
+{
+	LoadMap(CORRIDOR);
+	ChaseComponent* caller = CreateGuard(3, 1, 0.f, 0.f);
+	ChaseComponent* neighbour = CreateGuard(8, 1, 0.f, 0.f);
+
+	RoguelikeGame::Noise call;
+	call.position = At(3, 1);
+	call.radius = RoguelikeGame::SHOUT_RADIUS;
+	call.from = RoguelikeGame::Faction::Enemy;
+	call.kind = RoguelikeGame::NoiseKind::Call;
+	RoguelikeGame::RaiseNoise(call, caller->GetGameObject());
+
+	EXPECT_FALSE(caller->IsAlerted());
+	EXPECT_TRUE(neighbour->IsAlerted());
 }

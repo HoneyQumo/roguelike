@@ -9,7 +9,7 @@
 
 namespace RoguelikeGame
 {
-    void RaiseNoise(const Noise& noise)
+    void RaiseNoise(const Noise& noise, const XYZEngine::GameObject* except)
     {
         if (noise.radius <= 0.f)
         {
@@ -25,6 +25,11 @@ namespace RoguelikeGame
             }
 
             XYZEngine::GameObject* owner = listener->GetGameObject();
+            if (owner == except)
+            {
+                continue;
+            }
+
             XYZEngine::Vector2Df place = owner->GetTransform()->GetWorldPosition();
             int walls = LevelGrid::Current().CountWallsBetween(noise.position, place);
 

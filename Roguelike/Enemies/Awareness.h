@@ -98,6 +98,11 @@ namespace RoguelikeGame
         return level >= AWARENESS_ALERT_AT ? AwarenessState::Alerted : AwarenessState::Calm;
     }
 
+    constexpr bool IsSpottedNow(AwarenessState before, AwarenessState now)
+    {
+        return now == AwarenessState::Provoked && before != AwarenessState::Provoked;
+    }
+
     constexpr float AwarenessPart(float level)
     {
         return std::min(std::max(level / AWARENESS_PROVOKE_AT, 0.f), 1.f);

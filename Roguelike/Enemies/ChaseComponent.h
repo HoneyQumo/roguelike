@@ -55,6 +55,7 @@ namespace RoguelikeGame
 		void SetShoutRadius(float newRadius);
 		void SetForcedChase(bool newIsForced);
 		void Hear(const XYZEngine::Vector2Df& place);
+		void Provoke(const XYZEngine::Vector2Df& place);
 
 		bool IsChasing() const;
 		bool IsAlerted() const;

@@ -105,6 +105,7 @@
     <ClCompile Include="DoorHinge.tests.cpp" />
     <ClCompile Include="LevelZones.tests.cpp" />
     <ClCompile Include="ViewCulling.tests.cpp" />
+    <ClCompile Include="Settle.tests.cpp" />
     <ClCompile Include="RoomWake.tests.cpp" />
     <ClCompile Include="ActAssembler.tests.cpp" />
     <ClCompile Include="PathField.tests.cpp" />
@@ -165,6 +166,9 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\Roguelike\Level\RoomWakeComponent.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Roguelike\Characters\SettleComponent.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\Roguelike\Level\ActAssembler.cpp">

@@ -87,6 +87,12 @@
     <ClInclude Include="Characters\CharacterFactory.h">
       <Filter>Characters</Filter>
     </ClInclude>
+    <ClInclude Include="Characters\SettleComponent.h">
+      <Filter>Characters</Filter>
+    </ClInclude>
+    <ClCompile Include="Characters\SettleComponent.cpp">
+      <Filter>Characters</Filter>
+    </ClCompile>
     <ClCompile Include="Enemies\ChaseComponent.cpp">
       <Filter>Enemies</Filter>
     </ClCompile>

@@ -19,6 +19,7 @@
 #include "PatrolRoutes.h"
 #include "WeaponComponent.h"
 #include "MeleeWeaponComponent.h"
+#include "SettleComponent.h"
 #include <LoggerRegistry.h>
 
 namespace RoguelikeGame
@@ -142,9 +143,17 @@ namespace RoguelikeGame
             hitFlash->Flash();
         });
 
+        auto settle = gameObject->AddComponent<SettleComponent>();
+        settle->SetEnabled(false);
+        settle->SetReadyCheck([animation]()
+        {
+            return animation == nullptr
+                || (animation->GetCurrentAnimation() == XYZEngine::MovementAnimation::Death && animation->IsFinished());
+        });
+
         auto weaponComponent = gameObject->GetComponent<WeaponComponent>();
         const char* lootTable = config.lootTable;
-        health->SubscribeDeath([gameObject, animation, movement, chase, collider, aim, weaponComponent, meleeComponent, lootTable](const DeathInfo& death)
+        health->SubscribeDeath([gameObject, animation, movement, chase, collider, aim, weaponComponent, meleeComponent, lootTable, settle](const DeathInfo& death)
         {
             if (weaponComponent != nullptr)
             {
@@ -173,6 +182,8 @@ namespace RoguelikeGame
             {
                 DropLoot(lootTable, gameObject, death.position);
             }
+
+            settle->SetEnabled(true);
         });
 
         gameObject->SetRenderLayer(ENEMY_RENDER_LAYER);

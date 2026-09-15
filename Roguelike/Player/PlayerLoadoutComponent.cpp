@@ -270,7 +270,7 @@ namespace RoguelikeGame
         }
 
         const WeaponDefinition& definition = GetWeapon(id);
-        ShotProfile shot = MakeShotProfile(id, PLAYER_ATTACK_DAMAGE, PLAYER_PROJECTILE_SPEED, PLAYER_ATTACK_COOLDOWN);
+        ShotProfile shot = MakeWeaponShotProfile(id, PLAYER_ATTACK_DAMAGE, PLAYER_PROJECTILE_SPEED, PLAYER_ATTACK_COOLDOWN);
 
         rangedWeapon->CancelReload();
         ApplyWeaponDefinition(rangedWeapon, id, shot);

@@ -100,7 +100,7 @@ TEST(WeaponCatalogTests, ShotProfileForPlainWeaponIsUnscaled)
 	ShotProfile profile = MakeShotProfile(WeaponId::Ak47, 100.f, 800.f, 0.5f);
 
 	EXPECT_EQ(profile.pellets, 1);
-	EXPECT_FLOAT_EQ(profile.coneDegrees, 0.f);
+	EXPECT_FLOAT_EQ(profile.coneDegrees, SpreadOf(WeaponId::Ak47));
 	EXPECT_FLOAT_EQ(profile.damage, 100.f);
 	EXPECT_FLOAT_EQ(profile.speed, 800.f);
 	EXPECT_FLOAT_EQ(profile.cooldown, 0.5f);
@@ -210,4 +210,137 @@ TEST(WeaponCatalogTest, PlayerStartsWithMeleeOnly)
 	{
 		EXPECT_EQ(reserve.count, 0);
 	}
+}
+
+namespace
+{
+	float DamagePerSecond(WeaponId id)
+	{
+		const FireProfile* fire = FindFire(id);
+
+		return fire == nullptr ? 0.f : fire->damage / fire->cooldown;
+	}
+}
+
+TEST(WeaponFireTests, EveryFiringArmIsInTheFireTable)
+{
+	for (WeaponId id : ALL_WEAPONS)
+	{
+		if (IsMelee(id) || FindSpread(id) != nullptr || IsExplosive(id))
+		{
+			continue;
+		}
+
+		EXPECT_NE(FindFire(id), nullptr) << GetWeapon(id).id << " has no line in the fire table";
+	}
+}
+
+TEST(WeaponFireTests, TheAkHitsHarderThanTheM16AndSpraysWider)
+{
+	const FireProfile* ak = FindFire(WeaponId::Ak47);
+	const FireProfile* m16 = FindFire(WeaponId::M16);
+	ASSERT_NE(ak, nullptr);
+	ASSERT_NE(m16, nullptr);
+
+	EXPECT_GT(ak->damage, m16->damage);
+	EXPECT_GT(ak->spreadDegrees, m16->spreadDegrees);
+}
+
+TEST(WeaponFireTests, TheM16OutrunsTheAk)
+{
+	EXPECT_LT(FindFire(WeaponId::M16)->cooldown, FindFire(WeaponId::Ak47)->cooldown);
+}
+
+TEST(WeaponFireTests, TheSmgIsTheFastestAndTheWeakestPerShot)
+{
+	const FireProfile* smg = FindFire(WeaponId::SmgSuppressed);
+	ASSERT_NE(smg, nullptr);
+
+	for (const FireProfile& other : WEAPON_FIRE)
+	{
+		if (other.weapon == WeaponId::SmgSuppressed)
+		{
+			continue;
+		}
+
+		EXPECT_LT(smg->cooldown, other.cooldown) << GetWeapon(other.weapon).id << " fires faster than the smg";
+	}
+
+	EXPECT_LT(smg->damage, FindFire(WeaponId::Ak47)->damage);
+	EXPECT_LT(smg->damage, FindFire(WeaponId::M16)->damage);
+}
+
+TEST(WeaponFireTests, TheDeagleIsTheSlowestAndTheHardestHitter)
+{
+	const FireProfile* deagle = FindFire(WeaponId::Deagle);
+	ASSERT_NE(deagle, nullptr);
+
+	for (const FireProfile& other : WEAPON_FIRE)
+	{
+		if (other.weapon == WeaponId::Deagle)
+		{
+			continue;
+		}
+
+		EXPECT_GT(deagle->cooldown, other.cooldown) << GetWeapon(other.weapon).id << " is slower than the deagle";
+		EXPECT_GT(deagle->damage, other.damage) << GetWeapon(other.weapon).id << " hits harder than the deagle";
+	}
+}
+
+TEST(WeaponFireTests, RiflesAndTheSmgFireFasterThanThePlayerUsedTo)
+{
+	for (WeaponId id : {WeaponId::Ak47, WeaponId::M16, WeaponId::SmgSuppressed})
+	{
+		EXPECT_LT(FindFire(id)->cooldown, PLAYER_ATTACK_COOLDOWN) << GetWeapon(id).id << " is not faster than the old pace";
+	}
+}
+
+TEST(WeaponFireTests, NoArmRunsAwayWithTheDamagePerSecond)
+{
+	for (const FireProfile& fire : WEAPON_FIRE)
+	{
+		float dps = DamagePerSecond(fire.weapon);
+
+		EXPECT_GT(dps, 60.f) << GetWeapon(fire.weapon).id << " is not worth carrying";
+		EXPECT_LT(dps, 250.f) << GetWeapon(fire.weapon).id << " melts everything";
+	}
+}
+
+TEST(WeaponFireTests, AMagazineLastsLongEnoughToBeFelt)
+{
+	for (const FireProfile& fire : WEAPON_FIRE)
+	{
+		float emptyIn = GetWeapon(fire.weapon).magazineSize * fire.cooldown;
+
+		EXPECT_GT(emptyIn, 1.5f) << GetWeapon(fire.weapon).id << " empties before the player notices";
+	}
+}
+
+TEST(WeaponFireTests, TheOwnerOfTheArmShootsWithItsOwnNumbers)
+{
+	ShotProfile shot = MakeWeaponShotProfile(WeaponId::Ak47, 100.f, 800.f, 0.5f);
+	const FireProfile* ak = FindFire(WeaponId::Ak47);
+
+	EXPECT_FLOAT_EQ(shot.damage, ak->damage);
+	EXPECT_FLOAT_EQ(shot.cooldown, ak->cooldown);
+	EXPECT_FLOAT_EQ(shot.speed, ak->speed);
+	EXPECT_FLOAT_EQ(shot.coneDegrees, ak->spreadDegrees);
+}
+
+TEST(WeaponFireTests, ABorrowedArmKeepsTheShooterPowerButTakesTheSpread)
+{
+	ShotProfile shot = MakeShotProfile(WeaponId::Ak47, 100.f, 800.f, 0.5f);
+
+	EXPECT_FLOAT_EQ(shot.damage, 100.f);
+	EXPECT_FLOAT_EQ(shot.cooldown, 0.5f);
+	EXPECT_FLOAT_EQ(shot.coneDegrees, FindFire(WeaponId::Ak47)->spreadDegrees);
+}
+
+TEST(WeaponFireTests, AnArmOutsideTheTableFallsBackToTheShooter)
+{
+	ShotProfile shot = MakeWeaponShotProfile(WeaponId::ShotgunPump, 100.f, 800.f, 0.5f);
+	ShotProfile plain = MakeShotProfile(WeaponId::ShotgunPump, 100.f, 800.f, 0.5f);
+
+	EXPECT_FLOAT_EQ(shot.damage, plain.damage);
+	EXPECT_FLOAT_EQ(shot.cooldown, plain.cooldown);
 }

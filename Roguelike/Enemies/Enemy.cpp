@@ -20,6 +20,7 @@
 #include "WeaponComponent.h"
 #include "MeleeWeaponComponent.h"
 #include "AwarenessBarComponent.h"
+#include "EnemyVoiceComponent.h"
 #include "SettleComponent.h"
 #include <LoggerRegistry.h>
 
@@ -59,6 +60,11 @@ namespace RoguelikeGame
             chase->SetAwareness(config.awarenessGain, config.awarenessDecay);
 
             object->AddComponent<AwarenessBarComponent>();
+
+            auto voiceAudio = object->AddComponent<XYZEngine::AudioComponent>();
+            auto voice = object->AddComponent<EnemyVoiceComponent>();
+            voice->SetVoice(config.voice, config.voiceLines);
+            voice->SetAudio(voiceAudio);
 
             if (definition != nullptr)
             {

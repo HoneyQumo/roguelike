@@ -7,6 +7,7 @@
 #include "BossCatalog.h"
 #include "BossSpriteAtlas.h"
 #include "EnemyCatalog.h"
+#include "EnemyVoice.h"
 #include <PixelBounds.h>
 #include <ResourceSystem.h>
 #include <randomizer.h>
@@ -112,6 +113,7 @@ namespace RoguelikeGame
 
         XYZEngine::ResourceSystem::Instance()->LoadSound(SHOT_SOUND, SHOT_SOUND_FILE);
         XYZEngine::ResourceSystem::Instance()->LoadSound(HURT_SOUND, HURT_SOUND_FILE);
+        LoadVoiceLines();
 
         LoadWeaponSounds();
 
@@ -135,6 +137,28 @@ namespace RoguelikeGame
     const sf::SoundBuffer* GameResources::GetWeaponSound(const char* key)
     {
         return key == nullptr ? nullptr : XYZEngine::ResourceSystem::Instance()->GetSound(key);
+    }
+
+    const sf::SoundBuffer* GameResources::GetVoiceLine(const char* voice, int line)
+    {
+        std::string key = VoiceKey(voice, line);
+
+        return key.empty() ? nullptr : XYZEngine::ResourceSystem::Instance()->GetSound(key);
+    }
+
+    void GameResources::LoadVoiceLines()
+    {
+        for (const EnemyDefinition& enemy : ENEMIES)
+        {
+            for (int line = 1; line <= enemy.config.voiceLines; line++)
+            {
+                std::string key = VoiceKey(enemy.config.voice, line);
+                if (!key.empty() && !XYZEngine::ResourceSystem::Instance()->HasSound(key))
+                {
+                    XYZEngine::ResourceSystem::Instance()->LoadSound(key, VoiceFilePath(enemy.config.voice, line));
+                }
+            }
+        }
     }
 
     const sf::SoundBuffer* GameResources::GetMeleeHitSound(const MeleeDefinition& melee)

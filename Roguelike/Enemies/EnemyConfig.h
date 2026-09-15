@@ -36,5 +36,7 @@ namespace RoguelikeGame
         float alertRadiusScale = 1.f;
         float awarenessGain = 1.f;
         float awarenessDecay = 0.7f;
+        const char* voice = nullptr;
+        int voiceLines = 0;
     };
 }

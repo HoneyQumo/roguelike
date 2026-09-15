@@ -108,6 +108,7 @@
     <ClCompile Include="Settle.tests.cpp" />
     <ClCompile Include="Tileset.tests.cpp" />
     <ClCompile Include="Awareness.tests.cpp" />
+    <ClCompile Include="EnemyVoice.tests.cpp" />
     <ClCompile Include="RoomWake.tests.cpp" />
     <ClCompile Include="ActAssembler.tests.cpp" />
     <ClCompile Include="PathField.tests.cpp" />

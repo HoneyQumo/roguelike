@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "GameWorld.h"
 #include "HealthComponent.h"
+#include "ArmorRules.h"
 
 using RoguelikeGame::DamageInfo;
 using RoguelikeGame::DamageKind;
@@ -8,6 +9,8 @@ using RoguelikeGame::DamageSource;
 using RoguelikeGame::DeathInfo;
 using RoguelikeGame::Faction;
 using RoguelikeGame::HealthComponent;
+using RoguelikeGame::ARMOR_ABSORB_SHARE;
+using RoguelikeGame::SplitDamage;
 using XYZEngine::GameObject;
 using XYZEngine::GameWorld;
 
@@ -44,15 +47,94 @@ namespace
 
 TEST_F(HealthComponentTest, DamageEventCarriesAmountBeforeAndAfterArmor)
 {
-	HealthComponent* health = CreateHealth("Target", 100.f, 5.f);
+	HealthComponent* health = CreateHealth("Target", 100.f, 50.f);
 	DamageInfo taken;
 	health->SubscribeDamage([&taken](const DamageInfo& info) { taken = info; });
 
 	health->TakeDamage(20.f);
 
-	EXPECT_FLOAT_EQ(taken.amount, 15.f);
 	EXPECT_FLOAT_EQ(taken.rawAmount, 20.f);
+	EXPECT_FLOAT_EQ(taken.armorAmount, 20.f * ARMOR_ABSORB_SHARE);
+	EXPECT_FLOAT_EQ(taken.amount, 20.f - 20.f * ARMOR_ABSORB_SHARE);
 	EXPECT_FALSE(taken.isLethal);
+}
+
+TEST_F(HealthComponentTest, ArmorIsSpentByDamage)
+{
+	HealthComponent* health = CreateHealth("Target", 100.f, 50.f);
+
+	health->TakeDamage(20.f);
+
+	EXPECT_FLOAT_EQ(health->GetArmor(), 50.f - 20.f * ARMOR_ABSORB_SHARE);
+	EXPECT_LT(health->GetArmorPercent(), 1.f);
+	EXPECT_LT(health->GetHealth(), 100.f);
+}
+
+TEST_F(HealthComponentTest, SpentArmorStopsHelping)
+{
+	HealthComponent* health = CreateHealth("Target", 500.f, 6.f);
+
+	health->TakeDamage(10.f);
+	EXPECT_FLOAT_EQ(health->GetArmor(), 0.f);
+
+	float before = health->GetHealth();
+	health->TakeDamage(10.f);
+
+	EXPECT_FLOAT_EQ(before - health->GetHealth(), 10.f);
+}
+
+TEST_F(HealthComponentTest, ArmorNeverSoaksMoreThanItHas)
+{
+	HealthComponent* health = CreateHealth("Target", 500.f, 4.f);
+	DamageInfo taken;
+	health->SubscribeDamage([&taken](const DamageInfo& info) { taken = info; });
+
+	health->TakeDamage(100.f);
+
+	EXPECT_FLOAT_EQ(taken.armorAmount, 4.f);
+	EXPECT_FLOAT_EQ(taken.amount, 96.f);
+	EXPECT_FLOAT_EQ(health->GetArmor(), 0.f);
+}
+
+TEST_F(HealthComponentTest, ArmorOutlivesTheDamageItAbsorbs)
+{
+	HealthComponent* armored = CreateHealth("Armored", 100.f, 60.f);
+	HealthComponent* bare = CreateHealth("Bare", 100.f, 0.f);
+
+	for (int shot = 0; shot < 10; shot++)
+	{
+		armored->TakeDamage(15.f);
+		bare->TakeDamage(15.f);
+	}
+
+	EXPECT_FALSE(bare->IsAlive());
+	EXPECT_TRUE(armored->IsAlive());
+}
+
+TEST_F(HealthComponentTest, MaxArmorFillsTheArmorAndSetsThePercent)
+{
+	GameObject* object = GameWorld::Instance()->CreateGameObject("Shield");
+	auto health = object->AddComponent<HealthComponent>();
+	health->SetMaxHealth(100.f);
+	health->SetMaxArmor(120.f);
+
+	EXPECT_FLOAT_EQ(health->GetArmor(), 120.f);
+	EXPECT_FLOAT_EQ(health->GetMaxArmor(), 120.f);
+	EXPECT_FLOAT_EQ(health->GetArmorPercent(), 1.f);
+
+	health->SetArmor(30.f);
+
+	EXPECT_FLOAT_EQ(health->GetArmorPercent(), 0.25f);
+}
+
+TEST_F(HealthComponentTest, WithoutArmorThePercentIsZeroAndDamageGoesThrough)
+{
+	HealthComponent* health = CreateHealth("Target", 100.f, 0.f);
+
+	health->TakeDamage(25.f);
+
+	EXPECT_FLOAT_EQ(health->GetArmorPercent(), 0.f);
+	EXPECT_FLOAT_EQ(health->GetHealth(), 75.f);
 }
 
 TEST_F(HealthComponentTest, DamageEventCarriesSource)

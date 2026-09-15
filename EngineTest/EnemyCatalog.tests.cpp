@@ -202,3 +202,33 @@ TEST(NoiseTest, TheBossCallsSomebodyWhoShoots)
 	ASSERT_NE(minion, nullptr);
 	EXPECT_NE(minion->weapon, RoguelikeGame::WeaponId::Knife) << minion->objectName;
 }
+
+TEST(EnemyCatalogTest, ArmorIsEitherAbsentOrWorthShowing)
+{
+	for (const RoguelikeGame::EnemyDefinition& enemy : RoguelikeGame::ENEMIES)
+	{
+		if (enemy.config.armor <= 0.f)
+		{
+			continue;
+		}
+
+		EXPECT_GE(enemy.config.armor, 20.f) << enemy.config.objectName << " armor is gone in one burst";
+		EXPECT_LE(enemy.config.armor, enemy.config.maxHealth) << enemy.config.objectName << " is more armor than flesh";
+	}
+}
+
+TEST(EnemyCatalogTest, TheShieldCarriesTheMostArmorOfTheRankAndFile)
+{
+	const RoguelikeGame::EnemyConfig* shield = RoguelikeGame::FindEnemyConfig(RoguelikeGame::TileType::ShieldSpawn);
+	ASSERT_NE(shield, nullptr);
+
+	for (const RoguelikeGame::EnemyDefinition& enemy : RoguelikeGame::ENEMIES)
+	{
+		if (enemy.tile == RoguelikeGame::TileType::ShieldSpawn || enemy.tile == RoguelikeGame::TileType::BossSpawn)
+		{
+			continue;
+		}
+
+		EXPECT_LT(enemy.config.armor, shield->armor) << enemy.config.objectName << " out-armors the shield";
+	}
+}

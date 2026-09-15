@@ -27,6 +27,7 @@ namespace RoguelikeGame
 
 		sf::RectangleShape background;
 		sf::RectangleShape fill;
+		sf::RectangleShape armorFill;
 
 		XYZEngine::Vector2Df size = { 48.f, 6.f };
 		XYZEngine::Vector2Df offset = { 0.f, 40.f };

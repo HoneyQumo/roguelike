@@ -59,6 +59,7 @@ namespace RoguelikeGame
 
         parts.health = parts.gameObject->AddComponent<HealthComponent>();
         parts.health->SetMaxHealth(spec.maxHealth);
+        parts.health->SetMaxArmor(spec.armorCap > spec.armor ? spec.armorCap : spec.armor);
         parts.health->SetArmor(spec.armor);
 
         parts.gameObject->AddComponent<FactionComponent>()->SetFaction(spec.faction);

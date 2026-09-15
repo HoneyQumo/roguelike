@@ -29,6 +29,7 @@ namespace RoguelikeGame
     {
         float amount = 0.f;
         float rawAmount = 0.f;
+        float armorAmount = 0.f;
         bool isLethal = false;
         DamageSource source;
     };

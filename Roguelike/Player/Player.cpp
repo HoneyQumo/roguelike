@@ -61,6 +61,7 @@ namespace RoguelikeGame
         spec.speed = PLAYER_SPEED;
         spec.maxHealth = PLAYER_MAX_HEALTH;
         spec.armor = PLAYER_ARMOR;
+        spec.armorCap = PLAYER_ARMOR_CAP;
         spec.faction = Faction::Player;
         spec.weapon = startWeapon;
         spec.healthBarColor = {90, 200, 90};
@@ -183,7 +184,7 @@ namespace RoguelikeGame
 
         effects->SetHandler(ItemEffectKind::AddArmor, [health](const ItemEffect& effect)
         {
-            float taken = ArmorAfterPlate(health->GetArmor(), effect.amount, PLAYER_ARMOR_CAP);
+            float taken = ArmorAfterPlate(health->GetArmor(), effect.amount, health->GetMaxArmor());
             if (taken <= health->GetArmor())
             {
                 return false;

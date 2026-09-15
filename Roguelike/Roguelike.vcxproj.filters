@@ -96,6 +96,15 @@
     <ClCompile Include="Enemies\ChaseComponent.cpp">
       <Filter>Enemies</Filter>
     </ClCompile>
+    <ClInclude Include="Enemies\Awareness.h">
+      <Filter>Enemies</Filter>
+    </ClInclude>
+    <ClInclude Include="Enemies\AwarenessBarComponent.h">
+      <Filter>Enemies</Filter>
+    </ClInclude>
+    <ClCompile Include="Enemies\AwarenessBarComponent.cpp">
+      <Filter>Enemies</Filter>
+    </ClCompile>
     <ClInclude Include="Enemies\Vision.h">
       <Filter>Enemies</Filter>
     </ClInclude>

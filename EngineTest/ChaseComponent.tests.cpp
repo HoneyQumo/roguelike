@@ -1,4 +1,6 @@
 #include "pch.h"
+#include "Awareness.h"
+#include "AwarenessBarComponent.h"
 #include "ChaseComponent.h"
 #include "GameSettings.h"
 #include "LevelGrid.h"
@@ -45,6 +47,7 @@ namespace
 		"#######\n";
 
 	constexpr float SEARCH_TIME = 4.f;
+	constexpr float NOTICES_AT_ONCE = 100.f;
 	constexpr float STEP = 0.05f;
 	constexpr float LOOK_TIME = 1.f;
 
@@ -103,6 +106,7 @@ namespace
 			chase->SetAlertTime(5.f);
 			chase->SetSearchTime(SEARCH_TIME);
 			chase->SetLook(LOOK_TIME, 40.f);
+			chase->SetAwareness(NOTICES_AT_ONCE, NOTICES_AT_ONCE);
 
 			return chase;
 		}
@@ -478,4 +482,120 @@ TEST_F(ChaseComponentTest, ClosedDoorHidesTheTargetThatWasInSight)
 	Run(0.2f);
 
 	EXPECT_FALSE(chase->CanSeeTarget());
+}
+
+TEST_F(ChaseComponentTest, TargetInSightIsNotChasedAtOnce)
+{
+	CreateHero(3, 1);
+	ChaseComponent* chase = CreateEnemy(1, 1);
+	chase->SetAwareness(1.f, 0.7f);
+
+	Run(0.2f);
+
+	EXPECT_FALSE(chase->IsChasing());
+	EXPECT_EQ(chase->GetAwarenessState(), RoguelikeGame::AwarenessState::Calm);
+}
+
+TEST_F(ChaseComponentTest, EnemyGrowsSuspiciousBeforeTheChase)
+{
+	CreateHero(3, 1);
+	ChaseComponent* chase = CreateEnemy(1, 1);
+	chase->SetAwareness(1.f, 0.7f);
+
+	Run(1.1f);
+
+	EXPECT_TRUE(chase->IsSuspicious());
+	EXPECT_FALSE(chase->IsChasing());
+}
+
+TEST_F(ChaseComponentTest, SuspiciousEnemyIsAlreadyBusy)
+{
+	CreateHero(3, 1);
+	ChaseComponent* chase = CreateEnemy(1, 1);
+	chase->SetAwareness(1.f, 0.7f);
+
+	Run(1.1f);
+
+	ASSERT_TRUE(chase->IsSuspicious());
+	EXPECT_TRUE(chase->IsEngaged());
+}
+
+TEST_F(ChaseComponentTest, WatchingLongEnoughStartsTheChase)
+{
+	CreateHero(3, 1);
+	ChaseComponent* chase = CreateEnemy(1, 1);
+	chase->SetAwareness(1.f, 0.7f);
+
+	Run(2.5f);
+
+	EXPECT_TRUE(chase->IsChasing());
+	EXPECT_EQ(chase->GetAwarenessState(), RoguelikeGame::AwarenessState::Provoked);
+}
+
+TEST_F(ChaseComponentTest, TargetBehindTheBackIsNeverNoticed)
+{
+	CreateHero(3, 1);
+	ChaseComponent* chase = CreateEnemy(1, 1);
+	chase->SetAwareness(1.f, 0.7f);
+	chase->GetGameObject()->GetTransform()->SetWorldRotation(180.f);
+
+	Run(3.f);
+
+	EXPECT_FLOAT_EQ(chase->GetAwareness(), 0.f);
+	EXPECT_FALSE(chase->IsChasing());
+}
+
+TEST_F(ChaseComponentTest, QuickEnemyStartsTheChaseSoonerThanSlowOne)
+{
+	CreateHero(3, 1);
+	ChaseComponent* slow = CreateEnemy(1, 1);
+	slow->SetAwareness(0.6f, 0.7f);
+
+	Run(1.5f);
+
+	EXPECT_FALSE(slow->IsChasing());
+	EXPECT_LT(slow->GetAwareness(), RoguelikeGame::AWARENESS_PROVOKE_AT);
+}
+
+TEST_F(ChaseComponentTest, BarIsHiddenWhileNothingIsNoticed)
+{
+	CreateHero(3, 1);
+	ChaseComponent* chase = CreateEnemy(1, 1);
+	chase->SetAwareness(1.f, 0.7f);
+	chase->GetGameObject()->GetTransform()->SetWorldRotation(180.f);
+	auto bar = chase->GetGameObject()->AddComponent<RoguelikeGame::AwarenessBarComponent>();
+
+	Run(1.f);
+
+	EXPECT_FALSE(bar->IsShown());
+	EXPECT_FLOAT_EQ(bar->GetShownPart(), 0.f);
+}
+
+TEST_F(ChaseComponentTest, BarFillsUpWhileTheEnemyPeers)
+{
+	CreateHero(3, 1);
+	ChaseComponent* chase = CreateEnemy(1, 1);
+	chase->SetAwareness(1.f, 0.7f);
+	auto bar = chase->GetGameObject()->AddComponent<RoguelikeGame::AwarenessBarComponent>();
+
+	Run(0.6f);
+	float early = bar->GetShownPart();
+	Run(0.6f);
+
+	EXPECT_TRUE(bar->IsShown());
+	EXPECT_GT(early, 0.f);
+	EXPECT_GT(bar->GetShownPart(), early);
+}
+
+TEST_F(ChaseComponentTest, BarIsFullWhenTheChaseStarts)
+{
+	CreateHero(3, 1);
+	ChaseComponent* chase = CreateEnemy(1, 1);
+	chase->SetAwareness(1.f, 0.7f);
+	auto bar = chase->GetGameObject()->AddComponent<RoguelikeGame::AwarenessBarComponent>();
+
+	Run(2.5f);
+
+	ASSERT_TRUE(chase->IsChasing());
+	EXPECT_FLOAT_EQ(bar->GetShownPart(), 1.f);
 }

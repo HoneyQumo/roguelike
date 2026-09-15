@@ -216,6 +216,9 @@
         <ClInclude Include="Core\Faction.h"/>
         <ClInclude Include="Core\FactionComponent.h"/>
         <ClInclude Include="Enemies\ChaseRules.h"/>
+        <ClInclude Include="Enemies\Awareness.h"/>
+        <ClInclude Include="Enemies\AwarenessBarComponent.h"/>
+        <ClCompile Include="Enemies\AwarenessBarComponent.cpp"/>
         <ClInclude Include="Enemies\Vision.h"/>
         <ClInclude Include="Level\LevelGrid.h"/>
         <ClInclude Include="Level\PathField.h"/>

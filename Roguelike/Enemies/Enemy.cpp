@@ -19,6 +19,7 @@
 #include "PatrolRoutes.h"
 #include "WeaponComponent.h"
 #include "MeleeWeaponComponent.h"
+#include "AwarenessBarComponent.h"
 #include "SettleComponent.h"
 #include <LoggerRegistry.h>
 
@@ -55,6 +56,9 @@ namespace RoguelikeGame
             chase->SetSearchSpots(config.searchRadius, config.searchSpotsMin, config.searchSpotsMax);
             chase->SetSearchLook(config.searchLookTime);
             chase->SetAlertRadiusScale(config.alertRadiusScale);
+            chase->SetAwareness(config.awarenessGain, config.awarenessDecay);
+
+            object->AddComponent<AwarenessBarComponent>();
 
             if (definition != nullptr)
             {

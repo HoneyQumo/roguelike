@@ -21,6 +21,7 @@ using RoguelikeGame::RoomWakeComponent;
 
 namespace
 {
+	constexpr float NOTICES_AT_ONCE = 100.f;
 	const std::string HALL =
 		"[legend]\n"
 		"# Wall\n"
@@ -128,6 +129,7 @@ namespace
 			chase->SetAlertTime(5.f);
 			chase->SetSearchTime(4.f);
 			chase->SetLook(1.f, 40.f);
+			chase->SetAwareness(NOTICES_AT_ONCE, NOTICES_AT_ONCE);
 
 			return enemy;
 		}

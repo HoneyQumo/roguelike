@@ -1,5 +1,6 @@
 #include "LevelIntegrity.h"
 #include "ItemCatalog.h"
+#include "PropCatalog.h"
 #include <algorithm>
 #include <map>
 #include <set>
@@ -50,6 +51,23 @@ namespace RoguelikeGame
             return found;
         }
 
+        std::set<long long> SealedCells(const LevelData& levelData, const PropCatalog& props)
+        {
+            std::set<long long> sealed;
+            for (const PropPlacement& placement : levelData.props)
+            {
+                const PropDefinition* prop = props.Find(placement.propId);
+                if (prop == nullptr || !prop->isSolid || prop->IsDestructible() || prop->IsOpenable())
+                {
+                    continue;
+                }
+
+                sealed.insert(static_cast<long long>(placement.row) * levelData.width + placement.column);
+            }
+
+            return sealed;
+        }
+
         std::map<long long, std::string> DoorsByCell(const LevelData& levelData)
         {
             std::map<long long, std::string> doors;
@@ -62,7 +80,8 @@ namespace RoguelikeGame
         }
 
         std::vector<char> Walk(const LevelData& levelData, const Cell& start,
-            const std::map<long long, std::string>& doors, const std::set<std::string>& opened)
+            const std::map<long long, std::string>& doors, const std::set<std::string>& opened,
+            const std::set<long long>& sealed)
         {
             int width = levelData.width;
             int height = HeightOf(levelData);
@@ -99,6 +118,11 @@ namespace RoguelikeGame
 
                     TileType tile = TileAt(levelData, column, row);
                     if (IsSolid(tile))
+                    {
+                        continue;
+                    }
+
+                    if (sealed.count(static_cast<long long>(index)) != 0)
                     {
                         continue;
                     }
@@ -226,7 +250,8 @@ namespace RoguelikeGame
             }
         }
 
-        void CheckReached(const LevelData& levelData, const std::vector<char>& reached, LevelReport& report)
+        void CheckReached(const LevelData& levelData, const std::vector<char>& reached,
+            const std::set<long long>& sealed, LevelReport& report)
         {
             for (int row = 0; row < HeightOf(levelData); row++)
             {
@@ -239,6 +264,11 @@ namespace RoguelikeGame
                     }
 
                     std::size_t index = static_cast<std::size_t>(row) * levelData.width + column;
+                    if (sealed.count(static_cast<long long>(index)) != 0)
+                    {
+                        continue;
+                    }
+
                     if (index < reached.size() && reached[index] == 0)
                     {
                         report.issues.push_back({LevelFault::Unreachable, column, row, ""});
@@ -334,7 +364,7 @@ namespace RoguelikeGame
         return text;
     }
 
-    LevelReport CheckLevel(const LevelData& levelData, const ItemCatalog& items)
+    LevelReport CheckLevel(const LevelData& levelData, const ItemCatalog& items, const PropCatalog& props)
     {
         LevelReport report;
         if (levelData.width <= 0 || HeightOf(levelData) == 0)
@@ -352,8 +382,9 @@ namespace RoguelikeGame
         }
 
         std::map<long long, std::string> doors = DoorsByCell(levelData);
+        std::set<long long> sealed = SealedCells(levelData, props);
         std::set<std::string> opened;
-        std::vector<char> reached = Walk(levelData, start, doors, opened);
+        std::vector<char> reached = Walk(levelData, start, doors, opened, sealed);
 
         while (true)
         {
@@ -364,18 +395,23 @@ namespace RoguelikeGame
             }
 
             opened = next;
-            reached = Walk(levelData, start, doors, opened);
+            reached = Walk(levelData, start, doors, opened, sealed);
         }
 
         CheckDoors(levelData, opened, reached, report);
-        CheckReached(levelData, reached, report);
+        CheckReached(levelData, reached, sealed, report);
         CheckExit(levelData, reached, report);
 
         return report;
     }
 
+    LevelReport CheckLevel(const LevelData& levelData, const ItemCatalog& items)
+    {
+        return CheckLevel(levelData, items, PropCatalog::Empty());
+    }
+
     LevelReport CheckLevel(const LevelData& levelData)
     {
-        return CheckLevel(levelData, ItemCatalog::Empty());
+        return CheckLevel(levelData, ItemCatalog::Empty(), PropCatalog::Empty());
     }
 }

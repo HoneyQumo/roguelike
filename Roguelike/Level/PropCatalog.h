@@ -24,6 +24,8 @@ namespace RoguelikeGame
         sf::IntRect frame;
         sf::IntRect spentFrame;
         bool openable = false;
+        bool isSolid = true;
+        bool isCover = false;
 
         bool IsDestructible() const;
         bool IsOpenable() const;

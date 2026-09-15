@@ -32,22 +32,6 @@ namespace RoguelikeGame
             return static_cast<int>(levelData.tiles.size());
         }
 
-        TileType TileAt(const LevelData& levelData, int column, int row)
-        {
-            if (row < 0 || row >= HeightOf(levelData))
-            {
-                return TileType::Empty;
-            }
-
-            const std::vector<TileType>& line = levelData.tiles[row];
-            if (column < 0 || column >= static_cast<int>(line.size()))
-            {
-                return TileType::Empty;
-            }
-
-            return line[column];
-        }
-
         std::vector<Cell> CellsOf(const LevelData& levelData, TileType tile)
         {
             std::vector<Cell> found;

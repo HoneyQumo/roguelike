@@ -118,8 +118,11 @@ namespace RoguelikeGame
 
         PropVisualComponent* visual = AddVisual(gameObject, definition);
 
-        auto collider = gameObject->AddComponent<XYZEngine::BoxColliderComponent>();
-        collider->SetSize(definition.size, definition.size);
+        if (definition.isSolid)
+        {
+            auto collider = gameObject->AddComponent<XYZEngine::BoxColliderComponent>();
+            collider->SetSize(definition.size, definition.size);
+        }
 
         if (definition.IsOpenable())
         {

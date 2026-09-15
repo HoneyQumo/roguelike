@@ -59,6 +59,11 @@ namespace XYZEngine
 				if (event.type == sf::Event::GainedFocus)
 				{
 					InputSystem::Instance()->SyncWithDevice();
+					RenderSystem::Instance()->HandleFocus(true);
+				}
+				if (event.type == sf::Event::LostFocus)
+				{
+					RenderSystem::Instance()->HandleFocus(false);
 				}
 			}
 

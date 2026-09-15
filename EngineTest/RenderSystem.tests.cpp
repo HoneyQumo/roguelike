@@ -56,3 +56,42 @@ TEST_F(RenderSystemTest, SubscriberGetsTheNewSize)
 	EXPECT_EQ(seenWidth, 640u);
 	EXPECT_EQ(seenHeight, 480u);
 }
+
+TEST_F(RenderSystemTest, FocusedGameHoldsTheCursor)
+{
+	render->HandleFocus(true);
+	render->HoldMouse(true);
+
+	EXPECT_TRUE(render->IsMouseHeld());
+}
+
+TEST_F(RenderSystemTest, LostFocusLetsTheCursorOut)
+{
+	render->HoldMouse(true);
+	render->HandleFocus(false);
+
+	EXPECT_FALSE(render->IsMouseHeld());
+
+	render->HandleFocus(true);
+}
+
+TEST_F(RenderSystemTest, PauseLetsTheCursorOutEvenInFocus)
+{
+	render->HandleFocus(true);
+	render->HoldMouse(false);
+
+	EXPECT_FALSE(render->IsMouseHeld());
+
+	render->HoldMouse(true);
+}
+
+TEST_F(RenderSystemTest, ReturningFocusWhilePausedKeepsTheCursorFree)
+{
+	render->HoldMouse(false);
+	render->HandleFocus(false);
+	render->HandleFocus(true);
+
+	EXPECT_FALSE(render->IsMouseHeld());
+
+	render->HoldMouse(true);
+}

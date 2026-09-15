@@ -15,6 +15,9 @@ namespace XYZEngine
 		sf::RenderWindow& GetMainWindow() const;
 
 		void HandleResize(unsigned int width, unsigned int height);
+		void HandleFocus(bool isFocused);
+		void HoldMouse(bool isWanted);
+		bool IsMouseHeld() const;
 		sf::Vector2u GetWindowSize() const;
 		const sf::View& GetUiView() const;
 
@@ -36,6 +39,8 @@ namespace XYZEngine
 
 	private:
 		sf::RenderWindow* window = nullptr;
+		bool isMouseWanted = true;
+		bool isFocused = true;
 		sf::Vector2u windowSize = {0, 0};
 		sf::View uiView = sf::View(sf::FloatRect(0.f, 0.f, 0.f, 0.f));
 		sf::View savedView = sf::View(sf::FloatRect(0.f, 0.f, 0.f, 0.f));
@@ -43,6 +48,8 @@ namespace XYZEngine
 		int drawnCount = 0;
 		mutable int culledCount = 0;
 		EventList<unsigned int, unsigned int> resizeEvent;
+
+		void ApplyMouseHold();
 
 		RenderSystem() {}
 		~RenderSystem() {}

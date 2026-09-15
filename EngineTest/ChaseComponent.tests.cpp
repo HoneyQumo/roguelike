@@ -839,3 +839,30 @@ TEST_F(ChaseComponentTest, ACallSkipsTheOneWhoMadeIt)
 	EXPECT_FALSE(caller->IsAlerted());
 	EXPECT_TRUE(neighbour->IsAlerted());
 }
+
+TEST_F(ChaseComponentTest, ProvokedEnemyIsAlreadyEngagedFacingAway)
+{
+	GameObject* hero = CreateHero(1, 1);
+	ChaseComponent* chase = CreateEnemy(3, 1, 0.f);
+
+	Run(0.2f);
+	ASSERT_FALSE(chase->IsChasing());
+
+	chase->Provoke(hero->GetTransform()->GetWorldPosition());
+	Run(0.1f);
+
+	EXPECT_EQ(chase->GetAwarenessState(), RoguelikeGame::AwarenessState::Provoked);
+	EXPECT_TRUE(chase->IsEngaged());
+}
+
+TEST_F(ChaseComponentTest, ProvokedEnemyWalksToTheGivenPlace)
+{
+	ChaseComponent* chase = CreateEnemy(1, 1, 0.f);
+	GameObject* enemy = chase->GetGameObject();
+	float before = enemy->GetTransform()->GetWorldPosition().x;
+
+	chase->Provoke(At(5, 1));
+	Run(0.5f);
+
+	EXPECT_GT(enemy->GetTransform()->GetWorldPosition().x, before);
+}

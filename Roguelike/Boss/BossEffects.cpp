@@ -1,6 +1,8 @@
 #include "BossEffects.h"
 #include "CastMark.h"
+#include "ChaseComponent.h"
 #include "Enemy.h"
+#include <GameWorld.h>
 #include "EnemyCatalog.h"
 #include "Fx.h"
 #include "GameSettings.h"
@@ -46,7 +48,14 @@ namespace RoguelikeGame
 
             try
             {
-                brain->RegisterMinion(CreateEnemy(*config, point));
+                XYZEngine::GameObject* minion = CreateEnemy(*config, point);
+                if (auto chase = minion->GetComponent<ChaseComponent>())
+                {
+                    XYZEngine::GameObject* target = XYZEngine::GameWorld::Instance()->FindGameObject(chase->GetTargetName());
+                    chase->Provoke(target == nullptr ? point : target->GetTransform()->GetWorldPosition());
+                }
+
+                brain->RegisterMinion(minion);
             }
             catch (const std::exception& exception)
             {

@@ -51,6 +51,16 @@ namespace RoguelikeGame
         }
     }
 
+    bool LevelExitComponent::IsManual() const
+    {
+        return isManual;
+    }
+
+    void LevelExitComponent::SetManual(bool newIsManual)
+    {
+        isManual = newIsManual;
+    }
+
     bool LevelExitComponent::IsPlayerTrigger(const XYZEngine::Trigger& trigger) const
     {
         XYZEngine::ColliderComponent* other = trigger.GetFirst() == collider ? trigger.GetSecond() : trigger.GetFirst();
@@ -81,7 +91,7 @@ namespace RoguelikeGame
 
     void LevelExitComponent::TryEnter()
     {
-        if (isUsed)
+        if (isUsed || isManual)
         {
             return;
         }

@@ -29,6 +29,7 @@ namespace XYZEngine
 
 		void LoadSound(const std::string& name, std::string sourcePath);
 		const sf::SoundBuffer* GetSound(const std::string& name) const;
+		bool HasSound(const std::string& name) const;
 		void DeleteSound(const std::string& name);
 
 		void LoadMusic(const std::string& name, std::string sourcePath);

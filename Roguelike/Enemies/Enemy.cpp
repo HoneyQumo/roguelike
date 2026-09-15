@@ -19,6 +19,8 @@
 #include "PatrolRoutes.h"
 #include "WeaponComponent.h"
 #include "MeleeWeaponComponent.h"
+#include "AwarenessBarComponent.h"
+#include "EnemyVoiceComponent.h"
 #include "SettleComponent.h"
 #include <LoggerRegistry.h>
 
@@ -55,6 +57,14 @@ namespace RoguelikeGame
             chase->SetSearchSpots(config.searchRadius, config.searchSpotsMin, config.searchSpotsMax);
             chase->SetSearchLook(config.searchLookTime);
             chase->SetAlertRadiusScale(config.alertRadiusScale);
+            chase->SetAwareness(config.awarenessGain, config.awarenessDecay);
+
+            object->AddComponent<AwarenessBarComponent>();
+
+            auto voiceAudio = object->AddComponent<XYZEngine::AudioComponent>();
+            auto voice = object->AddComponent<EnemyVoiceComponent>();
+            voice->SetVoice(config.voice, config.voiceLines);
+            voice->SetAudio(voiceAudio);
 
             if (definition != nullptr)
             {

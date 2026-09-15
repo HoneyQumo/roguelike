@@ -22,6 +22,7 @@ using RoguelikeGame::PatrolStop;
 
 namespace
 {
+	constexpr float NOTICES_AT_ONCE = 100.f;
 	const std::string HALL =
 		"[legend]\n"
 		"# Wall\n"
@@ -78,6 +79,7 @@ namespace
 			chase->SetVisionHalfAngle(45.f);
 			chase->SetAlertHalfAngle(60.f);
 			chase->SetSearchTime(3.f);
+			chase->SetAwareness(NOTICES_AT_ONCE, NOTICES_AT_ONCE);
 
 			auto patrol = guard->AddComponent<PatrolComponent>();
 			patrol->SetLook(LOOK_TIME, 40.f);

@@ -104,6 +104,19 @@ namespace RoguelikeGame
 		return DirectionFromDegrees(transform->GetWorldRotation());
 	}
 
+	AwarenessSense ChaseComponent::ReadAwareness(const ChaseSense& sense, const Vector2Df& targetPosition, float deltaTime) const
+	{
+		AwarenessSense look;
+		look.isVisible = sense.isVisible;
+		look.keepsMemory = IsSearching(memory);
+		look.distance = sense.distanceToTarget;
+		look.maxDistance = sense.detectionRadius;
+		look.isTargetMoving = hasLastTarget && deltaTime > 0.f
+			&& (targetPosition - lastTargetPosition).GetLength() / deltaTime >= AWARENESS_MOVING_SPEED;
+
+		return look;
+	}
+
 	void ChaseComponent::ApplyAim(const ChaseSense& sense)
 	{
 		if (aim == nullptr)
@@ -111,7 +124,7 @@ namespace RoguelikeGame
 			return;
 		}
 
-		if (RoguelikeGame::IsTargetDetected(sense))
+		if (RoguelikeGame::IsTargetDetected(sense) || (isInSight && IsSuspicious()))
 		{
 			aim->AimAtGameObject(targetName);
 			aim->SetMaxDistance(0.f);
@@ -140,6 +153,7 @@ namespace RoguelikeGame
 		isChasing = false;
 		isEngaged = false;
 		isTargetVisible = false;
+		isInSight = false;
 		movement->SetDirection({ 0.f, 0.f });
 
 		if (targetName.empty() || detectionRadius <= 0.f)
@@ -151,6 +165,15 @@ namespace RoguelikeGame
 		Vector2Df targetPosition = target != nullptr ? target->GetTransform()->GetWorldPosition() : Vector2Df{ 0.f, 0.f };
 
 		ChaseSense sense = ReadSense(targetPosition, target != nullptr);
+		isInSight = sense.isVisible;
+
+		awareness = NextAwareness(awareness, rates, ReadAwareness(sense, targetPosition, deltaTime), deltaTime);
+		lastTargetPosition = targetPosition;
+		hasLastTarget = target != nullptr;
+
+		AwarenessState state = StateOf(awareness);
+		sense.isVisible = isInSight && state == AwarenessState::Provoked;
+		sense.isAlerted = sense.isAlerted || state == AwarenessState::Alerted;
 
 		if (sense.isVisible)
 		{
@@ -363,6 +386,27 @@ namespace RoguelikeGame
 	void ChaseComponent::SetSearchGap(int newGap)
 	{
 		searchGap = newGap;
+	}
+
+	void ChaseComponent::SetAwareness(float newGain, float newDecay)
+	{
+		rates.gain = std::max(newGain, 0.f);
+		rates.decay = std::max(newDecay, 0.f);
+	}
+
+	bool ChaseComponent::IsSuspicious() const
+	{
+		return StateOf(awareness) == AwarenessState::Alerted;
+	}
+
+	float ChaseComponent::GetAwareness() const
+	{
+		return awareness;
+	}
+
+	AwarenessState ChaseComponent::GetAwarenessState() const
+	{
+		return StateOf(awareness);
 	}
 
 	void ChaseComponent::SetAlertRadiusScale(float newScale)

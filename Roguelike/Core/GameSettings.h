@@ -286,6 +286,7 @@ namespace RoguelikeGame
     constexpr float SHOT_VOLUME = 20.f;
     constexpr float RELOAD_VOLUME = 45.f;
     constexpr float HURT_VOLUME = 35.f;
+    constexpr float VOICE_VOLUME = 70.f;
     constexpr float MELEE_HIT_VOLUME = 55.f;
 
     constexpr float HEAVY_CHARGED_GLOW = 0.22f;
@@ -374,6 +375,9 @@ namespace RoguelikeGame
     inline const sf::Color INVENTORY_SLOT_FILLED_COLOR = {70, 70, 80, 235};
     inline const sf::Color INVENTORY_SLOT_SELECTED_COLOR = {120, 150, 190, 245};
     inline const sf::Color INVENTORY_SLOT_OUTLINE_COLOR = {16, 16, 18, 255};
+    inline const sf::Color AWARENESS_BAR_COLOR = {235, 200, 80};
+    inline const sf::Color AWARENESS_BAR_ALARM_COLOR = {230, 70, 55};
+    inline const sf::Color AWARENESS_BAR_BACK_COLOR = {20, 20, 20, 190};
     inline const sf::Color DEBUG_DETECTION_COLOR = {240, 200, 60};
     inline const sf::Color DEBUG_CHASING_COLOR = {240, 80, 60};
     inline const sf::Color DEBUG_ATTACK_RANGE_COLOR = {255, 140, 40};

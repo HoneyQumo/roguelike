@@ -4,6 +4,7 @@
 #include <Component.h>
 #include <TransformComponent.h>
 #include <MovementComponent.h>
+#include "Awareness.h"
 #include "ChaseRules.h"
 #include "HidingSpots.h"
 #include "LookTurn.h"
@@ -49,10 +50,14 @@ namespace RoguelikeGame
 		void SetSearchLook(float newLookTime);
 		void SetSearchGap(int newGap);
 		void SetAlertRadiusScale(float newScale);
+		void SetAwareness(float newGain, float newDecay);
 		void SetForcedChase(bool newIsForced);
 
 		bool IsChasing() const;
 		bool IsAlerted() const;
+		bool IsSuspicious() const;
+		float GetAwareness() const;
+		AwarenessState GetAwarenessState() const;
 		bool IsEngaged() const;
 		bool CanSeeTarget() const;
 		std::size_t GetSearchStep() const;
@@ -75,6 +80,11 @@ namespace RoguelikeGame
 		bool isChasing = false;
 		bool isEngaged = false;
 		bool isTargetVisible = false;
+		bool isInSight = false;
+		bool hasLastTarget = false;
+		float awareness = 0.f;
+		AwarenessRates rates;
+		XYZEngine::Vector2Df lastTargetPosition = {0.f, 0.f};
 
 		XYZEngine::Vector2Df investigatePoint = {0.f, 0.f};
 		XYZEngine::Vector2Df escapeFrom = {0.f, 0.f};
@@ -99,6 +109,7 @@ namespace RoguelikeGame
 
 		void OnDamage(const DamageInfo& damage);
 		ChaseSense ReadSense(const XYZEngine::Vector2Df& targetPosition, bool hasTarget) const;
+		AwarenessSense ReadAwareness(const ChaseSense& sense, const XYZEngine::Vector2Df& targetPosition, float deltaTime) const;
 		void ApplyAim(const ChaseSense& sense);
 		XYZEngine::Vector2Df Facing() const;
 		void MoveTowards(const XYZEngine::Vector2Df& goal, float deltaTime);

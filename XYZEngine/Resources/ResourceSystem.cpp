@@ -190,6 +190,11 @@ namespace XYZEngine
         return sounds.Get(name);
     }
 
+    bool ResourceSystem::HasSound(const std::string& name) const
+    {
+        return sounds.Contains(name);
+    }
+
     void ResourceSystem::DeleteSound(const std::string& name)
     {
         sounds.Erase(name);

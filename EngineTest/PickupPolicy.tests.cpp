@@ -170,3 +170,19 @@ TEST_F(PickupPolicyTest, FullBagStillRefusesAnItemWithoutARule)
 	EXPECT_FALSE(pickup->TryPickUp(player));
 	EXPECT_FALSE(pickup->IsPickedUp());
 }
+
+TEST_F(PickupPolicyTest, ThePickupKeepsItsOwnCopyOfTheDefinition)
+{
+	ItemPickupComponent* pickup = nullptr;
+	{
+		ItemDefinition passing = MakeItem("key_card", ItemEffectKind::Unlock, "door_console");
+		passing.name = "key card";
+		pickup = DropItem(passing);
+	}
+
+	ASSERT_NE(pickup->GetDefinition(), nullptr);
+	EXPECT_EQ(pickup->GetDefinition()->id, "key_card");
+	EXPECT_EQ(pickup->GetDefinition()->name, "key card");
+	EXPECT_NE(pickup->GetPrompt(player).find("key card"), std::string::npos);
+	EXPECT_TRUE(pickup->TryPickUp(player));
+}

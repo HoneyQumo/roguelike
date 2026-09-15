@@ -19,7 +19,7 @@
 #include "PatrolRoutes.h"
 #include "WeaponComponent.h"
 #include "MeleeWeaponComponent.h"
-#include "AwarenessBarComponent.h"
+#include "AwarenessGaugeComponent.h"
 #include "EnemyVoiceComponent.h"
 #include "SettleComponent.h"
 #include <LoggerRegistry.h>
@@ -60,7 +60,7 @@ namespace RoguelikeGame
             chase->SetAwareness(config.awarenessGain, config.awarenessDecay);
             chase->SetPeripheryHalfAngle(config.peripheryHalfAngle);
 
-            object->AddComponent<AwarenessBarComponent>();
+            object->AddComponent<AwarenessGaugeComponent>();
 
             auto voiceAudio = object->AddComponent<XYZEngine::AudioComponent>();
             auto voice = object->AddComponent<EnemyVoiceComponent>();

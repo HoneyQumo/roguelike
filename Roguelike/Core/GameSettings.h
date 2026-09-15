@@ -375,9 +375,10 @@ namespace RoguelikeGame
     inline const sf::Color INVENTORY_SLOT_FILLED_COLOR = {70, 70, 80, 235};
     inline const sf::Color INVENTORY_SLOT_SELECTED_COLOR = {120, 150, 190, 245};
     inline const sf::Color INVENTORY_SLOT_OUTLINE_COLOR = {16, 16, 18, 255};
-    inline const sf::Color AWARENESS_BAR_COLOR = {235, 200, 80};
-    inline const sf::Color AWARENESS_BAR_ALARM_COLOR = {230, 70, 55};
-    inline const sf::Color AWARENESS_BAR_BACK_COLOR = {20, 20, 20, 190};
+    inline const sf::Color AWARENESS_GAUGE_COLOR = {245, 215, 90};
+    inline const sf::Color AWARENESS_GAUGE_ALARM_COLOR = {235, 65, 50};
+    inline const sf::Color AWARENESS_GAUGE_BACK_COLOR = {18, 18, 22, 170};
+    constexpr float AWARENESS_GAUGE_RIM = 2.f;
     inline const sf::Color DEBUG_DETECTION_COLOR = {240, 200, 60};
     inline const sf::Color DEBUG_CHASING_COLOR = {240, 80, 60};
     inline const sf::Color DEBUG_ATTACK_RANGE_COLOR = {255, 140, 40};

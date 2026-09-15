@@ -109,6 +109,7 @@
     <ClCompile Include="Tileset.tests.cpp" />
     <ClCompile Include="Awareness.tests.cpp" />
     <ClCompile Include="EnemyVoice.tests.cpp" />
+    <ClCompile Include="AwarenessGauge.tests.cpp" />
     <ClCompile Include="RoomWake.tests.cpp" />
     <ClCompile Include="ActAssembler.tests.cpp" />
     <ClCompile Include="PathField.tests.cpp" />
@@ -177,7 +178,10 @@
     <ClCompile Include="..\Roguelike\Level\Tileset.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\Roguelike\Enemies\AwarenessBarComponent.cpp">
+    <ClCompile Include="..\Roguelike\Enemies\AwarenessGauge.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Roguelike\Enemies\AwarenessGaugeComponent.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\Roguelike\Level\ActAssembler.cpp">

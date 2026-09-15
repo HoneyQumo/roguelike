@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "Awareness.h"
-#include "AwarenessBarComponent.h"
+#include "AwarenessGaugeComponent.h"
 #include "ChaseComponent.h"
 #include "GameSettings.h"
 #include "LevelGrid.h"
@@ -484,49 +484,49 @@ TEST_F(ChaseComponentTest, ClosedDoorHidesTheTargetThatWasInSight)
 	EXPECT_FALSE(chase->CanSeeTarget());
 }
 
-TEST_F(ChaseComponentTest, BarIsHiddenWhileNothingIsNoticed)
+TEST_F(ChaseComponentTest, GaugeIsHiddenWhileNothingIsNoticed)
 {
 	CreateHero(3, 1);
 	ChaseComponent* chase = CreateEnemy(1, 1);
 	chase->SetAwareness(1.f, 0.7f);
 	chase->GetGameObject()->GetTransform()->SetWorldRotation(180.f);
-	auto bar = chase->GetGameObject()->AddComponent<RoguelikeGame::AwarenessBarComponent>();
+	auto gauge = chase->GetGameObject()->AddComponent<RoguelikeGame::AwarenessGaugeComponent>();
 
 	Run(1.f);
 
-	EXPECT_FALSE(bar->IsShown());
-	EXPECT_FLOAT_EQ(bar->GetShownPart(), 0.f);
+	EXPECT_FALSE(gauge->IsShown());
+	EXPECT_FLOAT_EQ(gauge->GetShownPart(), 0.f);
 }
 
-TEST_F(ChaseComponentTest, BarFillsUpWhileTheEnemyPeers)
+TEST_F(ChaseComponentTest, GaugeFillsUpWhileTheEnemyPeers)
 {
 	CreateHero(1, 3);
 	ChaseComponent* chase = CreateEnemy(1, 1);
 	chase->SetAwareness(1.f, 0.7f);
 	chase->SetPeripheryHalfAngle(100.f);
-	auto bar = chase->GetGameObject()->AddComponent<RoguelikeGame::AwarenessBarComponent>();
+	auto gauge = chase->GetGameObject()->AddComponent<RoguelikeGame::AwarenessGaugeComponent>();
 
 	Run(0.6f);
-	float early = bar->GetShownPart();
+	float early = gauge->GetShownPart();
 	Run(0.6f);
 
-	EXPECT_TRUE(bar->IsShown());
+	EXPECT_TRUE(gauge->IsShown());
 	EXPECT_GT(early, 0.f);
-	EXPECT_GT(bar->GetShownPart(), early);
+	EXPECT_GT(gauge->GetShownPart(), early);
 }
 
-TEST_F(ChaseComponentTest, BarIsFullWhenTheChaseStarts)
+TEST_F(ChaseComponentTest, GaugeIsFullWhenTheChaseStarts)
 {
 	CreateHero(1, 3);
 	ChaseComponent* chase = CreateEnemy(1, 1);
 	chase->SetAwareness(1.f, 0.7f);
 	chase->SetPeripheryHalfAngle(100.f);
-	auto bar = chase->GetGameObject()->AddComponent<RoguelikeGame::AwarenessBarComponent>();
+	auto gauge = chase->GetGameObject()->AddComponent<RoguelikeGame::AwarenessGaugeComponent>();
 
 	Run(2.5f);
 
 	ASSERT_TRUE(chase->IsChasing());
-	EXPECT_FLOAT_EQ(bar->GetShownPart(), 1.f);
+	EXPECT_FLOAT_EQ(gauge->GetShownPart(), 1.f);
 }
 
 TEST_F(ChaseComponentTest, TargetInFrontIsSpottedAtOnce)

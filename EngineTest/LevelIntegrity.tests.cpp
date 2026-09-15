@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "ActAssembler.h"
 #include "ItemCatalogLoader.h"
+#include "PropCatalog.h"
 #include "LevelCatalog.h"
 #include "LevelIntegrity.h"
 #include "LevelLoader.h"
@@ -247,5 +248,56 @@ TEST_F(ShippedLevelsTest, EveryLevelInTheCatalogIsSound)
 		LevelReport report = CheckLevel(level, items);
 
 		EXPECT_TRUE(report.IsClean()) << entry.id << "\n" << report.Describe();
+	}
+}
+
+namespace
+{
+	class ShippedRoomsTest : public ProjectFiles::Test
+	{
+	};
+}
+
+TEST_F(ShippedRoomsTest, EveryRoomIsRectangular)
+{
+	ASSERT_TRUE(isFound) << previous.string();
+
+	int rooms = 0;
+	for (const auto& entry : std::filesystem::directory_iterator("Resources/Rooms"))
+	{
+		LevelData room = LevelLoader::Load(entry.path().string());
+		rooms++;
+
+		for (std::size_t line = 0; line < room.tiles.size(); line++)
+		{
+			EXPECT_EQ(static_cast<int>(room.tiles[line].size()), room.width)
+				<< entry.path().filename().string() << " line " << line;
+		}
+	}
+
+	EXPECT_GT(rooms, 0);
+}
+
+TEST_F(ShippedRoomsTest, EveryRoomNamesThingsThatExist)
+{
+	ASSERT_TRUE(isFound) << previous.string();
+
+	ItemCatalog items = ItemCatalogLoader::Load("Resources/Items/items.config");
+	RoguelikeGame::PropCatalog props = RoguelikeGame::PropCatalog::Load("Resources/Props/props.config");
+
+	for (const auto& entry : std::filesystem::directory_iterator("Resources/Rooms"))
+	{
+		std::string name = entry.path().filename().string();
+		LevelData room = LevelLoader::Load(entry.path().string());
+
+		for (const RoguelikeGame::PropPlacement& prop : room.props)
+		{
+			EXPECT_NE(props.Find(prop.propId), nullptr) << name << " has " << prop.propId;
+		}
+
+		for (const RoguelikeGame::ItemPlacement& item : room.items)
+		{
+			EXPECT_TRUE(items.Contains(item.itemId)) << name << " has " << item.itemId;
+		}
 	}
 }

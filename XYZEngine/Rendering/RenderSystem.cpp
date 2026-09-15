@@ -97,10 +97,47 @@ namespace XYZEngine
 
 	void RenderSystem::Render(const sf::Drawable& drawable)
 	{
+		drawnCount++;
 		GetMainWindow().draw(drawable);
 	}
 	void RenderSystem::Render(const sf::Drawable& drawable, const sf::RenderStates& states)
 	{
+		drawnCount++;
 		GetMainWindow().draw(drawable, states);
+	}
+
+	sf::FloatRect RenderSystem::GetViewArea() const
+	{
+		const sf::View& view = GetMainWindow().getView();
+		sf::Vector2f center = view.getCenter();
+		sf::Vector2f size = view.getSize();
+
+		return NormalizedArea(sf::FloatRect(center.x - 0.5f * size.x, center.y - 0.5f * size.y, size.x, size.y));
+	}
+
+	bool RenderSystem::IsVisible(const sf::FloatRect& bounds) const
+	{
+		if (IsInView(bounds, GetViewArea(), VIEW_CULLING_MARGIN))
+		{
+			return true;
+		}
+
+		culledCount++;
+
+		return false;
+	}
+
+	void RenderSystem::ResetFrameStats()
+	{
+		drawnCount = 0;
+		culledCount = 0;
+	}
+	int RenderSystem::GetDrawnCount() const
+	{
+		return drawnCount;
+	}
+	int RenderSystem::GetCulledCount() const
+	{
+		return culledCount;
 	}
 }

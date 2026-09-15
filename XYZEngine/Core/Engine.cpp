@@ -80,6 +80,8 @@ namespace XYZEngine
 
 			RenderSystem::Instance()->GetMainWindow().clear();
 
+			RenderSystem::Instance()->ResetFrameStats();
+
 			if (!isPaused)
 			{
 				GameWorld::Instance()->Update(gameDeltaTime);
@@ -87,6 +89,11 @@ namespace XYZEngine
 			}
 			GameWorld::Instance()->Render();
 			UiManager::Instance()->Render();
+			if (DebugDraw::Instance()->IsEnabled())
+			{
+				DebugDraw::Instance()->AddText("drawn " + std::to_string(RenderSystem::Instance()->GetDrawnCount())
+					+ ", culled " + std::to_string(RenderSystem::Instance()->GetCulledCount()));
+			}
 			DebugDraw::Instance()->Render();
 			GameWorld::Instance()->LateUpdate();
 

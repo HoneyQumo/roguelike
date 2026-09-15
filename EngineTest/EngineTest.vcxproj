@@ -104,6 +104,7 @@
     <ClCompile Include="Door.tests.cpp" />
     <ClCompile Include="DoorHinge.tests.cpp" />
     <ClCompile Include="LevelZones.tests.cpp" />
+    <ClCompile Include="ViewCulling.tests.cpp" />
     <ClCompile Include="RoomWake.tests.cpp" />
     <ClCompile Include="ActAssembler.tests.cpp" />
     <ClCompile Include="PathField.tests.cpp" />

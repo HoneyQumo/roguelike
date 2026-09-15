@@ -2,6 +2,7 @@
 
 #include <SFML/Graphics.hpp>
 #include "EventList.h"
+#include "ViewCulling.h"
 
 namespace XYZEngine
 {
@@ -26,12 +27,21 @@ namespace XYZEngine
 		void Render(const sf::Drawable& drawable);
 		void Render(const sf::Drawable& drawable, const sf::RenderStates& states);
 
+		sf::FloatRect GetViewArea() const;
+		bool IsVisible(const sf::FloatRect& bounds) const;
+
+		void ResetFrameStats();
+		int GetDrawnCount() const;
+		int GetCulledCount() const;
+
 	private:
 		sf::RenderWindow* window = nullptr;
 		sf::Vector2u windowSize = {0, 0};
 		sf::View uiView = sf::View(sf::FloatRect(0.f, 0.f, 0.f, 0.f));
 		sf::View savedView = sf::View(sf::FloatRect(0.f, 0.f, 0.f, 0.f));
 		bool isUiPass = false;
+		int drawnCount = 0;
+		mutable int culledCount = 0;
 		EventList<unsigned int, unsigned int> resizeEvent;
 
 		RenderSystem() {}

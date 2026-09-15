@@ -1,5 +1,7 @@
 #include "pch.h"
 #include "PropCatalog.h"
+#include "ProjectFiles.h"
+#include <SFML/Graphics/Image.hpp>
 #include <sstream>
 
 using RoguelikeGame::PropCatalog;
@@ -148,4 +150,102 @@ TEST(PropCatalogTest, ABushIsWalkedThroughAndBlocksTheView)
 	ASSERT_NE(prop, nullptr);
 	EXPECT_FALSE(prop->isSolid);
 	EXPECT_TRUE(prop->isCover);
+}
+
+namespace
+{
+	class ShippedPropsTest : public ProjectFiles::Test
+	{
+	protected:
+		PropCatalog Shipped()
+		{
+			return PropCatalog::Load("Resources/Props/props.config");
+		}
+	};
+}
+
+TEST_F(ShippedPropsTest, EveryFrameFitsInsideItsAtlas)
+{
+	ASSERT_TRUE(isFound) << previous.string();
+
+	PropCatalog catalog = Shipped();
+	ASSERT_FALSE(catalog.IsEmpty());
+
+	for (const PropDefinition& prop : catalog)
+	{
+		if (!prop.HasFrame())
+		{
+			continue;
+		}
+
+		sf::Image atlas;
+		ASSERT_TRUE(atlas.loadFromFile(prop.texturePath)) << prop.id;
+
+		for (const sf::IntRect& frame : {prop.frame, prop.spentFrame})
+		{
+			if (frame.width == 0 && frame.height == 0)
+			{
+				continue;
+			}
+
+			EXPECT_GE(frame.left, 0) << prop.id;
+			EXPECT_GE(frame.top, 0) << prop.id;
+			EXPECT_LE(frame.left + frame.width, static_cast<int>(atlas.getSize().x)) << prop.id;
+			EXPECT_LE(frame.top + frame.height, static_cast<int>(atlas.getSize().y)) << prop.id;
+		}
+	}
+}
+
+TEST_F(ShippedPropsTest, ABushIsWalkedThroughAndHides)
+{
+	ASSERT_TRUE(isFound) << previous.string();
+
+	PropCatalog catalog = Shipped();
+	const PropDefinition* bush = catalog.Find("bush");
+
+	ASSERT_NE(bush, nullptr);
+	EXPECT_FALSE(bush->isSolid);
+	EXPECT_TRUE(bush->isCover);
+}
+
+TEST_F(ShippedPropsTest, GlassAndBarsStopTheWayButNotTheView)
+{
+	ASSERT_TRUE(isFound) << previous.string();
+
+	PropCatalog catalog = Shipped();
+
+	for (const char* id : {"shop_glass", "cell_bars"})
+	{
+		const PropDefinition* prop = catalog.Find(id);
+		ASSERT_NE(prop, nullptr) << id;
+		EXPECT_TRUE(prop->isSolid) << id;
+		EXPECT_FALSE(prop->isCover) << id;
+	}
+}
+
+TEST_F(ShippedPropsTest, TallThingsHideWhoeverIsBehindThem)
+{
+	ASSERT_TRUE(isFound) << previous.string();
+
+	PropCatalog catalog = Shipped();
+
+	for (const char* id : {"locker", "bin", "concrete_block"})
+	{
+		const PropDefinition* prop = catalog.Find(id);
+		ASSERT_NE(prop, nullptr) << id;
+		EXPECT_TRUE(prop->isSolid) << id;
+		EXPECT_TRUE(prop->isCover) << id;
+	}
+}
+
+TEST_F(ShippedPropsTest, OldCratesStayAsTheyWere)
+{
+	ASSERT_TRUE(isFound) << previous.string();
+
+	PropCatalog catalog = Shipped();
+	const PropDefinition* crate = catalog.Find("crate_ammo");
+
+	ASSERT_NE(crate, nullptr);
+	EXPECT_TRUE(crate->isSolid);
+	EXPECT_FALSE(crate->isCover);
 }

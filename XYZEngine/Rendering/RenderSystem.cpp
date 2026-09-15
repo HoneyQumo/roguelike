@@ -23,8 +23,36 @@ namespace XYZEngine
 
 		window = newWindow;
 		HandleResize(window->getSize().x, window->getSize().y);
+		ApplyMouseHold();
 
 		LOG_INFO("Main window is set");
+	}
+
+	void RenderSystem::HandleFocus(bool newIsFocused)
+	{
+		isFocused = newIsFocused;
+		ApplyMouseHold();
+	}
+
+	void RenderSystem::HoldMouse(bool isWanted)
+	{
+		isMouseWanted = isWanted;
+		ApplyMouseHold();
+	}
+
+	bool RenderSystem::IsMouseHeld() const
+	{
+		return isMouseWanted && isFocused;
+	}
+
+	void RenderSystem::ApplyMouseHold()
+	{
+		if (window == nullptr)
+		{
+			return;
+		}
+
+		window->setMouseCursorGrabbed(IsMouseHeld());
 	}
 
 	void RenderSystem::HandleResize(unsigned int width, unsigned int height)

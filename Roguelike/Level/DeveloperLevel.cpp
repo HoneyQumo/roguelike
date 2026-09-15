@@ -366,6 +366,7 @@ namespace RoguelikeGame
     {
         Engine::Instance()->SetPaused(isPaused);
         RenderSystem::Instance()->GetMainWindow().setMouseCursorVisible(isPaused);
+        RenderSystem::Instance()->HoldMouse(!isPaused);
 
         if (music != nullptr)
         {

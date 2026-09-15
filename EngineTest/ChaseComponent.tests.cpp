@@ -1,5 +1,7 @@
 #include "pch.h"
 #include "Awareness.h"
+#include "FactionComponent.h"
+#include "Noise.h"
 #include "AwarenessGaugeComponent.h"
 #include "ChaseComponent.h"
 #include "GameSettings.h"
@@ -648,4 +650,74 @@ TEST_F(ChaseComponentTest, CloserToTheSideIsStillSeen)
 	Run(0.1f);
 
 	EXPECT_EQ(chase->GetVisionBand(), RoguelikeGame::VisionBand::Periphery);
+}
+
+TEST_F(ChaseComponentTest, HeardNoiseSendsTheEnemyToLook)
+{
+	CreateHero(11, 1);
+	ChaseComponent* chase = CreateEnemy(1, 1);
+	chase->GetGameObject()->GetTransform()->SetWorldRotation(180.f);
+	Run(0.1f);
+	ASSERT_FALSE(chase->IsEngaged());
+
+	chase->Hear(At(3, 1));
+	Run(0.3f);
+
+	EXPECT_TRUE(chase->IsEngaged());
+	EXPECT_GT(chase->GetGameObject()->GetTransform()->GetWorldPosition().x, At(1, 1).x);
+}
+
+TEST_F(ChaseComponentTest, NoiseNearbyIsHeardAndFarAwayIsNot)
+{
+	CreateHero(11, 1);
+	ChaseComponent* close = CreateEnemy(1, 1);
+	ChaseComponent* far = CreateEnemy(9, 1);
+	close->GetGameObject()->GetTransform()->SetWorldRotation(180.f);
+	far->GetGameObject()->GetTransform()->SetWorldRotation(180.f);
+	Run(0.1f);
+
+	RoguelikeGame::Noise noise;
+	noise.position = At(2, 1);
+	noise.radius = 200.f;
+	noise.from = RoguelikeGame::Faction::Player;
+	RaiseNoise(noise);
+	Run(0.1f);
+
+	EXPECT_TRUE(close->IsEngaged());
+	EXPECT_FALSE(far->IsEngaged());
+}
+
+TEST_F(ChaseComponentTest, EnemyDoesNotTurnOnItsOwnSideShot)
+{
+	CreateHero(11, 1);
+	ChaseComponent* chase = CreateEnemy(1, 1);
+	chase->GetGameObject()->AddComponent<RoguelikeGame::FactionComponent>()->SetFaction(RoguelikeGame::Faction::Enemy);
+	chase->GetGameObject()->GetTransform()->SetWorldRotation(180.f);
+	Run(0.1f);
+
+	RoguelikeGame::Noise noise;
+	noise.position = At(2, 1);
+	noise.radius = 400.f;
+	noise.from = RoguelikeGame::Faction::Enemy;
+	RaiseNoise(noise);
+	Run(0.1f);
+
+	EXPECT_FALSE(chase->IsEngaged());
+}
+
+TEST_F(ChaseComponentTest, BrokenCrateIsHeardByEverySide)
+{
+	CreateHero(11, 1);
+	ChaseComponent* chase = CreateEnemy(1, 1);
+	chase->GetGameObject()->AddComponent<RoguelikeGame::FactionComponent>()->SetFaction(RoguelikeGame::Faction::Enemy);
+	chase->GetGameObject()->GetTransform()->SetWorldRotation(180.f);
+	Run(0.1f);
+
+	RoguelikeGame::Noise noise;
+	noise.position = At(2, 1);
+	noise.radius = 400.f;
+	RaiseNoise(noise);
+	Run(0.1f);
+
+	EXPECT_TRUE(chase->IsEngaged());
 }

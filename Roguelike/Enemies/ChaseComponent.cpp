@@ -33,6 +33,18 @@ namespace RoguelikeGame
 		}
 	}
 
+	void ChaseComponent::Hear(const Vector2Df& place)
+	{
+		if (detectionRadius <= 0.f || alertTime <= 0.f || (health != nullptr && !health->IsAlive()))
+		{
+			return;
+		}
+
+		investigatePoint = place;
+		memory = Remember(memory, alertTime);
+		awareness = std::max(awareness, AWARENESS_ALERT_AT);
+	}
+
 	void ChaseComponent::OnDamage(const DamageInfo& damage)
 	{
 		if (detectionRadius <= 0.f || alertTime <= 0.f)

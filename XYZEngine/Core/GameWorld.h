@@ -30,6 +30,21 @@ namespace XYZEngine
 			return found == nullptr ? nullptr : found->GetComponent<T>();
 		}
 
+		template <typename T>
+		std::vector<T*> FindComponents() const
+		{
+			std::vector<T*> found;
+			for (GameObject* gameObject : gameObjects)
+			{
+				if (T* component = gameObject->GetComponent<T>())
+				{
+					found.push_back(component);
+				}
+			}
+
+			return found;
+		}
+
 		std::size_t GetObjectsCount() const;
 		void DestroyGameObject(GameObject* gameObject);
 		void DestroyGameObjects(const std::string& name);

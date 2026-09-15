@@ -110,6 +110,7 @@
     <ClCompile Include="Awareness.tests.cpp" />
     <ClCompile Include="EnemyVoice.tests.cpp" />
     <ClCompile Include="AwarenessGauge.tests.cpp" />
+    <ClCompile Include="Noise.tests.cpp" />
     <ClCompile Include="RoomWake.tests.cpp" />
     <ClCompile Include="ActAssembler.tests.cpp" />
     <ClCompile Include="PathField.tests.cpp" />
@@ -179,6 +180,9 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\Roguelike\Enemies\AwarenessGauge.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Roguelike\Enemies\Noise.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\Roguelike\Enemies\AwarenessGaugeComponent.cpp">

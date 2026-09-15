@@ -218,6 +218,8 @@
         <ClInclude Include="Enemies\ChaseRules.h"/>
         <ClInclude Include="Enemies\Awareness.h"/>
         <ClInclude Include="Enemies\AwarenessGauge.h"/>
+        <ClInclude Include="Enemies\Noise.h"/>
+        <ClCompile Include="Enemies\Noise.cpp"/>
         <ClInclude Include="Enemies\AwarenessGaugeComponent.h"/>
         <ClInclude Include="Enemies\EnemyVoice.h"/>
         <ClInclude Include="Enemies\EnemyVoiceComponent.h"/>

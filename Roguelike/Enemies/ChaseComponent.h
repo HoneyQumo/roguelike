@@ -53,6 +53,7 @@ namespace RoguelikeGame
 		void SetAwareness(float newGain, float newDecay);
 		void SetPeripheryHalfAngle(float newHalfAngle);
 		void SetForcedChase(bool newIsForced);
+		void Hear(const XYZEngine::Vector2Df& place);
 
 		bool IsChasing() const;
 		bool IsAlerted() const;

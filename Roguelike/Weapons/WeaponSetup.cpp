@@ -3,6 +3,8 @@
 #include "GameResources.h"
 #include "Projectile.h"
 #include "Fx.h"
+#include "FactionComponent.h"
+#include "Noise.h"
 
 namespace RoguelikeGame
 {
@@ -28,6 +30,19 @@ namespace RoguelikeGame
                                        float damage, float speed)
         {
             Projectile::Spawn(shotPosition, shotDirection, damage, speed, weapon->GetGameObject(), weapon->GetWeaponId());
+        });
+    }
+
+    void RaiseNoiseOnShot(WeaponComponent* weapon)
+    {
+        weapon->SubscribeShot([weapon](const XYZEngine::Vector2Df& shotPosition, const XYZEngine::Vector2Df&, float, float)
+        {
+            Noise noise;
+            noise.position = shotPosition;
+            noise.radius = GetWeapon(weapon->GetWeaponId()).noiseRadius;
+            noise.from = GetFactionOf(weapon->GetGameObject());
+
+            RaiseNoise(noise);
         });
     }
 

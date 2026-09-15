@@ -1,11 +1,13 @@
 #include "pch.h"
 #include "Noise.h"
+#include "EnemyCatalog.h"
 #include "WeaponCatalog.h"
 
 using RoguelikeGame::Faction;
 using RoguelikeGame::IsHeard;
 using RoguelikeGame::MuffledRadius;
 using RoguelikeGame::Noise;
+using RoguelikeGame::NoiseKind;
 using XYZEngine::Vector2Df;
 
 namespace
@@ -80,4 +82,48 @@ TEST(NoiseTest, ShotBehindOneWallIsHeardOnlyFromClose)
 TEST(NoiseTest, BehindManyWallsNothingIsHeard)
 {
 	EXPECT_FALSE(IsHeard(Shot(560.f), {100.f, 180.f}, Faction::Enemy, 4));
+}
+
+namespace
+{
+	Noise Call(float radius, Faction from)
+	{
+		Noise noise = Shot(radius, from);
+		noise.kind = NoiseKind::Call;
+
+		return noise;
+	}
+}
+
+TEST(NoiseTest, ACallReachesOwnSideOnly)
+{
+	EXPECT_TRUE(IsHeard(Call(300.f, Faction::Enemy), {100.f, 250.f}, Faction::Enemy));
+	EXPECT_FALSE(IsHeard(Call(300.f, Faction::Enemy), {100.f, 250.f}, Faction::Player));
+}
+
+TEST(NoiseTest, ADisturbanceReachesTheOtherSideOnly)
+{
+	EXPECT_TRUE(IsHeard(Shot(300.f, Faction::Enemy), {100.f, 250.f}, Faction::Player));
+	EXPECT_FALSE(IsHeard(Shot(300.f, Faction::Enemy), {100.f, 250.f}, Faction::Enemy));
+}
+
+TEST(NoiseTest, ACallIsMuffledByWallsTheSameWay)
+{
+	EXPECT_TRUE(IsHeard(Call(300.f, Faction::Enemy), {100.f, 250.f}, Faction::Enemy, 0));
+	EXPECT_FALSE(IsHeard(Call(300.f, Faction::Enemy), {100.f, 250.f}, Faction::Enemy, 1));
+}
+
+TEST(NoiseTest, EveryEnemyShoutsAndTheRadioShoutsFurther)
+{
+	for (const RoguelikeGame::EnemyDefinition& enemy : RoguelikeGame::ENEMIES)
+	{
+		EXPECT_GT(enemy.config.shoutRadius, 0.f) << enemy.config.objectName;
+	}
+
+	const RoguelikeGame::EnemyConfig* radio = RoguelikeGame::FindEnemyConfig(RoguelikeGame::TileType::RadioSpawn);
+	const RoguelikeGame::EnemyConfig* grunt = RoguelikeGame::FindEnemyConfig(RoguelikeGame::TileType::GruntSpawn);
+
+	ASSERT_NE(radio, nullptr);
+	ASSERT_NE(grunt, nullptr);
+	EXPECT_GT(radio->shoutRadius, grunt->shoutRadius);
 }

@@ -24,7 +24,7 @@ namespace RoguelikeGame
         }
 
         AwarenessState now = chase->GetAwarenessState();
-        if (ShouldSpeakOnSpotting(seenBefore, now))
+        if (IsSpottedNow(seenBefore, now))
         {
             Speak();
         }

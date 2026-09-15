@@ -3,16 +3,40 @@
 #include <Vector.h>
 #include "Faction.h"
 
+namespace XYZEngine
+{
+    class GameObject;
+}
+
 namespace RoguelikeGame
 {
     constexpr float WALL_MUFFLE = 0.45f;
+    constexpr float SHOUT_RADIUS = 420.f;
+    constexpr float RADIO_SHOUT_RADIUS = 1100.f;
+
+    enum class NoiseKind
+    {
+        Disturbance,
+        Call
+    };
 
     struct Noise
     {
         XYZEngine::Vector2Df position = {0.f, 0.f};
         float radius = 0.f;
         Faction from = Faction::Neutral;
+        NoiseKind kind = NoiseKind::Disturbance;
     };
+
+    inline bool ReachesSide(const Noise& noise, Faction listenerSide)
+    {
+        if (noise.kind == NoiseKind::Call)
+        {
+            return noise.from == listenerSide;
+        }
+
+        return noise.from == Faction::Neutral || noise.from != listenerSide;
+    }
 
     inline float MuffledRadius(float radius, int wallsBetween)
     {
@@ -32,7 +56,7 @@ namespace RoguelikeGame
             return false;
         }
 
-        if (noise.from != Faction::Neutral && noise.from == listenerSide)
+        if (!ReachesSide(noise, listenerSide))
         {
             return false;
         }
@@ -42,5 +66,5 @@ namespace RoguelikeGame
         return (listener - noise.position).GetLengthSquared() <= reach * reach;
     }
 
-    void RaiseNoise(const Noise& noise);
+    void RaiseNoise(const Noise& noise, const XYZEngine::GameObject* except = nullptr);
 }

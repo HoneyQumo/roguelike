@@ -3,6 +3,7 @@
 #include "FactionComponent.h"
 #include "GameSettings.h"
 #include "LevelGrid.h"
+#include "Noise.h"
 #include "PathService.h"
 #include "HealthComponent.h"
 #include <AimRotationComponent.h>
@@ -134,6 +135,22 @@ namespace RoguelikeGame
 		return look;
 	}
 
+	void ChaseComponent::Shout()
+	{
+		if (shoutRadius <= 0.f)
+		{
+			return;
+		}
+
+		Noise call;
+		call.position = transform->GetWorldPosition();
+		call.radius = shoutRadius;
+		call.from = GetFactionOf(gameObject);
+		call.kind = NoiseKind::Call;
+
+		RaiseNoise(call, gameObject);
+	}
+
 	void ChaseComponent::ApplyAim(const ChaseSense& sense)
 	{
 		if (aim == nullptr)
@@ -194,6 +211,12 @@ namespace RoguelikeGame
 		hasLastTarget = target != nullptr;
 
 		AwarenessState state = StateOf(awareness);
+		if (IsSpottedNow(spottedBefore, state))
+		{
+			Shout();
+		}
+
+		spottedBefore = state;
 		sense.isVisible = isInSight && state == AwarenessState::Provoked;
 		sense.isAlerted = sense.isAlerted || state == AwarenessState::Alerted;
 
@@ -413,6 +436,16 @@ namespace RoguelikeGame
 	void ChaseComponent::SetPeripheryHalfAngle(float newHalfAngle)
 	{
 		peripheryHalfAngle = std::max(newHalfAngle, 0.f);
+	}
+
+	void ChaseComponent::SetShoutRadius(float newRadius)
+	{
+		shoutRadius = std::max(newRadius, 0.f);
+	}
+
+	float ChaseComponent::GetShoutRadius() const
+	{
+		return shoutRadius;
 	}
 
 	VisionBand ChaseComponent::GetVisionBand() const

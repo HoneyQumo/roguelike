@@ -20,9 +20,4 @@ namespace RoguelikeGame
 
         return key.empty() ? key : VOICE_AUDIO_PATH + key + VOICE_AUDIO_SUFFIX;
     }
-
-    constexpr bool ShouldSpeakOnSpotting(AwarenessState before, AwarenessState now)
-    {
-        return now == AwarenessState::Provoked && before != AwarenessState::Provoked;
-    }
 }

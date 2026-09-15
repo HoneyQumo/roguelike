@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Noise.h"
 #include "WeaponCatalog.h"
 
 namespace RoguelikeGame
@@ -39,5 +40,6 @@ namespace RoguelikeGame
         const char* voice = nullptr;
         int voiceLines = 0;
         float peripheryHalfAngle = 0.f;
+        float shoutRadius = SHOUT_RADIUS;
     };
 }

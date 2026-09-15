@@ -1,4 +1,4 @@
-#include "RoomTransform.h"
+﻿#include "RoomTransform.h"
 
 namespace RoguelikeGame
 {
@@ -87,6 +87,18 @@ namespace RoguelikeGame
         {
             Placement to = Move({door.column, door.row}, width, height, turns, isMirrored);
             moved.doors.push_back({to.column, to.row, door.doorId});
+        }
+
+        for (const FixturePlacement& lever : room.levers)
+        {
+            Placement to = Move({lever.column, lever.row}, width, height, turns, isMirrored);
+            moved.levers.push_back({to.column, to.row, lever.id});
+        }
+
+        for (const FixturePlacement& hatch : room.hatches)
+        {
+            Placement to = Move({hatch.column, hatch.row}, width, height, turns, isMirrored);
+            moved.hatches.push_back({to.column, to.row, hatch.id});
         }
 
         for (const ZonePlacement& zone : room.zones)

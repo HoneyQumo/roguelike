@@ -11,6 +11,9 @@
 #include "Enemy.h"
 #include "EnemyCatalog.h"
 #include "Item.h"
+#include "GameResources.h"
+#include "HealthComponent.h"
+#include "DamageInfo.h"
 #include "Prop.h"
 #include "LevelExit.h"
 #include "LevelExitComponent.h"
@@ -186,6 +189,30 @@ namespace RoguelikeGame
         XYZEngine::GameObject* bossObject = CreateBoss(config, *definition, position);
         level.SetBoss(bossObject);
 
+        const ItemDefinition* prize = levelData.info.boss.drop.empty()
+            ? nullptr
+            : GameResources::GetItems().Find(levelData.info.boss.drop);
+
+        if (!levelData.info.boss.drop.empty() && prize == nullptr)
+        {
+            LOG_ERROR("Level boss drops unknown item: " + levelData.info.boss.drop);
+        }
+
+        if (prize != nullptr)
+        {
+            auto health = bossObject->GetComponent<HealthComponent>();
+            if (health != nullptr)
+            {
+                Level* target = &level;
+                ItemDefinition kept = *prize;
+                health->SubscribeDeath([target, kept](const DeathInfo& death)
+                {
+                    target->Add(CreateItem(kept, death.position));
+                    LOG_INFO("Boss dropped " + kept.id);
+                });
+            }
+        }
+
         return bossObject;
     }
 
@@ -323,6 +350,23 @@ namespace RoguelikeGame
         }
 
         LinkSwitches(levers, hatches);
+
+        if (!hatches.empty() && level.GetExit() == nullptr)
+        {
+            XYZEngine::GameObject* hidden = CreateLevelExit(
+                hatches.front()->GetGameObject()->GetTransform()->GetWorldPosition());
+
+            for (XYZEngine::Component* part : hidden->GetComponents<XYZEngine::Component>())
+            {
+                if (dynamic_cast<XYZEngine::RectangleRendererComponent*>(part) != nullptr)
+                {
+                    part->SetEnabled(false);
+                }
+            }
+
+            level.Add(hidden);
+            level.SetExit(hidden);
+        }
 
         if (!hatches.empty() && level.GetExit() != nullptr)
         {

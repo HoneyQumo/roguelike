@@ -168,6 +168,8 @@ namespace RoguelikeGame
                 info.boss.damageScale = 1.f;
             }
 
+            stream >> info.boss.drop;
+
             if (info.boss.healthScale <= 0.f || info.boss.damageScale <= 0.f)
             {
                 LOG_ERROR("Level boss scales must be positive, line " + std::to_string(lineNumber));

@@ -87,6 +87,7 @@ namespace RoguelikeGame
         std::string bossId;
         float healthScale = 1.f;
         float damageScale = 1.f;
+        std::string drop;
 
         bool IsEmpty() const { return bossId.empty(); }
     };

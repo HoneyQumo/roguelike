@@ -228,6 +228,9 @@
     <ClInclude Include="Rendering\PixelBounds.h">
       <Filter>Rendering</Filter>
     </ClInclude>
+    <ClInclude Include="Rendering\ViewCulling.h">
+      <Filter>Rendering</Filter>
+    </ClInclude>
     <ClCompile Include="Rendering\RectangleRendererComponent.cpp">
       <Filter>Rendering</Filter>
     </ClCompile>

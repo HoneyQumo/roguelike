@@ -31,6 +31,11 @@ namespace XYZEngine
         auto transformScale = Convert<sf::Vector2f, Vector2Df>(transform->GetWorldScale());
         sprite.setScale({scale.x * transformScale.x, scale.y * transformScale.y});
 
+        if (!RenderSystem::Instance()->IsVisible(sprite.getGlobalBounds()))
+        {
+            return;
+        }
+
         sf::RenderStates states(isAdditiveBlending ? sf::BlendAdd : sf::BlendAlpha);
 
         if (shader != nullptr)

@@ -23,6 +23,11 @@ namespace XYZEngine
 		rectangle.setPosition(Convert<sf::Vector2f, Vector2Df>(transform->GetWorldPosition()));
 		rectangle.setRotation(transform->GetWorldRotation());
 
+		if (!RenderSystem::Instance()->IsVisible(rectangle.getGlobalBounds()))
+		{
+			return;
+		}
+
 		RenderSystem::Instance()->Render(rectangle);
 	}
 

@@ -239,6 +239,7 @@ namespace RoguelikeGame
         auto rooms = gameObject->AddComponent<RoomWakeComponent>();
         rooms->SetTargetName(PLAYER_OBJECT_NAME);
         rooms->SetZones(zones);
+        rooms->SetAhead(ROOM_WAKE_AHEAD);
 
         return rooms;
     }

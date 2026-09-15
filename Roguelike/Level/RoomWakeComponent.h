@@ -19,6 +19,7 @@ namespace RoguelikeGame
 
         void SetTargetName(const std::string& newTargetName);
         void SetZones(std::vector<LevelZone> newZones);
+        void SetAhead(int newAhead);
 
         void AddSleeper(const std::string& zoneId, XYZEngine::GameObject* sleeper);
 
@@ -38,6 +39,7 @@ namespace RoguelikeGame
 
         std::string targetName;
         std::vector<LevelZone> zones;
+        int ahead = 0;
         std::vector<Sleeper> sleepers;
 
         XYZEngine::EventList<const std::string&> wokenEvent;

@@ -1,4 +1,5 @@
 #include "RoomWakeComponent.h"
+#include "GameSettings.h"
 #include "LevelGrid.h"
 #include <GameObject.h>
 #include <GameWorld.h>
@@ -31,10 +32,9 @@ namespace RoguelikeGame
         int row = 0;
         LevelGrid::Current().ToCell(target->GetTransform()->GetWorldPosition(), column, row);
 
-        const LevelZone* zone = FindZoneAt(zones, column, row);
-        if (zone != nullptr)
+        for (const std::string& zoneId : ZonesWithin(zones, column, row, ahead, ROOM_NEIGHBOUR_GAP))
         {
-            Wake(zone->id);
+            Wake(zoneId);
         }
     }
 
@@ -50,6 +50,11 @@ namespace RoguelikeGame
     void RoomWakeComponent::SetZones(std::vector<LevelZone> newZones)
     {
         zones = std::move(newZones);
+    }
+
+    void RoomWakeComponent::SetAhead(int newAhead)
+    {
+        ahead = std::max(newAhead, 0);
     }
 
     void RoomWakeComponent::AddSleeper(const std::string& zoneId, XYZEngine::GameObject* sleeper)

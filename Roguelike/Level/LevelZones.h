@@ -22,4 +22,7 @@ namespace RoguelikeGame
 
     std::vector<LevelZone> BuildZones(const LevelData& levelData);
     const LevelZone* FindZoneAt(const std::vector<LevelZone>& zones, int column, int row);
+
+    bool AreNeighbours(const LevelZone& first, const LevelZone& second, int gap);
+    std::vector<std::string> ZonesWithin(const std::vector<LevelZone>& zones, int column, int row, int ahead, int gap);
 }

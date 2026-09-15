@@ -1,13 +1,16 @@
 #include "pch.h"
 #include "LevelLoader.h"
 #include "LevelZones.h"
+#include <algorithm>
 #include <sstream>
 
+using RoguelikeGame::AreNeighbours;
 using RoguelikeGame::BuildZones;
 using RoguelikeGame::FindZoneAt;
 using RoguelikeGame::LevelData;
 using RoguelikeGame::LevelLoader;
 using RoguelikeGame::LevelZone;
+using RoguelikeGame::ZonesWithin;
 
 namespace
 {
@@ -17,6 +20,20 @@ namespace
 
 		return LevelLoader::Parse(input, "zones");
 	}
+
+	const std::string THREE_IN_A_ROW =
+		"[legend]\n"
+		"# Wall\n"
+		". Floor\n"
+		"a Zone:left\n"
+		"b Zone:middle\n"
+		"c Zone:right\n"
+		"[map]\n"
+		"###############\n"
+		"#a...b....c...#\n"
+		"#.............#\n"
+		"#...a....b...c#\n"
+		"###############\n";
 
 	const std::string TWO_ROOMS =
 		"[legend]\n"
@@ -115,4 +132,79 @@ TEST(LevelZonesTest, SingleMarkerMakesAZoneOfOneCell)
 TEST(LevelZonesTest, LegendWithoutAZoneIdIsRefused)
 {
 	EXPECT_THROW(LevelOf("[legend]\n# Wall\n. Floor\na Zone:\n[map]\n###\n#a#\n###\n"), std::runtime_error);
+}
+
+TEST(LevelZonesTest, RoomsSideBySideAreNeighbours)
+{
+	std::vector<LevelZone> zones = BuildZones(LevelOf(THREE_IN_A_ROW));
+
+	ASSERT_EQ(zones.size(), 3u);
+	EXPECT_TRUE(AreNeighbours(zones[0], zones[1], 1));
+	EXPECT_TRUE(AreNeighbours(zones[1], zones[2], 1));
+	EXPECT_FALSE(AreNeighbours(zones[0], zones[2], 1));
+}
+
+TEST(LevelZonesTest, ZoneIsNotItsOwnNeighbour)
+{
+	std::vector<LevelZone> zones = BuildZones(LevelOf(THREE_IN_A_ROW));
+
+	ASSERT_FALSE(zones.empty());
+	EXPECT_FALSE(AreNeighbours(zones[0], zones[0], 1));
+}
+
+TEST(LevelZonesTest, WithoutAGapTouchingRoomsAreApart)
+{
+	std::vector<LevelZone> zones = BuildZones(LevelOf(THREE_IN_A_ROW));
+
+	ASSERT_EQ(zones.size(), 3u);
+	EXPECT_FALSE(AreNeighbours(zones[0], zones[1], 0));
+}
+
+TEST(LevelZonesTest, LookingNowhereAheadGivesOnlyTheOwnRoom)
+{
+	std::vector<LevelZone> zones = BuildZones(LevelOf(THREE_IN_A_ROW));
+
+	EXPECT_EQ(ZonesWithin(zones, 2, 1, 0, 1), std::vector<std::string>({"left"}));
+}
+
+TEST(LevelZonesTest, OneRoomAheadTakesTheNeighbour)
+{
+	std::vector<LevelZone> zones = BuildZones(LevelOf(THREE_IN_A_ROW));
+	std::vector<std::string> woken = ZonesWithin(zones, 2, 1, 1, 1);
+
+	ASSERT_EQ(woken.size(), 2u);
+	EXPECT_EQ(woken[0], "left");
+	EXPECT_EQ(woken[1], "middle");
+}
+
+TEST(LevelZonesTest, FarRoomStaysOutOfReach)
+{
+	std::vector<LevelZone> zones = BuildZones(LevelOf(THREE_IN_A_ROW));
+	std::vector<std::string> woken = ZonesWithin(zones, 2, 1, 1, 1);
+
+	EXPECT_EQ(std::count(woken.begin(), woken.end(), std::string("right")), 0);
+}
+
+TEST(LevelZonesTest, TwoRoomsAheadReachTheFarOne)
+{
+	std::vector<LevelZone> zones = BuildZones(LevelOf(THREE_IN_A_ROW));
+	std::vector<std::string> woken = ZonesWithin(zones, 2, 1, 2, 1);
+
+	EXPECT_EQ(woken.size(), 3u);
+}
+
+TEST(LevelZonesTest, StandingInTheMiddleReachesBothSides)
+{
+	std::vector<LevelZone> zones = BuildZones(LevelOf(THREE_IN_A_ROW));
+	std::vector<std::string> woken = ZonesWithin(zones, 7, 1, 1, 1);
+
+	ASSERT_EQ(woken.size(), 3u);
+	EXPECT_EQ(woken[0], "middle");
+}
+
+TEST(LevelZonesTest, OutsideEveryRoomWakesNothing)
+{
+	std::vector<LevelZone> zones = BuildZones(LevelOf(THREE_IN_A_ROW));
+
+	EXPECT_TRUE(ZonesWithin(zones, 0, 0, 1, 1).empty());
 }

@@ -33,6 +33,20 @@ namespace
 		"#........z#\n"
 		"###########\n";
 
+	const std::string THREE_ROOMS =
+		"[legend]\n"
+		"# Wall\n"
+		". Floor\n"
+		"a Zone:left\n"
+		"b Zone:middle\n"
+		"c Zone:right\n"
+		"[map]\n"
+		"###############\n"
+		"#a...b....c...#\n"
+		"#.............#\n"
+		"#...a....b...c#\n"
+		"###############\n";
+
 	class TickCounterComponent : public Component
 	{
 	public:
@@ -52,8 +66,12 @@ namespace
 		void SetUp() override
 		{
 			GameWorld::Instance()->Clear();
+			LoadMap(HALL);
+		}
 
-			std::istringstream input(HALL);
+		void LoadMap(const std::string& map)
+		{
+			std::istringstream input(map);
 			level = LevelLoader::Parse(input, "wake");
 			LevelGrid::SetCurrent(LevelGrid::Build(level));
 			PathService::Reset();
@@ -256,4 +274,65 @@ TEST_F(RoomWakeTest, EnemyOutsideAnyZoneIsNeverPutToSleep)
 	EXPECT_TRUE(enemy->IsActive());
 	EXPECT_EQ(rooms->GetSleepingCount(), 0);
 	EXPECT_GT(enemy->GetComponent<TickCounterComponent>()->ticks, 0);
+}
+
+TEST_F(RoomWakeTest, NextRoomWakesUpTogetherWithThisOne)
+{
+	LoadMap(THREE_ROOMS);
+	RoomWakeComponent* rooms = CreateRooms();
+	rooms->SetAhead(1);
+	CreateHero(2, 2);
+	GameObject* middle = CreateEnemy(7, 2);
+	rooms->AddSleeper("middle", middle);
+
+	Run(3);
+
+	EXPECT_TRUE(middle->IsActive());
+	EXPECT_FALSE(rooms->IsAsleep("middle"));
+}
+
+TEST_F(RoomWakeTest, RoomTwoDoorsAwayKeepsSleeping)
+{
+	LoadMap(THREE_ROOMS);
+	RoomWakeComponent* rooms = CreateRooms();
+	rooms->SetAhead(1);
+	CreateHero(2, 2);
+	GameObject* right = CreateEnemy(12, 2);
+	rooms->AddSleeper("right", right);
+
+	Run(3);
+
+	EXPECT_FALSE(right->IsActive());
+	EXPECT_TRUE(rooms->IsAsleep("right"));
+}
+
+TEST_F(RoomWakeTest, WalkingOnWakesTheRoomAfterNext)
+{
+	LoadMap(THREE_ROOMS);
+	RoomWakeComponent* rooms = CreateRooms();
+	rooms->SetAhead(1);
+	GameObject* hero = CreateHero(2, 2);
+	GameObject* right = CreateEnemy(12, 2);
+	rooms->AddSleeper("right", right);
+	Run(3);
+	ASSERT_FALSE(right->IsActive());
+
+	hero->GetTransform()->SetWorldPosition(At(7, 2));
+	Run(3);
+
+	EXPECT_TRUE(right->IsActive());
+}
+
+TEST_F(RoomWakeTest, WithoutLookingAheadOnlyTheOwnRoomWakes)
+{
+	LoadMap(THREE_ROOMS);
+	RoomWakeComponent* rooms = CreateRooms();
+	rooms->SetAhead(0);
+	CreateHero(2, 2);
+	GameObject* middle = CreateEnemy(7, 2);
+	rooms->AddSleeper("middle", middle);
+
+	Run(3);
+
+	EXPECT_FALSE(middle->IsActive());
 }

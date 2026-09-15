@@ -16,6 +16,10 @@
 #include "LevelExitComponent.h"
 #include "Wall.h"
 #include "Door.h"
+#include "Fixture.h"
+#include "HatchComponent.h"
+#include "SwitchComponent.h"
+#include "LevelExitComponent.h"
 #include "DoorComponent.h"
 #include "RoomWakeComponent.h"
 #include "Tileset.h"
@@ -149,6 +153,7 @@ namespace RoguelikeGame
         int itemsCount = BuildItems(levelData, items, level);
         int propsCount = BuildProps(levelData, props, items, level);
         int doorsCount = BuildDoors(levelData, items, level);
+        int fixturesCount = BuildFixtures(levelData, level);
 
         LOG_INFO("Level built: tiles " + std::to_string(tilesCount)
             + ", walls " + std::to_string(wallsCount)
@@ -156,6 +161,7 @@ namespace RoguelikeGame
             + ", items " + std::to_string(itemsCount)
             + ", props " + std::to_string(propsCount)
             + ", doors " + std::to_string(doorsCount)
+            + ", fixtures " + std::to_string(fixturesCount)
             + ", asleep " + std::to_string(rooms != nullptr ? rooms->GetSleepingCount() : 0));
 
         return level;
@@ -287,6 +293,53 @@ namespace RoguelikeGame
         LinkDoors(doors);
 
         return static_cast<int>(doors.size());
+    }
+
+    int LevelBuilder::BuildFixtures(const LevelData& levelData, Level& level)
+    {
+        std::vector<SwitchComponent*> levers;
+        std::vector<HatchComponent*> hatches;
+
+        for (const FixturePlacement& placement : levelData.hatches)
+        {
+            auto position = TileToWorldPosition(placement.column, placement.row, levelData.height);
+
+            XYZEngine::GameObject* gameObject = CreateHatch(placement.id, position);
+            if (level.Add(gameObject))
+            {
+                hatches.push_back(gameObject->GetComponent<HatchComponent>());
+            }
+        }
+
+        for (const FixturePlacement& placement : levelData.levers)
+        {
+            auto position = TileToWorldPosition(placement.column, placement.row, levelData.height);
+
+            XYZEngine::GameObject* gameObject = CreateLever(placement.id, position);
+            if (level.Add(gameObject))
+            {
+                levers.push_back(gameObject->GetComponent<SwitchComponent>());
+            }
+        }
+
+        LinkSwitches(levers, hatches);
+
+        if (!hatches.empty() && level.GetExit() != nullptr)
+        {
+            auto exitComponent = level.GetExit()->GetComponent<LevelExitComponent>();
+            if (exitComponent != nullptr)
+            {
+                exitComponent->SetLocked(true);
+                for (HatchComponent* hatch : hatches)
+                {
+                    hatch->SubscribeFled([exitComponent]() { exitComponent->Use(); });
+                }
+
+                LOG_INFO("Level exit is behind a hatch");
+            }
+        }
+
+        return static_cast<int>(levers.size() + hatches.size());
     }
 
     int LevelBuilder::BuildProps(const LevelData& levelData, const PropCatalog& props, const ItemCatalog& items, Level& level)

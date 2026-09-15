@@ -5,7 +5,9 @@
 #include "LevelGrid.h"
 #include "PathService.h"
 #include "PropVisualComponent.h"
+#include <AudioComponent.h>
 #include <ColliderComponent.h>
+#include <ResourceSystem.h>
 #include <GameObject.h>
 #include <LoggerRegistry.h>
 #include <TransformComponent.h>
@@ -82,6 +84,11 @@ namespace RoguelikeGame
     void DoorComponent::SetKeyName(const std::string& newKeyName)
     {
         keyName = newKeyName;
+    }
+
+    void DoorComponent::SetAudio(XYZEngine::AudioComponent* newAudio)
+    {
+        audio = newAudio;
     }
 
     void DoorComponent::SetVisual(PropVisualComponent* newVisual)
@@ -199,6 +206,17 @@ namespace RoguelikeGame
 
         isOpen = true;
         swingTime = 0.f;
+
+        if (audio != nullptr)
+        {
+            const sf::SoundBuffer* sound = XYZEngine::ResourceSystem::Instance()->GetSound(DOOR_OPEN_SOUND);
+            if (sound != nullptr)
+            {
+                audio->SetSound(sound);
+                audio->SetVolume(FIXTURE_VOLUME);
+                audio->Play();
+            }
+        }
 
         if (collider != nullptr)
         {

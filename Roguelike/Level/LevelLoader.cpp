@@ -16,6 +16,8 @@ namespace RoguelikeGame
     const std::string WATCH_PREFIX = "Watch:";
     const std::string DOOR_PREFIX = "Door:";
     const std::string ZONE_PREFIX = "Zone:";
+    const std::string SWITCH_PREFIX = "Switch:";
+    const std::string HATCH_PREFIX = "Hatch:";
     constexpr char COMMENT_SYMBOL = ';';
     constexpr char EMPTY_SYMBOL = ' ';
     const std::string WHITESPACE = " \t";
@@ -256,6 +258,31 @@ namespace RoguelikeGame
             return;
         }
 
+        bool isHatch = name.compare(0, HATCH_PREFIX.size(), HATCH_PREFIX) == 0;
+        if (isHatch || name.compare(0, SWITCH_PREFIX.size(), SWITCH_PREFIX) == 0)
+        {
+            std::string fixtureId = Trim(name.substr(isHatch ? HATCH_PREFIX.size() : SWITCH_PREFIX.size()));
+            if (fixtureId.empty())
+            {
+                LOG_ERROR("Level legend line " + std::to_string(lineNumber) + " has no fixture id");
+                throw std::runtime_error("Level legend line has no fixture id");
+            }
+
+            LegendEntry entry;
+            entry.tile = TileType::Floor;
+            if (isHatch)
+            {
+                entry.hatchId = fixtureId;
+            }
+            else
+            {
+                entry.leverId = fixtureId;
+            }
+
+            legend[symbol] = entry;
+            return;
+        }
+
         if (name.compare(0, ZONE_PREFIX.size(), ZONE_PREFIX) == 0)
         {
             std::string zoneId = Trim(name.substr(ZONE_PREFIX.size()));
@@ -334,6 +361,16 @@ namespace RoguelikeGame
                 if (!tile->second.doorId.empty())
                 {
                     levelData.doors.push_back({column, row, tile->second.doorId});
+                }
+
+                if (!tile->second.leverId.empty())
+                {
+                    levelData.levers.push_back({column, row, tile->second.leverId});
+                }
+
+                if (!tile->second.hatchId.empty())
+                {
+                    levelData.hatches.push_back({column, row, tile->second.hatchId});
                 }
 
                 if (!tile->second.zoneId.empty())

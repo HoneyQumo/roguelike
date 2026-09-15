@@ -44,7 +44,12 @@ namespace RoguelikeGame
     {
         UpdateTarget();
 
-        if (input != nullptr && input->WasActionPressed(XYZEngine::InputAction::Interact))
+        if (input == nullptr || target == nullptr)
+        {
+            return;
+        }
+
+        if (input->WasActionPressed(target->GetAction()))
         {
             Interact();
         }

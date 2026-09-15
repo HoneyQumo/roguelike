@@ -4,7 +4,7 @@
 #include "LevelCatalog.h"
 #include "LevelIntegrity.h"
 #include "LevelLoader.h"
-#include <filesystem>
+#include "ProjectFiles.h"
 #include <sstream>
 
 using RoguelikeGame::CheckLevel;
@@ -228,34 +228,8 @@ TEST(LevelIntegrityTest, ACrateDoesNotCloseTheWay)
 
 namespace
 {
-	class ShippedLevelsTest : public ::testing::Test
+	class ShippedLevelsTest : public ProjectFiles::Test
 	{
-	protected:
-		void SetUp() override
-		{
-			previous = std::filesystem::current_path();
-
-			std::filesystem::path root = previous;
-			for (int step = 0; step < 6; step++)
-			{
-				if (std::filesystem::exists(root / "Roguelike" / "Resources" / "Levels" / "levels.config"))
-				{
-					std::filesystem::current_path(root / "Roguelike");
-					isFound = true;
-					return;
-				}
-
-				root = root.parent_path();
-			}
-		}
-
-		void TearDown() override
-		{
-			std::filesystem::current_path(previous);
-		}
-
-		std::filesystem::path previous;
-		bool isFound = false;
 	};
 }
 

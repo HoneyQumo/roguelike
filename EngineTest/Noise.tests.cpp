@@ -4,6 +4,7 @@
 
 using RoguelikeGame::Faction;
 using RoguelikeGame::IsHeard;
+using RoguelikeGame::MuffledRadius;
 using RoguelikeGame::Noise;
 using XYZEngine::Vector2Df;
 
@@ -60,4 +61,23 @@ TEST(NoiseTest, QuietWeaponIsHeardCloserThanALoudOne)
 
 	EXPECT_TRUE(IsHeard(Shot(RoguelikeGame::SHOT_NOISE_RADIUS), listener, Faction::Enemy));
 	EXPECT_FALSE(IsHeard(Shot(RoguelikeGame::QUIET_NOISE_RADIUS), listener, Faction::Enemy));
+}
+
+TEST(NoiseTest, WallCutsTheReachDown)
+{
+	EXPECT_FLOAT_EQ(MuffledRadius(560.f, 0), 560.f);
+	EXPECT_LT(MuffledRadius(560.f, 1), 560.f);
+	EXPECT_LT(MuffledRadius(560.f, 2), MuffledRadius(560.f, 1));
+}
+
+TEST(NoiseTest, ShotBehindOneWallIsHeardOnlyFromClose)
+{
+	EXPECT_TRUE(IsHeard(Shot(400.f), {100.f, 300.f}, Faction::Enemy, 0));
+	EXPECT_FALSE(IsHeard(Shot(400.f), {100.f, 300.f}, Faction::Enemy, 1));
+	EXPECT_TRUE(IsHeard(Shot(400.f), {100.f, 250.f}, Faction::Enemy, 1));
+}
+
+TEST(NoiseTest, BehindManyWallsNothingIsHeard)
+{
+	EXPECT_FALSE(IsHeard(Shot(560.f), {100.f, 180.f}, Faction::Enemy, 4));
 }

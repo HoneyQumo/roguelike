@@ -1,6 +1,7 @@
 #include "Noise.h"
 #include "ChaseComponent.h"
 #include "FactionComponent.h"
+#include "LevelGrid.h"
 #include <GameObject.h>
 #include <GameWorld.h>
 #include <LoggerRegistry.h>
@@ -24,7 +25,10 @@ namespace RoguelikeGame
             }
 
             XYZEngine::GameObject* owner = listener->GetGameObject();
-            if (!IsHeard(noise, owner->GetTransform()->GetWorldPosition(), GetFactionOf(owner)))
+            XYZEngine::Vector2Df place = owner->GetTransform()->GetWorldPosition();
+            int walls = LevelGrid::Current().CountWallsBetween(noise.position, place);
+
+            if (!IsHeard(noise, place, GetFactionOf(owner), walls))
             {
                 continue;
             }

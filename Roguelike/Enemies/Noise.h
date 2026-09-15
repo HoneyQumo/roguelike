@@ -5,6 +5,8 @@
 
 namespace RoguelikeGame
 {
+    constexpr float WALL_MUFFLE = 0.45f;
+
     struct Noise
     {
         XYZEngine::Vector2Df position = {0.f, 0.f};
@@ -12,7 +14,18 @@ namespace RoguelikeGame
         Faction from = Faction::Neutral;
     };
 
-    inline bool IsHeard(const Noise& noise, const XYZEngine::Vector2Df& listener, Faction listenerSide)
+    inline float MuffledRadius(float radius, int wallsBetween)
+    {
+        float left = radius;
+        for (int wall = 0; wall < wallsBetween; wall++)
+        {
+            left *= WALL_MUFFLE;
+        }
+
+        return left;
+    }
+
+    inline bool IsHeard(const Noise& noise, const XYZEngine::Vector2Df& listener, Faction listenerSide, int wallsBetween = 0)
     {
         if (noise.radius <= 0.f)
         {
@@ -24,7 +37,9 @@ namespace RoguelikeGame
             return false;
         }
 
-        return (listener - noise.position).GetLengthSquared() <= noise.radius * noise.radius;
+        float reach = MuffledRadius(noise.radius, wallsBetween);
+
+        return (listener - noise.position).GetLengthSquared() <= reach * reach;
     }
 
     void RaiseNoise(const Noise& noise);

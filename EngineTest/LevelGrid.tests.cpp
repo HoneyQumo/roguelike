@@ -355,3 +355,52 @@ TEST(LevelGridTest, EmptyGridHidesNothing)
 	EXPECT_TRUE(grid.IsEmpty());
 	EXPECT_FALSE(grid.HasWallBetween({0.f, 0.f}, {1000.f, 1000.f}));
 }
+
+TEST(LevelGridTest, OpenRoomHasNoWallsInTheWay)
+{
+	LevelGrid grid = GridOf("[map]\n#######\n#.....#\n#######\n");
+
+	EXPECT_EQ(grid.CountWallsBetween(grid.ToWorld(1, 1), grid.ToWorld(5, 1)), 0);
+}
+
+TEST(LevelGridTest, OneWallBetweenIsCountedOnce)
+{
+	LevelGrid grid = GridOf("[map]\n#######\n#.#...#\n#######\n");
+
+	EXPECT_EQ(grid.CountWallsBetween(grid.ToWorld(1, 1), grid.ToWorld(5, 1)), 1);
+}
+
+TEST(LevelGridTest, TwoWallsAreCountedApart)
+{
+	LevelGrid grid = GridOf("[map]\n#########\n#.#.#...#\n#########\n");
+
+	EXPECT_EQ(grid.CountWallsBetween(grid.ToWorld(1, 1), grid.ToWorld(7, 1)), 2);
+}
+
+TEST(LevelGridTest, ThickWallStillCountsAsOne)
+{
+	LevelGrid grid = GridOf("[map]\n#########\n#.###...#\n#########\n");
+
+	EXPECT_EQ(grid.CountWallsBetween(grid.ToWorld(1, 1), grid.ToWorld(7, 1)), 1);
+}
+
+TEST(LevelGridTest, ClosedDoorCountsAsAWall)
+{
+	LevelGrid grid = GridOf("[legend]\n# Wall\n. Floor\n+ Door:door_exit\n[map]\n#######\n#.+...#\n#######\n");
+
+	EXPECT_EQ(grid.CountWallsBetween(grid.ToWorld(1, 1), grid.ToWorld(5, 1)), 1);
+}
+
+TEST(LevelGridTest, CrateDoesNotCountAsAWall)
+{
+	LevelGrid grid = GridOf("[legend]\n# Wall\n. Floor\nc Prop:crate_ammo\n[map]\n#######\n#.c...#\n#######\n");
+
+	EXPECT_EQ(grid.CountWallsBetween(grid.ToWorld(1, 1), grid.ToWorld(5, 1)), 0);
+}
+
+TEST(LevelGridTest, EmptyGridCountsNoWalls)
+{
+	LevelGrid grid;
+
+	EXPECT_EQ(grid.CountWallsBetween({0.f, 0.f}, {500.f, 500.f}), 0);
+}

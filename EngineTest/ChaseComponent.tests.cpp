@@ -721,3 +721,37 @@ TEST_F(ChaseComponentTest, BrokenCrateIsHeardByEverySide)
 
 	EXPECT_TRUE(chase->IsEngaged());
 }
+
+TEST_F(ChaseComponentTest, NoiseBehindAWallDoesNotReach)
+{
+	CreateHero(11, 2);
+	ChaseComponent* chase = CreateEnemy(5, 1);
+	chase->GetGameObject()->GetTransform()->SetWorldRotation(180.f);
+	Run(0.1f);
+
+	RoguelikeGame::Noise noise;
+	noise.position = At(2, 1);
+	noise.radius = 300.f;
+	noise.from = RoguelikeGame::Faction::Player;
+	RaiseNoise(noise);
+	Run(0.1f);
+
+	EXPECT_FALSE(chase->IsEngaged());
+}
+
+TEST_F(ChaseComponentTest, TheSameNoiseInTheOpenIsHeard)
+{
+	CreateHero(11, 2);
+	ChaseComponent* chase = CreateEnemy(5, 2);
+	chase->GetGameObject()->GetTransform()->SetWorldRotation(180.f);
+	Run(0.1f);
+
+	RoguelikeGame::Noise noise;
+	noise.position = At(2, 2);
+	noise.radius = 300.f;
+	noise.from = RoguelikeGame::Faction::Player;
+	RaiseNoise(noise);
+	Run(0.1f);
+
+	EXPECT_TRUE(chase->IsEngaged());
+}

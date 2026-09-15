@@ -36,12 +36,13 @@ namespace RoguelikeGame
 
     void ItemPickupComponent::SetDefinition(const ItemDefinition* newDefinition)
     {
-        definition = newDefinition;
+        hasDefinition = newDefinition != nullptr;
+        definition = hasDefinition ? *newDefinition : ItemDefinition();
     }
 
     const ItemDefinition* ItemPickupComponent::GetDefinition() const
     {
-        return definition;
+        return hasDefinition ? &definition : nullptr;
     }
 
     bool ItemPickupComponent::IsPickedUp() const
@@ -51,12 +52,12 @@ namespace RoguelikeGame
 
     std::string ItemPickupComponent::GetPrompt(XYZEngine::GameObject* actor) const
     {
-        if (definition == nullptr)
+        if (!hasDefinition)
         {
             return {};
         }
 
-        return std::string(INTERACT_PROMPT_PREFIX) + definition->name;
+        return std::string(INTERACT_PROMPT_PREFIX) + definition.name;
     }
 
     bool ItemPickupComponent::IsAvailable() const
@@ -71,12 +72,12 @@ namespace RoguelikeGame
 
     bool ItemPickupComponent::TryPickUp(XYZEngine::GameObject* collector)
     {
-        if (isPickedUp || definition == nullptr || collector == nullptr)
+        if (isPickedUp || !hasDefinition || collector == nullptr)
         {
             return false;
         }
 
-        if (!Take(*definition, collector))
+        if (!Take(definition, collector))
         {
             return false;
         }
@@ -84,9 +85,9 @@ namespace RoguelikeGame
         isPickedUp = true;
         Hide();
 
-        LOG_INFO(collector->GetName() + " picks up " + definition->id);
+        LOG_INFO(collector->GetName() + " picks up " + definition.id);
 
-        pickedUpEvent.Invoke(*definition, collector);
+        pickedUpEvent.Invoke(definition, collector);
         return true;
     }
 

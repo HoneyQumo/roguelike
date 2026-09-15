@@ -203,12 +203,11 @@ namespace RoguelikeGame
             auto health = bossObject->GetComponent<HealthComponent>();
             if (health != nullptr)
             {
-                ItemDefinition kept = *prize;
-                health->SubscribeDeath([bossObject, kept](const DeathInfo& death)
+                health->SubscribeDeath([bossObject, prize](const DeathInfo& death)
                 {
-                    if (CreateItem(kept, death.position, bossObject) != nullptr)
+                    if (CreateItem(*prize, death.position, bossObject) != nullptr)
                     {
-                        LOG_INFO("Boss dropped " + kept.id);
+                        LOG_INFO("Boss dropped " + prize->id);
                     }
                 });
             }

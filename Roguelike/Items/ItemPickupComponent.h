@@ -35,7 +35,8 @@ namespace RoguelikeGame
         XYZEngine::SubscriptionId SubscribePickedUp(std::function<void(const ItemDefinition&, XYZEngine::GameObject*)> onPickedUp);
 
     private:
-        const ItemDefinition* definition = nullptr;
+        ItemDefinition definition;
+        bool hasDefinition = false;
         XYZEngine::ColliderComponent* collider = nullptr;
         XYZEngine::SpriteRendererComponent* renderer = nullptr;
         bool isPickedUp = false;

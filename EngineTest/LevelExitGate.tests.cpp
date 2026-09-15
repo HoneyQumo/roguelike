@@ -175,3 +175,42 @@ TEST_F(LevelExitGateTest, LockedExitBlocksOnEveryApproach)
 	EXPECT_EQ(blocked, 2);
 	EXPECT_EQ(entered, 0);
 }
+
+TEST_F(LevelExitGateTest, AManualExitIgnoresThePlayerStandingOnIt)
+{
+	levelExit->SetManual(true);
+	levelExit->SetLocked(false);
+	CreatePlayerAway();
+
+	MovePlayerTo(0.f, 0.f);
+
+	EXPECT_EQ(entered, 0);
+	EXPECT_EQ(blocked, 0);
+	EXPECT_FALSE(levelExit->IsUsed());
+}
+
+TEST_F(LevelExitGateTest, AManualExitStillOpensWhenSomethingUsesIt)
+{
+	levelExit->SetManual(true);
+	CreatePlayerAway();
+	MovePlayerTo(0.f, 0.f);
+	ASSERT_EQ(entered, 0);
+
+	levelExit->Use();
+
+	EXPECT_EQ(entered, 1);
+	EXPECT_TRUE(levelExit->IsUsed());
+}
+
+TEST_F(LevelExitGateTest, UnlockingAManualExitUnderThePlayerChangesNothing)
+{
+	levelExit->SetManual(true);
+	levelExit->SetLocked(true);
+	CreatePlayerAway();
+	MovePlayerTo(0.f, 0.f);
+
+	levelExit->SetLocked(false);
+
+	EXPECT_EQ(entered, 0);
+	EXPECT_FALSE(levelExit->IsUsed());
+}

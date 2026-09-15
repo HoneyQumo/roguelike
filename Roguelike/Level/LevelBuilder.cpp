@@ -374,6 +374,7 @@ namespace RoguelikeGame
             if (exitComponent != nullptr)
             {
                 exitComponent->SetLocked(true);
+                exitComponent->SetManual(true);
                 for (HatchComponent* hatch : hatches)
                 {
                     hatch->SubscribeFled([exitComponent]() { exitComponent->Use(); });

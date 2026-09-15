@@ -24,6 +24,8 @@ namespace RoguelikeGame
         bool IsUsed() const;
         bool IsLocked() const;
         void SetLocked(bool newIsLocked);
+        bool IsManual() const;
+        void SetManual(bool newIsManual);
         void Use();
 
         XYZEngine::SubscriptionId SubscribeEntered(std::function<void()> onEntered);
@@ -33,6 +35,7 @@ namespace RoguelikeGame
         XYZEngine::ColliderComponent* collider = nullptr;
         bool isUsed = false;
         bool isLocked = false;
+        bool isManual = false;
         bool isPlayerInside = false;
 
         XYZEngine::EventList<> enteredEvent;

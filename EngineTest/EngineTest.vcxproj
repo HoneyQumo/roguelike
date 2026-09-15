@@ -98,6 +98,7 @@
     <ClCompile Include="TileAtlas.tests.cpp" />
     <ClCompile Include="ChaseRules.tests.cpp" />
     <ClCompile Include="LevelGrid.tests.cpp" />
+    <ClCompile Include="LevelIntegrity.tests.cpp" />
     <ClCompile Include="RoomTransform.tests.cpp" />
     <ClCompile Include="ActPlan.tests.cpp" />
     <ClCompile Include="DoorRules.tests.cpp" />
@@ -144,6 +145,9 @@
     <ClCompile Include="Destructible.tests.cpp" />
     <ClCompile Include="Level.tests.cpp" />
     <ClCompile Include="..\Roguelike\Level\LevelGrid.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Roguelike\Level\LevelIntegrity.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\Roguelike\Level\PathField.cpp">

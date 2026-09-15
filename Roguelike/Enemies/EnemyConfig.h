@@ -41,5 +41,6 @@ namespace RoguelikeGame
         int voiceLines = 0;
         float peripheryHalfAngle = 0.f;
         float shoutRadius = SHOUT_RADIUS;
+        float provokedRangeScale = 1.f;
     };
 }

@@ -1,4 +1,5 @@
 #include "pch.h"
+#include "BossEffects.h"
 #include "EnemyCatalog.h"
 #include "Vision.h"
 #include <set>
@@ -175,4 +176,29 @@ TEST(EnemyCatalogTest, EveryEnemyLooksForALostTarget)
 	{
 		EXPECT_GT(enemy.config.searchTime, 0.f) << enemy.tileName;
 	}
+}
+
+TEST(NoiseTest, ShootingEnemiesReachFurtherWhenProvoked)
+{
+	for (const RoguelikeGame::EnemyDefinition& enemy : RoguelikeGame::ENEMIES)
+	{
+		bool isMelee = enemy.config.weapon == RoguelikeGame::WeaponId::Knife;
+		if (isMelee)
+		{
+			EXPECT_FLOAT_EQ(enemy.config.provokedRangeScale, 1.f) << enemy.config.objectName;
+			continue;
+		}
+
+		EXPECT_GT(enemy.config.provokedRangeScale, 1.f) << enemy.config.objectName;
+		EXPECT_GT(enemy.config.attackRange * enemy.config.provokedRangeScale, enemy.config.detectionRadius)
+			<< enemy.config.objectName;
+	}
+}
+
+TEST(NoiseTest, TheBossCallsSomebodyWhoShoots)
+{
+	const RoguelikeGame::EnemyConfig* minion = RoguelikeGame::FindEnemyConfig(RoguelikeGame::BOSS_MINION_TILE);
+
+	ASSERT_NE(minion, nullptr);
+	EXPECT_NE(minion->weapon, RoguelikeGame::WeaponId::Knife) << minion->objectName;
 }

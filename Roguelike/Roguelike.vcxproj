@@ -141,6 +141,7 @@
         <ClCompile Include="Weapons\WeaponSetup.cpp"/>
         <ClCompile Include="Level\DeveloperLevel.cpp"/>
         <ClCompile Include="Characters\CharacterFactory.cpp"/>
+        <ClCompile Include="Characters\SettleComponent.cpp"/>
         <ClCompile Include="Enemies\Enemy.cpp"/>
         <ClCompile Include="Enemies\EnemyAttackComponent.cpp"/>
         <ClCompile Include="Player\PlayerAttackComponent.cpp"/>
@@ -259,6 +260,7 @@
         <ClInclude Include="Weapons\WeaponSetup.h"/>
         <ClInclude Include="Level\DeveloperLevel.h"/>
         <ClInclude Include="Characters\CharacterFactory.h"/>
+        <ClInclude Include="Characters\SettleComponent.h"/>
         <ClInclude Include="Enemies\Enemy.h"/>
         <ClInclude Include="Enemies\EnemyAttackComponent.h"/>
         <ClInclude Include="Enemies\EnemyCatalog.h"/>

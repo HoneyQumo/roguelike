@@ -239,7 +239,9 @@ namespace RoguelikeGame
     constexpr auto DOOR_OPEN_SOUND = "door_open";
     constexpr auto LEVER_SOUND = "lever";
     constexpr auto HATCH_SOUND = "hatch_open";
-    constexpr float FIXTURE_VOLUME = 55.f;
+    constexpr float DOOR_VOLUME = 45.f;
+    constexpr float LEVER_VOLUME = 55.f;
+    constexpr float HATCH_VOLUME = 70.f;
     constexpr auto DOOR_LOCKED_PREFIX = u8"Дверь заперта: нужен ";
     constexpr auto DOOR_UNKNOWN_KEY_NAME = u8"ключ";
     constexpr int HUD_PROMPT_FONT_SIZE = 24;

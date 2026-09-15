@@ -80,7 +80,7 @@ namespace RoguelikeGame
             if (sound != nullptr)
             {
                 audio->SetSound(sound);
-                audio->SetVolume(FIXTURE_VOLUME);
+                audio->SetVolume(HATCH_VOLUME);
                 audio->Play();
             }
         }

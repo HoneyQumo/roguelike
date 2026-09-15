@@ -144,7 +144,7 @@ namespace RoguelikeGame
             "shotgun_pump_reload", nullptr, &SHOTGUN_PUMP_SPREAD
         },
         {
-            "smg_suppressed", u8"ПП с глушителем", 57.60f, 12.16f, 0.60f, 0.35f, BulletKind::Pistol, AmmoKind::Smg, 25, 1.30f, "smg_silenced_shot",
+            "smg_suppressed", u8"ПП с глушителем", 57.60f, 12.16f, 0.60f, 0.35f, BulletKind::Pistol, AmmoKind::Smg, 30, 1.30f, "smg_silenced_shot",
             "smg_silenced_reload", nullptr, nullptr, nullptr, QUIET_NOISE_RADIUS
         },
         {"glock", u8"Глок", 32.00f, 11.68f, 0.55f, 0.65f, BulletKind::Pistol, AmmoKind::Pistol, 17, 1.10f, "glock_shot", "glock_reload"},
@@ -171,6 +171,50 @@ namespace RoguelikeGame
         float speed;
         float cooldown;
     };
+
+    /**
+    *	Боевые характеристики ствола: урон за пулю, пауза между выстрелами,
+    *	скорость пули и конус разброса в градусах.
+    *	Ствол без строки в таблице стреляет силой стрелка.
+    */
+    struct FireProfile
+    {
+        WeaponId weapon;
+        float damage;
+        float cooldown;
+        float speed;
+        float spreadDegrees;
+    };
+
+    constexpr FireProfile WEAPON_FIRE[] = {
+        {WeaponId::Ak47, 15.f, 0.100f, 1100.f, 6.0f},
+        {WeaponId::M16, 11.f, 0.075f, 1150.f, 2.5f},
+        {WeaponId::SmgSuppressed, 8.f, 0.067f, 950.f, 4.0f},
+        {WeaponId::Glock, 18.f, 0.167f, 850.f, 3.0f},
+        {WeaponId::Deagle, 45.f, 0.350f, 1000.f, 1.5f},
+        {WeaponId::PistolSuppressed, 14.f, 0.200f, 850.f, 2.0f}
+    };
+
+    constexpr const FireProfile* FindFire(WeaponId id)
+    {
+        for (const FireProfile& fire : WEAPON_FIRE)
+        {
+            if (fire.weapon == id)
+            {
+                return &fire;
+            }
+        }
+
+        return nullptr;
+    }
+
+    constexpr float SpreadOf(WeaponId id)
+    {
+        const FireProfile* fire = FindFire(id);
+
+        return fire == nullptr ? 0.f : fire->spreadDegrees;
+    }
+
 
     struct AmmoKindName
     {
@@ -255,10 +299,25 @@ namespace RoguelikeGame
         const SpreadDefinition* spread = FindSpread(id);
         if (spread == nullptr)
         {
-            return {1, 0.f, damage, speed, cooldown};
+            return {1, SpreadOf(id), damage, speed, cooldown};
         }
 
         return {spread->pellets, spread->coneDegrees, damage * spread->damageScale, speed * spread->speedScale, cooldown * spread->cooldownScale};
+    }
+
+    /**
+    *	Для того, кто раскрывает ствол полностью: урон и темп берутся из таблицы огня,
+    *	а переданные значения остаются запасными для стволов без своей строки.
+    */
+    constexpr ShotProfile MakeWeaponShotProfile(WeaponId id, float damage, float speed, float cooldown)
+    {
+        const FireProfile* fire = FindFire(id);
+        if (fire == nullptr)
+        {
+            return MakeShotProfile(id, damage, speed, cooldown);
+        }
+
+        return MakeShotProfile(id, fire->damage, fire->speed, fire->cooldown);
     }
 
     constexpr int WeaponFrameIndex(WeaponId id, int variant)

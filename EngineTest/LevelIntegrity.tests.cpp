@@ -47,6 +47,37 @@ namespace
 		return ItemCatalogLoader::Parse(input, "integrity");
 	}
 
+	RoguelikeGame::PropCatalog PropKinds()
+	{
+		std::string text =
+			"[prop bunk]\n"
+			"name Bunk\n"
+			"size 56\n"
+			"\n"
+			"[prop crate]\n"
+			"name Crate\n"
+			"health 40\n"
+			"size 48\n"
+			"\n"
+			"[prop bush]\n"
+			"name Bush\n"
+			"solid false\n"
+			"size 56\n";
+		std::istringstream input(text);
+
+		return RoguelikeGame::PropCatalog::Parse(input, "integrity");
+	}
+
+	const std::string PROP_LEGEND =
+		"[legend]\n"
+		"# Wall\n"
+		". Floor\n"
+		"@ PlayerSpawn\n"
+		"n Prop:bunk\n"
+		"c Prop:crate\n"
+		"h Prop:bush\n"
+		"[map]\n";
+
 	const std::string DOOR_LEGEND =
 		"[legend]\n"
 		"# Wall\n"
@@ -239,13 +270,14 @@ TEST_F(ShippedLevelsTest, EveryLevelInTheCatalogIsSound)
 	ASSERT_TRUE(isFound) << "Resources/Levels/levels.config not found from " << previous.string();
 
 	ItemCatalog items = ItemCatalogLoader::Load("Resources/Items/items.config");
+	RoguelikeGame::PropCatalog props = RoguelikeGame::PropCatalog::Load("Resources/Props/props.config");
 	LevelCatalog catalog = LevelCatalog::Load("Resources/Levels/levels.config");
 	ASSERT_FALSE(catalog.IsEmpty());
 
 	for (const LevelEntry& entry : catalog)
 	{
 		LevelData level = entry.isAct ? LoadAct(entry.filePath) : LevelLoader::Load(entry.filePath);
-		LevelReport report = CheckLevel(level, items);
+		LevelReport report = CheckLevel(level, items, props);
 
 		EXPECT_TRUE(report.IsClean()) << entry.id << "\n" << report.Describe();
 	}
@@ -300,4 +332,46 @@ TEST_F(ShippedRoomsTest, EveryRoomNamesThingsThatExist)
 			EXPECT_TRUE(items.Contains(item.itemId)) << name << " has " << item.itemId;
 		}
 	}
+}
+
+TEST(LevelIntegrityTest, AnUnbreakableThingInTheOnlyPassageSealsTheWay)
+{
+	LevelData level = LevelOf(PROP_LEGEND +
+		"#######\n"
+		"#@.#..#\n"
+		"#..n..#\n"
+		"#..#..#\n"
+		"#######\n");
+
+	LevelReport report = CheckLevel(level, ItemCatalog(), PropKinds());
+
+	EXPECT_GT(report.Count(LevelFault::Unreachable), 0) << report.Describe();
+}
+
+TEST(LevelIntegrityTest, ABreakableCrateInTheSamePassageIsFine)
+{
+	LevelData level = LevelOf(PROP_LEGEND +
+		"#######\n"
+		"#@.#..#\n"
+		"#..c..#\n"
+		"#..#..#\n"
+		"#######\n");
+
+	LevelReport report = CheckLevel(level, ItemCatalog(), PropKinds());
+
+	EXPECT_TRUE(report.IsClean()) << report.Describe();
+}
+
+TEST(LevelIntegrityTest, AThingYouWalkThroughDoesNotSealTheWay)
+{
+	LevelData level = LevelOf(PROP_LEGEND +
+		"#######\n"
+		"#@.#..#\n"
+		"#..h..#\n"
+		"#..#..#\n"
+		"#######\n");
+
+	LevelReport report = CheckLevel(level, ItemCatalog(), PropKinds());
+
+	EXPECT_TRUE(report.IsClean()) << report.Describe();
 }

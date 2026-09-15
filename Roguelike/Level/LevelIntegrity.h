@@ -7,6 +7,7 @@
 namespace RoguelikeGame
 {
     class ItemCatalog;
+    class PropCatalog;
 
     enum class LevelFault
     {
@@ -54,6 +55,7 @@ namespace RoguelikeGame
         std::string Describe() const;
     };
 
+    LevelReport CheckLevel(const LevelData& levelData, const ItemCatalog& items, const PropCatalog& props);
     LevelReport CheckLevel(const LevelData& levelData, const ItemCatalog& items);
     LevelReport CheckLevel(const LevelData& levelData);
 }

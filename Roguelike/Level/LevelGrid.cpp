@@ -198,9 +198,19 @@ namespace RoguelikeGame
 
     bool LevelGrid::IsCrossed(const XYZEngine::Vector2Df& from, const XYZEngine::Vector2Df& to, bool sightOnly) const
     {
+        return CountCrossed(from, to, sightOnly, true) > 0;
+    }
+
+    int LevelGrid::CountWallsBetween(const XYZEngine::Vector2Df& from, const XYZEngine::Vector2Df& to) const
+    {
+        return CountCrossed(from, to, true, false);
+    }
+
+    int LevelGrid::CountCrossed(const XYZEngine::Vector2Df& from, const XYZEngine::Vector2Df& to, bool sightOnly, bool stopAtFirst) const
+    {
         if (IsEmpty())
         {
-            return false;
+            return 0;
         }
 
         float fromU = from.x / TILE_SIZE + 0.5f;
@@ -230,12 +240,14 @@ namespace RoguelikeGame
         float overRow = spanV != 0.f ? 1.f / std::abs(spanV) : FAR_AHEAD;
 
         int guard = std::abs(lastColumn - column) + std::abs(lastRow - row) + 2;
+        int crossed = 0;
+        bool wasBlocking = false;
 
         for (int step = 0; step < guard; step++)
         {
             if (column == lastColumn && row == lastRow)
             {
-                return false;
+                return crossed;
             }
 
             if (nextColumn <= nextRow)
@@ -251,16 +263,22 @@ namespace RoguelikeGame
 
             if (column == lastColumn && row == lastRow)
             {
-                return false;
+                return crossed;
             }
 
             bool isBlocking = sightOnly ? BlocksSight(column, row) : !IsPassable(column, row);
-            if (isBlocking)
+            if (isBlocking && !wasBlocking)
             {
-                return true;
+                crossed++;
+                if (stopAtFirst)
+                {
+                    return crossed;
+                }
             }
+
+            wasBlocking = isBlocking;
         }
 
-        return false;
+        return crossed;
     }
 }

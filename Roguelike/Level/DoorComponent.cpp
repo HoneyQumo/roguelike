@@ -213,7 +213,7 @@ namespace RoguelikeGame
             if (sound != nullptr)
             {
                 audio->SetSound(sound);
-                audio->SetVolume(FIXTURE_VOLUME);
+                audio->SetVolume(DOOR_VOLUME);
                 audio->Play();
             }
         }

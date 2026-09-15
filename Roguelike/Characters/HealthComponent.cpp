@@ -1,4 +1,5 @@
 #include "HealthComponent.h"
+#include "ArmorRules.h"
 #include <GameObject.h>
 #include <TransformComponent.h>
 #include <LoggerRegistry.h>
@@ -8,7 +9,6 @@ using namespace XYZEngine;
 
 namespace RoguelikeGame
 {
-    constexpr float MIN_DAMAGE = 1.f;
     constexpr float LOW_HEALTH_PERCENT = 0.3f;
 
     HealthComponent::HealthComponent(GameObject* gameObject) : Component(gameObject)
@@ -52,6 +52,25 @@ namespace RoguelikeGame
         return health / maxHealth;
     }
 
+    void HealthComponent::SetMaxArmor(float newMaxArmor)
+    {
+        assert(newMaxArmor >= 0.f);
+
+        if (newMaxArmor < 0.f)
+        {
+            LOG_WARN("Max armor can't be negative on " + gameObject->GetName());
+            return;
+        }
+
+        maxArmor = newMaxArmor;
+        armor = newMaxArmor;
+    }
+
+    float HealthComponent::GetMaxArmor() const
+    {
+        return maxArmor;
+    }
+
     void HealthComponent::SetArmor(float newArmor)
     {
         assert(newArmor >= 0.f);
@@ -62,12 +81,22 @@ namespace RoguelikeGame
             return;
         }
 
+        if (newArmor > maxArmor)
+        {
+            maxArmor = newArmor;
+        }
+
         armor = newArmor;
     }
 
     float HealthComponent::GetArmor() const
     {
         return armor;
+    }
+
+    float HealthComponent::GetArmorPercent() const
+    {
+        return maxArmor > 0.f ? armor / maxArmor : 0.f;
     }
 
     void HealthComponent::SetInvulnerable(bool newIsInvulnerable)
@@ -96,7 +125,10 @@ namespace RoguelikeGame
         }
 
 
-        float takenDamage = CalculateDamage(damage);
+        ArmorHit hit = SplitDamage(damage, armor);
+        armor -= hit.toArmor;
+
+        float takenDamage = hit.toHealth;
         health -= takenDamage;
         if (health < 0.f)
         {
@@ -109,6 +141,7 @@ namespace RoguelikeGame
         DamageInfo info;
         info.amount = takenDamage;
         info.rawAmount = damage;
+        info.armorAmount = hit.toArmor;
         info.isLethal = !IsAlive();
         info.source = source;
 
@@ -196,11 +229,5 @@ namespace RoguelikeGame
     void HealthComponent::UnsubscribeDeath(XYZEngine::SubscriptionId subscription)
     {
         deathEvent.Unsubscribe(subscription);
-    }
-
-    float HealthComponent::CalculateDamage(float damage) const
-    {
-        float reducedDamage = damage - armor;
-        return reducedDamage < MIN_DAMAGE ? MIN_DAMAGE : reducedDamage;
     }
 }

@@ -51,8 +51,8 @@ namespace RoguelikeGame
     constexpr float PLAYER_SPEED = 250.f;
     constexpr float PLAYER_RUN_SPEED_MULTIPLIER = 1.5f;
     constexpr float PLAYER_MAX_HEALTH = 100.f;
-    constexpr float PLAYER_ARMOR = 5.f;
-    constexpr float PLAYER_ARMOR_CAP = 20.f;
+    constexpr float PLAYER_ARMOR = 40.f;
+    constexpr float PLAYER_ARMOR_CAP = 120.f;
 
     constexpr bool CanTakeArmor(float current, float cap)
     {
@@ -259,6 +259,9 @@ namespace RoguelikeGame
     constexpr float HEALTH_BAR_WIDTH = 48.f;
     constexpr float HEALTH_BAR_HEIGHT = 6.f;
     constexpr float HEALTH_BAR_OFFSET_Y = 30.f;
+    constexpr float ARMOR_BAR_HEIGHT = 3.f;
+    constexpr float ARMOR_BAR_GAP = 1.f;
+    inline const sf::Color ARMOR_BAR_COLOR = {170, 180, 200};
 
     constexpr float BOSS_HEALTH_BAR_WIDTH = 96.f;
     constexpr float BOSS_HEALTH_BAR_HEIGHT = 10.f;

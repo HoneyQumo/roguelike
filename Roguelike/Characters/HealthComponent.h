@@ -20,8 +20,11 @@ namespace RoguelikeGame
         float GetHealth() const;
         float GetHealthPercent() const;
 
+        void SetMaxArmor(float newMaxArmor);
+        float GetMaxArmor() const;
         void SetArmor(float newArmor);
         float GetArmor() const;
+        float GetArmorPercent() const;
         
         void SetInvulnerable(bool newIsInvulnerable);
         bool IsInvulnerable() const;
@@ -43,6 +46,7 @@ namespace RoguelikeGame
     private:
         float maxHealth = 100.f;
         float health = 100.f;
+        float maxArmor = 0.f;
         float armor = 0.f;
         bool isInvulnerable = false;
 
@@ -50,6 +54,6 @@ namespace RoguelikeGame
         XYZEngine::EventList<float> healEvent;
         XYZEngine::EventList<const DeathInfo&> deathEvent;
 
-        float CalculateDamage(float damage) const;
+
     };
 }

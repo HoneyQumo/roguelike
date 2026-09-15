@@ -1,4 +1,5 @@
 #include "HealthBarComponent.h"
+#include "GameSettings.h"
 #include <GameObject.h>
 #include <RenderSystem.h>
 #include <LoggerRegistry.h>
@@ -13,6 +14,7 @@ namespace RoguelikeGame
 
 		background.setFillColor({ 20, 20, 20, 200 });
 		fill.setFillColor({ 200, 60, 60 });
+		armorFill.setFillColor(ARMOR_BAR_COLOR);
 	}
 
 	void HealthBarComponent::Start()
@@ -30,7 +32,8 @@ namespace RoguelikeGame
 	}
 	void HealthBarComponent::Render()
 	{
-		if (health == nullptr || !health->IsAlive() || (!isAlwaysVisible && health->GetHealthPercent() >= 1.f))
+		bool isUntouched = health != nullptr && health->GetHealthPercent() >= 1.f && health->GetArmorPercent() >= 1.f;
+		if (health == nullptr || !health->IsAlive() || (!isAlwaysVisible && isUntouched))
 		{
 			return;
 		}
@@ -46,6 +49,14 @@ namespace RoguelikeGame
 
 		RenderSystem::Instance()->Render(background);
 		RenderSystem::Instance()->Render(fill);
+
+		if (health->GetArmor() > 0.f)
+		{
+			armorFill.setSize({ size.x * health->GetArmorPercent(), ARMOR_BAR_HEIGHT });
+			armorFill.setPosition({ barPosition.x, barPosition.y - ARMOR_BAR_HEIGHT - ARMOR_BAR_GAP });
+
+			RenderSystem::Instance()->Render(armorFill);
+		}
 	}
 
 	void HealthBarComponent::SetSize(float newWidth, float newHeight)

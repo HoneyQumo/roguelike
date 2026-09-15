@@ -264,6 +264,7 @@
         <ClInclude Include="Level\ActAssembler.h"/>
         <ClInclude Include="Enemies\ChaseComponent.h"/>
         <ClInclude Include="Characters\AmmoPouchComponent.h"/>
+        <ClInclude Include="Characters\ArmorRules.h"/>
         <ClInclude Include="Characters\HealthBarComponent.h"/>
         <ClInclude Include="Characters\HealthComponent.h"/>
         <ClInclude Include="Weapons\ProjectileComponent.h"/>

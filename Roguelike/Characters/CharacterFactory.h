@@ -28,6 +28,7 @@ namespace RoguelikeGame
         float speed = 0.f;
         float maxHealth = 0.f;
         float armor = 0.f;
+        float armorCap = 0.f;
         Faction faction = Faction::Neutral;
         WeaponId weapon = WeaponId::Knife;
         sf::Color healthBarColor;

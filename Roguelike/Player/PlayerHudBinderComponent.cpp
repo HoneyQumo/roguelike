@@ -130,7 +130,7 @@ namespace RoguelikeGame
         if (health != nullptr)
         {
             state.healthPart = health->GetHealthPercent();
-            state.armorPart = PLAYER_ARMOR_CAP > 0.f ? health->GetArmor() / PLAYER_ARMOR_CAP : 0.f;
+            state.armorPart = health->GetArmorPercent();
         }
 
         if (stamina != nullptr)

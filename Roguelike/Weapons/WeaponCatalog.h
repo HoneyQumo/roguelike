@@ -105,6 +105,10 @@ namespace RoguelikeGame
 
     constexpr ExplosiveDefinition RPG_EXPLOSIVE = {96.f, 0.30f, 0.45f, 4.80f, 0.55f, 1.00f, 2.40f, 22.f};
 
+    constexpr float SHOT_NOISE_RADIUS = 560.f;
+    constexpr float QUIET_NOISE_RADIUS = 200.f;
+    constexpr float BLAST_NOISE_RADIUS = 900.f;
+
     struct WeaponDefinition
     {
         const char* id;
@@ -125,6 +129,7 @@ namespace RoguelikeGame
         const MeleeDefinition* melee = nullptr;
         const SpreadDefinition* spread = nullptr;
         const ExplosiveDefinition* explosive = nullptr;
+        float noiseRadius = SHOT_NOISE_RADIUS;
     };
 
     constexpr WeaponDefinition WEAPONS[] = {
@@ -140,17 +145,17 @@ namespace RoguelikeGame
         },
         {
             "smg_suppressed", u8"ПП с глушителем", 57.60f, 12.16f, 0.60f, 0.35f, BulletKind::Pistol, AmmoKind::Smg, 25, 1.30f, "smg_silenced_shot",
-            "smg_silenced_reload"
+            "smg_silenced_reload", nullptr, nullptr, nullptr, QUIET_NOISE_RADIUS
         },
         {"glock", u8"Глок", 32.00f, 11.68f, 0.55f, 0.65f, BulletKind::Pistol, AmmoKind::Pistol, 17, 1.10f, "glock_shot", "glock_reload"},
         {"deagle", u8"Дигл", 38.88f, 12.00f, 1.40f, 1.20f, BulletKind::Pistol, AmmoKind::Pistol, 7, 1.40f, "deagle_shot", "deagle_reload"},
         {
             "pistol_suppressed", u8"Пистолет с глушителем", 56.00f, 12.16f, 0.50f, 0.30f, BulletKind::Pistol, AmmoKind::Pistol, 12, 1.20f, "pistol_silenced_shot",
-            "pistol_silenced_reload"
+            "pistol_silenced_reload", nullptr, nullptr, nullptr, QUIET_NOISE_RADIUS
         },
         {"knife", u8"Нож", 42.40f, 15.36f, 0.00f, 0.00f, BulletKind::Pistol, AmmoKind::None, 0, 0.00f, nullptr, nullptr, &KNIFE_MELEE},
         {"bat", u8"Бита", 55.20f, 12.32f, 0.00f, 0.00f, BulletKind::Pistol, AmmoKind::None, 0, 0.00f, nullptr, nullptr, &BAT_MELEE},
-        {"rpg", u8"РПГ", 76.00f, 12.16f, 1.80f, 1.60f, BulletKind::Rocket, AmmoKind::Rocket, 1, 2.60f, "rpg_shot", "rpg_reload", nullptr, nullptr, &RPG_EXPLOSIVE}
+        {"rpg", u8"РПГ", 76.00f, 12.16f, 1.80f, 1.60f, BulletKind::Rocket, AmmoKind::Rocket, 1, 2.60f, "rpg_shot", "rpg_reload", nullptr, nullptr, &RPG_EXPLOSIVE, BLAST_NOISE_RADIUS}
     };
 
     constexpr int WEAPON_COUNT = static_cast<int>(std::size(WEAPONS));

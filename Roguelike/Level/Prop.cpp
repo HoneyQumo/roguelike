@@ -6,6 +6,7 @@
 #include "HealthComponent.h"
 #include "ItemCatalog.h"
 #include "LootDrop.h"
+#include "Noise.h"
 #include "PropVisualComponent.h"
 #include <BoxColliderComponent.h>
 #include "LevelGrid.h"
@@ -137,6 +138,11 @@ namespace RoguelikeGame
                 {
                     LevelGrid::OpenCell(where);
                     PathService::Reset();
+
+                    Noise noise;
+                    noise.position = where;
+                    noise.radius = PROP_NOISE_RADIUS;
+                    RaiseNoise(noise);
                 });
             }
         }

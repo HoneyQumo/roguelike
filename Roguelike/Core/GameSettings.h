@@ -287,6 +287,7 @@ namespace RoguelikeGame
     constexpr float RELOAD_VOLUME = 45.f;
     constexpr float HURT_VOLUME = 35.f;
     constexpr float VOICE_VOLUME = 70.f;
+    constexpr float PROP_NOISE_RADIUS = 320.f;
     constexpr float MELEE_HIT_VOLUME = 55.f;
 
     constexpr float HEAVY_CHARGED_GLOW = 0.22f;

@@ -132,6 +132,7 @@ namespace RoguelikeGame
             PlayEffectsOnReload(weaponComponent, animation, reloadAudio);
             PlayEffectsOnShot(weaponComponent, shotAudio, animation, weaponLayer);
             SpawnProjectilesOnShot(weaponComponent);
+            RaiseNoiseOnShot(weaponComponent);
 
             auto attack = gameObject->AddComponent<EnemyAttackComponent>();
             attack->SetTargetName(PLAYER_OBJECT_NAME);

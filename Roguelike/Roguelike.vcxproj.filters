@@ -102,6 +102,12 @@
     <ClInclude Include="Enemies\AwarenessGauge.h">
       <Filter>Enemies</Filter>
     </ClInclude>
+    <ClInclude Include="Enemies\Noise.h">
+      <Filter>Enemies</Filter>
+    </ClInclude>
+    <ClCompile Include="Enemies\Noise.cpp">
+      <Filter>Enemies</Filter>
+    </ClCompile>
     <ClInclude Include="Enemies\AwarenessGaugeComponent.h">
       <Filter>Enemies</Filter>
     </ClInclude>

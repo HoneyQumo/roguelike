@@ -1,6 +1,7 @@
 #pragma once
 
 #include <algorithm>
+#include "Vision.h"
 
 namespace RoguelikeGame
 {
@@ -9,6 +10,8 @@ namespace RoguelikeGame
     constexpr float AWARENESS_CLOSE_GAIN = 2.f;
     constexpr float AWARENESS_MOVING_GAIN = 1.5f;
     constexpr float AWARENESS_MOVING_SPEED = 40.f;
+    constexpr float AWARENESS_SIDE_GAIN = 1.f;
+    constexpr float AWARENESS_BACK_GAIN = 0.7f;
 
     enum class AwarenessState
     {
@@ -25,7 +28,7 @@ namespace RoguelikeGame
 
     struct AwarenessSense
     {
-        bool isVisible = false;
+        VisionBand band = VisionBand::None;
         bool isTargetMoving = false;
         bool keepsMemory = false;
         float distance = 0.f;
@@ -42,12 +45,22 @@ namespace RoguelikeGame
         return distance <= 0.f ? 1.f : 1.f - distance / maxDistance;
     }
 
+    constexpr float BandGain(VisionBand band)
+    {
+        if (band == VisionBand::Periphery)
+        {
+            return AWARENESS_SIDE_GAIN;
+        }
+
+        return band == VisionBand::Back ? AWARENESS_BACK_GAIN : 0.f;
+    }
+
     constexpr float GainFor(const AwarenessRates& rates, const AwarenessSense& sense)
     {
         float closer = 1.f + (AWARENESS_CLOSE_GAIN - 1.f) * Nearness(sense.distance, sense.maxDistance);
         float moving = sense.isTargetMoving ? AWARENESS_MOVING_GAIN : 1.f;
 
-        return rates.gain * closer * moving;
+        return rates.gain * BandGain(sense.band) * closer * moving;
     }
 
     constexpr float NextAwareness(float level, const AwarenessRates& rates, const AwarenessSense& sense, float deltaTime)
@@ -58,7 +71,12 @@ namespace RoguelikeGame
         }
 
         float next = level;
-        if (sense.isVisible)
+        if (sense.band == VisionBand::Focus)
+        {
+            return AWARENESS_PROVOKE_AT;
+        }
+
+        if (sense.band != VisionBand::None)
         {
             next += GainFor(rates, sense) * deltaTime;
         }

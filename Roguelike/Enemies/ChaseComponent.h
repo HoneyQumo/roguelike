@@ -51,12 +51,14 @@ namespace RoguelikeGame
 		void SetSearchGap(int newGap);
 		void SetAlertRadiusScale(float newScale);
 		void SetAwareness(float newGain, float newDecay);
+		void SetPeripheryHalfAngle(float newHalfAngle);
 		void SetForcedChase(bool newIsForced);
 
 		bool IsChasing() const;
 		bool IsAlerted() const;
 		bool IsSuspicious() const;
 		float GetAwareness() const;
+		VisionBand GetVisionBand() const;
 		AwarenessState GetAwarenessState() const;
 		bool IsEngaged() const;
 		bool CanSeeTarget() const;
@@ -75,12 +77,14 @@ namespace RoguelikeGame
 		float alertTime = 0.f;
 		float visionHalfAngle = 180.f;
 		float alertHalfAngle = 180.f;
+		float peripheryHalfAngle = 0.f;
 		float searchTime = 0.f;
 		bool isForced = false;
 		bool isChasing = false;
 		bool isEngaged = false;
 		bool isTargetVisible = false;
 		bool isInSight = false;
+		VisionBand band = VisionBand::None;
 		bool hasLastTarget = false;
 		float awareness = 0.f;
 		AwarenessRates rates;
@@ -109,6 +113,7 @@ namespace RoguelikeGame
 
 		void OnDamage(const DamageInfo& damage);
 		ChaseSense ReadSense(const XYZEngine::Vector2Df& targetPosition, bool hasTarget) const;
+		VisionField ReadField(bool isAlerted) const;
 		AwarenessSense ReadAwareness(const ChaseSense& sense, const XYZEngine::Vector2Df& targetPosition, float deltaTime) const;
 		void ApplyAim(const ChaseSense& sense);
 		XYZEngine::Vector2Df Facing() const;

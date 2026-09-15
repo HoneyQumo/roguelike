@@ -484,79 +484,6 @@ TEST_F(ChaseComponentTest, ClosedDoorHidesTheTargetThatWasInSight)
 	EXPECT_FALSE(chase->CanSeeTarget());
 }
 
-TEST_F(ChaseComponentTest, TargetInSightIsNotChasedAtOnce)
-{
-	CreateHero(3, 1);
-	ChaseComponent* chase = CreateEnemy(1, 1);
-	chase->SetAwareness(1.f, 0.7f);
-
-	Run(0.2f);
-
-	EXPECT_FALSE(chase->IsChasing());
-	EXPECT_EQ(chase->GetAwarenessState(), RoguelikeGame::AwarenessState::Calm);
-}
-
-TEST_F(ChaseComponentTest, EnemyGrowsSuspiciousBeforeTheChase)
-{
-	CreateHero(3, 1);
-	ChaseComponent* chase = CreateEnemy(1, 1);
-	chase->SetAwareness(1.f, 0.7f);
-
-	Run(1.1f);
-
-	EXPECT_TRUE(chase->IsSuspicious());
-	EXPECT_FALSE(chase->IsChasing());
-}
-
-TEST_F(ChaseComponentTest, SuspiciousEnemyIsAlreadyBusy)
-{
-	CreateHero(3, 1);
-	ChaseComponent* chase = CreateEnemy(1, 1);
-	chase->SetAwareness(1.f, 0.7f);
-
-	Run(1.1f);
-
-	ASSERT_TRUE(chase->IsSuspicious());
-	EXPECT_TRUE(chase->IsEngaged());
-}
-
-TEST_F(ChaseComponentTest, WatchingLongEnoughStartsTheChase)
-{
-	CreateHero(3, 1);
-	ChaseComponent* chase = CreateEnemy(1, 1);
-	chase->SetAwareness(1.f, 0.7f);
-
-	Run(2.5f);
-
-	EXPECT_TRUE(chase->IsChasing());
-	EXPECT_EQ(chase->GetAwarenessState(), RoguelikeGame::AwarenessState::Provoked);
-}
-
-TEST_F(ChaseComponentTest, TargetBehindTheBackIsNeverNoticed)
-{
-	CreateHero(3, 1);
-	ChaseComponent* chase = CreateEnemy(1, 1);
-	chase->SetAwareness(1.f, 0.7f);
-	chase->GetGameObject()->GetTransform()->SetWorldRotation(180.f);
-
-	Run(3.f);
-
-	EXPECT_FLOAT_EQ(chase->GetAwareness(), 0.f);
-	EXPECT_FALSE(chase->IsChasing());
-}
-
-TEST_F(ChaseComponentTest, QuickEnemyStartsTheChaseSoonerThanSlowOne)
-{
-	CreateHero(3, 1);
-	ChaseComponent* slow = CreateEnemy(1, 1);
-	slow->SetAwareness(0.6f, 0.7f);
-
-	Run(1.5f);
-
-	EXPECT_FALSE(slow->IsChasing());
-	EXPECT_LT(slow->GetAwareness(), RoguelikeGame::AWARENESS_PROVOKE_AT);
-}
-
 TEST_F(ChaseComponentTest, BarIsHiddenWhileNothingIsNoticed)
 {
 	CreateHero(3, 1);
@@ -573,9 +500,10 @@ TEST_F(ChaseComponentTest, BarIsHiddenWhileNothingIsNoticed)
 
 TEST_F(ChaseComponentTest, BarFillsUpWhileTheEnemyPeers)
 {
-	CreateHero(3, 1);
+	CreateHero(1, 3);
 	ChaseComponent* chase = CreateEnemy(1, 1);
 	chase->SetAwareness(1.f, 0.7f);
+	chase->SetPeripheryHalfAngle(100.f);
 	auto bar = chase->GetGameObject()->AddComponent<RoguelikeGame::AwarenessBarComponent>();
 
 	Run(0.6f);
@@ -589,13 +517,135 @@ TEST_F(ChaseComponentTest, BarFillsUpWhileTheEnemyPeers)
 
 TEST_F(ChaseComponentTest, BarIsFullWhenTheChaseStarts)
 {
-	CreateHero(3, 1);
+	CreateHero(1, 3);
 	ChaseComponent* chase = CreateEnemy(1, 1);
 	chase->SetAwareness(1.f, 0.7f);
+	chase->SetPeripheryHalfAngle(100.f);
 	auto bar = chase->GetGameObject()->AddComponent<RoguelikeGame::AwarenessBarComponent>();
 
 	Run(2.5f);
 
 	ASSERT_TRUE(chase->IsChasing());
 	EXPECT_FLOAT_EQ(bar->GetShownPart(), 1.f);
+}
+
+TEST_F(ChaseComponentTest, TargetInFrontIsSpottedAtOnce)
+{
+	CreateHero(3, 1);
+	ChaseComponent* chase = CreateEnemy(1, 1);
+	chase->SetAwareness(0.2f, 0.2f);
+
+	Run(0.1f);
+
+	EXPECT_TRUE(chase->IsChasing());
+	EXPECT_EQ(chase->GetVisionBand(), RoguelikeGame::VisionBand::Focus);
+}
+
+TEST_F(ChaseComponentTest, TargetAtTheSideIsNotSpottedAtOnce)
+{
+	CreateHero(1, 3);
+	ChaseComponent* chase = CreateEnemy(1, 1);
+	chase->SetAwareness(1.f, 0.7f);
+	chase->SetPeripheryHalfAngle(100.f);
+
+	Run(0.2f);
+
+	EXPECT_FALSE(chase->IsChasing());
+	EXPECT_EQ(chase->GetVisionBand(), RoguelikeGame::VisionBand::Periphery);
+}
+
+TEST_F(ChaseComponentTest, EnemyGrowsSuspiciousOfSomeoneAtTheSide)
+{
+	CreateHero(1, 3);
+	ChaseComponent* chase = CreateEnemy(1, 1);
+	chase->SetAwareness(1.f, 0.7f);
+	chase->SetPeripheryHalfAngle(100.f);
+
+	Run(0.9f);
+
+	EXPECT_TRUE(chase->IsSuspicious());
+	EXPECT_FALSE(chase->IsChasing());
+	EXPECT_TRUE(chase->IsEngaged());
+}
+
+TEST_F(ChaseComponentTest, SomeoneAtTheSideIsSpottedInTheEnd)
+{
+	CreateHero(1, 3);
+	ChaseComponent* chase = CreateEnemy(1, 1);
+	chase->SetAwareness(1.f, 0.7f);
+	chase->SetPeripheryHalfAngle(100.f);
+
+	Run(3.f);
+
+	EXPECT_TRUE(chase->IsChasing());
+}
+
+TEST_F(ChaseComponentTest, WithoutPeripheryTheSideIsNotSeenAtAll)
+{
+	CreateHero(1, 3);
+	ChaseComponent* chase = CreateEnemy(1, 1);
+	chase->SetAwareness(1.f, 0.7f);
+
+	Run(3.f);
+
+	EXPECT_FALSE(chase->IsChasing());
+	EXPECT_FLOAT_EQ(chase->GetAwareness(), 0.f);
+}
+
+TEST_F(ChaseComponentTest, SomeoneFarBehindIsNotNoticed)
+{
+	CreateHero(4, 1);
+	ChaseComponent* chase = CreateEnemy(1, 1);
+	chase->SetAwareness(1.f, 0.7f);
+	chase->SetPeripheryHalfAngle(100.f);
+	chase->GetGameObject()->GetTransform()->SetWorldRotation(180.f);
+
+	Run(3.f);
+
+	EXPECT_EQ(chase->GetVisionBand(), RoguelikeGame::VisionBand::None);
+	EXPECT_FALSE(chase->IsChasing());
+}
+
+TEST_F(ChaseComponentTest, SomeoneRightBehindTheBackIsNoticed)
+{
+	CreateHero(2, 1);
+	ChaseComponent* chase = CreateEnemy(1, 1);
+	chase->SetAwareness(1.f, 0.7f);
+	chase->SetPeripheryHalfAngle(100.f);
+	chase->GetGameObject()->GetTransform()->SetWorldRotation(180.f);
+
+	Run(0.1f);
+	ASSERT_EQ(chase->GetVisionBand(), RoguelikeGame::VisionBand::Back);
+	EXPECT_FALSE(chase->IsChasing());
+
+	Run(3.f);
+
+	EXPECT_TRUE(chase->IsChasing());
+}
+
+TEST_F(ChaseComponentTest, SideVisionReachesOnlyPartOfTheRadius)
+{
+	CreateHero(6, 2);
+	ChaseComponent* chase = CreateEnemy(1, 2);
+	chase->SetAwareness(1.f, 0.7f);
+	chase->SetPeripheryHalfAngle(100.f);
+	chase->GetGameObject()->GetTransform()->SetWorldRotation(90.f);
+
+	Run(0.1f);
+
+	EXPECT_EQ(chase->GetVisionBand(), RoguelikeGame::VisionBand::None);
+	EXPECT_FLOAT_EQ(chase->GetAwareness(), 0.f);
+}
+
+TEST_F(ChaseComponentTest, CloserToTheSideIsStillSeen)
+{
+	CreateHero(4, 2);
+	ChaseComponent* chase = CreateEnemy(1, 2);
+	chase->SetAwareness(1.f, 0.7f);
+	chase->SetPeripheryHalfAngle(100.f);
+	chase->GetGameObject()->GetTransform()->SetWorldRotation(90.f);
+
+	Run(0.1f);
+
+	EXPECT_EQ(chase->GetVisionBand(), RoguelikeGame::VisionBand::Periphery);
 }

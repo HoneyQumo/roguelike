@@ -85,18 +85,21 @@ namespace RoguelikeGame
 
 		if (hasTarget)
 		{
-			VisionRange range;
-			range.maxDistance = detectionRadius * (sense.isAlerted ? alertRadiusScale : 1.f);
-			range.calmHalfAngle = visionHalfAngle;
-			range.alertHalfAngle = alertHalfAngle;
-
-			VisionCone cone = ConeFor(range, sense.isAlerted);
-
 			bool isBlocked = LevelGrid::Current().HasWallBetween(position, targetPosition);
-			sense.isVisible = RoguelikeGame::CanSeeTarget(cone, Facing(), toTarget, isBlocked);
+			sense.isVisible = BandFor(ReadField(sense.isAlerted), Facing(), toTarget, isBlocked) != VisionBand::None;
 		}
 
 		return sense;
+	}
+
+	VisionField ChaseComponent::ReadField(bool isAlerted) const
+	{
+		VisionField field;
+		field.maxDistance = detectionRadius * (isAlerted ? alertRadiusScale : 1.f);
+		field.focusHalfAngle = isAlerted ? std::max(visionHalfAngle, alertHalfAngle) : visionHalfAngle;
+		field.peripheryHalfAngle = std::max(peripheryHalfAngle, field.focusHalfAngle);
+
+		return field;
 	}
 
 	Vector2Df ChaseComponent::Facing() const
@@ -106,11 +109,13 @@ namespace RoguelikeGame
 
 	AwarenessSense ChaseComponent::ReadAwareness(const ChaseSense& sense, const Vector2Df& targetPosition, float deltaTime) const
 	{
+		VisionField field = ReadField(sense.isAlerted);
+
 		AwarenessSense look;
-		look.isVisible = sense.isVisible;
+		look.band = band;
 		look.keepsMemory = IsSearching(memory);
 		look.distance = sense.distanceToTarget;
-		look.maxDistance = sense.detectionRadius;
+		look.maxDistance = BandDistance(field, band);
 		look.isTargetMoving = hasLastTarget && deltaTime > 0.f
 			&& (targetPosition - lastTargetPosition).GetLength() / deltaTime >= AWARENESS_MOVING_SPEED;
 
@@ -124,7 +129,7 @@ namespace RoguelikeGame
 			return;
 		}
 
-		if (RoguelikeGame::IsTargetDetected(sense) || (isInSight && IsSuspicious()))
+		if (RoguelikeGame::IsTargetDetected(sense))
 		{
 			aim->AimAtGameObject(targetName);
 			aim->SetMaxDistance(0.f);
@@ -154,6 +159,7 @@ namespace RoguelikeGame
 		isEngaged = false;
 		isTargetVisible = false;
 		isInSight = false;
+		band = VisionBand::None;
 		movement->SetDirection({ 0.f, 0.f });
 
 		if (targetName.empty() || detectionRadius <= 0.f)
@@ -166,6 +172,10 @@ namespace RoguelikeGame
 
 		ChaseSense sense = ReadSense(targetPosition, target != nullptr);
 		isInSight = sense.isVisible;
+		band = target != nullptr
+			? BandFor(ReadField(sense.isAlerted), Facing(), targetPosition - transform->GetWorldPosition(),
+				LevelGrid::Current().HasWallBetween(transform->GetWorldPosition(), targetPosition))
+			: VisionBand::None;
 
 		awareness = NextAwareness(awareness, rates, ReadAwareness(sense, targetPosition, deltaTime), deltaTime);
 		lastTargetPosition = targetPosition;
@@ -386,6 +396,16 @@ namespace RoguelikeGame
 	void ChaseComponent::SetSearchGap(int newGap)
 	{
 		searchGap = newGap;
+	}
+
+	void ChaseComponent::SetPeripheryHalfAngle(float newHalfAngle)
+	{
+		peripheryHalfAngle = std::max(newHalfAngle, 0.f);
+	}
+
+	VisionBand ChaseComponent::GetVisionBand() const
+	{
+		return band;
 	}
 
 	void ChaseComponent::SetAwareness(float newGain, float newDecay)

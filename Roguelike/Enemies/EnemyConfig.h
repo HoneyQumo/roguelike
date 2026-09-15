@@ -38,5 +38,6 @@ namespace RoguelikeGame
         float awarenessDecay = 0.7f;
         const char* voice = nullptr;
         int voiceLines = 0;
+        float peripheryHalfAngle = 0.f;
     };
 }

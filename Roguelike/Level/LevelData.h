@@ -108,6 +108,22 @@ namespace RoguelikeGame
         LevelInfo info;
     };
 
+    inline TileType TileAt(const LevelData& levelData, int column, int row)
+    {
+        if (row < 0 || row >= static_cast<int>(levelData.tiles.size()))
+        {
+            return TileType::Empty;
+        }
+
+        const std::vector<TileType>& line = levelData.tiles[row];
+        if (column < 0 || column >= static_cast<int>(line.size()))
+        {
+            return TileType::Empty;
+        }
+
+        return line[column];
+    }
+
     inline int CountTiles(const LevelData& levelData, TileType tileType)
     {
         int count = 0;

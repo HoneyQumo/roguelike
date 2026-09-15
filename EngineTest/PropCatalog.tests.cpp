@@ -119,3 +119,33 @@ TEST(PropCatalogTest, HitEffectComesFromTheData)
 	EXPECT_EQ(catalog.Find("flesh_pile")->hitEffect, "blood");
 	EXPECT_EQ(catalog.Find("statue")->hitEffect, "impact");
 }
+
+TEST(PropCatalogTest, APropIsSolidAndSeeThroughByDefault)
+{
+	PropCatalog catalog = ParseProps("[prop crate]\nname Crate\n");
+
+	const PropDefinition* prop = catalog.Find("crate");
+	ASSERT_NE(prop, nullptr);
+	EXPECT_TRUE(prop->isSolid);
+	EXPECT_FALSE(prop->isCover);
+}
+
+TEST(PropCatalogTest, AShelfIsSolidAndBlocksTheView)
+{
+	PropCatalog catalog = ParseProps("[prop shelf]\nname Shelf\ncover true\n");
+
+	const PropDefinition* prop = catalog.Find("shelf");
+	ASSERT_NE(prop, nullptr);
+	EXPECT_TRUE(prop->isSolid);
+	EXPECT_TRUE(prop->isCover);
+}
+
+TEST(PropCatalogTest, ABushIsWalkedThroughAndBlocksTheView)
+{
+	PropCatalog catalog = ParseProps("[prop bush]\nname Bush\nsolid false\ncover true\n");
+
+	const PropDefinition* prop = catalog.Find("bush");
+	ASSERT_NE(prop, nullptr);
+	EXPECT_FALSE(prop->isSolid);
+	EXPECT_TRUE(prop->isCover);
+}

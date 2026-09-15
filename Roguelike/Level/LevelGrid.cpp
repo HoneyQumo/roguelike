@@ -1,4 +1,5 @@
 #include "LevelGrid.h"
+#include "PropCatalog.h"
 #include "GameSettings.h"
 #include <algorithm>
 #include <cmath>
@@ -29,6 +30,11 @@ namespace RoguelikeGame
     }
 
     LevelGrid LevelGrid::Build(const LevelData& levelData)
+    {
+        return Build(levelData, PropCatalog::Empty());
+    }
+
+    LevelGrid LevelGrid::Build(const LevelData& levelData, const PropCatalog& props)
     {
         LevelGrid grid;
         grid.height = static_cast<int>(levelData.tiles.size());
@@ -61,9 +67,22 @@ namespace RoguelikeGame
             }
 
             std::size_t index = static_cast<std::size_t>(prop.row) * grid.width + prop.column;
-            if (grid.cells[index] == LevelCell::Floor)
+            if (grid.cells[index] != LevelCell::Floor)
             {
-                grid.cells[index] = LevelCell::Blocked;
+                continue;
+            }
+
+            const PropDefinition* definition = props.Find(prop.propId);
+            bool isSolid = definition == nullptr || definition->isSolid;
+            bool isCover = definition != nullptr && definition->isCover;
+
+            if (isSolid)
+            {
+                grid.cells[index] = isCover ? LevelCell::Screen : LevelCell::Blocked;
+            }
+            else if (isCover)
+            {
+                grid.cells[index] = LevelCell::Brush;
             }
         }
 
@@ -82,7 +101,9 @@ namespace RoguelikeGame
         }
 
         std::size_t index = static_cast<std::size_t>(row) * current.width + column;
-        if (current.cells[index] == LevelCell::Blocked || current.cells[index] == LevelCell::Door)
+        LevelCell cell = current.cells[index];
+        if (cell == LevelCell::Blocked || cell == LevelCell::Screen || cell == LevelCell::Brush
+            || cell == LevelCell::Door)
         {
             current.cells[index] = LevelCell::Floor;
         }
@@ -125,14 +146,25 @@ namespace RoguelikeGame
 
     bool LevelGrid::IsPassable(int column, int row) const
     {
-        return GetCell(column, row) == LevelCell::Floor;
+        LevelCell cell = GetCell(column, row);
+
+        return cell == LevelCell::Floor || cell == LevelCell::Brush;
     }
 
     bool LevelGrid::BlocksSight(int column, int row) const
     {
         LevelCell cell = GetCell(column, row);
 
-        return cell == LevelCell::Wall || cell == LevelCell::Outside || cell == LevelCell::Door;
+        return cell == LevelCell::Wall || cell == LevelCell::Outside || cell == LevelCell::Door
+            || cell == LevelCell::Screen || cell == LevelCell::Brush;
+    }
+
+    bool LevelGrid::BlocksSound(int column, int row) const
+    {
+        LevelCell cell = GetCell(column, row);
+
+        return cell == LevelCell::Wall || cell == LevelCell::Outside || cell == LevelCell::Door
+            || cell == LevelCell::Screen;
     }
 
     XYZEngine::Vector2Df LevelGrid::ToWorld(int column, int row) const
@@ -188,25 +220,25 @@ namespace RoguelikeGame
 
     bool LevelGrid::HasWallBetween(const XYZEngine::Vector2Df& from, const XYZEngine::Vector2Df& to) const
     {
-        return IsCrossed(from, to, true);
+        return IsCrossed(from, to, CrossKind::Sight);
     }
 
     bool LevelGrid::HasObstacleBetween(const XYZEngine::Vector2Df& from, const XYZEngine::Vector2Df& to) const
     {
-        return IsCrossed(from, to, false);
+        return IsCrossed(from, to, CrossKind::Move);
     }
 
-    bool LevelGrid::IsCrossed(const XYZEngine::Vector2Df& from, const XYZEngine::Vector2Df& to, bool sightOnly) const
+    bool LevelGrid::IsCrossed(const XYZEngine::Vector2Df& from, const XYZEngine::Vector2Df& to, CrossKind kind) const
     {
-        return CountCrossed(from, to, sightOnly, true) > 0;
+        return CountCrossed(from, to, kind, true) > 0;
     }
 
     int LevelGrid::CountWallsBetween(const XYZEngine::Vector2Df& from, const XYZEngine::Vector2Df& to) const
     {
-        return CountCrossed(from, to, true, false);
+        return CountCrossed(from, to, CrossKind::Sound, false);
     }
 
-    int LevelGrid::CountCrossed(const XYZEngine::Vector2Df& from, const XYZEngine::Vector2Df& to, bool sightOnly, bool stopAtFirst) const
+    int LevelGrid::CountCrossed(const XYZEngine::Vector2Df& from, const XYZEngine::Vector2Df& to, CrossKind kind, bool stopAtFirst) const
     {
         if (IsEmpty())
         {
@@ -266,7 +298,9 @@ namespace RoguelikeGame
                 return crossed;
             }
 
-            bool isBlocking = sightOnly ? BlocksSight(column, row) : !IsPassable(column, row);
+            bool isBlocking = kind == CrossKind::Move ? !IsPassable(column, row)
+                : kind == CrossKind::Sound ? BlocksSound(column, row)
+                : BlocksSight(column, row);
             if (isBlocking && !wasBlocking)
             {
                 crossed++;

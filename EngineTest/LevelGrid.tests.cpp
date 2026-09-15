@@ -2,6 +2,7 @@
 #include "GameSettings.h"
 #include "LevelGrid.h"
 #include "LevelLoader.h"
+#include "PropCatalog.h"
 #include <sstream>
 
 using RoguelikeGame::LevelCell;
@@ -20,6 +21,44 @@ namespace
 
 		return LevelGrid::Build(level);
 	}
+
+	LevelGrid GridOf(const std::string& map, const std::string& props)
+	{
+		std::istringstream mapInput(map);
+		LevelData level = LevelLoader::Parse(mapInput, "grid");
+		std::istringstream propInput(props);
+
+		return LevelGrid::Build(level, RoguelikeGame::PropCatalog::Parse(propInput, "grid"));
+	}
+
+	const std::string COVER_PROPS =
+		"[prop crate]\n"
+		"name Crate\n"
+		"size 48\n"
+		"\n"
+		"[prop shelf]\n"
+		"name Shelf\n"
+		"size 60\n"
+		"cover true\n"
+		"\n"
+		"[prop bush]\n"
+		"name Bush\n"
+		"size 56\n"
+		"solid false\n"
+		"cover true\n";
+
+	const std::string COVER_MAP =
+		"[legend]\n"
+		"# Wall\n"
+		". Floor\n"
+		"c Prop:crate\n"
+		"s Prop:shelf\n"
+		"b Prop:bush\n"
+		"[map]\n"
+		"#######\n"
+		"#.c.s.#\n"
+		"#..b..#\n"
+		"#######\n";
 
 	const std::string ROOMS =
 		"[map]\n"
@@ -403,4 +442,65 @@ TEST(LevelGridTest, EmptyGridCountsNoWalls)
 	LevelGrid grid;
 
 	EXPECT_EQ(grid.CountWallsBetween({0.f, 0.f}, {500.f, 500.f}), 0);
+}
+
+TEST(LevelGridTest, ACrateStopsTheWayButNotTheView)
+{
+	LevelGrid grid = GridOf(COVER_MAP, COVER_PROPS);
+
+	EXPECT_FALSE(grid.IsPassable(2, 1));
+	EXPECT_FALSE(grid.BlocksSight(2, 1));
+	EXPECT_FALSE(grid.BlocksSound(2, 1));
+}
+
+TEST(LevelGridTest, AShelfStopsBothTheWayAndTheView)
+{
+	LevelGrid grid = GridOf(COVER_MAP, COVER_PROPS);
+
+	EXPECT_FALSE(grid.IsPassable(4, 1));
+	EXPECT_TRUE(grid.BlocksSight(4, 1));
+	EXPECT_TRUE(grid.BlocksSound(4, 1));
+}
+
+TEST(LevelGridTest, ABushLetsYouThroughAndStillHidesYou)
+{
+	LevelGrid grid = GridOf(COVER_MAP, COVER_PROPS);
+
+	EXPECT_TRUE(grid.IsPassable(3, 2));
+	EXPECT_TRUE(grid.BlocksSight(3, 2));
+	EXPECT_FALSE(grid.BlocksSound(3, 2));
+}
+
+TEST(LevelGridTest, WithoutACatalogEveryPropIsAPlainCrate)
+{
+	LevelGrid grid = GridOf(COVER_MAP);
+
+	EXPECT_FALSE(grid.IsPassable(4, 1));
+	EXPECT_FALSE(grid.BlocksSight(4, 1));
+	EXPECT_FALSE(grid.BlocksSight(3, 2));
+}
+
+TEST(LevelGridTest, BreakingACoverOpensTheWayAndTheView)
+{
+	LevelGrid::SetCurrent(GridOf(COVER_MAP, COVER_PROPS));
+
+	LevelGrid::OpenCell(LevelGrid::Current().ToWorld(4, 1));
+
+	EXPECT_TRUE(LevelGrid::Current().IsPassable(4, 1));
+	EXPECT_FALSE(LevelGrid::Current().BlocksSight(4, 1));
+	LevelGrid::SetCurrent(LevelGrid());
+}
+
+TEST(LevelGridTest, ABushDoesNotMuffleTheSound)
+{
+	LevelGrid grid = GridOf(COVER_MAP, COVER_PROPS);
+
+	EXPECT_EQ(grid.CountWallsBetween(grid.ToWorld(2, 2), grid.ToWorld(5, 2)), 0);
+}
+
+TEST(LevelGridTest, AShelfMufflesTheSound)
+{
+	LevelGrid grid = GridOf(COVER_MAP, COVER_PROPS);
+
+	EXPECT_EQ(grid.CountWallsBetween(grid.ToWorld(3, 1), grid.ToWorld(5, 1)), 1);
 }

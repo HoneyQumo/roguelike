@@ -1,4 +1,6 @@
 #include "LevelBuilder.h"
+#include "Chasm.h"
+#include "GameResources.h"
 #include "TileAtlas.h"
 #include "LevelGrid.h"
 #include "PathService.h"
@@ -27,7 +29,7 @@ namespace RoguelikeGame
 {
     Level LevelBuilder::Build(const LevelData& levelData, const ItemCatalog& items, const PropCatalog& props)
     {
-        LevelGrid::SetCurrent(LevelGrid::Build(levelData));
+        LevelGrid::SetCurrent(LevelGrid::Build(levelData, GameResources::GetProps()));
         PathService::Reset();
         PatrolRoutes::SetCurrent(PatrolRoutes::Build(levelData, LevelGrid::Current()));
 
@@ -60,6 +62,13 @@ namespace RoguelikeGame
                     case TileType::Wall:
                         level.Add(CreateWall(position));
                         wallsCount++;
+                        break;
+                    case TileType::Empty:
+                        if (IsChasmEdge(levelData, column, row))
+                        {
+                            level.Add(CreateWall(position));
+                            wallsCount++;
+                        }
                         break;
                     case TileType::PlayerSpawn:
                         if (level.GetPlayerSpawn().has_value())

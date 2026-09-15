@@ -151,6 +151,7 @@
         <ClCompile Include="Weapons\Projectile.cpp"/>
         <ClCompile Include="Weapons\Weapon.cpp"/>
         <ClCompile Include="Level\Level.cpp"/>
+        <ClCompile Include="Level\Chasm.cpp"/>
         <ClCompile Include="Level\LevelGrid.cpp"/>
         <ClCompile Include="Level\LevelIntegrity.cpp"/>
         <ClCompile Include="Level\PathField.cpp"/>
@@ -228,6 +229,7 @@
         <ClCompile Include="Enemies\AwarenessGauge.cpp"/>
         <ClCompile Include="Enemies\AwarenessGaugeComponent.cpp"/>
         <ClInclude Include="Enemies\Vision.h"/>
+        <ClInclude Include="Level\Chasm.h"/>
         <ClInclude Include="Level\LevelGrid.h"/>
         <ClInclude Include="Level\LevelIntegrity.h"/>
         <ClInclude Include="Level\PathField.h"/>

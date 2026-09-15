@@ -215,6 +215,14 @@ namespace RoguelikeGame
                 continue;
             }
 
+            if (key == "solid" || key == "cover")
+            {
+                std::string value;
+                stream >> value;
+                (key == "solid" ? current.isSolid : current.isCover) = value == "true";
+                continue;
+            }
+
             if (key == "key")
             {
                 stream >> current.keyItem;

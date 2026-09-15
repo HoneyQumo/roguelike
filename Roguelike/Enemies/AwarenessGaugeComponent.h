@@ -1,26 +1,29 @@
 #pragma once
 
-#include <SFML/Graphics/RectangleShape.hpp>
+#include <SFML/Graphics/CircleShape.hpp>
+#include <SFML/Graphics/VertexArray.hpp>
 #include <Component.h>
 #include <TransformComponent.h>
 #include <Vector.h>
+#include "AwarenessGauge.h"
 
 namespace RoguelikeGame
 {
     class ChaseComponent;
 
-    class AwarenessBarComponent : public XYZEngine::Component
+    class AwarenessGaugeComponent : public XYZEngine::Component
     {
     public:
-        AwarenessBarComponent(XYZEngine::GameObject* gameObject);
+        AwarenessGaugeComponent(XYZEngine::GameObject* gameObject);
 
         void Start() override;
         void Update(float deltaTime) override;
         void Render() override;
 
-        void SetSize(float newWidth, float newHeight);
+        void SetRadius(float newRadius);
         void SetOffset(float offsetX, float offsetY);
 
+        GaugeLook ReadLook() const;
         bool IsShown() const;
         float GetShownPart() const;
 
@@ -28,10 +31,11 @@ namespace RoguelikeGame
         XYZEngine::TransformComponent* transform = nullptr;
         ChaseComponent* chase = nullptr;
 
-        sf::RectangleShape background;
-        sf::RectangleShape fill;
+        sf::CircleShape background;
+        sf::VertexArray sector;
 
-        XYZEngine::Vector2Df size = {34.f, 5.f};
-        XYZEngine::Vector2Df offset = {0.f, 52.f};
+        float radius = 11.f;
+        float sinceSpotted = 0.f;
+        XYZEngine::Vector2Df offset = {0.f, 58.f};
     };
 }

@@ -217,11 +217,13 @@
         <ClInclude Include="Core\FactionComponent.h"/>
         <ClInclude Include="Enemies\ChaseRules.h"/>
         <ClInclude Include="Enemies\Awareness.h"/>
-        <ClInclude Include="Enemies\AwarenessBarComponent.h"/>
+        <ClInclude Include="Enemies\AwarenessGauge.h"/>
+        <ClInclude Include="Enemies\AwarenessGaugeComponent.h"/>
         <ClInclude Include="Enemies\EnemyVoice.h"/>
         <ClInclude Include="Enemies\EnemyVoiceComponent.h"/>
         <ClCompile Include="Enemies\EnemyVoiceComponent.cpp"/>
-        <ClCompile Include="Enemies\AwarenessBarComponent.cpp"/>
+        <ClCompile Include="Enemies\AwarenessGauge.cpp"/>
+        <ClCompile Include="Enemies\AwarenessGaugeComponent.cpp"/>
         <ClInclude Include="Enemies\Vision.h"/>
         <ClInclude Include="Level\LevelGrid.h"/>
         <ClInclude Include="Level\PathField.h"/>

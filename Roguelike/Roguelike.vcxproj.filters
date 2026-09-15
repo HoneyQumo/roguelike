@@ -99,7 +99,10 @@
     <ClInclude Include="Enemies\Awareness.h">
       <Filter>Enemies</Filter>
     </ClInclude>
-    <ClInclude Include="Enemies\AwarenessBarComponent.h">
+    <ClInclude Include="Enemies\AwarenessGauge.h">
+      <Filter>Enemies</Filter>
+    </ClInclude>
+    <ClInclude Include="Enemies\AwarenessGaugeComponent.h">
       <Filter>Enemies</Filter>
     </ClInclude>
     <ClInclude Include="Enemies\EnemyVoice.h">
@@ -111,7 +114,10 @@
     <ClCompile Include="Enemies\EnemyVoiceComponent.cpp">
       <Filter>Enemies</Filter>
     </ClCompile>
-    <ClCompile Include="Enemies\AwarenessBarComponent.cpp">
+    <ClCompile Include="Enemies\AwarenessGauge.cpp">
+      <Filter>Enemies</Filter>
+    </ClCompile>
+    <ClCompile Include="Enemies\AwarenessGaugeComponent.cpp">
       <Filter>Enemies</Filter>
     </ClCompile>
     <ClInclude Include="Enemies\Vision.h">

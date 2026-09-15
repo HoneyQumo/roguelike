@@ -1,5 +1,6 @@
 #include "Door.h"
 #include "DoorComponent.h"
+#include <AudioComponent.h>
 #include "DoorHinge.h"
 #include "DoorRules.h"
 #include "GameSettings.h"
@@ -67,7 +68,9 @@ namespace RoguelikeGame
         auto collider = gameObject->AddComponent<XYZEngine::BoxColliderComponent>();
         collider->SetSize(TILE_SIZE, TILE_SIZE);
 
+        auto doorAudio = gameObject->AddComponent<XYZEngine::AudioComponent>();
         auto door = gameObject->AddComponent<DoorComponent>();
+        door->SetAudio(doorAudio);
         door->SetDoorId(doorId);
         door->SetKeyName(KeyNameFor(doorId, items));
 

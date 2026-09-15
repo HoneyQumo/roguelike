@@ -12,7 +12,7 @@
 
 namespace RoguelikeGame
 {
-    constexpr TileType BOSS_MINION_TILE = TileType::GruntSpawn;
+    constexpr TileType BOSS_MINION_TILE = TileType::MarauderSpawn;
 
     void SpawnProjectilesOnBossVolley(BossBrainComponent* brain, XYZEngine::GameObject* boss, WeaponId weapon);
     void SummonMinionsOnBossCall(BossBrainComponent* brain);

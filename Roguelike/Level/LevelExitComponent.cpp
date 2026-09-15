@@ -99,6 +99,17 @@ namespace RoguelikeGame
         enteredEvent.Invoke();
     }
 
+    void LevelExitComponent::Use()
+    {
+        if (isUsed)
+        {
+            return;
+        }
+
+        isUsed = true;
+        enteredEvent.Invoke();
+    }
+
     XYZEngine::SubscriptionId LevelExitComponent::SubscribeEntered(std::function<void()> onEntered)
     {
         return enteredEvent.Subscribe(std::move(onEntered));

@@ -59,6 +59,13 @@ namespace RoguelikeGame
         std::string doorId;
     };
 
+    struct FixturePlacement
+    {
+        int column = 0;
+        int row = 0;
+        std::string id;
+    };
+
     struct ZonePlacement
     {
         int column = 0;
@@ -80,6 +87,7 @@ namespace RoguelikeGame
         std::string bossId;
         float healthScale = 1.f;
         float damageScale = 1.f;
+        std::string drop;
 
         bool IsEmpty() const { return bossId.empty(); }
     };
@@ -105,6 +113,8 @@ namespace RoguelikeGame
         std::vector<PatrolPoint> patrols;
         std::vector<DoorPlacement> doors;
         std::vector<ZonePlacement> zones;
+        std::vector<FixturePlacement> levers;
+        std::vector<FixturePlacement> hatches;
         LevelInfo info;
     };
 

@@ -148,6 +148,15 @@ namespace RoguelikeGame
             const std::vector<char>& reached)
         {
             std::set<std::string> opened;
+
+            const ItemDefinition* prize = levelData.info.boss.drop.empty()
+                ? nullptr
+                : items.Find(levelData.info.boss.drop);
+
+            if (prize != nullptr && prize->effect.kind == ItemEffectKind::Unlock)
+            {
+                opened.insert(prize->effect.target);
+            }
             for (const ItemPlacement& placement : levelData.items)
             {
                 std::size_t index = static_cast<std::size_t>(placement.row) * levelData.width + placement.column;
@@ -280,6 +289,10 @@ namespace RoguelikeGame
         void CheckExit(const LevelData& levelData, const std::vector<char>& reached, LevelReport& report)
         {
             std::vector<Cell> exits = CellsOf(levelData, TileType::Exit);
+            for (const FixturePlacement& hatch : levelData.hatches)
+            {
+                exits.push_back({hatch.column, hatch.row});
+            }
             if (exits.empty())
             {
                 if (!levelData.info.nextLevelId.empty())

@@ -83,6 +83,8 @@ namespace RoguelikeGame
                     info.boss.damageScale = 1.f;
                 }
 
+                stream >> info.boss.drop;
+
                 return;
             }
 

@@ -9,6 +9,7 @@
 
 namespace XYZEngine
 {
+    class AudioComponent;
     class ColliderComponent;
     class TransformComponent;
 }
@@ -30,6 +31,7 @@ namespace RoguelikeGame
         const std::string& GetDoorId() const;
 
         void SetKeyName(const std::string& newKeyName);
+        void SetAudio(XYZEngine::AudioComponent* newAudio);
         void SetVisual(PropVisualComponent* newVisual);
         void SetLeaf(XYZEngine::TransformComponent* newLeaf);
         void SetHinge(const DoorHinge& newHinge);
@@ -56,6 +58,7 @@ namespace RoguelikeGame
 
         XYZEngine::ColliderComponent* collider = nullptr;
         PropVisualComponent* visual = nullptr;
+        XYZEngine::AudioComponent* audio = nullptr;
         XYZEngine::TransformComponent* leaf = nullptr;
 
         DoorHinge hinge;

@@ -17,6 +17,7 @@ namespace XYZEngine
 		bindings[static_cast<int>(InputAction::Reload)].key = sf::Keyboard::R;
 		bindings[static_cast<int>(InputAction::Roll)].key = sf::Keyboard::Space;
 		bindings[static_cast<int>(InputAction::Interact)].key = sf::Keyboard::E;
+		bindings[static_cast<int>(InputAction::Flee)].key = sf::Keyboard::F;
 		bindings[static_cast<int>(InputAction::Inventory)].key = sf::Keyboard::I;
 		bindings[static_cast<int>(InputAction::Inventory)].alternativeKey = sf::Keyboard::Tab;
 		bindings[static_cast<int>(InputAction::Pause)].key = sf::Keyboard::Escape;

@@ -8,6 +8,8 @@
 #include "BossSpriteAtlas.h"
 #include "EnemyCatalog.h"
 #include "EnemyVoice.h"
+#include "Fixtures.h"
+#include "TileAtlas.h"
 #include <PixelBounds.h>
 #include <ResourceSystem.h>
 #include <randomizer.h>
@@ -113,6 +115,10 @@ namespace RoguelikeGame
 
         XYZEngine::ResourceSystem::Instance()->LoadSound(SHOT_SOUND, SHOT_SOUND_FILE);
         XYZEngine::ResourceSystem::Instance()->LoadSound(HURT_SOUND, HURT_SOUND_FILE);
+        XYZEngine::ResourceSystem::Instance()->LoadSound(DOOR_OPEN_SOUND, DOOR_OPEN_SOUND_FILE);
+        XYZEngine::ResourceSystem::Instance()->LoadSound(LEVER_SOUND, LEVER_SOUND_FILE);
+        XYZEngine::ResourceSystem::Instance()->LoadSound(HATCH_SOUND, HATCH_SOUND_FILE);
+        LoadFixtures();
         LoadVoiceLines();
 
         LoadWeaponSounds();
@@ -267,6 +273,23 @@ namespace RoguelikeGame
     const LootCatalog& GameResources::GetLoot()
     {
         return loot;
+    }
+
+    void GameResources::LoadFixtures()
+    {
+        for (int frame = 0; frame < HATCH_FRAMES; frame++)
+        {
+            XYZEngine::ResourceSystem::Instance()->LoadTexturePart(
+                std::string(HATCH_TEXTURE_PREFIX) + std::to_string(frame), FIXTURES_TEXTURE_FILE,
+                sf::IntRect(frame * TILE_FRAME_SIZE, 0, TILE_FRAME_SIZE, TILE_FRAME_SIZE), false);
+        }
+
+        for (int frame = 0; frame < LEVER_FRAMES; frame++)
+        {
+            XYZEngine::ResourceSystem::Instance()->LoadTexturePart(
+                std::string(LEVER_TEXTURE_PREFIX) + std::to_string(frame), FIXTURES_TEXTURE_FILE,
+                sf::IntRect((HATCH_FRAMES + frame) * TILE_FRAME_SIZE, 0, TILE_FRAME_SIZE, TILE_FRAME_SIZE), false);
+        }
     }
 
     void GameResources::LoadProps()

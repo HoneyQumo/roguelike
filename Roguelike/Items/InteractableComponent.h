@@ -2,6 +2,7 @@
 
 #include <string>
 #include <Component.h>
+#include <InputSystem.h>
 
 namespace XYZEngine
 {
@@ -18,6 +19,7 @@ namespace RoguelikeGame
         InteractableComponent(XYZEngine::GameObject* gameObject);
 
         virtual std::string GetPrompt(XYZEngine::GameObject* actor) const = 0;
+        virtual XYZEngine::InputAction GetAction() const;
         virtual std::string GetRefusal(XYZEngine::GameObject* actor) const;
         virtual bool IsAvailable() const = 0;
         virtual bool Interact(XYZEngine::GameObject* actor) = 0;

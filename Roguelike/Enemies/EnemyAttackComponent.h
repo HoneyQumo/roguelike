@@ -27,6 +27,8 @@ namespace RoguelikeGame
 
         void SetTargetName(const std::string& newTargetName);
         void SetAttackRange(float newAttackRange);
+        void SetProvokedRangeScale(float newScale);
+        float GetReach() const;
         bool IsAttacking() const;
 
     private:
@@ -38,6 +40,7 @@ namespace RoguelikeGame
 
         std::string targetName;
         float attackRange = 0.f;
+        float provokedRangeScale = 1.f;
         bool isAttacking = false;
     };
 }

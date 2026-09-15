@@ -113,6 +113,7 @@ namespace RoguelikeGame
             auto attack = gameObject->AddComponent<EnemyAttackComponent>();
             attack->SetTargetName(PLAYER_OBJECT_NAME);
             attack->SetAttackRange(config.attackRange);
+            attack->SetProvokedRangeScale(config.provokedRangeScale);
         }
         else
         {
@@ -138,6 +139,7 @@ namespace RoguelikeGame
             auto attack = gameObject->AddComponent<EnemyAttackComponent>();
             attack->SetTargetName(PLAYER_OBJECT_NAME);
             attack->SetAttackRange(config.attackRange);
+            attack->SetProvokedRangeScale(config.provokedRangeScale);
         }
 
         auto meleeComponent = gameObject->GetComponent<MeleeWeaponComponent>();

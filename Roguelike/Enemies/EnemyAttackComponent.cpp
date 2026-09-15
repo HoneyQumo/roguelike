@@ -49,7 +49,7 @@ namespace RoguelikeGame
         sense.hasTarget = target != nullptr;
         sense.isTargetAlive = targetHealth == nullptr || targetHealth->IsAlive();
         sense.canSeeTarget = chase != nullptr && chase->CanSeeTarget();
-        sense.attackRange = attackRange;
+        sense.attackRange = GetReach();
 
         XYZEngine::Vector2Df targetPosition = target != nullptr
             ? target->GetTransform()->GetWorldPosition()
@@ -79,13 +79,25 @@ namespace RoguelikeGame
     {
         if (XYZEngine::DebugDraw::Instance()->IsEnabled() && attackRange > 0.f)
         {
-            XYZEngine::DebugDraw::Instance()->DrawCircle(transform->GetWorldPosition(), attackRange, DEBUG_ATTACK_RANGE_COLOR);
+            XYZEngine::DebugDraw::Instance()->DrawCircle(transform->GetWorldPosition(), GetReach(), DEBUG_ATTACK_RANGE_COLOR);
         }
     }
 
     void EnemyAttackComponent::SetTargetName(const std::string& newTargetName)
     {
         targetName = newTargetName;
+    }
+
+    float EnemyAttackComponent::GetReach() const
+    {
+        bool isProvoked = chase != nullptr && chase->GetAwarenessState() == AwarenessState::Provoked;
+
+        return isProvoked ? attackRange * provokedRangeScale : attackRange;
+    }
+
+    void EnemyAttackComponent::SetProvokedRangeScale(float newScale)
+    {
+        provokedRangeScale = newScale < 1.f ? 1.f : newScale;
     }
 
     void EnemyAttackComponent::SetAttackRange(float newAttackRange)

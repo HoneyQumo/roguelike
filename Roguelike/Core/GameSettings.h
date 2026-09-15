@@ -234,6 +234,12 @@ namespace RoguelikeGame
     constexpr auto CONTAINER_OPEN_PREFIX = u8"[E] Открыть: ";
     constexpr auto CONTAINER_LOCKED_PREFIX = u8"Заперто: нужен ";
     constexpr auto DOOR_OPEN_PROMPT = u8"[E] Открыть дверь";
+    constexpr auto LEVER_PROMPT = u8"[E] Дёрнуть рычаг";
+    constexpr auto HATCH_FLEE_PROMPT = u8"[F] Сбежать из тюрьмы";
+    constexpr auto DOOR_OPEN_SOUND = "door_open";
+    constexpr auto LEVER_SOUND = "lever";
+    constexpr auto HATCH_SOUND = "hatch_open";
+    constexpr float FIXTURE_VOLUME = 55.f;
     constexpr auto DOOR_LOCKED_PREFIX = u8"Дверь заперта: нужен ";
     constexpr auto DOOR_UNKNOWN_KEY_NAME = u8"ключ";
     constexpr int HUD_PROMPT_FONT_SIZE = 24;
@@ -343,6 +349,12 @@ namespace RoguelikeGame
     constexpr auto DOORS_ATLAS_FILE = "Resources/Textures/doors.png";
     constexpr auto HIT_FLASH_SHADER_FILE = "Resources/Shaders/hit_flash.frag";
     constexpr auto SHOT_SOUND_FILE = "Resources/Audio/shot.wav";
+    constexpr auto DOOR_OPEN_SOUND_FILE = "Resources/Audio/door_open.wav";
+    constexpr auto LEVER_SOUND_FILE = "Resources/Audio/lever.wav";
+    constexpr auto HATCH_SOUND_FILE = "Resources/Audio/hatch_open.wav";
+    constexpr auto FIXTURES_TEXTURE_FILE = "Resources/Textures/fixtures.png";
+    constexpr auto HATCH_TEXTURE_PREFIX = "hatch_";
+    constexpr auto LEVER_TEXTURE_PREFIX = "lever_";
     constexpr auto HURT_SOUND_FILE = "Resources/Audio/hurt.wav";
     constexpr auto MAIN_THEME_FILE = "Resources/Audio/main_music_1.ogg";
     constexpr auto TEST_LEVEL_FILE = "Resources/Levels/test_level.config";

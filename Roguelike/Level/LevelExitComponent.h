@@ -24,6 +24,7 @@ namespace RoguelikeGame
         bool IsUsed() const;
         bool IsLocked() const;
         void SetLocked(bool newIsLocked);
+        void Use();
 
         XYZEngine::SubscriptionId SubscribeEntered(std::function<void()> onEntered);
         XYZEngine::SubscriptionId SubscribeBlocked(std::function<void()> onBlocked);

@@ -7,6 +7,11 @@
 
 namespace RoguelikeGame
 {
+    XYZEngine::InputAction InteractableComponent::GetAction() const
+    {
+        return XYZEngine::InputAction::Interact;
+    }
+
     InteractableComponent::InteractableComponent(XYZEngine::GameObject* gameObject) : Component(gameObject) {}
 
     std::string InteractableComponent::GetRefusal(XYZEngine::GameObject* actor) const

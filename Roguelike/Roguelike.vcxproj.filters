@@ -180,6 +180,12 @@
     <ClCompile Include="Level\LevelZones.cpp">
       <Filter>Level</Filter>
     </ClCompile>
+    <ClInclude Include="Level\Tileset.h">
+      <Filter>Level</Filter>
+    </ClInclude>
+    <ClCompile Include="Level\Tileset.cpp">
+      <Filter>Level</Filter>
+    </ClCompile>
     <ClInclude Include="Level\RoomWakeComponent.h">
       <Filter>Level</Filter>
     </ClInclude>

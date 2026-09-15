@@ -18,6 +18,7 @@ namespace XYZEngine
 		void LoadTexture(const std::string& name, std::string sourcePath, bool isSmooth = true);
 		void LoadTexturePart(const std::string& name, std::string sourcePath, sf::IntRect area, bool isSmooth = true);
 		const sf::Texture* GetTextureShared(const std::string& name) const;
+		bool HasTexture(const std::string& name) const;
 		void DeleteSharedTexture(const std::string& name);
 
 		void LoadTextureMap(const std::string& name, std::string sourcePath, sf::Vector2u elementPixelSize, int totalElements, bool isSmooth = true);

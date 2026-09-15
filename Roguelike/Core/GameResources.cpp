@@ -80,7 +80,6 @@ namespace RoguelikeGame
                                                              {WEAPON_FRAME_WIDTH, WEAPON_FRAME_HEIGHT}, WEAPON_ATLAS_FRAMES, false);
 
         XYZEngine::ResourceSystem::Instance()->LoadTexture(FX_ATLAS_TEXTURE, FX_ATLAS_FILE, false);
-        XYZEngine::ResourceSystem::Instance()->LoadTexture(TILES_TEXTURE, TILES_ATLAS_FILE, false);
         XYZEngine::ResourceSystem::Instance()->LoadTexturePart(DOOR_LOCKED_TEXTURE, DOORS_ATLAS_FILE,
                                                               {0, 0, static_cast<int>(TILE_SIZE), static_cast<int>(TILE_SIZE)}, false);
         XYZEngine::ResourceSystem::Instance()->LoadTexturePart(DOOR_OPEN_TEXTURE, DOORS_ATLAS_FILE,

@@ -46,6 +46,11 @@ namespace XYZEngine
         return textures.Get(name);
     }
 
+    bool ResourceSystem::HasTexture(const std::string& name) const
+    {
+        return textures.Contains(name);
+    }
+
     void ResourceSystem::DeleteSharedTexture(const std::string& name)
     {
         textures.Erase(name);

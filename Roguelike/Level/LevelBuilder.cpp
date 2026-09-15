@@ -16,6 +16,7 @@
 #include "Door.h"
 #include "DoorComponent.h"
 #include "RoomWakeComponent.h"
+#include "Tileset.h"
 #include <GameWorld.h>
 #include <RectangleRendererComponent.h>
 #include <VertexArrayRendererComponent.h>
@@ -319,7 +320,7 @@ namespace RoguelikeGame
         auto renderer = tilesObject->AddComponent<XYZEngine::VertexArrayRendererComponent>();
         const XYZEngine::Vector2Df tileSize = {TILE_SIZE, TILE_SIZE};
 
-        const sf::Texture* tiles = XYZEngine::ResourceSystem::Instance()->GetTextureShared(TILES_TEXTURE);
+        const sf::Texture* tiles = LoadTileset(levelData.info.tileset);
         renderer->SetTexture(tiles);
 
         for (int row = 0; row < levelData.height; row++)

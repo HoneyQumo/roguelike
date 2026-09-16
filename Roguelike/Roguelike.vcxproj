@@ -157,6 +157,7 @@
         <ClCompile Include="Level\HatchComponent.cpp"/>
         <ClCompile Include="Level\SwitchComponent.cpp"/>
         <ClCompile Include="Level\WaveDirectorComponent.cpp"/>
+        <ClCompile Include="Level\TileAnimationComponent.cpp"/>
         <ClCompile Include="Level\EscapeCarComponent.cpp"/>
         <ClCompile Include="Cutscene\CutscenePlayerComponent.cpp"/>
         <ClCompile Include="Cutscene\CutsceneTimeline.cpp"/>
@@ -244,6 +245,7 @@
         <ClInclude Include="Level\HatchComponent.h"/>
         <ClInclude Include="Level\SwitchComponent.h"/>
         <ClInclude Include="Level\WaveDirectorComponent.h"/>
+        <ClInclude Include="Level\TileAnimationComponent.h"/>
         <ClInclude Include="Level\EscapeCarComponent.h"/>
         <ClInclude Include="Cutscene\CutscenePlayerComponent.h"/>
         <ClInclude Include="Cutscene\CutsceneTimeline.h"/>

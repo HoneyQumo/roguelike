@@ -22,6 +22,9 @@ namespace XYZEngine
 		void AddQuad(const Vector2Df& center, const Vector2Df& size, const sf::IntRect& frame,
 			const sf::Color& tint = sf::Color::White);
 
+		// Меняет кадр уже добавленного квада, не трогая его положение.
+		void SetQuadFrame(std::size_t quad, const sf::IntRect& frame);
+
 		std::size_t GetQuadsCount() const;
 		const sf::VertexArray& GetVertices() const;
 

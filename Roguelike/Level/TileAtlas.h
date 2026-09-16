@@ -8,6 +8,11 @@ namespace RoguelikeGame
     constexpr int TILE_FRAME_SIZE = 64;
     constexpr int TILE_FLOOR_ROW = 0;
     constexpr int TILE_WALL_ROW = 1;
+    constexpr int TILE_LINE_ROW = 2;
+    constexpr int TILE_WATER_ROW = 3;
+
+    constexpr int TILE_LINE_ACROSS = 0;
+    constexpr int TILE_LINE_ALONG = 1;
     constexpr int TILE_FLOOR_FRAMES = 4;
     constexpr int TILE_WALL_FRAMES = 16;
     constexpr int TILE_ATLAS_COLUMNS = 16;
@@ -73,11 +78,45 @@ namespace RoguelikeGame
         return {safeColumn * TILE_FRAME_SIZE, safeRow * TILE_FRAME_SIZE, TILE_FRAME_SIZE, TILE_FRAME_SIZE};
     }
 
+    inline bool IsLineAt(const LevelData& level, int column, int row)
+    {
+        return TileAt(level, column, row) == TileType::Line;
+    }
+
+    /**
+    *	Разметка ложится вдоль своего ряда: соседи слева и справа - штрих поперёк клетки,
+    *	соседи сверху и снизу - вдоль неё.
+    */
+    inline int LineFrame(const LevelData& level, int column, int row)
+    {
+        bool isAlong = IsLineAt(level, column, row - 1) || IsLineAt(level, column, row + 1);
+        bool isAcross = IsLineAt(level, column - 1, row) || IsLineAt(level, column + 1, row);
+
+        return isAlong && !isAcross ? TILE_LINE_ALONG : TILE_LINE_ACROSS;
+    }
+
+    inline int WaterFrame(int column, int row)
+    {
+        return static_cast<int>(TileHash(column, row) % TILE_FLOOR_FRAMES);
+    }
+
     inline sf::IntRect TileFrameFor(const LevelData& level, int column, int row)
     {
-        if (level.tiles[row][column] == TileType::Wall)
+        TileType tile = level.tiles[row][column];
+
+        if (tile == TileType::Wall)
         {
             return TileFrameRect(TILE_WALL_ROW, WallFrame(WallMask(level, column, row)));
+        }
+
+        if (tile == TileType::Water)
+        {
+            return TileFrameRect(TILE_WATER_ROW, WaterFrame(column, row));
+        }
+
+        if (tile == TileType::Line)
+        {
+            return TileFrameRect(TILE_LINE_ROW, LineFrame(level, column, row));
         }
 
         return TileFrameRect(TILE_FLOOR_ROW, FloorFrame(column, row));

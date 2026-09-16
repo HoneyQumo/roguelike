@@ -20,7 +20,9 @@ namespace RoguelikeGame
         BossSpawn,
         Entrance,
         Exit,
-        Door
+        Door,
+        Line,
+        Water
     };
 
     struct TileTypeName
@@ -35,7 +37,9 @@ namespace RoguelikeGame
         {"Wall", TileType::Wall},
         {"PlayerSpawn", TileType::PlayerSpawn},
         {"Entrance", TileType::Entrance},
-        {"Exit", TileType::Exit}
+        {"Exit", TileType::Exit},
+        {"Line", TileType::Line},
+        {"Water", TileType::Water}
     };
 
     struct PropPlacement

@@ -23,6 +23,11 @@ namespace
 	constexpr int ACT_CHARACTERS = 55;
 	constexpr int ACT_SHOTS = 40;
 
+	// Мост: отбойник в две линии на всю длину плюс машины и бойцы вокруг игрока.
+	constexpr int BRIDGE_LENGTH = 800;
+	constexpr int BRIDGE_PROPS = 260;
+	constexpr int BRIDGE_CHARACTERS = 40;
+
 	class PhysicsTest : public ::testing::Test
 	{
 	protected:
@@ -67,6 +72,27 @@ namespace
 			for (int i = 0; i < ACT_CHARACTERS; i++)
 			{
 				CreateCharacter(static_cast<float>(i) * TILE + 16.f, 7.f * TILE);
+			}
+
+			GameWorld::Instance()->Update(0.016f);
+		}
+
+		void BuildBridgeLevel()
+		{
+			for (int column = 0; column < BRIDGE_LENGTH; column++)
+			{
+				CreateWall(static_cast<float>(column) * TILE, 0.f);
+				CreateWall(static_cast<float>(column) * TILE, 13.f * TILE);
+			}
+
+			for (int index = 0; index < BRIDGE_PROPS; index++)
+			{
+				CreateWall(static_cast<float>(index * 3) * TILE, static_cast<float>(3 + index % 8) * TILE);
+			}
+
+			for (int index = 0; index < BRIDGE_CHARACTERS; index++)
+			{
+				CreateCharacter(static_cast<float>(index) * TILE + 16.f, 7.f * TILE);
 			}
 
 			GameWorld::Instance()->Update(0.016f);
@@ -403,5 +429,41 @@ TEST_F(PhysicsTest, BenchmarkOverlapOnActSizedWorld)
 
 	double millisecondsPerFrame = std::chrono::duration<double, std::milli>(elapsed).count() / FRAMES;
 	std::cout << "PhysicsSystem::Overlap " << ACT_SHOTS << " times with " << (ACT_WALLS + ACT_CHARACTERS) << " colliders: "
+		<< millisecondsPerFrame << " ms per frame" << std::endl;
+}
+
+TEST_F(PhysicsTest, BenchmarkUpdateOnBridgeSizedWorld)
+{
+	BuildBridgeLevel();
+
+	std::size_t colliders = PhysicsSystem::Instance()->GetColliders().size();
+
+	auto started = std::chrono::steady_clock::now();
+	for (int frame = 0; frame < FRAMES; frame++)
+	{
+		PhysicsSystem::Instance()->Update();
+	}
+	auto elapsed = std::chrono::steady_clock::now() - started;
+
+	double millisecondsPerFrame = std::chrono::duration<double, std::milli>(elapsed).count() / FRAMES;
+	std::cout << "PhysicsSystem::Update with " << colliders << " colliders: "
+		<< millisecondsPerFrame << " ms per frame" << std::endl;
+}
+
+TEST_F(PhysicsTest, BenchmarkWorldUpdateOnBridgeSizedWorld)
+{
+	BuildBridgeLevel();
+
+	std::size_t objects = GameWorld::Instance()->GetObjectsCount();
+
+	auto started = std::chrono::steady_clock::now();
+	for (int frame = 0; frame < FRAMES; frame++)
+	{
+		GameWorld::Instance()->Update(0.016f);
+	}
+	auto elapsed = std::chrono::steady_clock::now() - started;
+
+	double millisecondsPerFrame = std::chrono::duration<double, std::milli>(elapsed).count() / FRAMES;
+	std::cout << "GameWorld::Update with " << objects << " objects: "
 		<< millisecondsPerFrame << " ms per frame" << std::endl;
 }

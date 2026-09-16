@@ -23,6 +23,7 @@ namespace RoguelikeGame
         static void PutToSleep(RoomWakeComponent* rooms, const std::vector<LevelZone>& zones, int column, int row, XYZEngine::GameObject* enemy);
         static int BuildDoors(const LevelData& levelData, const ItemCatalog& items, Level& level);
         static int BuildFixtures(const LevelData& levelData, Level& level);
+        static int BuildWaves(const LevelData& levelData, Level& level);
         static int BuildProps(const LevelData& levelData, const PropCatalog& props, const ItemCatalog& items, Level& level);
         static int BuildItems(const LevelData& levelData, const ItemCatalog& items, Level& level);
         static XYZEngine::GameObject* CreateBossObject(const LevelData& levelData, const XYZEngine::Vector2Df& position, Level& level);

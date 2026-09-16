@@ -76,6 +76,16 @@ namespace RoguelikeGame
         bossObject = newBossObject;
     }
 
+    void Level::SetWaveDirector(XYZEngine::GameObject* newDirectorObject)
+    {
+        directorObject = newDirectorObject;
+    }
+
+    XYZEngine::GameObject* Level::GetWaveDirector() const
+    {
+        return directorObject;
+    }
+
     std::optional<XYZEngine::Vector2Df> Level::GetEntrance() const
     {
         return entrance;

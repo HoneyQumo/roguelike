@@ -156,6 +156,7 @@
         <ClCompile Include="Level\Fixture.cpp"/>
         <ClCompile Include="Level\HatchComponent.cpp"/>
         <ClCompile Include="Level\SwitchComponent.cpp"/>
+        <ClCompile Include="Level\WaveDirectorComponent.cpp"/>
         <ClCompile Include="Level\LevelGrid.cpp"/>
         <ClCompile Include="Level\LevelIntegrity.cpp"/>
         <ClCompile Include="Level\PathField.cpp"/>
@@ -239,6 +240,7 @@
         <ClInclude Include="Level\PropAlign.h"/>
         <ClInclude Include="Level\HatchComponent.h"/>
         <ClInclude Include="Level\SwitchComponent.h"/>
+        <ClInclude Include="Level\WaveDirectorComponent.h"/>
         <ClInclude Include="Level\LevelGrid.h"/>
         <ClInclude Include="Level\LevelIntegrity.h"/>
         <ClInclude Include="Level\PathField.h"/>

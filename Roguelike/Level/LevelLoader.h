@@ -34,6 +34,7 @@ namespace RoguelikeGame
         static void ReadInfoLine(const std::string& line, int lineNumber, LevelInfo& info);
         static void Validate(const LevelData& levelData, const std::string& sourceName);
         static void ReadLegendLine(const std::string& line, int lineNumber, Legend& legend);
+        static void ReadWaveLine(const std::string& line, int lineNumber, const Legend& legend, LevelData& levelData);
         static void ReadMapLine(const std::string& line, const Legend& legend, LevelData& levelData);
         static bool TryGetTileType(const std::string& name, TileType& tileType);
         static const Legend& GetDefaultLegend();

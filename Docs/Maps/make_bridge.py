@@ -56,6 +56,7 @@ LEGEND = [
     ('h', 'ShieldSpawn'),
     ('e', 'HeavySpawn'),
     ('d', 'RadioSpawn'),
+    ('*', 'WaveSpawn'),
 ]
 
 # Проп шириной в две клетки: ставим его через одну, чтобы машины не слипались.
@@ -218,6 +219,13 @@ def Collapse(rows, rng):
     PutWide(rows, left + width + 1, LANE_LINE + 2 if isTop else LANE_LINE - 2, 'w')
 
 
+def WavePoints(rows, index):
+    for column in (6, 16, 26):
+        for row in (ROAD_TOP, ROAD_BOTTOM):
+            if rows[row][column] in (ROAD, LINE):
+                rows[row][column] = '*'
+
+
 def Enemies(rows, rng, count, kinds):
     placed = 0
     guard = 0
@@ -242,6 +250,7 @@ def Section(index, rng):
     rows = Blank()
 
     SHAPES[index](rows, rng)
+    WavePoints(rows, index)
 
     # Первые секции щадящие, дальше плотнее.
     # Торцы моста закрыты: за первой секцией и за последней ехать некуда.
@@ -286,6 +295,14 @@ def Build(seed=20260916):
 
     lines = ['[act]', 'title Мост', 'next street', 'tileset bridge', 'music march', '', '[library]']
     lines += ['%s Resources/Rooms/%s.config' % (name, name) for name in names]
+    lines += ['', '[waves]']
+    lines += [
+        '; wave <пауза> <символ врага><сколько>',
+        'wave 3 m3 a1',
+        'wave 5 m3 a2 s1',
+        'wave 6 a3 s2 h1',
+        'wave 7 a2 s2 h2 r1',
+    ]
     lines += ['', '[rooms]']
     lines += ['%s %d 0' % (name, index * WIDTH) for index, name in enumerate(names)]
 

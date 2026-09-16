@@ -22,7 +22,8 @@ namespace RoguelikeGame
         Exit,
         Door,
         Line,
-        Water
+        Water,
+        WaveSpawn
     };
 
     struct TileTypeName
@@ -39,7 +40,8 @@ namespace RoguelikeGame
         {"Entrance", TileType::Entrance},
         {"Exit", TileType::Exit},
         {"Line", TileType::Line},
-        {"Water", TileType::Water}
+        {"Water", TileType::Water},
+        {"WaveSpawn", TileType::WaveSpawn}
     };
 
     struct PropPlacement
@@ -68,6 +70,29 @@ namespace RoguelikeGame
         int column = 0;
         int row = 0;
         std::string id;
+    };
+
+    struct WaveEntry
+    {
+        TileType enemy = TileType::Empty;
+        int count = 0;
+    };
+
+    struct WaveSpec
+    {
+        float delay = 0.f;
+        std::vector<WaveEntry> entries;
+
+        int Size() const
+        {
+            int total = 0;
+            for (const WaveEntry& entry : entries)
+            {
+                total += entry.count;
+            }
+
+            return total;
+        }
     };
 
     struct ZonePlacement
@@ -117,6 +142,7 @@ namespace RoguelikeGame
         std::vector<PatrolPoint> patrols;
         std::vector<DoorPlacement> doors;
         std::vector<ZonePlacement> zones;
+        std::vector<WaveSpec> waves;
         std::vector<FixturePlacement> levers;
         std::vector<FixturePlacement> hatches;
         LevelInfo info;

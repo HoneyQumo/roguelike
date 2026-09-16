@@ -16,6 +16,7 @@
 #include "DamageInfo.h"
 #include "Prop.h"
 #include "PropAlign.h"
+#include "WaveDirectorComponent.h"
 #include "LevelExit.h"
 #include "LevelExitComponent.h"
 #include "Wall.h"
@@ -79,6 +80,9 @@ namespace RoguelikeGame
                             wallsCount++;
                         }
                         break;
+                    case TileType::WaveSpawn:
+                        break;
+
                     case TileType::PlayerSpawn:
                         if (level.GetPlayerSpawn().has_value())
                         {
@@ -159,6 +163,7 @@ namespace RoguelikeGame
         int propsCount = BuildProps(levelData, props, items, level);
         int doorsCount = BuildDoors(levelData, items, level);
         int fixturesCount = BuildFixtures(levelData, level);
+        int wavesCount = BuildWaves(levelData, level);
 
         LOG_INFO("Level built: tiles " + std::to_string(tilesCount)
             + ", walls " + std::to_string(wallsCount)
@@ -167,6 +172,7 @@ namespace RoguelikeGame
             + ", props " + std::to_string(propsCount)
             + ", doors " + std::to_string(doorsCount)
             + ", fixtures " + std::to_string(fixturesCount)
+            + ", waves " + std::to_string(wavesCount)
             + ", asleep " + std::to_string(rooms != nullptr ? rooms->GetSleepingCount() : 0));
 
         return level;
@@ -220,7 +226,8 @@ namespace RoguelikeGame
 
     void LevelBuilder::LockExit(Level& level)
     {
-        if (level.GetBoss() == nullptr || level.GetExit() == nullptr)
+        bool isGuarded = level.GetBoss() != nullptr || level.GetWaveDirector() != nullptr;
+        if (!isGuarded || level.GetExit() == nullptr)
         {
             return;
         }
@@ -322,6 +329,51 @@ namespace RoguelikeGame
         LinkDoors(doors);
 
         return static_cast<int>(doors.size());
+    }
+
+    int LevelBuilder::BuildWaves(const LevelData& levelData, Level& level)
+    {
+        if (levelData.waves.empty())
+        {
+            return 0;
+        }
+
+        std::vector<XYZEngine::Vector2Df> points;
+        for (int row = 0; row < levelData.height; row++)
+        {
+            for (int column = 0; column < static_cast<int>(levelData.tiles[row].size()); column++)
+            {
+                if (levelData.tiles[row][column] == TileType::WaveSpawn)
+                {
+                    points.push_back(TileToWorldPosition(column, row, levelData.height));
+                }
+            }
+        }
+
+        if (points.empty())
+        {
+            LOG_ERROR("Level has waves but no spawn points");
+            return 0;
+        }
+
+        auto gameObject = XYZEngine::GameWorld::Instance()->CreateGameObject(WAVE_DIRECTOR_OBJECT_NAME);
+        auto director = gameObject->AddComponent<WaveDirectorComponent>();
+        director->SetWaves(levelData.waves);
+        director->SetPoints(points);
+        director->SetSpawner([](TileType enemy, const XYZEngine::Vector2Df& place) -> XYZEngine::GameObject*
+        {
+            const EnemyConfig* config = FindEnemyConfig(enemy);
+
+            return config == nullptr ? nullptr : CreateEnemy(*config, place);
+        });
+
+        level.Add(gameObject);
+        level.SetWaveDirector(gameObject);
+
+        LOG_INFO("Waves ready: " + std::to_string(levelData.waves.size()) + " over "
+            + std::to_string(points.size()) + " points");
+
+        return static_cast<int>(levelData.waves.size());
     }
 
     int LevelBuilder::BuildFixtures(const LevelData& levelData, Level& level)

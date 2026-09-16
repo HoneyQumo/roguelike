@@ -25,6 +25,7 @@ namespace RoguelikeGame
         void SetInfo(const LevelInfo& newInfo);
         void SetExit(XYZEngine::GameObject* exitObject);
         void SetBoss(XYZEngine::GameObject* bossObject);
+        void SetWaveDirector(XYZEngine::GameObject* directorObject);
 
         std::optional<XYZEngine::Vector2Df> GetPlayerSpawn() const;
         std::optional<XYZEngine::Vector2Df> GetEntrance() const;
@@ -32,6 +33,7 @@ namespace RoguelikeGame
         const LevelInfo& GetInfo() const;
         XYZEngine::GameObject* GetExit() const;
         XYZEngine::GameObject* GetBoss() const;
+        XYZEngine::GameObject* GetWaveDirector() const;
         std::size_t GetObjectsCount() const;
 
         void Clear();
@@ -42,6 +44,7 @@ namespace RoguelikeGame
         std::optional<XYZEngine::Vector2Df> entrance;
         XYZEngine::GameObject* exitObject = nullptr;
         XYZEngine::GameObject* bossObject = nullptr;
+        XYZEngine::GameObject* directorObject = nullptr;
         LevelInfo info;
     };
 }

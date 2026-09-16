@@ -9,6 +9,8 @@ namespace RoguelikeGame
 {
     const std::string LEGEND_SECTION = "legend";
     const std::string MAP_SECTION = "map";
+    const std::string WAVES_SECTION = "waves";
+    const std::string WAVE_KEYWORD = "wave";
     const std::string LEVEL_SECTION = "level";
     const std::string ITEM_PREFIX = "Item:";
     const std::string PROP_PREFIX = "Prop:";
@@ -41,6 +43,7 @@ namespace RoguelikeGame
         Legend legend = GetDefaultLegend();
         bool isLegendSection = false;
         bool isLevelSection = false;
+        bool isWavesSection = false;
 
         std::string line;
         int lineNumber = 0;
@@ -76,10 +79,18 @@ namespace RoguelikeGame
                 legend.clear();
                 continue;
             }
+            if (IsSection(line, WAVES_SECTION))
+            {
+                isWavesSection = true;
+                isLegendSection = false;
+                isLevelSection = false;
+                continue;
+            }
             if (IsSection(line, MAP_SECTION))
             {
                 isLegendSection = false;
                 isLevelSection = false;
+                isWavesSection = false;
                 continue;
             }
 
@@ -92,6 +103,12 @@ namespace RoguelikeGame
             if (isLegendSection)
             {
                 ReadLegendLine(line, lineNumber, legend);
+                continue;
+            }
+
+            if (isWavesSection)
+            {
+                ReadWaveLine(line, lineNumber, legend, levelData);
                 continue;
             }
 
@@ -206,6 +223,80 @@ namespace RoguelikeGame
     bool LevelLoader::IsSection(const std::string& line, const std::string& sectionName)
     {
         return Trim(line) == "[" + sectionName + "]";
+    }
+
+
+    /**
+    *	Строка волны: wave <пауза> <символ><сколько> ...
+    *	Символы берутся из легенды уровня и обязаны быть вражьими.
+    */
+    void LevelLoader::ReadWaveLine(const std::string& line, int lineNumber, const Legend& legend, LevelData& levelData)
+    {
+        std::istringstream stream(Trim(line));
+        std::string keyword;
+        stream >> keyword;
+
+        if (keyword != WAVE_KEYWORD)
+        {
+            LOG_ERROR("Wave line " + std::to_string(lineNumber) + " does not start with " + WAVE_KEYWORD);
+            throw std::runtime_error("Unknown wave line");
+        }
+
+        WaveSpec wave;
+        if (!(stream >> wave.delay) || wave.delay < 0.f)
+        {
+            LOG_ERROR("Wave line " + std::to_string(lineNumber) + " has no delay");
+            throw std::runtime_error("Wave line has no delay");
+        }
+
+        std::string group;
+        while (stream >> group)
+        {
+            if (group.size() < 2)
+            {
+                LOG_ERROR("Wave line " + std::to_string(lineNumber) + " has a group without a count: " + group);
+                throw std::runtime_error("Wave group has no count");
+            }
+
+            auto found = legend.find(group.front());
+            if (found == legend.end())
+            {
+                LOG_ERROR("Wave line " + std::to_string(lineNumber) + " uses a symbol that is not in the legend: " + group);
+                throw std::runtime_error("Unknown wave symbol");
+            }
+
+            if (FindEnemyConfig(found->second.tile) == nullptr)
+            {
+                LOG_ERROR("Wave line " + std::to_string(lineNumber) + " asks for something that is not an enemy: " + group);
+                throw std::runtime_error("Wave symbol is not an enemy");
+            }
+
+            int count = 0;
+            try
+            {
+                count = std::stoi(group.substr(1));
+            }
+            catch (const std::exception&)
+            {
+                count = 0;
+            }
+
+            if (count <= 0)
+            {
+                LOG_ERROR("Wave line " + std::to_string(lineNumber) + " asks for a non-positive count: " + group);
+                throw std::runtime_error("Wave group count must be positive");
+            }
+
+            wave.entries.push_back({found->second.tile, count});
+        }
+
+        if (wave.entries.empty())
+        {
+            LOG_ERROR("Wave line " + std::to_string(lineNumber) + " is empty");
+            throw std::runtime_error("Wave has no enemies");
+        }
+
+        levelData.waves.push_back(std::move(wave));
     }
 
     void LevelLoader::ReadLegendLine(const std::string& line, int lineNumber, Legend& legend)

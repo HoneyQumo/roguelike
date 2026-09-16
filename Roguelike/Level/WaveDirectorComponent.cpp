@@ -17,35 +17,77 @@ namespace RoguelikeGame
             return;
         }
 
-        if (!isWaiting)
-        {
-            if (CountAlive() > 0)
-            {
-                return;
-            }
-
-            waveClearedEvent.Invoke(currentWave + 1, static_cast<int>(waves.size()));
-
-            if (currentWave + 1 >= static_cast<int>(waves.size()))
-            {
-                isCleared = true;
-                LOG_INFO("Waves are over");
-                clearedEvent.Invoke();
-                return;
-            }
-
-            isWaiting = true;
-            pause.Start(waves[currentWave + 1].delay);
-            return;
-        }
-
         pause.Tick(deltaTime);
-        if (pause.IsRunning())
+
+        if (isWaiting)
+        {
+            if (pause.IsRunning())
+            {
+                return;
+            }
+
+            StartWave();
+            return;
+        }
+
+        if (!IsWaveOver())
         {
             return;
         }
 
-        StartWave();
+        // Оторвался - не значит отбил: о победе сообщаем, только когда из волны никого не осталось.
+        if (!isWaveReported && CountAlive() == 0)
+        {
+            isWaveReported = true;
+            waveClearedEvent.Invoke(currentWave + 1, static_cast<int>(waves.size()));
+        }
+
+        if (currentWave + 1 >= static_cast<int>(waves.size()))
+        {
+            // Последнюю волну мало пережить: пока хвост дышит в спину, уезжать рано.
+            if (CountAliveNearby() > 0)
+            {
+                return;
+            }
+
+            isCleared = true;
+            LOG_INFO("Waves are over");
+            clearedEvent.Invoke();
+            return;
+        }
+
+        isWaiting = true;
+        pause.Start(waves[currentWave + 1].delay);
+    }
+
+    /**
+    *	Волна закрыта, когда рядом с игроком никого не осталось или когда он ушёл
+    *	достаточно далеко. Без второго условия один отставший враг где-то позади
+    *	вешал бы погоню навсегда.
+    */
+    bool WaveDirectorComponent::IsWaveOver() const
+    {
+        return CountAliveNearby() == 0 || HasAdvanced();
+    }
+
+    bool WaveDirectorComponent::HasAdvanced() const
+    {
+        if (!hasWaveStart || hero == nullptr)
+        {
+            return false;
+        }
+
+        return (hero->GetTransform()->GetWorldPosition() - waveStart).GetLength() >= WAVE_ADVANCE_STEP;
+    }
+
+    float WaveDirectorComponent::DistanceToHero(const XYZEngine::Vector2Df& place) const
+    {
+        if (hero == nullptr)
+        {
+            return 0.f;
+        }
+
+        return (place - hero->GetTransform()->GetWorldPosition()).GetLength();
     }
 
     void WaveDirectorComponent::Render()
@@ -110,6 +152,36 @@ namespace RoguelikeGame
         return alive;
     }
 
+    int WaveDirectorComponent::CountAliveNearby() const
+    {
+        if (hero == nullptr)
+        {
+            return CountAlive();
+        }
+
+        int alive = 0;
+        for (XYZEngine::GameObject* enemy : spawned)
+        {
+            if (enemy == nullptr)
+            {
+                continue;
+            }
+
+            auto health = enemy->GetComponent<HealthComponent>();
+            if (health == nullptr || !health->IsAlive())
+            {
+                continue;
+            }
+
+            if (DistanceToHero(enemy->GetTransform()->GetWorldPosition()) <= WAVE_KEEP_RANGE)
+            {
+                alive++;
+            }
+        }
+
+        return alive;
+    }
+
     bool WaveDirectorComponent::IsCleared() const
     {
         return isCleared;
@@ -139,7 +211,14 @@ namespace RoguelikeGame
     {
         currentWave++;
         isWaiting = false;
+        isWaveReported = false;
         spawned.clear();
+
+        hasWaveStart = hero != nullptr;
+        if (hasWaveStart)
+        {
+            waveStart = hero->GetTransform()->GetWorldPosition();
+        }
 
         const WaveSpec& wave = waves[currentWave];
         for (const WaveEntry& entry : wave.entries)
@@ -173,24 +252,46 @@ namespace RoguelikeGame
         enemySpawnedEvent.Invoke(born);
     }
 
-    // Точки перебираются по кругу, но прямо под ногами враг не появляется.
+    /**
+    *	Точка берётся из окна вокруг игрока: дальше WAVE_SPAWN_GAP, чтобы враг не
+    *	вырос под ногами, и ближе WAVE_SPAWN_REACH, чтобы волна вышла на этом
+    *	участке моста, а не там, куда игрок дойдёт через минуту.
+    *	Точки внутри окна перебираются по кругу - волна не лезет из одной дыры.
+    */
     XYZEngine::Vector2Df WaveDirectorComponent::PickPoint()
     {
-        XYZEngine::Vector2Df chosen = points[nextPoint % points.size()];
+        if (hero == nullptr)
+        {
+            XYZEngine::Vector2Df anywhere = points[nextPoint % points.size()];
+            nextPoint = (nextPoint + 1u) % points.size();
+
+            return anywhere;
+        }
+
+        // Если в окно ничего не попало, берём ближайшую за его краем: она хотя бы рядом.
+        XYZEngine::Vector2Df fallback = points[0];
+        float bestDistance = -1.f;
 
         for (std::size_t step = 0u; step < points.size(); step++)
         {
-            const XYZEngine::Vector2Df& candidate = points[(nextPoint + step) % points.size()];
-            if (hero == nullptr || (candidate - hero->GetTransform()->GetWorldPosition()).GetLength() >= WAVE_SPAWN_GAP)
+            std::size_t index = (nextPoint + step) % points.size();
+            const XYZEngine::Vector2Df& candidate = points[index];
+            float distance = DistanceToHero(candidate);
+
+            if (distance >= WAVE_SPAWN_GAP && distance <= WAVE_SPAWN_REACH)
             {
-                chosen = candidate;
-                nextPoint = (nextPoint + step + 1u) % points.size();
-                return chosen;
+                nextPoint = (index + 1u) % points.size();
+
+                return candidate;
+            }
+
+            if (distance >= WAVE_SPAWN_GAP && (bestDistance < 0.f || distance < bestDistance))
+            {
+                bestDistance = distance;
+                fallback = candidate;
             }
         }
 
-        nextPoint = (nextPoint + 1u) % points.size();
-
-        return chosen;
+        return fallback;
     }
 }

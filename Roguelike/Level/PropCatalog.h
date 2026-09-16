@@ -26,6 +26,7 @@ namespace RoguelikeGame
         bool openable = false;
         bool isSolid = true;
         bool isCover = false;
+        bool isPanel = false;
 
         bool IsDestructible() const;
         bool IsOpenable() const;

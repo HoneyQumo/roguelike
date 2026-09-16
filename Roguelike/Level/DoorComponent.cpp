@@ -114,6 +114,11 @@ namespace RoguelikeGame
         BindReach(reach);
     }
 
+    XYZEngine::InputAction DoorComponent::GetAction() const
+    {
+        return XYZEngine::InputAction::Pass;
+    }
+
     std::string DoorComponent::GetPrompt(XYZEngine::GameObject* actor) const
     {
         if (isOpen)

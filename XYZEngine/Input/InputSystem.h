@@ -21,7 +21,7 @@ namespace XYZEngine
 		Reload,
 		Roll,
 		Interact,
-		Flee,
+		Pass,
 		Inventory,
 		Pause,
 		WeaponSlot1,

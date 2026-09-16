@@ -157,7 +157,7 @@ TEST_F(FixtureTest, TheOpenHatchIsUsedOnceAndAsksForItsOwnKey)
 	lever->Interact(nullptr);
 	Run(HATCH_OPEN_TIME + 0.2f);
 
-	EXPECT_EQ(hatch->GetAction(), XYZEngine::InputAction::Flee);
+	EXPECT_EQ(hatch->GetAction(), XYZEngine::InputAction::Pass);
 	EXPECT_TRUE(hatch->Interact(nullptr));
 	EXPECT_FALSE(hatch->Interact(nullptr));
 	EXPECT_EQ(fled, 1);

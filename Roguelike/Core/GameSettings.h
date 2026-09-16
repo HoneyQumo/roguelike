@@ -262,7 +262,7 @@ namespace RoguelikeGame
     constexpr auto INTERACT_PROMPT_PREFIX = u8"[E] Подобрать: ";
     constexpr auto CONTAINER_OPEN_PREFIX = u8"[E] Открыть: ";
     constexpr auto CONTAINER_LOCKED_PREFIX = u8"Заперто: нужен ";
-    constexpr auto DOOR_OPEN_PROMPT = u8"[E] Открыть дверь";
+    constexpr auto DOOR_OPEN_PROMPT = u8"[F] Открыть дверь";
     constexpr auto LEVER_PROMPT = u8"[E] Дёрнуть рычаг";
     constexpr auto HATCH_FLEE_PROMPT = u8"[F] Сбежать из тюрьмы";
     constexpr auto DOOR_OPEN_SOUND = "door_open";

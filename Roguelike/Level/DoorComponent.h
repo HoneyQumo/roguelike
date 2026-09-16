@@ -38,6 +38,9 @@ namespace RoguelikeGame
         void SetReach(XYZEngine::ColliderComponent* reach);
 
         std::string GetPrompt(XYZEngine::GameObject* actor) const override;
+
+        // Дверь - это проход, а не предмет: она открывается тем же F, что люк и машина.
+        XYZEngine::InputAction GetAction() const override;
         std::string GetRefusal(XYZEngine::GameObject* actor) const override;
         bool IsAvailable() const override;
         bool Interact(XYZEngine::GameObject* actor) override;

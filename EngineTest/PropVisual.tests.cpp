@@ -33,7 +33,7 @@ namespace
 			renderer->SetSize(48.f, 48.f);
 			renderer->SetColor({150, 110, 60});
 			visual = prop->AddComponent<PropVisualComponent>();
-			visual->SetSize(48.f);
+			visual->SetSize(48.f, 48.f);
 
 			GameWorld::Instance()->Update(0.016f);
 		}

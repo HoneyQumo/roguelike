@@ -36,7 +36,7 @@ namespace RoguelikeGame
             renderer->SetPivot(0.5f, 1.f);
 
             auto visual = leaf->AddComponent<PropVisualComponent>();
-            visual->SetSize(TILE_SIZE);
+            visual->SetSize(TILE_SIZE, TILE_SIZE);
             visual->SetSpentColor(DOOR_OPEN_COLOR);
             visual->SetSpentTexture(XYZEngine::ResourceSystem::Instance()->GetTextureShared(DOOR_OPEN_TEXTURE));
 
@@ -50,7 +50,7 @@ namespace RoguelikeGame
             renderer->SetColor(DOOR_LOCKED_COLOR);
 
             auto visual = door->AddComponent<PropVisualComponent>();
-            visual->SetSize(TILE_SIZE);
+            visual->SetSize(TILE_SIZE, TILE_SIZE);
             visual->SetSpentColor(DOOR_OPEN_COLOR);
             visual->SetSpentLayer(GROUND_RENDER_LAYER);
 

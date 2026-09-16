@@ -16,6 +16,7 @@ namespace RoguelikeGame
         std::string hitEffect = "impact";
         float health = 0.f;
         float size = 48.f;
+        float height = 0.f;
         sf::Color color = {150, 110, 60};
         sf::Color brokenColor = {80, 60, 35};
         sf::Color openedColor = {90, 80, 55};
@@ -28,6 +29,8 @@ namespace RoguelikeGame
         bool isCover = false;
         bool isPanel = false;
 
+        // Высота по умолчанию равна ширине: почти все пропы квадратные.
+        float Height() const;
         bool IsDestructible() const;
         bool IsOpenable() const;
         bool HasFrame() const;

@@ -22,9 +22,10 @@ namespace RoguelikeGame
     {
     }
 
-    void PropVisualComponent::SetSize(float newSize)
+    void PropVisualComponent::SetSize(float newSize, float newHeight)
     {
         size = newSize;
+        height = newHeight > 0.f ? newHeight : newSize;
     }
 
     void PropVisualComponent::SetSpentColor(const sf::Color& newSpentColor)
@@ -64,7 +65,7 @@ namespace RoguelikeGame
         if (sprite != nullptr && spentTexture != nullptr)
         {
             sprite->SetTexture(*spentTexture);
-            sprite->SetPixelSize(static_cast<int>(size), static_cast<int>(size));
+            sprite->SetPixelSize(static_cast<int>(size), static_cast<int>(height));
             return;
         }
 

@@ -15,6 +15,7 @@
 #include "HealthComponent.h"
 #include "DamageInfo.h"
 #include "Prop.h"
+#include "PropAlign.h"
 #include "LevelExit.h"
 #include "LevelExitComponent.h"
 #include "Wall.h"
@@ -404,7 +405,15 @@ namespace RoguelikeGame
 
             try
             {
-                if (level.Add(CreateProp(*definition, position, items)))
+                XYZEngine::GameObject* gameObject = CreateProp(*definition, position, items);
+
+                if (gameObject != nullptr && definition->isPanel)
+                {
+                    PanelSupport support = ReadPanelSupport(levelData, placement.propId, placement.column, placement.row);
+                    gameObject->GetTransform()->SetWorldRotation(PanelAngle(support));
+                }
+
+                if (level.Add(gameObject))
                 {
                     propsCount++;
                 }

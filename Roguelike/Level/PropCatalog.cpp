@@ -223,6 +223,14 @@ namespace RoguelikeGame
                 continue;
             }
 
+            if (key == "panel")
+            {
+                std::string value;
+                stream >> value;
+                current.isPanel = value == "true";
+                continue;
+            }
+
             if (key == "key")
             {
                 stream >> current.keyItem;

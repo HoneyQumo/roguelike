@@ -235,6 +235,7 @@
         <ClInclude Include="Level\Chasm.h"/>
         <ClInclude Include="Level\Fixture.h"/>
         <ClInclude Include="Level\Fixtures.h"/>
+        <ClInclude Include="Level\PropAlign.h"/>
         <ClInclude Include="Level\HatchComponent.h"/>
         <ClInclude Include="Level\SwitchComponent.h"/>
         <ClInclude Include="Level\LevelGrid.h"/>

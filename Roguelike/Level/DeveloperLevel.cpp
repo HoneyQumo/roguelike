@@ -10,6 +10,8 @@
 #include "Crosshair.h"
 #include "Particles.h"
 #include "BossBrainComponent.h"
+#include "CameraDirectorComponent.h"
+#include "SwitchComponent.h"
 #include "CutscenePlayerComponent.h"
 #include "PlayerHudBinderComponent.h"
 #include "EscapeCarComponent.h"
@@ -53,6 +55,7 @@ namespace RoguelikeGame
             try
             {
                 player = CreatePlayer(level.GetStartPosition());
+                camera = CreateCamera(player);
 
                 auto health = player->GetComponent<HealthComponent>();
                 if (health != nullptr)
@@ -75,6 +78,7 @@ namespace RoguelikeGame
         SubscribeWaves();
         SubscribePursuit();
         SubscribeEscape();
+        SubscribeLevers();
 
         music = CreateMusic(MAIN_THEME_MUSIC, MUSIC_VOLUME);
 
@@ -262,6 +266,85 @@ namespace RoguelikeGame
         car->SubscribeBoarded([this]() { PlayEscape(); });
     }
 
+    /**
+    *	Рычаг открывает люк где-то в стороне, и без камеры игрок видит только
+    *	то, что дёрнул рычаг. Сцена показывает результат: камера уезжает к люку,
+    *	ждёт, пока он откроется, и возвращается.
+    */
+    void DeveloperLevel::SubscribeLevers()
+    {
+        for (SwitchComponent* lever : GameWorld::Instance()->FindComponents<SwitchComponent>())
+        {
+            std::string hatchName = std::string(HATCH_OBJECT_PREFIX) + lever->GetSwitchId();
+            if (GameWorld::Instance()->FindGameObject(hatchName) == nullptr)
+            {
+                continue;
+            }
+
+            lever->SubscribePulled([this, hatchName]() { PlayHatchScene(hatchName); });
+        }
+    }
+
+    void DeveloperLevel::PlayHatchScene(const std::string& hatchName)
+    {
+        CutsceneBeat away;
+        away.action = HATCH_SCENE_BEAT;
+        away.seconds = HATCH_SCENE_TRAVEL + HATCH_SCENE_HOLD;
+        away.command = CutsceneCommand::LookAtTarget;
+        away.target = hatchName;
+        away.travel = HATCH_SCENE_TRAVEL;
+
+        CutsceneBeat back;
+        back.seconds = HATCH_SCENE_TRAVEL;
+        back.command = CutsceneCommand::LookAtHero;
+        back.travel = HATCH_SCENE_TRAVEL;
+
+        CutsceneBeat hold;
+        hold.command = CutsceneCommand::TakeControl;
+        hold.seconds = 0.f;
+
+        StartCutscene({hold, away, back});
+    }
+
+    /**
+    *	Собирает сцену: общая обвязка у всех одна - камера, замок управления
+    *	и поиск цели по имени. Сами шаги приносит тот, кто сцену заказывает.
+    */
+    CutscenePlayerComponent* DeveloperLevel::StartCutscene(std::vector<CutsceneBeat> beats)
+    {
+        if (cutscene != nullptr)
+        {
+            return nullptr;
+        }
+
+        cutscene = XYZEngine::GameWorld::Instance()->CreateGameObject(CUTSCENE_OBJECT_NAME);
+        level.Add(cutscene);
+
+        auto scene = cutscene->AddComponent<CutscenePlayerComponent>();
+        scene->SetBeats(std::move(beats));
+        scene->SetControlLock([this](bool isTaken) { SetControlTaken(isTaken); });
+        scene->SetTargetFinder([](const std::string& name)
+        {
+            return XYZEngine::GameWorld::Instance()->FindGameObject(name);
+        });
+
+        if (camera != nullptr)
+        {
+            scene->SetCamera(camera->GetComponent<CameraDirectorComponent>());
+        }
+
+        scene->SubscribeFinished([this]()
+        {
+            // Сцена отыграла - объект больше не нужен, и место под следующую свободно.
+            XYZEngine::GameWorld::Instance()->DestroyGameObject(cutscene);
+            cutscene = nullptr;
+        });
+
+        scene->Play();
+
+        return scene;
+    }
+
     void DeveloperLevel::PlayEscape()
     {
         XYZEngine::GameObject* carObject = level.GetEscapeCar();
@@ -313,29 +396,67 @@ namespace RoguelikeGame
         scene->Play();
     }
 
-    void DeveloperLevel::TakeControl()
+    /**
+    *	Забирает управление у игрока и возвращает ровно то, что забрало.
+    *
+    *	Список выключенного приходится помнить: слепо включить всё обратно нельзя,
+    *	часть компонентов могла быть выключена не сценой, а чем-то ещё.
+    */
+    void DeveloperLevel::SetControlTaken(bool isTaken)
     {
         if (player == nullptr)
         {
             return;
         }
 
+        if (!isTaken)
+        {
+            for (XYZEngine::Component* part : takenParts)
+            {
+                if (part != nullptr)
+                {
+                    part->SetEnabled(true);
+                }
+            }
+
+            takenParts.clear();
+
+            if (crosshair != nullptr)
+            {
+                crosshair->SetActive(true);
+            }
+
+            return;
+        }
+
+        if (!takenParts.empty())
+        {
+            return;
+        }
+
         for (XYZEngine::Component* part : player->GetComponents<XYZEngine::Component>())
         {
-            bool isDriving = dynamic_cast<XYZEngine::CameraComponent*>(part) != nullptr
-                || dynamic_cast<XYZEngine::TransformComponent*>(part) != nullptr
+            bool isDriving = dynamic_cast<XYZEngine::TransformComponent*>(part) != nullptr
                 || dynamic_cast<PlayerHudBinderComponent*>(part) != nullptr;
 
-            if (!isDriving)
+            if (isDriving || !part->IsEnabled())
             {
-                part->SetEnabled(false);
+                continue;
             }
+
+            part->SetEnabled(false);
+            takenParts.push_back(part);
         }
 
         if (crosshair != nullptr)
         {
             crosshair->SetActive(false);
         }
+    }
+
+    void DeveloperLevel::TakeControl()
+    {
+        SetControlTaken(true);
     }
 
     void DeveloperLevel::DriveEscape(XYZEngine::GameObject* carObject, float deltaTime)
@@ -481,6 +602,7 @@ namespace RoguelikeGame
         SubscribeWaves();
         SubscribePursuit();
         SubscribeEscape();
+        SubscribeLevers();
         ShowLevelTitle();
 
         LOG_INFO("Level changed to " + entry->id + ", objects in world "
@@ -639,6 +761,8 @@ namespace RoguelikeGame
         crosshair = nullptr;
         music = nullptr;
         player = nullptr;
+        camera = nullptr;
+        takenParts.clear();
         particles = nullptr;
 
         level.Clear();

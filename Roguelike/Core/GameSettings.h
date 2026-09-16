@@ -349,6 +349,12 @@ namespace RoguelikeGame
 
     constexpr auto ESCAPE_CAR_OBJECT_NAME = "EscapeCar";
     constexpr auto CUTSCENE_OBJECT_NAME = "Cutscene";
+
+    // Сцена с люком: камера уезжает показать, что именно открыл рычаг.
+    constexpr auto HATCH_SCENE_BEAT = "hatch_opens";
+    constexpr float HATCH_SCENE_TRAVEL = 0.55f;
+    constexpr float HATCH_SCENE_HOLD = 1.1f;
+    constexpr auto HATCH_OBJECT_PREFIX = "Hatch_";
     constexpr auto ESCAPE_CAR_TEXTURE = "prop_car_van";
     constexpr auto ESCAPE_CAR_PROMPT = u8"[F] Уехать";
     constexpr float ESCAPE_CAR_WIDTH = 124.f;
@@ -418,6 +424,7 @@ namespace RoguelikeGame
     constexpr float HEAVY_CHARGED_GLOW_PERIOD = 0.18f;
 
     constexpr auto PLAYER_OBJECT_NAME = "Player";
+    constexpr auto CAMERA_OBJECT_NAME = "Camera";
     constexpr auto DOOR_OBJECT_PREFIX = "Door_";
     constexpr auto ROOMS_OBJECT_NAME = "Rooms";
     constexpr int ROOM_WAKE_AHEAD = 1;

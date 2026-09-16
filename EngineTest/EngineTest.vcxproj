@@ -79,6 +79,7 @@
     <ClCompile Include="Fire.tests.cpp" />
     <ClCompile Include="Waves.tests.cpp" />
     <ClCompile Include="Cutscene.tests.cpp" />
+    <ClCompile Include="CutsceneCamera.tests.cpp" />
     <ClCompile Include="LevelLoader.tests.cpp" />
     <ClCompile Include="GameWorld.tests.cpp" />
     <ClCompile Include="Logger.tests.cpp" />
@@ -281,6 +282,9 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\Roguelike\Cutscene\CutscenePlayerComponent.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Roguelike\Cutscene\CameraDirectorComponent.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\Roguelike\Characters\StaminaComponent.cpp">

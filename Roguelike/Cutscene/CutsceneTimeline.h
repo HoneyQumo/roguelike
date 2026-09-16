@@ -1,14 +1,34 @@
-#pragma once
+﻿#pragma once
 
 #include <string>
 #include <vector>
+#include <Vector.h>
 
 namespace RoguelikeGame
 {
+    /**
+    *	Что сцена делает в начале шага. Сам шаг при этом остаётся отрезком времени:
+    *	команда срабатывает один раз, а дальше идёт отсчёт.
+    */
+    enum class CutsceneCommand
+    {
+        None,
+        TakeControl,
+        GiveControl,
+        LookAtTarget,
+        LookAtPoint,
+        LookAtHero
+    };
+
     struct CutsceneBeat
     {
         std::string action;
         float seconds = 0.f;
+
+        CutsceneCommand command = CutsceneCommand::None;
+        std::string target;
+        XYZEngine::Vector2Df point = {0.f, 0.f};
+        float travel = 0.f;
     };
 
     /**
@@ -24,6 +44,7 @@ namespace RoguelikeGame
 
         int GetCurrent() const;
         const std::string& GetCurrentAction() const;
+        const CutsceneBeat* GetCurrentBeat() const;
         float GetBeatProgress() const;
         bool IsOver() const;
         bool IsEmpty() const;

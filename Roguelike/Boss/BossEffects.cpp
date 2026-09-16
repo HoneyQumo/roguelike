@@ -49,14 +49,7 @@ namespace RoguelikeGame
             try
             {
                 XYZEngine::GameObject* minion = CreateEnemy(*config, point);
-                if (auto chase = minion->GetComponent<ChaseComponent>())
-                {
-                    XYZEngine::GameObject* target = XYZEngine::GameWorld::Instance()->FindGameObject(chase->GetTargetName());
-                    chase->Provoke(target == nullptr ? point : target->GetTransform()->GetWorldPosition());
-
-                    // Свита выходит из портала уже зная, за кем пришла, и цель больше не теряет.
-                    chase->SetForcedChase(true);
-                }
+                SendAfterPlayer(minion, point);
 
                 brain->RegisterMinion(minion);
             }

@@ -10,10 +10,15 @@
 
 namespace RoguelikeGame
 {
+    class CameraDirectorComponent;
+
     class CutscenePlayerComponent : public XYZEngine::Component
     {
     public:
         using BeatHandler = std::function<void(float)>;
+
+        // Забрать у игрока управление и вернуть обратно. Как именно - решает уровень.
+        using ControlLock = std::function<void(bool)>;
 
         CutscenePlayerComponent(XYZEngine::GameObject* gameObject);
 
@@ -22,6 +27,9 @@ namespace RoguelikeGame
 
         void SetBeats(std::vector<CutsceneBeat> beats);
         void SetHandler(const std::string& action, BeatHandler handler);
+        void SetCamera(CameraDirectorComponent* newCamera);
+        void SetControlLock(ControlLock newLock);
+        void SetTargetFinder(std::function<XYZEngine::GameObject*(const std::string&)> newFinder);
 
         void Play();
         void Stop();
@@ -35,11 +43,17 @@ namespace RoguelikeGame
     private:
         CutsceneTimeline timeline;
         std::map<std::string, BeatHandler> handlers;
+        CameraDirectorComponent* camera = nullptr;
+        ControlLock controlLock;
+        std::function<XYZEngine::GameObject*(const std::string&)> findTarget;
         bool isPlaying = false;
+        bool hasTakenControl = false;
 
         XYZEngine::EventList<const std::string&> beatStartedEvent;
         XYZEngine::EventList<> finishedEvent;
 
         void RunBeat(float deltaTime);
+        void RunCommand(const CutsceneBeat& beat);
+        void ReleaseControl();
     };
 }

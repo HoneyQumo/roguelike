@@ -16,6 +16,7 @@
 #include <GameWorld.h>
 #include <RenderSystem.h>
 #include <CameraComponent.h>
+#include "CameraDirectorComponent.h"
 #include <InputComponent.h>
 #include "WeaponComponent.h"
 #include "MeleeWeaponComponent.h"
@@ -49,6 +50,21 @@ namespace RoguelikeGame
         }
     }
 
+    XYZEngine::GameObject* CreateCamera(XYZEngine::GameObject* follow)
+    {
+        auto gameObject = XYZEngine::GameWorld::Instance()->CreateGameObject(CAMERA_OBJECT_NAME);
+
+        auto camera = gameObject->AddComponent<XYZEngine::CameraComponent>();
+        camera->SetViewHeight(CAMERA_VIEW_HEIGHT);
+        camera->SetMaxShakeAmplitude(CAMERA_SHAKE_LIMIT);
+        camera->SetRotationEnabled(false);
+
+        auto director = gameObject->AddComponent<CameraDirectorComponent>();
+        director->SetFollow(follow);
+
+        return gameObject;
+    }
+
     XYZEngine::GameObject* CreatePlayer(const XYZEngine::Vector2Df& position)
     {
         WeaponId startWeapon = PLAYER_LOADOUT[PLAYER_START_WEAPON_SLOT].id;
@@ -68,11 +84,6 @@ namespace RoguelikeGame
 
         CharacterParts parts = CreateCharacter(spec, [](XYZEngine::GameObject* object)
         {
-            auto camera = object->AddComponent<XYZEngine::CameraComponent>();
-            camera->SetViewHeight(CAMERA_VIEW_HEIGHT);
-            camera->SetMaxShakeAmplitude(CAMERA_SHAKE_LIMIT);
-            camera->SetRotationEnabled(false);
-
             object->AddComponent<XYZEngine::InputComponent>();
         });
 

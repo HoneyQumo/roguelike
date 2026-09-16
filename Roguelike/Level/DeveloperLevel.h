@@ -2,6 +2,7 @@
 
 #include "Scene.h"
 #include "Level.h"
+#include "CutsceneTimeline.h"
 #include "HudScreen.h"
 #include "InventoryScreen.h"
 #include "FadeScreen.h"
@@ -12,6 +13,8 @@
 
 namespace RoguelikeGame
 {
+    class CutscenePlayerComponent;
+
     class DeveloperLevel : public XYZEngine::Scene
     {
     public:
@@ -32,6 +35,10 @@ namespace RoguelikeGame
         Level level;
         XYZEngine::GameObject* player = nullptr;
         XYZEngine::GameObject* cutscene = nullptr;
+        XYZEngine::GameObject* camera = nullptr;
+
+        // Что именно выключила сцена: вернуть надо ровно это.
+        std::vector<XYZEngine::Component*> takenParts;
         float escapeSpeed = 0.f;
         XYZEngine::GameObject* particles = nullptr;
         XYZEngine::GameObject* uiRoot = nullptr;
@@ -60,8 +67,12 @@ namespace RoguelikeGame
         void SubscribeWaves();
         void SubscribePursuit();
         void SubscribeEscape();
+        void SubscribeLevers();
+        void PlayHatchScene(const std::string& hatchName);
+        CutscenePlayerComponent* StartCutscene(std::vector<CutsceneBeat> beats);
         void PlayEscape();
         void TakeControl();
+        void SetControlTaken(bool isTaken);
         void DriveEscape(XYZEngine::GameObject* carObject, float deltaTime);
         void OnWavesCleared();
         void OnBossDefeated();

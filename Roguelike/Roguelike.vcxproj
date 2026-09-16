@@ -162,6 +162,7 @@
         <ClCompile Include="Level\WaveDirectorComponent.cpp"/>
         <ClCompile Include="Level\TileAnimationComponent.cpp"/>
         <ClCompile Include="Level\EscapeCarComponent.cpp"/>
+        <ClCompile Include="Cutscene\CameraDirectorComponent.cpp"/>
         <ClCompile Include="Cutscene\CutscenePlayerComponent.cpp"/>
         <ClCompile Include="Cutscene\CutsceneTimeline.cpp"/>
         <ClCompile Include="Level\LevelGrid.cpp"/>
@@ -253,6 +254,7 @@
         <ClInclude Include="Level\WaveDirectorComponent.h"/>
         <ClInclude Include="Level\TileAnimationComponent.h"/>
         <ClInclude Include="Level\EscapeCarComponent.h"/>
+        <ClInclude Include="Cutscene\CameraDirectorComponent.h"/>
         <ClInclude Include="Cutscene\CutscenePlayerComponent.h"/>
         <ClInclude Include="Cutscene\CutsceneTimeline.h"/>
         <ClInclude Include="Level\LevelGrid.h"/>

@@ -1,4 +1,5 @@
 #include "CutscenePlayerComponent.h"
+#include "CameraDirectorComponent.h"
 #include <GameObject.h>
 #include <LoggerRegistry.h>
 
@@ -15,6 +16,12 @@ namespace RoguelikeGame
 
         if (timeline.Advance(deltaTime))
         {
+            const CutsceneBeat* beat = timeline.GetCurrentBeat();
+            if (beat != nullptr)
+            {
+                RunCommand(*beat);
+            }
+
             const std::string& action = timeline.GetCurrentAction();
             LOG_INFO("Cutscene beat: " + action);
             beatStartedEvent.Invoke(action);
@@ -23,6 +30,10 @@ namespace RoguelikeGame
         if (timeline.IsOver())
         {
             isPlaying = false;
+
+            // Управление возвращается само: сцена, забывшая его отдать, вешает игру.
+            ReleaseControl();
+
             LOG_INFO("Cutscene is over");
             finishedEvent.Invoke();
             return;
@@ -56,9 +67,92 @@ namespace RoguelikeGame
         isPlaying = true;
     }
 
+    // Сцену могли оборвать смертью или сменой локации: и камера, и управление возвращаются.
     void CutscenePlayerComponent::Stop()
     {
         isPlaying = false;
+
+        if (camera != nullptr)
+        {
+            camera->Release();
+        }
+
+        ReleaseControl();
+    }
+
+    void CutscenePlayerComponent::SetCamera(CameraDirectorComponent* newCamera)
+    {
+        camera = newCamera;
+    }
+
+    void CutscenePlayerComponent::SetControlLock(ControlLock newLock)
+    {
+        controlLock = std::move(newLock);
+    }
+
+    void CutscenePlayerComponent::SetTargetFinder(std::function<XYZEngine::GameObject*(const std::string&)> newFinder)
+    {
+        findTarget = std::move(newFinder);
+    }
+
+    void CutscenePlayerComponent::ReleaseControl()
+    {
+        if (!hasTakenControl)
+        {
+            return;
+        }
+
+        hasTakenControl = false;
+
+        if (controlLock != nullptr)
+        {
+            controlLock(false);
+        }
+    }
+
+    void CutscenePlayerComponent::RunCommand(const CutsceneBeat& beat)
+    {
+        switch (beat.command)
+        {
+        case CutsceneCommand::TakeControl:
+            if (!hasTakenControl)
+            {
+                hasTakenControl = true;
+                if (controlLock != nullptr)
+                {
+                    controlLock(true);
+                }
+            }
+            break;
+
+        case CutsceneCommand::GiveControl:
+            ReleaseControl();
+            break;
+
+        case CutsceneCommand::LookAtPoint:
+            if (camera != nullptr)
+            {
+                camera->LookAt(beat.point, beat.travel);
+            }
+            break;
+
+        case CutsceneCommand::LookAtTarget:
+            if (camera != nullptr && findTarget != nullptr)
+            {
+                camera->LookAt(findTarget(beat.target), beat.travel);
+            }
+            break;
+
+        case CutsceneCommand::LookAtHero:
+            if (camera != nullptr)
+            {
+                camera->LookAtFollow(beat.travel);
+            }
+            break;
+
+        default:
+            break;
+        }
     }
 
     bool CutscenePlayerComponent::IsPlaying() const

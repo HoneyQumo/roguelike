@@ -49,6 +49,11 @@ namespace RoguelikeGame
         return hasChanged;
     }
 
+    const CutsceneBeat* CutsceneTimeline::GetCurrentBeat() const
+    {
+        return current >= 0 && current < static_cast<int>(beats.size()) ? &beats[current] : nullptr;
+    }
+
     int CutsceneTimeline::GetCurrent() const
     {
         return current;

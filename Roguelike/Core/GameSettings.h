@@ -228,6 +228,25 @@ namespace RoguelikeGame
     constexpr int HUD_NOTICE_FONT_SIZE = 22;
     constexpr float HUD_NOTICE_MARGIN_Y = 120.f;
     constexpr float HUD_NOTICE_TIME = 2.f;
+    // Панель волн: заголовок, полоса по всей осаде и счётчик тех, кто ещё на хвосте.
+    constexpr float WAVE_HUD_MARGIN_Y = 18.f;
+    constexpr float WAVE_HUD_WIDTH = 300.f;
+    constexpr int WAVE_HUD_TITLE_FONT_SIZE = 22;
+    constexpr int WAVE_HUD_COUNT_FONT_SIZE = 18;
+    constexpr float WAVE_HUD_BAR_HEIGHT = 10.f;
+    constexpr float WAVE_HUD_GAP = 6.f;
+    constexpr float WAVE_HUD_TITLE_HEIGHT = WAVE_HUD_TITLE_FONT_SIZE * AMMO_HUD_LINE_HEIGHT;
+    constexpr float WAVE_HUD_COUNT_HEIGHT = WAVE_HUD_COUNT_FONT_SIZE * AMMO_HUD_LINE_HEIGHT;
+    constexpr float WAVE_HUD_HEIGHT = WAVE_HUD_TITLE_HEIGHT + WAVE_HUD_BAR_HEIGHT + WAVE_HUD_COUNT_HEIGHT + 2.f * WAVE_HUD_GAP;
+    inline const sf::Color WAVE_HUD_COLOR = {235, 225, 210};
+    inline const sf::Color WAVE_HUD_BAR_COLOR = {215, 90, 60};
+    inline const sf::Color WAVE_HUD_CALM_COLOR = {130, 190, 140};
+    constexpr auto WAVE_HUD_TITLE = u8"ВОЛНА ";
+    constexpr auto WAVE_HUD_OF = u8" / ";
+    constexpr auto WAVE_HUD_LEFT = u8"Осталось: ";
+    constexpr auto WAVE_HUD_CALM = u8"Затишье";
+    constexpr auto WAVE_HUD_NEXT_IN = u8"Следующая волна через ";
+
     constexpr auto INVENTORY_FULL_NOTICE = u8"Инвентарь полон";
     constexpr auto ITEM_REFUSED_NOTICE = u8"Сейчас это не пригодится";
     constexpr auto BOSS_GATE_NOTICE = u8"Выход закрыт: сначала победи босса";

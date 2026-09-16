@@ -25,6 +25,8 @@ namespace RoguelikeGame
         void Render() override;
 
         bool IsBroken() const;
+        void SetLeavesWreck(bool newLeavesWreck);
+        bool LeavesWreck() const;
 
         XYZEngine::SubscriptionId SubscribeBroken(std::function<void(const XYZEngine::Vector2Df&)> onBroken);
 
@@ -33,6 +35,7 @@ namespace RoguelikeGame
         XYZEngine::ColliderComponent* collider = nullptr;
 
         bool isBroken = false;
+        bool leavesWreck = false;
 
         XYZEngine::EventList<const XYZEngine::Vector2Df&> brokenEvent;
 

@@ -95,6 +95,7 @@ namespace RoguelikeGame
             visual->SetSpentLayer(PROP_DEBRIS_RENDER_LAYER);
 
             auto destructible = gameObject->AddComponent<DestructibleComponent>();
+            destructible->SetLeavesWreck(definition.leavesWreck);
 
             std::string lootTable = definition.lootTable;
             destructible->SubscribeBroken([gameObject, lootTable, visual](const XYZEngine::Vector2Df& place)
@@ -181,10 +182,14 @@ namespace RoguelikeGame
 
             if (auto destructible = gameObject->GetComponent<DestructibleComponent>())
             {
-                destructible->SubscribeBroken([](const XYZEngine::Vector2Df& where)
+                bool leavesWreck = definition.leavesWreck;
+                destructible->SubscribeBroken([leavesWreck](const XYZEngine::Vector2Df& where)
                 {
-                    LevelGrid::OpenCell(where);
-                    PathService::Reset();
+                    if (!leavesWreck)
+                    {
+                        LevelGrid::OpenCell(where);
+                        PathService::Reset();
+                    }
 
                     Noise noise;
                     noise.position = where;

@@ -41,7 +41,7 @@ namespace RoguelikeGame
 
         isBroken = true;
 
-        if (collider != nullptr)
+        if (collider != nullptr && !leavesWreck)
         {
             collider->SetTrigger(true);
         }
@@ -49,6 +49,16 @@ namespace RoguelikeGame
         LOG_INFO(gameObject->GetName() + " is broken");
 
         brokenEvent.Invoke(gameObject->GetTransform()->GetWorldPosition());
+    }
+
+    void DestructibleComponent::SetLeavesWreck(bool newLeavesWreck)
+    {
+        leavesWreck = newLeavesWreck;
+    }
+
+    bool DestructibleComponent::LeavesWreck() const
+    {
+        return leavesWreck;
     }
 
     bool DestructibleComponent::IsBroken() const

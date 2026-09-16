@@ -246,6 +246,14 @@ namespace RoguelikeGame
                 continue;
             }
 
+            if (key == "wreck")
+            {
+                std::string value;
+                stream >> value;
+                current.leavesWreck = value == "true";
+                continue;
+            }
+
             if (key == "panel")
             {
                 std::string value;

@@ -184,7 +184,7 @@ namespace
 	};
 }
 
-TEST_F(ShippedEscapeTest, TheBridgeEndsWithACarStandingAtTheExit)
+TEST_F(ShippedEscapeTest, TheOnlyWayOffTheBridgeIsTheCar)
 {
 	ASSERT_TRUE(isFound) << previous.string();
 
@@ -192,24 +192,21 @@ TEST_F(ShippedEscapeTest, TheBridgeEndsWithACarStandingAtTheExit)
 
 	ASSERT_EQ(bridge.escapes.size(), 1u) << "the bridge needs exactly one escape car";
 
-	int exitColumn = -1;
-	int exitRow = -1;
+	int teleports = 0;
 	for (int row = 0; row < bridge.height; row++)
 	{
 		for (int column = 0; column < static_cast<int>(bridge.tiles[row].size()); column++)
 		{
 			if (bridge.tiles[row][column] == RoguelikeGame::TileType::Exit)
 			{
-				exitColumn = column;
-				exitRow = row;
+				teleports++;
 			}
 		}
 	}
 
-	ASSERT_GE(exitColumn, 0) << "the bridge has no exit";
-
-	EXPECT_EQ(bridge.escapes.front().row, exitRow) << "the car is not on the exit lane";
-	EXPECT_LE(std::abs(bridge.escapes.front().column - exitColumn), 2) << "the car is far from the exit";
+	// Переходом служит машина: второй выход рядом с ней сводил сцену на нет.
+	EXPECT_EQ(teleports, 0) << "the bridge still has a teleport next to the car";
+	EXPECT_LE(bridge.width - bridge.escapes.front().column, 6) << "the car does not wait at the far end";
 }
 
 TEST_F(ShippedEscapeTest, TheCarIsTheFinishOfAChaseAndNotAReward)

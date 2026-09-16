@@ -87,6 +87,8 @@ namespace RoguelikeGame
                                                               {0, 0, static_cast<int>(TILE_SIZE), static_cast<int>(TILE_SIZE)}, false);
         XYZEngine::ResourceSystem::Instance()->LoadTexturePart(DOOR_OPEN_TEXTURE, DOORS_ATLAS_FILE,
                                                               {static_cast<int>(TILE_SIZE), 0, static_cast<int>(TILE_SIZE), static_cast<int>(TILE_SIZE)}, false);
+        XYZEngine::ResourceSystem::Instance()->LoadTexturePart(ESCAPE_CAR_OPEN_TEXTURE, ESCAPE_CAR_ATLAS_FILE,
+                                                              {ESCAPE_CAR_OPEN_FRAME_LEFT, 0, ESCAPE_CAR_OPEN_FRAME_SIDE, ESCAPE_CAR_OPEN_FRAME_SIDE}, false);
 
         LoadFxStrip(MUZZLE_FLASH_TEXTURE, FX_MUZZLE_FLASH);
         LoadFxStrip(BLOOD_POOL_TEXTURE, FX_BLOOD_POOL);

@@ -370,6 +370,26 @@ namespace RoguelikeGame
     constexpr float ESCAPE_CAR_SPEED = 540.f;
     constexpr float ESCAPE_CAR_PICKUP = 320.f;
     constexpr auto ESCAPE_NOTICE = u8"Гони!";
+
+    // Приезд: машины на карте нет, пока герой не добежит до конца.
+    constexpr auto ESCAPE_CAR_OPEN_TEXTURE = "escape_car_open";
+    constexpr auto ESCAPE_CAR_ATLAS_FILE = "Resources/Textures/props_bridge.png";
+    constexpr int ESCAPE_CAR_OPEN_FRAME_LEFT = 1164;
+    constexpr int ESCAPE_CAR_OPEN_FRAME_SIDE = 136;
+
+    // Кадр с дверью вдвое выше кузова: центр машины остаётся на месте.
+    constexpr float ESCAPE_CAR_OPEN_HEIGHT = ESCAPE_CAR_HEIGHT * 2.f;
+
+    constexpr auto ARRIVAL_BEAT_DRIVE = "car_drive";
+    constexpr auto ARRIVAL_BEAT_DOOR = "car_door";
+    constexpr float ARRIVAL_CALL_RANGE = 12.f * TILE_SIZE;
+    constexpr float ARRIVAL_ENTRY_OFFSET = 22.f * TILE_SIZE;
+    constexpr float ARRIVAL_LOOK_TIME = 0.8f;
+    constexpr float ARRIVAL_DRIVE_TIME = 2.f;
+    constexpr float ARRIVAL_DOOR_TIME = 0.9f;
+    constexpr float ARRIVAL_SKID_START = 0.55f;
+    constexpr float ARRIVAL_SKID_SLIDE = 28.f;
+    constexpr float ARRIVAL_FACING_IN = 180.f;
     /**
     *	Волна выходит из окна вокруг игрока: не под ногами, но и не за горизонтом.
     *	На длинной карте точки разбросаны на сотни клеток, и без окна волна

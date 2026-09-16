@@ -102,6 +102,7 @@ namespace RoguelikeGame
         auto car = gameObject->AddComponent<EscapeCarComponent>();
         car->SetCarId(carId);
         car->SetReachCollider(reach);
+        car->SetParkPlace(position);
 
         return gameObject;
     }

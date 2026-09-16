@@ -1,22 +1,10 @@
 #include "SettleComponent.h"
+#include "Freeze.h"
 #include <GameObject.h>
 #include <LoggerRegistry.h>
-#include <RectangleRendererComponent.h>
-#include <SpriteRendererComponent.h>
-#include <TransformComponent.h>
 
 namespace RoguelikeGame
 {
-    namespace
-    {
-        bool KeepsDrawing(XYZEngine::Component* component)
-        {
-            return dynamic_cast<XYZEngine::SpriteRendererComponent*>(component) != nullptr
-                || dynamic_cast<XYZEngine::RectangleRendererComponent*>(component) != nullptr
-                || dynamic_cast<XYZEngine::TransformComponent*>(component) != nullptr;
-        }
-    }
-
     SettleComponent::SettleComponent(XYZEngine::GameObject* gameObject) : Component(gameObject) {}
 
     void SettleComponent::Start()

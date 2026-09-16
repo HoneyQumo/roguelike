@@ -321,6 +321,7 @@
         <ClInclude Include="Weapons\StowedWeaponComponent.h"/>
         <ClInclude Include="Weapons\Projectile.h"/>
         <ClInclude Include="Weapons\Weapon.h"/>
+        <ClInclude Include="Core\Freeze.h"/>
         <ClInclude Include="Core\GameSettings.h"/>
         <ClInclude Include="Level\Level.h"/>
         <ClInclude Include="Level\LevelBuilder.h"/>

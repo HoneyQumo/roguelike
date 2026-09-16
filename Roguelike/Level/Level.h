@@ -34,6 +34,8 @@ namespace RoguelikeGame
         XYZEngine::GameObject* GetExit() const;
         XYZEngine::GameObject* GetBoss() const;
         XYZEngine::GameObject* GetWaveDirector() const;
+        XYZEngine::GameObject* GetEscapeCar() const;
+        void SetEscapeCar(XYZEngine::GameObject* carObject);
         std::size_t GetObjectsCount() const;
 
         void Clear();
@@ -45,6 +47,7 @@ namespace RoguelikeGame
         XYZEngine::GameObject* exitObject = nullptr;
         XYZEngine::GameObject* bossObject = nullptr;
         XYZEngine::GameObject* directorObject = nullptr;
+        XYZEngine::GameObject* carObject = nullptr;
         LevelInfo info;
     };
 }

@@ -20,6 +20,7 @@ namespace RoguelikeGame
     const std::string ZONE_PREFIX = "Zone:";
     const std::string SWITCH_PREFIX = "Switch:";
     const std::string HATCH_PREFIX = "Hatch:";
+    const std::string ESCAPE_PREFIX = "Escape:";
     constexpr char COMMENT_SYMBOL = ';';
     constexpr char EMPTY_SYMBOL = ' ';
     const std::string WHITESPACE = " \t";
@@ -352,9 +353,11 @@ namespace RoguelikeGame
         }
 
         bool isHatch = name.compare(0, HATCH_PREFIX.size(), HATCH_PREFIX) == 0;
-        if (isHatch || name.compare(0, SWITCH_PREFIX.size(), SWITCH_PREFIX) == 0)
+        bool isEscape = name.compare(0, ESCAPE_PREFIX.size(), ESCAPE_PREFIX) == 0;
+        if (isHatch || isEscape || name.compare(0, SWITCH_PREFIX.size(), SWITCH_PREFIX) == 0)
         {
-            std::string fixtureId = Trim(name.substr(isHatch ? HATCH_PREFIX.size() : SWITCH_PREFIX.size()));
+            std::size_t prefix = isHatch ? HATCH_PREFIX.size() : (isEscape ? ESCAPE_PREFIX.size() : SWITCH_PREFIX.size());
+            std::string fixtureId = Trim(name.substr(prefix));
             if (fixtureId.empty())
             {
                 LOG_ERROR("Level legend line " + std::to_string(lineNumber) + " has no fixture id");
@@ -366,6 +369,10 @@ namespace RoguelikeGame
             if (isHatch)
             {
                 entry.hatchId = fixtureId;
+            }
+            else if (isEscape)
+            {
+                entry.escapeId = fixtureId;
             }
             else
             {
@@ -459,6 +466,11 @@ namespace RoguelikeGame
                 if (!tile->second.leverId.empty())
                 {
                     levelData.levers.push_back({column, row, tile->second.leverId});
+                }
+
+                if (!tile->second.escapeId.empty())
+                {
+                    levelData.escapes.push_back({column, row, tile->second.escapeId});
                 }
 
                 if (!tile->second.hatchId.empty())

@@ -26,6 +26,7 @@ namespace RoguelikeGame
             std::string zoneId;
             std::string leverId;
             std::string hatchId;
+            std::string escapeId;
         };
 
         using Legend = std::map<char, LegendEntry>;

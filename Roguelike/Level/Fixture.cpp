@@ -1,12 +1,14 @@
 #include "Fixture.h"
 #include "Fixtures.h"
 #include "GameSettings.h"
+#include "EscapeCarComponent.h"
 #include "HatchComponent.h"
 #include "SwitchComponent.h"
 #include <AudioComponent.h>
 #include <BoxColliderComponent.h>
 #include <GameObject.h>
 #include <GameWorld.h>
+#include <ResourceSystem.h>
 #include <SpriteRendererComponent.h>
 #include <TransformComponent.h>
 
@@ -71,6 +73,35 @@ namespace RoguelikeGame
         hatch->SetSprite(sprite);
         hatch->SetAudio(audio);
         hatch->SetReachCollider(reach);
+
+        return gameObject;
+    }
+
+    // Машина побега: крупнее прочих фикстур, берёт спрайт у фургона с моста.
+    XYZEngine::GameObject* CreateEscapeCar(const std::string& carId, const XYZEngine::Vector2Df& position)
+    {
+        auto gameObject = XYZEngine::GameWorld::Instance()->CreateGameObject(ESCAPE_CAR_OBJECT_NAME);
+        gameObject->SetRenderLayer(ITEM_RENDER_LAYER);
+        gameObject->GetTransform()->SetWorldPosition(position);
+
+        auto sprite = gameObject->AddComponent<XYZEngine::SpriteRendererComponent>();
+        sprite->SetPixelSize(static_cast<int>(ESCAPE_CAR_WIDTH), static_cast<int>(ESCAPE_CAR_HEIGHT));
+        sprite->SetPivot(0.5f, 0.5f);
+
+        const sf::Texture* body = XYZEngine::ResourceSystem::Instance()->GetTextureShared(ESCAPE_CAR_TEXTURE);
+        if (body != nullptr)
+        {
+            sprite->SetTexture(*body);
+        }
+
+        auto reach = gameObject->AddComponent<XYZEngine::BoxColliderComponent>();
+        reach->SetSize(ESCAPE_CAR_WIDTH + FIXTURE_REACH_MARGIN, ESCAPE_CAR_HEIGHT + FIXTURE_REACH_MARGIN);
+        reach->SetTrigger(true);
+        reach->SetCollisionLayer(ITEM_COLLISION_LAYER);
+
+        auto car = gameObject->AddComponent<EscapeCarComponent>();
+        car->SetCarId(carId);
+        car->SetReachCollider(reach);
 
         return gameObject;
     }

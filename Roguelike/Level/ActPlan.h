@@ -23,6 +23,7 @@ namespace RoguelikeGame
         std::map<std::string, std::string> library;
         std::vector<RoomPlacement> rooms;
         std::vector<WaveSpec> waves;
+        PursuitSpec pursuit;
 
         bool IsEmpty() const { return rooms.empty(); }
     };

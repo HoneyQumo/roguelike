@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "ActAssembler.h"
 #include "ActPlan.h"
+#include "EnemyCatalog.h"
 #include "GameSettings.h"
 #include "GameWorld.h"
 #include "HealthComponent.h"
@@ -450,21 +451,32 @@ namespace
 	};
 }
 
-TEST_F(ShippedWavesTest, TheBridgeHasWavesAndSomewhereToPutThem)
+TEST_F(ShippedWavesTest, TheBridgeRunsOnAChaseAndNotOnWaves)
 {
 	ASSERT_TRUE(isFound) << previous.string();
 
 	ActPlan plan = ActLoader::Load("Resources/Acts/act1_bridge.config");
 
-	ASSERT_FALSE(plan.waves.empty()) << "the bridge has no waves";
+	// Волны заставляют останавливаться и зачищать - беговой локации это противопоказано.
+	EXPECT_TRUE(plan.waves.empty()) << "the bridge still has waves to stop and clear";
+	ASSERT_FALSE(plan.pursuit.IsEmpty()) << "nobody chases the player across the bridge";
 
-	for (const WaveSpec& wave : plan.waves)
-	{
-		EXPECT_GT(wave.Size(), 0) << "an empty wave";
-		EXPECT_GT(wave.delay, 0.f) << "a wave with no breather before it";
-	}
+	EXPECT_GT(plan.pursuit.keep, 0);
+	EXPECT_GT(plan.pursuit.grow, plan.pursuit.keep) << "standing still costs the player nothing";
+	EXPECT_GT(plan.pursuit.respawn, 0.f) << "the dead are replaced within the same frame";
+}
 
+TEST_F(ShippedWavesTest, TheChaseIsCarriedThroughTheAssembledAct)
+{
+	ASSERT_TRUE(isFound) << previous.string();
+
+	ActPlan plan = ActLoader::Load("Resources/Acts/act1_bridge.config");
 	LevelData bridge = RoguelikeGame::LoadAct("Resources/Acts/act1_bridge.config");
+
+	ASSERT_FALSE(bridge.pursuit.IsEmpty()) << "the pursuit was lost while assembling the act";
+	EXPECT_EQ(bridge.pursuit.echelons.size(), plan.pursuit.echelons.size());
+	EXPECT_EQ(bridge.pursuit.keep, plan.pursuit.keep);
+
 	int points = 0;
 	for (const auto& row : bridge.tiles)
 	{
@@ -474,33 +486,48 @@ TEST_F(ShippedWavesTest, TheBridgeHasWavesAndSomewhereToPutThem)
 		}
 	}
 
-	EXPECT_GT(points, 0) << "waves have nowhere to spawn";
-	EXPECT_EQ(bridge.waves.size(), plan.waves.size()) << "waves were lost while assembling the act";
+	EXPECT_GT(points, 0) << "the chase has nowhere to come from";
 }
 
-TEST_F(ShippedWavesTest, TheBridgeHasEnoughWavesForItsLength)
-{
-	ASSERT_TRUE(isFound) << previous.string();
-
-	LevelData bridge = RoguelikeGame::LoadAct("Resources/Acts/act1_bridge.config");
-
-	// Волна нагоняет игрока раз в WAVE_ADVANCE_STEP пути - на всю длину моста их должно хватить.
-	float length = static_cast<float>(bridge.width) * RoguelikeGame::TILE_SIZE;
-	auto needed = static_cast<std::size_t>(length / RoguelikeGame::WAVE_ADVANCE_STEP);
-
-	EXPECT_GE(bridge.waves.size(), needed)
-		<< "the bridge runs out of waves " << needed << " were needed for " << bridge.width << " tiles";
-}
-
-TEST_F(ShippedWavesTest, TheBridgeWavesGrowHeavier)
+TEST_F(ShippedWavesTest, TheChaseCoversTheWholeBridgeFromTheStart)
 {
 	ASSERT_TRUE(isFound) << previous.string();
 
 	ActPlan plan = ActLoader::Load("Resources/Acts/act1_bridge.config");
-	ASSERT_GE(plan.waves.size(), 2u);
+	ASSERT_GE(plan.pursuit.echelons.size(), 2u);
 
-	EXPECT_LT(plan.waves.front().Size(), plan.waves.back().Size())
-		<< "the last wave is no bigger than the first";
+	// Первый эшелон обязан начинаться с нуля, иначе в начале моста гнаться некому.
+	EXPECT_FLOAT_EQ(plan.pursuit.echelons.front().fromPart, 0.f);
+	EXPECT_LE(plan.pursuit.echelons.back().fromPart, 0.9f) << "the last stretch is left without its own company";
+
+	for (const RoguelikeGame::PursuitEchelon& echelon : plan.pursuit.echelons)
+	{
+		EXPECT_FALSE(echelon.entries.empty()) << "an echelon with nobody in it";
+		EXPECT_GT(echelon.TotalWeight(), 0);
+	}
+}
+
+TEST_F(ShippedWavesTest, TheChaseGetsHeavierTowardsTheCar)
+{
+	ASSERT_TRUE(isFound) << previous.string();
+
+	ActPlan plan = ActLoader::Load("Resources/Acts/act1_bridge.config");
+	ASSERT_GE(plan.pursuit.echelons.size(), 2u);
+
+	auto Toughness = [](const RoguelikeGame::PursuitEchelon& echelon)
+	{
+		float total = 0.f;
+		for (const RoguelikeGame::PursuitEntry& entry : echelon.entries)
+		{
+			const RoguelikeGame::EnemyConfig* config = RoguelikeGame::FindEnemyConfig(entry.enemy);
+			total += config == nullptr ? 0.f : (config->maxHealth + config->armor) * entry.weight;
+		}
+
+		return total / static_cast<float>(echelon.TotalWeight());
+	};
+
+	EXPECT_GT(Toughness(plan.pursuit.echelons.back()), Toughness(plan.pursuit.echelons.front()))
+		<< "the chase near the car is no tougher than at the prison gates";
 }
 
 TEST_F(ShippedWavesTest, SpawnPointsAreSpreadAlongTheWholeBridge)

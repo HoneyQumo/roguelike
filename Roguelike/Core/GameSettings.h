@@ -247,6 +247,12 @@ namespace RoguelikeGame
     constexpr auto WAVE_HUD_CALM = u8"Затишье";
     constexpr auto WAVE_HUD_NEXT_IN = u8"Следующая волна через ";
 
+    // Панель погони: полоса - путь до машины, подпись - насколько близко хвост.
+    inline const sf::Color CHASE_HUD_CLOSE_COLOR = {215, 90, 60};
+    inline const sf::Color CHASE_HUD_AWAY_COLOR = {130, 190, 140};
+    constexpr auto CHASE_HUD_CLOSE = u8"Погоня близко";
+    constexpr auto CHASE_HUD_AWAY = u8"Оторвался";
+
     constexpr auto INVENTORY_FULL_NOTICE = u8"Инвентарь полон";
     constexpr auto ITEM_REFUSED_NOTICE = u8"Сейчас это не пригодится";
     constexpr auto BOSS_GATE_NOTICE = u8"Выход закрыт: сначала победи босса";
@@ -323,6 +329,18 @@ namespace RoguelikeGame
     // Вода перебирает кадры медленно: рябь, а не мельтешение.
     constexpr float WATER_FRAME_TIME = 0.28f;
     constexpr auto WAVE_DIRECTOR_OBJECT_NAME = "WaveDirector";
+    constexpr auto PURSUIT_OBJECT_NAME = "Pursuit";
+
+    // Погоня выходит из-за спины: ближе - видно рождение, дальше - не догонит.
+    constexpr float PURSUIT_SPAWN_GAP = 7.f * TILE_SIZE;
+    constexpr float PURSUIT_SPAWN_REACH = 15.f * TILE_SIZE;
+
+    // Топчешься на месте - каждые столько секунд на хвосте становится на одного больше.
+    constexpr float PURSUIT_GROW_TIME = 6.f;
+    constexpr float PURSUIT_RELAX_STEP = 16.f * TILE_SIZE;
+    constexpr float PURSUIT_CLOSE_RANGE = 12.f * TILE_SIZE;
+
+
     constexpr auto ESCAPE_CAR_OBJECT_NAME = "EscapeCar";
     constexpr auto CUTSCENE_OBJECT_NAME = "Cutscene";
     constexpr auto ESCAPE_CAR_TEXTURE = "prop_car_van";

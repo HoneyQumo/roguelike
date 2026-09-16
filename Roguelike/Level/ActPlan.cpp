@@ -1,4 +1,5 @@
 #include "ActPlan.h"
+#include "PursuitFormat.h"
 #include "EnemyCatalog.h"
 #include <LoggerRegistry.h>
 #include <fstream>
@@ -13,6 +14,7 @@ namespace RoguelikeGame
         const std::string ROOMS_SECTION = "[rooms]";
         const std::string LIBRARY_SECTION = "[library]";
         const std::string WAVES_SECTION = "[waves]";
+        const std::string PURSUIT_SECTION = "[pursuit]";
         const std::string UTF8_BOM = "\xEF\xBB\xBF";
         constexpr char COMMENT_SYMBOL = ';';
 
@@ -112,6 +114,7 @@ namespace RoguelikeGame
         *	Строка волны акта: wave <пауза> <символ><сколько> ...
         *	Символ здесь - из каталога врагов, а не из легенды комнаты: у акта своей легенды нет.
         */
+
         void ReadActWaveLine(const std::string& line, int lineNumber, std::vector<WaveSpec>& waves)
         {
             std::istringstream stream(line);
@@ -226,6 +229,7 @@ namespace RoguelikeGame
         bool isRoomsSection = false;
         bool isLibrarySection = false;
         bool isWavesSection = false;
+        bool isPursuitSection = false;
 
         std::string line;
         int lineNumber = 0;
@@ -250,6 +254,7 @@ namespace RoguelikeGame
                 isRoomsSection = false;
                 isLibrarySection = false;
                 isWavesSection = false;
+                isPursuitSection = false;
                 continue;
             }
 
@@ -259,6 +264,7 @@ namespace RoguelikeGame
                 isRoomsSection = false;
                 isLibrarySection = true;
                 isWavesSection = false;
+                isPursuitSection = false;
                 continue;
             }
 
@@ -268,6 +274,7 @@ namespace RoguelikeGame
                 isRoomsSection = true;
                 isLibrarySection = false;
                 isWavesSection = false;
+                isPursuitSection = false;
                 continue;
             }
 
@@ -277,6 +284,17 @@ namespace RoguelikeGame
                 isRoomsSection = false;
                 isLibrarySection = false;
                 isWavesSection = true;
+                isPursuitSection = false;
+                continue;
+            }
+
+            if (line == PURSUIT_SECTION)
+            {
+                isActSection = false;
+                isRoomsSection = false;
+                isLibrarySection = false;
+                isWavesSection = false;
+                isPursuitSection = true;
                 continue;
             }
 
@@ -295,6 +313,12 @@ namespace RoguelikeGame
             if (isWavesSection)
             {
                 ReadActWaveLine(line, lineNumber, plan.waves);
+                continue;
+            }
+
+            if (isPursuitSection)
+            {
+                ReadPursuitLine(line, lineNumber, plan.pursuit);
                 continue;
             }
 

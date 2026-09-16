@@ -66,6 +66,9 @@ LEGEND = [
     ('W', 'Prop:car_wreck@84'),
 ]
 
+# Точки маршрута для охраны блокпоста: 1 - пост, 2 - дальний конец обхода.
+PATROL_SYMBOLS = ('1', '2')
+
 # Проп шириной в две клетки: ставим его через одну, чтобы машины не слипались.
 WIDE = set('cvsw')
 
@@ -130,6 +133,10 @@ def Jam(rows, rng):
 
 
 def Checkpoint(rows, rng):
+    """Блокпост: стена барьеров с проходом по центру и охрана при нём.
+
+    Проход намеренно оставлен: заслон должен тормозить бегущего, а не запирать.
+    """
     column = rng.randint(10, 18)
     for row in range(ROAD_TOP, ROAD_BOTTOM + 1):
         if row in (LANE_LINE - 1, LANE_LINE, LANE_LINE + 1):
@@ -146,6 +153,27 @@ def Checkpoint(rows, rng):
 
     PutWide(rows, column - 6, LANE_LINE - 2, 'v')
     PutWide(rows, column + 3, LANE_LINE + 2, 'c')
+
+    Garrison(rows, column)
+
+    return True
+
+
+def Garrison(rows, column):
+    """Охрана блокпоста: щитовик в проходе, стрелки за барьером, патруль вдоль него.
+
+    Патруль ходит по своей стороне барьера - тот, кто держит заслон,
+    не должен стоять истуканом, пока игрок обходит его по краю.
+    """
+    Put(rows, column + 1, LANE_LINE, 'h')
+
+    for row in (LANE_LINE - 4, LANE_LINE + 4):
+        Put(rows, column + 2, row, 'r')
+
+    # Две точки на разных концах барьера: между ними и ходит караул.
+    Put(rows, column + 3, ROAD_TOP + 1, PATROL_SYMBOLS[0])
+    Put(rows, column + 3, ROAD_BOTTOM - 1, PATROL_SYMBOLS[1])
+    Put(rows, column + 4, ROAD_TOP + 1, 'g')
 
 
 def Wreck(rows, rng):
@@ -304,6 +332,11 @@ def Write(index, rows):
     name = 'act1_bridge_%02d' % (index + 1)
     lines = ['[level]', 'kind %s' % name, 'tileset bridge', '', '[legend]']
     lines += ['%s %s' % (symbol, meaning) for symbol, meaning in LEGEND]
+
+    # Маршрут именуется по секции: одно имя на весь мост склеило бы все посты в один обход.
+    if any(symbol in ''.join(''.join(row) for row in rows) for symbol in PATROL_SYMBOLS):
+        route = 'block%02d' % (index + 1)
+        lines += ['%s Patrol:%s' % (symbol, route) for symbol in PATROL_SYMBOLS]
     lines += ['', '[map]']
     lines += [''.join(row) for row in rows]
 
@@ -323,13 +356,19 @@ def Build(seed=20260916):
 
     lines = ['[act]', 'title Мост', 'next street', 'tileset bridge', 'music march', '', '[library]']
     lines += ['%s Resources/Rooms/%s.config' % (name, name) for name in names]
-    lines += ['', '[waves]']
+    lines += ['', '[pursuit]']
     lines += [
-        '; wave <пауза> <символ врага><сколько>',
-        'wave 3 m3 a1',
-        'wave 5 m3 a2 s1',
-        'wave 6 a3 s2 h1',
-        'wave 7 a2 s2 h2 r1',
+        '; keep - сколько держится на хвосте, grow - до скольки растёт, если стоять на месте',
+        '; respawn - через сколько приходит замена убитому',
+        'keep 6',
+        'grow 12',
+        'respawn 2.5',
+        '',
+        '; from <доля пути> <символ врага><вес>: кто выбегает на этом отрезке моста',
+        'from 0.0 m4 g3',
+        'from 0.25 m3 a3 g2',
+        'from 0.5 a4 s2 m2',
+        'from 0.75 a3 s3 h2 r1',
     ]
     lines += ['', '[rooms]']
     lines += ['%s %d 0' % (name, index * WIDTH) for index, name in enumerate(names)]

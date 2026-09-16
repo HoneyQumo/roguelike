@@ -158,6 +158,7 @@
         <ClCompile Include="Level\Fixture.cpp"/>
         <ClCompile Include="Level\HatchComponent.cpp"/>
         <ClCompile Include="Level\SwitchComponent.cpp"/>
+        <ClCompile Include="Level\PursuitComponent.cpp"/>
         <ClCompile Include="Level\WaveDirectorComponent.cpp"/>
         <ClCompile Include="Level\TileAnimationComponent.cpp"/>
         <ClCompile Include="Level\EscapeCarComponent.cpp"/>
@@ -246,6 +247,9 @@
         <ClInclude Include="Level\PropAlign.h"/>
         <ClInclude Include="Level\HatchComponent.h"/>
         <ClInclude Include="Level\SwitchComponent.h"/>
+        <ClInclude Include="Level\GuardFacing.h"/>
+        <ClInclude Include="Level\PursuitComponent.h"/>
+        <ClInclude Include="Level\PursuitFormat.h"/>
         <ClInclude Include="Level\WaveDirectorComponent.h"/>
         <ClInclude Include="Level\TileAnimationComponent.h"/>
         <ClInclude Include="Level\EscapeCarComponent.h"/>

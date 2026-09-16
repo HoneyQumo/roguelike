@@ -70,6 +70,7 @@
     <ClCompile Include="Separation.tests.cpp" />
     <ClCompile Include="PropAlign.tests.cpp" />
     <ClCompile Include="PropAngle.tests.cpp" />
+    <ClCompile Include="Pursuit.tests.cpp" />
     <ClCompile Include="TileAnimation.tests.cpp" />
     <ClCompile Include="WaterTiles.tests.cpp" />
     <ClCompile Include="BridgeProps.tests.cpp" />
@@ -263,6 +264,9 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\Roguelike\Level\WaveDirectorComponent.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Roguelike\Level\PursuitComponent.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\Roguelike\Level\TileAnimationComponent.cpp">

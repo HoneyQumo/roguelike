@@ -15,8 +15,10 @@
 #include "HealthComponent.h"
 #include "DamageInfo.h"
 #include "Prop.h"
+#include "GuardFacing.h"
 #include "PropAlign.h"
 #include "TileAnimationComponent.h"
+#include "PursuitComponent.h"
 #include "WaveDirectorComponent.h"
 #include "LevelExit.h"
 #include "LevelExitComponent.h"
@@ -35,6 +37,8 @@
 #include <VertexArrayRendererComponent.h>
 #include <LoggerRegistry.h>
 #include <cassert>
+#include <MathUtils.h>
+#include <optional>
 
 namespace RoguelikeGame
 {
@@ -56,6 +60,7 @@ namespace RoguelikeGame
         int wallsCount = 0;
         int enemiesCount = 0;
 
+        std::optional<float> guardFacing = FacingAgainstTheRun(levelData);
         std::vector<LevelZone> zones = BuildZones(levelData);
         RoomWakeComponent* rooms = CreateRoomWake(zones, level);
 
@@ -138,6 +143,13 @@ namespace RoguelikeGame
                         if (const EnemyConfig* config = FindEnemyConfig(tile))
                         {
                             XYZEngine::GameObject* enemyObject = CreateEnemy(*config, position);
+
+                            // Заслон ждёт бегущего: стоять к нему спиной ему незачем.
+                            if (guardFacing.has_value())
+                            {
+                                enemyObject->GetTransform()->SetWorldRotation(*guardFacing);
+                            }
+
                             level.Add(enemyObject);
                             PutToSleep(rooms, zones, column, row, enemyObject);
                             enemiesCount++;
@@ -166,6 +178,7 @@ namespace RoguelikeGame
         int doorsCount = BuildDoors(levelData, items, level);
         int fixturesCount = BuildFixtures(levelData, level);
         int wavesCount = BuildWaves(levelData, level);
+        int pursuitCount = BuildPursuit(levelData, level);
 
         LOG_INFO("Level built: tiles " + std::to_string(tilesCount)
             + ", walls " + std::to_string(wallsCount)
@@ -175,6 +188,7 @@ namespace RoguelikeGame
             + ", doors " + std::to_string(doorsCount)
             + ", fixtures " + std::to_string(fixturesCount)
             + ", waves " + std::to_string(wavesCount)
+            + ", pursuit " + std::to_string(pursuitCount)
             + ", asleep " + std::to_string(rooms != nullptr ? rooms->GetSleepingCount() : 0));
 
         return level;
@@ -333,14 +347,10 @@ namespace RoguelikeGame
         return static_cast<int>(doors.size());
     }
 
-    int LevelBuilder::BuildWaves(const LevelData& levelData, Level& level)
+    std::vector<XYZEngine::Vector2Df> LevelBuilder::CollectSpawnPoints(const LevelData& levelData)
     {
-        if (levelData.waves.empty())
-        {
-            return 0;
-        }
-
         std::vector<XYZEngine::Vector2Df> points;
+
         for (int row = 0; row < levelData.height; row++)
         {
             for (int column = 0; column < static_cast<int>(levelData.tiles[row].size()); column++)
@@ -352,6 +362,62 @@ namespace RoguelikeGame
             }
         }
 
+        return points;
+    }
+
+    // Кого ни зови - волну или погоню, - он приходит по душу игрока, а не стоять в карауле.
+    XYZEngine::GameObject* LevelBuilder::SpawnHunter(TileType enemy, const XYZEngine::Vector2Df& place)
+    {
+        const EnemyConfig* config = FindEnemyConfig(enemy);
+        if (config == nullptr)
+        {
+            return nullptr;
+        }
+
+        XYZEngine::GameObject* born = CreateEnemy(*config, place);
+        SendAfterPlayer(born, place);
+
+        return born;
+    }
+
+    int LevelBuilder::BuildPursuit(const LevelData& levelData, Level& level)
+    {
+        if (levelData.pursuit.IsEmpty())
+        {
+            return 0;
+        }
+
+        std::vector<XYZEngine::Vector2Df> points = CollectSpawnPoints(levelData);
+        if (points.empty())
+        {
+            LOG_ERROR("Level has a pursuit but no spawn points");
+            return 0;
+        }
+
+        auto gameObject = XYZEngine::GameWorld::Instance()->CreateGameObject(PURSUIT_OBJECT_NAME);
+        auto pursuit = gameObject->AddComponent<PursuitComponent>();
+        pursuit->SetSpec(levelData.pursuit);
+        pursuit->SetPoints(points);
+        pursuit->SetSpawner(&LevelBuilder::SpawnHunter);
+
+        level.Add(gameObject);
+        level.SetPursuit(gameObject);
+
+        LOG_INFO("Pursuit ready: keeps " + std::to_string(levelData.pursuit.keep)
+            + ", grows to " + std::to_string(levelData.pursuit.grow)
+            + " over " + std::to_string(points.size()) + " points");
+
+        return levelData.pursuit.keep;
+    }
+
+    int LevelBuilder::BuildWaves(const LevelData& levelData, Level& level)
+    {
+        if (levelData.waves.empty())
+        {
+            return 0;
+        }
+
+        std::vector<XYZEngine::Vector2Df> points = CollectSpawnPoints(levelData);
         if (points.empty())
         {
             LOG_ERROR("Level has waves but no spawn points");
@@ -362,20 +428,7 @@ namespace RoguelikeGame
         auto director = gameObject->AddComponent<WaveDirectorComponent>();
         director->SetWaves(levelData.waves);
         director->SetPoints(points);
-        director->SetSpawner([](TileType enemy, const XYZEngine::Vector2Df& place) -> XYZEngine::GameObject*
-        {
-            const EnemyConfig* config = FindEnemyConfig(enemy);
-            if (config == nullptr)
-            {
-                return nullptr;
-            }
-
-            // Волна приходит по душу игрока: стоять в карауле ей незачем.
-            XYZEngine::GameObject* born = CreateEnemy(*config, place);
-            SendAfterPlayer(born, place);
-
-            return born;
-        });
+        director->SetSpawner(&LevelBuilder::SpawnHunter);
 
         level.Add(gameObject);
         level.SetWaveDirector(gameObject);

@@ -5,6 +5,7 @@
 #include "Level.h"
 #include "LevelData.h"
 #include "LevelZones.h"
+#include <optional>
 #include <Vector.h>
 
 namespace RoguelikeGame
@@ -24,6 +25,11 @@ namespace RoguelikeGame
         static int BuildDoors(const LevelData& levelData, const ItemCatalog& items, Level& level);
         static int BuildFixtures(const LevelData& levelData, Level& level);
         static int BuildWaves(const LevelData& levelData, Level& level);
+        static int BuildPursuit(const LevelData& levelData, Level& level);
+
+        // Точки и способ рождения общие: волна и погоня отличаются тем, когда звать, а не кого.
+        static std::vector<XYZEngine::Vector2Df> CollectSpawnPoints(const LevelData& levelData);
+        static XYZEngine::GameObject* SpawnHunter(TileType enemy, const XYZEngine::Vector2Df& place);
         static int BuildProps(const LevelData& levelData, const PropCatalog& props, const ItemCatalog& items, Level& level);
         static int BuildItems(const LevelData& levelData, const ItemCatalog& items, Level& level);
         static XYZEngine::GameObject* CreateBossObject(const LevelData& levelData, const XYZEngine::Vector2Df& position, Level& level);

@@ -76,6 +76,40 @@ namespace RoguelikeGame
         noticeLabel->SetFont(font);
         noticeLabel->SetVisible(false);
 
+        wavePanel = GetRoot().AddChild<XYZEngine::UiWidget>();
+        wavePanel->SetAnchor(XYZEngine::UiAnchor::Top);
+        wavePanel->SetPivot(XYZEngine::UiAnchor::Top);
+        wavePanel->SetOffset({0.f, WAVE_HUD_MARGIN_Y});
+        wavePanel->SetSize({WAVE_HUD_WIDTH, WAVE_HUD_HEIGHT});
+        wavePanel->SetVisible(false);
+
+        waveLabel = wavePanel->AddChild<XYZEngine::UiLabel>();
+        waveLabel->SetAnchor(XYZEngine::UiAnchor::Top);
+        waveLabel->SetPivot(XYZEngine::UiAnchor::Top);
+        waveLabel->SetSize({WAVE_HUD_WIDTH, WAVE_HUD_TITLE_HEIGHT});
+        waveLabel->SetAlign(XYZEngine::UiAnchor::Center);
+        waveLabel->SetCharacterSize(WAVE_HUD_TITLE_FONT_SIZE);
+        waveLabel->SetColor(WAVE_HUD_COLOR);
+        waveLabel->SetOutline(AMMO_HUD_OUTLINE, AMMO_HUD_OUTLINE_COLOR);
+        waveLabel->SetFont(font);
+
+        waveBar = wavePanel->AddChild<XYZEngine::UiProgressBar>();
+        waveBar->SetAnchor(XYZEngine::UiAnchor::Top);
+        waveBar->SetPivot(XYZEngine::UiAnchor::Top);
+        waveBar->SetOffset({0.f, WAVE_HUD_TITLE_HEIGHT + WAVE_HUD_GAP});
+        waveBar->SetSize({WAVE_HUD_WIDTH, WAVE_HUD_BAR_HEIGHT});
+        waveBar->SetColors(WAVE_HUD_BAR_COLOR, VITALS_HUD_BACK_COLOR);
+
+        waveCountLabel = wavePanel->AddChild<XYZEngine::UiLabel>();
+        waveCountLabel->SetAnchor(XYZEngine::UiAnchor::Bottom);
+        waveCountLabel->SetPivot(XYZEngine::UiAnchor::Bottom);
+        waveCountLabel->SetSize({WAVE_HUD_WIDTH, WAVE_HUD_COUNT_HEIGHT});
+        waveCountLabel->SetAlign(XYZEngine::UiAnchor::Center);
+        waveCountLabel->SetCharacterSize(WAVE_HUD_COUNT_FONT_SIZE);
+        waveCountLabel->SetColor(WAVE_HUD_COLOR);
+        waveCountLabel->SetOutline(AMMO_HUD_OUTLINE, AMMO_HUD_OUTLINE_COLOR);
+        waveCountLabel->SetFont(font);
+
         promptLabel = GetRoot().AddChild<XYZEngine::UiLabel>();
         promptLabel->SetAnchor(XYZEngine::UiAnchor::Bottom);
         promptLabel->SetPivot(XYZEngine::UiAnchor::Bottom);
@@ -155,6 +189,60 @@ namespace RoguelikeGame
 
         staminaBar->SetColors(state.isExhausted ? VITALS_HUD_STAMINA_EMPTY_COLOR : VITALS_HUD_STAMINA_COLOR,
             VITALS_HUD_BACK_COLOR);
+    }
+
+    void HudScreen::SetWaves(const WaveHudState& state)
+    {
+        wavePanel->SetVisible(state.isRunning);
+        if (!state.isRunning)
+        {
+            return;
+        }
+
+        std::string title = state.isPause
+            ? std::string(WAVE_HUD_CALM)
+            : std::string(WAVE_HUD_TITLE) + std::to_string(state.current) + WAVE_HUD_OF + std::to_string(state.total);
+
+        if (shownWave != title)
+        {
+            shownWave = title;
+            waveLabel->SetUtf8Text(title.c_str());
+        }
+
+        // Полоса меряет всю осаду: сколько волн позади из тех, что будут.
+        float part = state.total > 0 ? static_cast<float>(state.current) / static_cast<float>(state.total) : 0.f;
+        waveBar->SetValue(part);
+        waveBar->SetColors(state.isPause ? WAVE_HUD_CALM_COLOR : WAVE_HUD_BAR_COLOR, VITALS_HUD_BACK_COLOR);
+
+        std::string count = state.isPause
+            ? std::string(WAVE_HUD_NEXT_IN) + std::to_string(static_cast<int>(state.nextIn + 1.f))
+            : std::string(WAVE_HUD_LEFT) + std::to_string(state.left);
+
+        if (shownWaveCount != count)
+        {
+            shownWaveCount = count;
+            waveCountLabel->SetUtf8Text(count.c_str());
+        }
+    }
+
+    const XYZEngine::UiLabel& HudScreen::GetWaveLabel() const
+    {
+        return *waveLabel;
+    }
+
+    const XYZEngine::UiLabel& HudScreen::GetWaveCountLabel() const
+    {
+        return *waveCountLabel;
+    }
+
+    const XYZEngine::UiProgressBar& HudScreen::GetWaveBar() const
+    {
+        return *waveBar;
+    }
+
+    bool HudScreen::IsWavePanelShown() const
+    {
+        return wavePanel->IsVisible();
     }
 
     void HudScreen::SetAmmo(const AmmoHudState& state)

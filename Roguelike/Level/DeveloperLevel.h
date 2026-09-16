@@ -50,6 +50,7 @@ namespace RoguelikeGame
         void SetPaused(bool isPaused);
         void ShowGameOver();
         void UpdateOverlay();
+        void UpdateWavePanel();
         void ShowLevelTitle();
 
         bool LoadLevel(int levelIndex);

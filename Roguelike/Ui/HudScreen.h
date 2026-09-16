@@ -4,6 +4,7 @@
 #include <UiLabel.h>
 #include <UiProgressBar.h>
 #include <UiScreen.h>
+#include <UiWidget.h>
 
 namespace RoguelikeGame
 {
@@ -25,6 +26,16 @@ namespace RoguelikeGame
         bool isLow = false;
     };
 
+    struct WaveHudState
+    {
+        int current = 0;
+        int total = 0;
+        int left = 0;
+        float nextIn = 0.f;
+        bool isRunning = false;
+        bool isPause = false;
+    };
+
     class HudScreen : public XYZEngine::UiScreen
     {
     public:
@@ -32,6 +43,7 @@ namespace RoguelikeGame
 
         void SetAmmo(const AmmoHudState& state);
         void SetVitals(const VitalsHudState& state);
+        void SetWaves(const WaveHudState& state);
 
         void ShowNotice(const std::string& text);
         void SetPrompt(const std::string& text);
@@ -45,6 +57,11 @@ namespace RoguelikeGame
         const XYZEngine::UiProgressBar& GetStaminaBar() const;
         const XYZEngine::UiProgressBar& GetArmorBar() const;
 
+        const XYZEngine::UiLabel& GetWaveLabel() const;
+        const XYZEngine::UiLabel& GetWaveCountLabel() const;
+        const XYZEngine::UiProgressBar& GetWaveBar() const;
+        bool IsWavePanelShown() const;
+
     private:
         XYZEngine::UiLabel* nameLabel = nullptr;
         XYZEngine::UiLabel* ammoLabel = nullptr;
@@ -53,9 +70,15 @@ namespace RoguelikeGame
         XYZEngine::UiProgressBar* armorBar = nullptr;
         XYZEngine::UiLabel* noticeLabel = nullptr;
         XYZEngine::UiLabel* promptLabel = nullptr;
+        XYZEngine::UiWidget* wavePanel = nullptr;
+        XYZEngine::UiLabel* waveLabel = nullptr;
+        XYZEngine::UiLabel* waveCountLabel = nullptr;
+        XYZEngine::UiProgressBar* waveBar = nullptr;
         float noticeTimeLeft = 0.f;
 
         std::string shownName;
         std::string shownAmmo;
+        std::string shownWave;
+        std::string shownWaveCount;
     };
 }

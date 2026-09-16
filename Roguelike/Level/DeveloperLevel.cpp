@@ -493,6 +493,8 @@ namespace RoguelikeGame
             return;
         }
 
+        UpdateWavePanel();
+
         if (state == State::PlayerDied)
         {
             gameOverDelay.Tick(deltaTime);
@@ -513,6 +515,38 @@ namespace RoguelikeGame
                 health->Heal(DEBUG_HEAL_AMOUNT);
             }
         }
+    }
+
+    void DeveloperLevel::UpdateWavePanel()
+    {
+        if (hudScreen == nullptr)
+        {
+            return;
+        }
+
+        WaveHudState state;
+
+        XYZEngine::GameObject* directorObject = level.GetWaveDirector();
+        auto director = directorObject != nullptr ? directorObject->GetComponent<WaveDirectorComponent>() : nullptr;
+
+        // Панель живёт ровно столько, сколько идёт осада: на пустой карте её быть не должно.
+        if (director != nullptr && !director->IsCleared() && director->GetWavesCount() > 0)
+        {
+            state.isRunning = true;
+            state.isPause = director->IsPause();
+            state.current = director->GetCurrentWave() + 1;
+            state.total = director->GetWavesCount();
+            state.left = director->CountAliveNearby();
+            state.nextIn = director->GetPauseLeft();
+
+            if (state.isPause)
+            {
+                // В затишье номер показывает уже отбитые волны, а не ту, что ещё не пришла.
+                state.current = state.current < 0 ? 0 : state.current;
+            }
+        }
+
+        hudScreen->SetWaves(state);
     }
 
     void DeveloperLevel::Restart()

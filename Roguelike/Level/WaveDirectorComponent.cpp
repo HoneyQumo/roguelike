@@ -187,6 +187,16 @@ namespace RoguelikeGame
         return isCleared;
     }
 
+    bool WaveDirectorComponent::IsPause() const
+    {
+        return isWaiting && !isCleared;
+    }
+
+    float WaveDirectorComponent::GetPauseLeft() const
+    {
+        return isWaiting ? pause.GetLeft() : 0.f;
+    }
+
     XYZEngine::SubscriptionId WaveDirectorComponent::SubscribeWaveStarted(std::function<void(int, int)> onWaveStarted)
     {
         return waveStartedEvent.Subscribe(std::move(onWaveStarted));

@@ -1,7 +1,8 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "GameSettings.h"
 #include "HudScreen.h"
 #include "RenderSystem.h"
+#include <TextUtils.h>
 
 using RoguelikeGame::AmmoHudState;
 using RoguelikeGame::HudScreen;
@@ -141,4 +142,126 @@ TEST_F(HudScreenTest, ArmorBarFollowsTheStat)
 	state.armorPart = 1.f;
 	screen.SetVitals(state);
 	EXPECT_FLOAT_EQ(screen.GetArmorBar().GetValue(), 1.f);
+}
+
+namespace
+{
+	RoguelikeGame::WaveHudState RunningWave(int current, int total, int left)
+	{
+		RoguelikeGame::WaveHudState state;
+		state.isRunning = true;
+		state.current = current;
+		state.total = total;
+		state.left = left;
+
+		return state;
+	}
+
+	std::string TextOf(const XYZEngine::UiLabel& label)
+	{
+		std::basic_string<sf::Uint8> utf8 = label.GetText().toUtf8();
+
+		return std::string(utf8.begin(), utf8.end());
+	}
+}
+
+TEST_F(HudScreenTest, WithoutWavesThePanelIsNotOnScreen)
+{
+	HudScreen screen;
+	screen.Resize({1280.f, 720.f});
+
+	screen.SetWaves({});
+
+	EXPECT_FALSE(screen.IsWavePanelShown());
+}
+
+TEST_F(HudScreenTest, TheWavePanelShowsWhichWaveItIs)
+{
+	HudScreen screen;
+	screen.Resize({1280.f, 720.f});
+
+	screen.SetWaves(RunningWave(3, 12, 4));
+
+	EXPECT_TRUE(screen.IsWavePanelShown());
+	EXPECT_EQ(TextOf(screen.GetWaveLabel()), u8"ВОЛНА 3 / 12") << "the title does not say where the player is";
+}
+
+TEST_F(HudScreenTest, TheCounterShowsWhatIsLeftToKill)
+{
+	HudScreen screen;
+	screen.Resize({1280.f, 720.f});
+
+	screen.SetWaves(RunningWave(3, 12, 4));
+
+	EXPECT_EQ(TextOf(screen.GetWaveCountLabel()), u8"Осталось: 4");
+}
+
+TEST_F(HudScreenTest, TheBarFillsUpAsTheSiegeGoesOn)
+{
+	HudScreen screen;
+	screen.Resize({1280.f, 720.f});
+
+	screen.SetWaves(RunningWave(3, 12, 4));
+	float early = screen.GetWaveBar().GetValue();
+
+	screen.SetWaves(RunningWave(11, 12, 2));
+
+	EXPECT_GT(screen.GetWaveBar().GetValue(), early) << "the bar does not move towards the end";
+	EXPECT_FLOAT_EQ(screen.GetWaveBar().GetValue(), 11.f / 12.f);
+}
+
+TEST_F(HudScreenTest, ALullSaysHowLongTheBreathIs)
+{
+	HudScreen screen;
+	screen.Resize({1280.f, 720.f});
+
+	RoguelikeGame::WaveHudState state = RunningWave(3, 12, 0);
+	state.isPause = true;
+	state.nextIn = 4.2f;
+	screen.SetWaves(state);
+
+	EXPECT_TRUE(screen.IsWavePanelShown());
+	EXPECT_EQ(TextOf(screen.GetWaveLabel()), u8"Затишье");
+	EXPECT_EQ(TextOf(screen.GetWaveCountLabel()), u8"Следующая волна через 5");
+}
+
+TEST_F(HudScreenTest, TheLullIsToldApartByColour)
+{
+	HudScreen screen;
+	screen.Resize({1280.f, 720.f});
+
+	screen.SetWaves(RunningWave(3, 12, 4));
+	EXPECT_EQ(screen.GetWaveBar().GetFillColor(), RoguelikeGame::WAVE_HUD_BAR_COLOR);
+
+	RoguelikeGame::WaveHudState lull = RunningWave(3, 12, 0);
+	lull.isPause = true;
+	screen.SetWaves(lull);
+
+	EXPECT_EQ(screen.GetWaveBar().GetFillColor(), RoguelikeGame::WAVE_HUD_CALM_COLOR);
+}
+
+TEST_F(HudScreenTest, WhenTheSiegeIsOverThePanelGoesAway)
+{
+	HudScreen screen;
+	screen.Resize({1280.f, 720.f});
+
+	screen.SetWaves(RunningWave(12, 12, 0));
+	ASSERT_TRUE(screen.IsWavePanelShown());
+
+	screen.SetWaves({});
+
+	EXPECT_FALSE(screen.IsWavePanelShown());
+}
+
+TEST_F(HudScreenTest, TheWavePanelKeepsClearOfTheVitals)
+{
+	HudScreen screen;
+	screen.Resize({1280.f, 720.f});
+
+	screen.SetWaves(RunningWave(1, 12, 3));
+
+	sf::FloatRect panel = screen.GetWaveBar().GetBounds();
+	sf::FloatRect vitals = screen.GetHealthBar().GetBounds();
+
+	EXPECT_FALSE(panel.intersects(vitals)) << "the wave panel sits on top of the health bar";
 }

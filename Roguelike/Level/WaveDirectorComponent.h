@@ -33,6 +33,10 @@ namespace RoguelikeGame
         int CountAliveNearby() const;
         bool IsCleared() const;
 
+        // Затишье между волнами и сколько его осталось - для панели на экране.
+        bool IsPause() const;
+        float GetPauseLeft() const;
+
         XYZEngine::SubscriptionId SubscribeWaveStarted(std::function<void(int, int)> onWaveStarted);
         XYZEngine::SubscriptionId SubscribeWaveCleared(std::function<void(int, int)> onWaveCleared);
         XYZEngine::SubscriptionId SubscribeEnemySpawned(std::function<void(XYZEngine::GameObject*)> onEnemySpawned);

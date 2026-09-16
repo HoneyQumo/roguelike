@@ -144,7 +144,7 @@ namespace RoguelikeGame
 
             for (const PropPlacement& prop : room.layout.props)
             {
-                act.props.push_back({room.column + prop.column, room.row + prop.row, prop.propId});
+                act.props.push_back({room.column + prop.column, room.row + prop.row, prop.propId, prop.angle});
             }
 
             for (const DoorPlacement& door : room.layout.doors)

@@ -2,6 +2,8 @@
 
 #include <string>
 #include "LevelData.h"
+#include "PropCatalog.h"
+#include "TileAtlas.h"
 
 namespace RoguelikeGame
 {
@@ -25,6 +27,19 @@ namespace RoguelikeGame
         int flat = (support.left ? 1 : 0) + (support.right ? 1 : 0);
 
         return upright > flat ? PANEL_UPRIGHT_ANGLE : 0.f;
+    }
+
+    inline float PropAngle(const PropDefinition& definition, const PropPlacement& placement)
+    {
+        if (definition.jitterDegrees <= 0.f)
+        {
+            return placement.angle;
+        }
+
+        unsigned int noise = TileHash(placement.column, placement.row);
+        float part = static_cast<float>(noise % 2001u) / 1000.f - 1.f;
+
+        return placement.angle + part * definition.jitterDegrees;
     }
 
     inline bool HasPropAt(const LevelData& levelData, const std::string& propId, int column, int row)

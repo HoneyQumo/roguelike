@@ -14,6 +14,11 @@ WALL_FRAMES = 16
 ATLAS_COLUMNS = 16
 ATLAS_ROWS = 4
 
+WALL_NEIGHBOUR_UP = 1
+WALL_NEIGHBOUR_RIGHT = 2
+WALL_NEIGHBOUR_DOWN = 4
+WALL_NEIGHBOUR_LEFT = 8
+
 FLOOR_ROW = 0
 WALL_ROW = 1
 LINE_ROW = 2
@@ -153,6 +158,59 @@ def Water(seed, shades):
     return np.clip(tile, 0, 255)
 
 
+PARAPET_SETS = {'bridge'}
+
+BRICK_HEIGHT = 11
+BRICK_LENGTH = 21
+BRICK_BASE = (96, 70, 62)
+BRICK_DARK = (58, 42, 38)
+BRICK_SEAM = (42, 34, 32)
+
+RAIL_TOP_ROW = 6
+RAIL_HEIGHT = 13
+RAIL_METAL = (150, 156, 164)
+RAIL_SHINE = (198, 204, 212)
+RAIL_SHADOW = (68, 72, 78)
+
+
+def Parapet(mask, seed):
+    """Кирпичная кладка, а поверх - металлический отбойник.
+
+    Балка рисуется только там, где парапет тянется вдоль: у клетки есть сосед
+    слева или справа. На торцах остаётся голая кладка, иначе отбойник
+    обрывался бы в воздухе.
+    """
+    rng = np.random.default_rng(seed + 700)
+    tile = np.zeros((TILE, TILE, 4))
+    tile[..., 3] = 255
+
+    for row in range(TILE):
+        course = row // BRICK_HEIGHT
+        shift = (course % 2) * (BRICK_LENGTH // 2)
+
+        for column in range(TILE):
+            isSeam = (row % BRICK_HEIGHT) == 0 or ((column + shift) % BRICK_LENGTH) == 0
+            shade = 0.86 + 0.1 * ((course * 7 + (column + shift) // BRICK_LENGTH * 3) % 4) / 3.0
+
+            colour = np.array(BRICK_SEAM if isSeam else BRICK_BASE, dtype=float) * (1.0 if isSeam else shade)
+            tile[row, column, :3] = colour + rng.normal(0.0, 3.5, 3)
+
+    tile[TILE - 3:, :, :3] = np.array(BRICK_DARK, dtype=float)
+
+    isAlong = (mask & WALL_NEIGHBOUR_LEFT) != 0 or (mask & WALL_NEIGHBOUR_RIGHT) != 0
+    if isAlong:
+        top = RAIL_TOP_ROW
+        tile[top:top + RAIL_HEIGHT, :, :3] = np.array(RAIL_METAL, dtype=float)
+        tile[top:top + 3, :, :3] = np.array(RAIL_SHINE, dtype=float)
+        tile[top + RAIL_HEIGHT - 3:top + RAIL_HEIGHT, :, :3] = np.array(RAIL_SHADOW, dtype=float)
+
+        # Стойки под балкой: ритм, по которому отбойник читается как отбойник.
+        for column in range(6, TILE, 26):
+            tile[top + RAIL_HEIGHT:top + RAIL_HEIGHT + 9, column:column + 5, :3] = np.array(RAIL_SHADOW, dtype=float)
+
+    return np.clip(tile, 0, 255)
+
+
 def Build(name):
     ramp = RAMPS[name]
     source = np.asarray(Image.open(SOURCE).convert('RGBA')).astype(float)
@@ -169,6 +227,10 @@ def Build(name):
     if name in ASPHALT_SETS:
         for frame in range(FLOOR_FRAMES):
             out[0:TILE, frame * TILE:(frame + 1) * TILE] = Asphalt(frame + 1)
+
+    if name in PARAPET_SETS:
+        for mask in range(WALL_FRAMES):
+            out[TILE:2 * TILE, mask * TILE:(mask + 1) * TILE] = Parapet(mask, mask + 1)
 
     # Разметка и вода идут у каждого тайлсета, чтобы у атласа была одна форма на всех.
     for frame in range(FLOOR_FRAMES):

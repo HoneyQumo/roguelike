@@ -16,6 +16,7 @@
 #include "DamageInfo.h"
 #include "Prop.h"
 #include "PropAlign.h"
+#include "TileAnimationComponent.h"
 #include "WaveDirectorComponent.h"
 #include "LevelExit.h"
 #include "LevelExitComponent.h"
@@ -512,6 +513,12 @@ namespace RoguelikeGame
         auto renderer = tilesObject->AddComponent<XYZEngine::VertexArrayRendererComponent>();
         const XYZEngine::Vector2Df tileSize = {TILE_SIZE, TILE_SIZE};
 
+        // Вода живёт в том же массиве, что и остальные тайлы: помним её квады,
+        // чтобы менять им кадр, и отрисовка остаётся одним вызовом.
+        auto water = tilesObject->AddComponent<TileAnimationComponent>();
+        water->SetRenderer(renderer);
+        water->SetStrip(TILE_WATER_ROW, TILE_FLOOR_FRAMES, WATER_FRAME_TIME);
+
         const sf::Texture* tiles = LoadTileset(levelData.info.tileset);
         renderer->SetTexture(tiles);
 
@@ -529,6 +536,11 @@ namespace RoguelikeGame
 
                 if (tiles != nullptr)
                 {
+                    if (tile == TileType::Water)
+                    {
+                        water->AddCell(renderer->GetQuadsCount(), TileHash(column, row));
+                    }
+
                     renderer->AddQuad(position, tileSize, TileFrameFor(levelData, column, row));
                     continue;
                 }

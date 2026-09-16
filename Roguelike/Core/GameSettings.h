@@ -299,6 +299,8 @@ namespace RoguelikeGame
     constexpr float HURT_VOLUME = 35.f;
     constexpr float VOICE_VOLUME = 70.f;
     // Враг волны не появляется ближе полутора клеток к игроку.
+    // Вода перебирает кадры медленно: рябь, а не мельтешение.
+    constexpr float WATER_FRAME_TIME = 0.28f;
     constexpr auto WAVE_DIRECTOR_OBJECT_NAME = "WaveDirector";
     constexpr auto ESCAPE_CAR_OBJECT_NAME = "EscapeCar";
     constexpr auto CUTSCENE_OBJECT_NAME = "Cutscene";

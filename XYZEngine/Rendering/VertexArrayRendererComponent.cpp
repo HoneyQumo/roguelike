@@ -71,6 +71,25 @@ namespace XYZEngine
 		vertices.append({ { left, top }, tint, { u0, v0 } });
 	}
 
+	void VertexArrayRendererComponent::SetQuadFrame(std::size_t quad, const sf::IntRect& frame)
+	{
+		std::size_t first = quad * 4u;
+		if (first + 3u >= vertices.getVertexCount())
+		{
+			return;
+		}
+
+		float u0 = static_cast<float>(frame.left) + TEXTURE_EDGE_INSET;
+		float u1 = static_cast<float>(frame.left + frame.width) - TEXTURE_EDGE_INSET;
+		float v0 = static_cast<float>(frame.top) + TEXTURE_EDGE_INSET;
+		float v1 = static_cast<float>(frame.top + frame.height) - TEXTURE_EDGE_INSET;
+
+		vertices[first + 0u].texCoords = { u0, v1 };
+		vertices[first + 1u].texCoords = { u1, v1 };
+		vertices[first + 2u].texCoords = { u1, v0 };
+		vertices[first + 3u].texCoords = { u0, v0 };
+	}
+
 	const sf::VertexArray& VertexArrayRendererComponent::GetVertices() const
 	{
 		return vertices;

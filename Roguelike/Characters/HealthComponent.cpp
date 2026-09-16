@@ -125,7 +125,7 @@ namespace RoguelikeGame
         }
 
 
-        ArmorHit hit = SplitDamage(damage, armor);
+        ArmorHit hit = SplitDamage(damage, armor, IgnoresArmor(source.kind) ? 0.f : ARMOR_ABSORB_SHARE);
         armor -= hit.toArmor;
 
         float takenDamage = hit.toHealth;

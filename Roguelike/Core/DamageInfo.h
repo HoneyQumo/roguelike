@@ -12,8 +12,15 @@ namespace RoguelikeGame
         Unknown,
         Bullet,
         Melee,
-        Explosion
+        Explosion,
+        Burn
     };
+
+    // Огонь жжёт прямо по телу: пластина его не держит, и весь ожог уходит в здоровье.
+    constexpr bool IgnoresArmor(DamageKind kind)
+    {
+        return kind == DamageKind::Burn;
+    }
 
     struct DamageSource
     {

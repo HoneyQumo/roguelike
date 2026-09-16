@@ -1,12 +1,16 @@
 #include "pch.h"
 #include "BoxColliderComponent.h"
+#include "DamageInfo.h"
 #include "FactionComponent.h"
+#include "Fire.h"
 #include "FireComponent.h"
 #include "GameSettings.h"
 #include "GameWorld.h"
 #include "HealthComponent.h"
 #include "ProjectFiles.h"
 #include "PropCatalog.h"
+#include "SpriteAnimationComponent.h"
+#include "SpriteRendererComponent.h"
 #include <sstream>
 
 using RoguelikeGame::Faction;
@@ -214,6 +218,49 @@ TEST_F(ShippedFireTest, ACarBurnsMuchLongerThanABarrel)
 	EXPECT_GT(car->burnTime, 3.f * barrel->burnTime);
 	EXPECT_NEAR(car->burnTime, 60.f, 15.f) << "a car should burn for about a minute";
 	EXPECT_NEAR(barrel->burnTime, 15.f, 5.f) << "a barrel should burn for about fifteen seconds";
+}
+
+TEST(FlameScaleTests, TheFlameCoversTheGroundItBurns)
+{
+	// Кадр 64 пикселя, очаг радиусом 46 - пламя должно накрыть все 92 пикселя диаметра.
+	EXPECT_FLOAT_EQ(RoguelikeGame::FlameScale(46.f, 64) * 64.f, 92.f);
+	EXPECT_FLOAT_EQ(RoguelikeGame::FlameScale(26.f, 32) * 32.f, 52.f);
+}
+
+TEST(FlameScaleTests, ANonsenseFrameLeavesTheSpriteAsItIs)
+{
+	EXPECT_FLOAT_EQ(RoguelikeGame::FlameScale(46.f, 0), 1.f);
+	EXPECT_FLOAT_EQ(RoguelikeGame::FlameScale(0.f, 64), 1.f);
+}
+
+TEST(FlameScaleTests, TheShippedFireIsDrawnAtItsOwnSize)
+{
+	// Кадры у пламени и уголька разной величины, поэтому сравнивать надо нарисованный размер, а не множитель.
+	float flame = RoguelikeGame::FlameScale(RoguelikeGame::FIRE_RADIUS, RoguelikeGame::FX_FIRE_BIG.width)
+		* RoguelikeGame::FX_FIRE_BIG.width;
+	float ember = RoguelikeGame::FlameScale(RoguelikeGame::EMBER_RADIUS, RoguelikeGame::FX_FIRE_SMALL.width)
+		* RoguelikeGame::FX_FIRE_SMALL.width;
+
+	EXPECT_GT(flame, ember) << "an ember is drawn no smaller than a burning car";
+	EXPECT_FLOAT_EQ(flame, 2.f * RoguelikeGame::FIRE_RADIUS);
+	EXPECT_FLOAT_EQ(ember, 2.f * RoguelikeGame::EMBER_RADIUS);
+}
+
+// Ловушка, на которой огонь и остался невидимым: анимация без рендерера молча выключается.
+TEST(FlameVisualTests, AnAnimationWithoutASpriteNeverPlays)
+{
+	GameWorld::Instance()->Clear();
+
+	GameObject* lonely = GameWorld::Instance()->CreateGameObject("NoSprite");
+	auto animation = lonely->AddComponent<XYZEngine::SpriteAnimationComponent>();
+	animation->SetLooped(true);
+	animation->Play();
+
+	GameWorld::Instance()->Update(0.1f);
+
+	EXPECT_FALSE(animation->IsPlaying()) << "the animation pretends to run with nothing to draw on";
+
+	GameWorld::Instance()->Clear();
 }
 
 TEST(PropBurnTests, APropWithoutBurnTimeLeavesNoFire)

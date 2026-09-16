@@ -13,6 +13,13 @@ using XYZEngine::GameWorld;
 
 namespace
 {
+	class WreckOrderTest : public ProjectFiles::Test
+	{
+	};
+}
+
+namespace
+{
 	constexpr float STEP = 0.05f;
 
 	class FuseTest : public ::testing::Test
@@ -195,4 +202,50 @@ TEST(PropBlastTests, AWreckKeepsItsColliderWhileARegularPropOpensUp)
 
 	EXPECT_TRUE(catalog.Find("car")->leavesWreck);
 	EXPECT_FALSE(catalog.Find("crate")->leavesWreck) << "a crate should open the way once broken";
+}
+
+TEST(PropBlastTests, AnOrdinaryPropTurnsIntoItsWreckRightAway)
+{
+	PropCatalog catalog = CatalogOf(
+		"[prop crate]\n"
+		"name Crate\n"
+		"health 20\n"
+		"size 48\n");
+
+	const PropDefinition* crate = catalog.Find("crate");
+	ASSERT_NE(crate, nullptr);
+
+	EXPECT_TRUE(crate->ShowsWreckOnBreak());
+}
+
+TEST(PropBlastTests, ExplosivesKeepTheirLooksUntilTheyGoOff)
+{
+	PropCatalog catalog = CatalogOf(
+		"[prop barrel]\n"
+		"name Barrel\n"
+		"health 25\n"
+		"size 44\n"
+		"blast 150 55 0.25\n");
+
+	const PropDefinition* barrel = catalog.Find("barrel");
+	ASSERT_NE(barrel, nullptr);
+	ASSERT_TRUE(barrel->IsExplosive());
+
+	EXPECT_FALSE(barrel->ShowsWreckOnBreak()) << "the barrel blackens before it blows up";
+}
+
+TEST_F(WreckOrderTest, NothingOnTheBridgeBlackensBeforeItsBlast)
+{
+	ASSERT_TRUE(isFound) << previous.string();
+
+	PropCatalog props = PropCatalog::Load("Resources/Props/props.config");
+
+	for (const char* id : {"car_sedan", "car_van", "car_small", "fuel_barrel"})
+	{
+		const PropDefinition* prop = props.Find(id);
+		ASSERT_NE(prop, nullptr) << id;
+		ASSERT_TRUE(prop->IsExplosive()) << id;
+
+		EXPECT_FALSE(prop->ShowsWreckOnBreak()) << id << " shows its wreck while the fuse is still burning";
+	}
 }

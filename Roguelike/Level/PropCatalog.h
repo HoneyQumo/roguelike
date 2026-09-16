@@ -43,6 +43,9 @@ namespace RoguelikeGame
         bool IsOpenable() const;
         bool HasFrame() const;
         bool HasSpentFrame() const;
+
+        // Взрывчатка стоит целой, пока горит фитиль: остов ей полагается только после вспышки.
+        bool ShowsWreckOnBreak() const;
     };
 
     class PropCatalog

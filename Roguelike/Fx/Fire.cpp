@@ -19,7 +19,13 @@ namespace RoguelikeGame
             auto gameObject = XYZEngine::GameWorld::Instance()->CreateGameObject(name);
             gameObject->SetRenderLayer(FIRE_RENDER_LAYER);
 
-            Fx::AddAnimation(gameObject, texture, strip);
+            // Без картинки огонь всё равно горит: механика не должна зависеть от текстуры.
+            if (Fx::AddSprite(gameObject, texture, strip, 0, FlameScale(radius, strip.width)) != nullptr)
+            {
+                auto animation = Fx::AddAnimation(gameObject, texture, strip);
+                animation->SetLooped(true);
+                animation->Play();
+            }
 
             auto fire = gameObject->AddComponent<FireComponent>();
             fire->SetRadius(radius);

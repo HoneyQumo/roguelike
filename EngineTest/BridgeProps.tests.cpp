@@ -145,7 +145,7 @@ TEST_F(ShippedBridgePropsTest, CarsAreAboutTwoTilesLongAndOneWide)
 
 	PropCatalog props = PropCatalog::Load("Resources/Props/props.config");
 
-	for (const char* id : {"car_sedan", "car_van", "car_wreck"})
+	for (const char* id : {"car_sedan", "car_van", "car_small", "car_wreck"})
 	{
 		const PropDefinition* car = props.Find(id);
 		ASSERT_NE(car, nullptr) << id;
@@ -154,6 +154,46 @@ TEST_F(ShippedBridgePropsTest, CarsAreAboutTwoTilesLongAndOneWide)
 		EXPECT_LE(car->size, 2.2f * RoguelikeGame::TILE_SIZE) << id << " is longer than two tiles";
 		EXPECT_GE(car->Height(), 0.8f * RoguelikeGame::TILE_SIZE) << id << " is too narrow";
 		EXPECT_LE(car->Height(), 1.1f * RoguelikeGame::TILE_SIZE) << id << " is wider than a lane";
+	}
+}
+
+TEST_F(ShippedBridgePropsTest, NoCarLooksLikeAToyNextToTheOthers)
+{
+	ASSERT_TRUE(isFound) << previous.string();
+
+	PropCatalog props = PropCatalog::Load("Resources/Props/props.config");
+
+	float smallest = 0.f;
+	float largest = 0.f;
+
+	for (const char* id : {"car_sedan", "car_van", "car_small", "car_wreck"})
+	{
+		const PropDefinition* car = props.Find(id);
+		ASSERT_NE(car, nullptr) << id;
+
+		smallest = smallest == 0.f || car->size < smallest ? car->size : smallest;
+		largest = car->size > largest ? car->size : largest;
+	}
+
+	EXPECT_GE(smallest, 0.85f * largest) << "the smallest car reads as a toy beside the biggest";
+}
+
+TEST_F(ShippedBridgePropsTest, EveryCarKeepsTheShapeOfItsOwnFrame)
+{
+	ASSERT_TRUE(isFound) << previous.string();
+
+	PropCatalog props = PropCatalog::Load("Resources/Props/props.config");
+
+	for (const char* id : {"car_sedan", "car_van", "car_small", "car_wreck"})
+	{
+		const PropDefinition* car = props.Find(id);
+		ASSERT_NE(car, nullptr) << id;
+		ASSERT_GT(car->frame.height, 0) << id;
+
+		float frameShape = static_cast<float>(car->frame.width) / static_cast<float>(car->frame.height);
+		float boxShape = car->size / car->Height();
+
+		EXPECT_NEAR(boxShape, frameShape, 0.05f) << id << " is squashed against its own sprite";
 	}
 }
 

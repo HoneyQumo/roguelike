@@ -45,6 +45,43 @@ namespace
 	};
 }
 
+TEST_F(HealthComponentTest, ArmorDoesNotStopABurn)
+{
+	HealthComponent* health = CreateHealth("Target", 100.f, 50.f);
+
+	DamageSource burn = MakeSource("Fire");
+	burn.kind = DamageKind::Burn;
+	health->TakeDamage(20.f, burn);
+
+	EXPECT_FLOAT_EQ(health->GetHealth(), 80.f) << "the plate soaked up the fire";
+	EXPECT_FLOAT_EQ(health->GetArmor(), 50.f) << "the burn ate the armor instead of the body";
+}
+
+TEST_F(HealthComponentTest, ABurnReportsNothingTakenByArmor)
+{
+	HealthComponent* health = CreateHealth("Target", 100.f, 50.f);
+
+	DamageInfo taken;
+	health->SubscribeDamage([&taken](const DamageInfo& info) { taken = info; });
+
+	DamageSource burn = MakeSource("Fire");
+	burn.kind = DamageKind::Burn;
+	health->TakeDamage(20.f, burn);
+
+	EXPECT_FLOAT_EQ(taken.armorAmount, 0.f);
+	EXPECT_FLOAT_EQ(taken.amount, 20.f);
+}
+
+TEST_F(HealthComponentTest, OnlyABurnGoesStraightThroughTheArmor)
+{
+	for (DamageKind kind : {DamageKind::Unknown, DamageKind::Bullet, DamageKind::Melee, DamageKind::Explosion})
+	{
+		EXPECT_FALSE(RoguelikeGame::IgnoresArmor(kind)) << "armor became useless against kind " << static_cast<int>(kind);
+	}
+
+	EXPECT_TRUE(RoguelikeGame::IgnoresArmor(DamageKind::Burn));
+}
+
 TEST_F(HealthComponentTest, DamageEventCarriesAmountBeforeAndAfterArmor)
 {
 	HealthComponent* health = CreateHealth("Target", 100.f, 50.f);

@@ -175,6 +175,8 @@ namespace RoguelikeGame
     }
 
     constexpr int GROUND_RENDER_LAYER = 0;
+    // Накладка ложится поверх пола, но под всем, что на нём лежит.
+    constexpr int OVERLAY_RENDER_LAYER = 5;
     constexpr int BLOOD_RENDER_LAYER = 10;
     constexpr int PROP_DEBRIS_RENDER_LAYER = 15;
     constexpr int ITEM_RENDER_LAYER = 25;

@@ -3,6 +3,7 @@
 #include "ActAssembler.h"
 #include "LevelCatalog.h"
 #include "ProjectFiles.h"
+#include "TileAtlas.h"
 #include "Tileset.h"
 #include <SFML/Graphics/Image.hpp>
 #include <sstream>
@@ -82,8 +83,10 @@ TEST(TilesetTest, LevelFileWithoutTheseFieldsLeavesThemEmpty)
 namespace
 {
 	constexpr unsigned int ATLAS_WIDTH = 1024u;
-	// Пол, стены, разметка и вода - по строке на каждое, у всех тайлсетов одинаково.
-	constexpr unsigned int ATLAS_HEIGHT = 256u;
+
+	// Пол, стены, разметка, вода и накладка - по строке на каждое, у всех тайлсетов одинаково.
+	constexpr unsigned int ATLAS_ROWS = 5u;
+	constexpr unsigned int ATLAS_HEIGHT = ATLAS_ROWS * RoguelikeGame::TILE_FRAME_SIZE;
 
 	class ShippedTilesetsTest : public ProjectFiles::Test
 	{

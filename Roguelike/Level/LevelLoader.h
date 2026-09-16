@@ -38,6 +38,7 @@ namespace RoguelikeGame
         static void ReadLegendLine(const std::string& line, int lineNumber, Legend& legend);
         static void ReadWaveLine(const std::string& line, int lineNumber, const Legend& legend, LevelData& levelData);
         static void ReadMapLine(const std::string& line, const Legend& legend, LevelData& levelData);
+        static void ReadOverlayLine(const std::string& line, const Legend& legend, LevelData& levelData);
         static bool TryGetTileType(const std::string& name, TileType& tileType);
         static const Legend& GetDefaultLegend();
         static std::string Trim(const std::string& line);

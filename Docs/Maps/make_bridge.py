@@ -328,6 +328,24 @@ def Section(index, rng):
     return rows
 
 
+def SplitOverlay(rows):
+    """Уводит разметку в верхний слой.
+
+    В нижнем слое каждый кадр разметки несёт свой кусок асфальта, поэтому их
+    надо держать столько же, сколько вариантов покрытия. Наверху это просто
+    белая полоса на прозрачном, и ложится она на любой асфальт.
+    """
+    overlay = [[GAP] * WIDTH for _ in range(HEIGHT)]
+
+    for row in range(HEIGHT):
+        for column in range(WIDTH):
+            if rows[row][column] == LINE:
+                rows[row][column] = ROAD
+                overlay[row][column] = LINE
+
+    return overlay
+
+
 def Write(index, rows):
     name = 'act1_bridge_%02d' % (index + 1)
     lines = ['[level]', 'kind %s' % name, 'tileset bridge', '', '[legend]']
@@ -337,8 +355,14 @@ def Write(index, rows):
     if any(symbol in ''.join(''.join(row) for row in rows) for symbol in PATROL_SYMBOLS):
         route = 'block%02d' % (index + 1)
         lines += ['%s Patrol:%s' % (symbol, route) for symbol in PATROL_SYMBOLS]
+    overlay = SplitOverlay(rows)
+
     lines += ['', '[map]']
     lines += [''.join(row) for row in rows]
+
+    if any(LINE in row for row in overlay):
+        lines += ['', '[overlay]']
+        lines += [''.join(row) for row in overlay]
 
     path = os.path.join(ROOMS, name + '.config')
     with open(path, 'w', encoding='utf-8-sig', newline='\r\n') as out:

@@ -10,6 +10,7 @@ namespace RoguelikeGame
     constexpr int TILE_WALL_ROW = 1;
     constexpr int TILE_LINE_ROW = 2;
     constexpr int TILE_WATER_ROW = 3;
+    constexpr int TILE_OVERLAY_ROW = 4;
 
     constexpr int TILE_LINE_ACROSS = 0;
     constexpr int TILE_LINE_ALONG = 1;
@@ -78,19 +79,21 @@ namespace RoguelikeGame
         return {safeColumn * TILE_FRAME_SIZE, safeRow * TILE_FRAME_SIZE, TILE_FRAME_SIZE, TILE_FRAME_SIZE};
     }
 
-    inline bool IsLineAt(const LevelData& level, int column, int row)
+    inline bool IsLineAt(const TileGrid& grid, int column, int row)
     {
-        return TileAt(level, column, row) == TileType::Line;
+        return GridAt(grid, column, row) == TileType::Line;
     }
 
     /**
     *	Разметка ложится вдоль своего ряда: соседи слева и справа - штрих поперёк клетки,
     *	соседи сверху и снизу - вдоль неё.
+    *	Соседей ищем в той же сетке, где лежит сама линия: разметка нижнего слоя
+    *	не должна равняться на верхний и наоборот.
     */
-    inline int LineFrame(const LevelData& level, int column, int row)
+    inline int LineFrame(const TileGrid& grid, int column, int row)
     {
-        bool isAlong = IsLineAt(level, column, row - 1) || IsLineAt(level, column, row + 1);
-        bool isAcross = IsLineAt(level, column - 1, row) || IsLineAt(level, column + 1, row);
+        bool isAlong = IsLineAt(grid, column, row - 1) || IsLineAt(grid, column, row + 1);
+        bool isAcross = IsLineAt(grid, column - 1, row) || IsLineAt(grid, column + 1, row);
 
         return isAlong && !isAcross ? TILE_LINE_ALONG : TILE_LINE_ACROSS;
     }
@@ -116,7 +119,34 @@ namespace RoguelikeGame
 
         if (tile == TileType::Line)
         {
-            return TileFrameRect(TILE_LINE_ROW, LineFrame(level, column, row));
+            return TileFrameRect(TILE_LINE_ROW, LineFrame(level.tiles, column, row));
+        }
+
+        return TileFrameRect(TILE_FLOOR_ROW, FloorFrame(column, row));
+    }
+
+    /**
+    *	Кадр верхнего слоя. Разметка здесь берётся из своей строки атласа - без
+    *	подложки, поэтому ложится на любое покрытие. Всё остальное рисуется тем же
+    *	кадром, что и внизу: накладке незачем иметь свой вид у каждого тайла.
+    */
+    inline sf::IntRect OverlayFrameFor(const LevelData& level, int column, int row)
+    {
+        TileType tile = OverlayAt(level, column, row);
+
+        if (tile == TileType::Line)
+        {
+            return TileFrameRect(TILE_OVERLAY_ROW, LineFrame(level.overlay, column, row));
+        }
+
+        if (tile == TileType::Water)
+        {
+            return TileFrameRect(TILE_WATER_ROW, WaterFrame(column, row));
+        }
+
+        if (tile == TileType::Wall)
+        {
+            return TileFrameRect(TILE_WALL_ROW, WallFrame(WallMask(level, column, row)));
         }
 
         return TileFrameRect(TILE_FLOOR_ROW, FloorFrame(column, row));

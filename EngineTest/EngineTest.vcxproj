@@ -70,6 +70,7 @@
     <ClCompile Include="Separation.tests.cpp" />
     <ClCompile Include="PropAlign.tests.cpp" />
     <ClCompile Include="PropAngle.tests.cpp" />
+    <ClCompile Include="Overlay.tests.cpp" />
     <ClCompile Include="Pursuit.tests.cpp" />
     <ClCompile Include="TileAnimation.tests.cpp" />
     <ClCompile Include="WaterTiles.tests.cpp" />

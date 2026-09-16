@@ -3,6 +3,7 @@
 #include <set>
 #include <utility>
 #include <vector>
+#include "Separation.h"
 #include "SpatialHashGrid.h"
 #include "ColliderComponent.h"
 #include "RigidbodyComponent.h"
@@ -41,6 +42,8 @@ namespace XYZEngine
 		static bool IsBefore(ColliderComponent* first, ColliderComponent* second);
 
 		void Collect(const sf::FloatRect& area, std::vector<ColliderComponent*>& found) const;
+		static Vector2Df StepOf(ColliderComponent* collider);
+		static void MoveOut(ColliderComponent* collider, const Vector2Df& offset);
 
 		std::vector<ColliderComponent*> colliders;
 		std::set<TriggerPair> triggersEnteredPair;

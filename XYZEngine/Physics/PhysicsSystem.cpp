@@ -13,6 +13,8 @@ namespace XYZEngine
 
 	void PhysicsSystem::Update()
 	{
+		separatedPairs.clear();
+
 		for (int i = 0; i < colliders.size(); i++)
 		{
 			auto body = colliders[i]->GetBody();
@@ -59,13 +61,19 @@ namespace XYZEngine
 					}
 					else if (!colliders[i]->isTrigger)
 					{
+						TriggerPair separated = MakeTriggerPair(colliders[i], other);
+						if (separatedPairs.find(separated) != separatedPairs.end())
+						{
+							continue;
+						}
+						separatedPairs.insert(separated);
+
 						float intersectionWidth = intersection.width;
 						float intersectionHeight = intersection.height;
 						Vector2Df intersectionPosition = { intersection.left + 0.5f * intersectionWidth, intersection.top + 0.5f * intersectionHeight };
 
 						Vector2Df aPosition = { colliders[i]->bounds.left + 0.5f * colliders[i]->bounds.width,
 												colliders[i]->bounds.top + 0.5f * colliders[i]->bounds.height };
-						auto aTransform = colliders[i]->GetGameObject()->GetTransform();
 
 						Vector2Df pushOffset = { 0.f, 0.f };
 						if (intersectionWidth > intersectionHeight)
@@ -91,13 +99,13 @@ namespace XYZEngine
 							}
 						}
 
-						aTransform->MoveBy(pushOffset);
+						RigidbodyComponent* otherBody = other->GetBody();
+						bool isOtherMovable = otherBody != nullptr && !otherBody->GetKinematic();
 
-						// Bounds must follow the push, otherwise the next collider in the loop pushes the object out twice.
-						sf::FloatRect pushedBounds = colliders[i]->bounds;
-						pushedBounds.left += pushOffset.x;
-						pushedBounds.top += pushOffset.y;
-						colliders[i]->SetBounds(pushedBounds);
+						Push push = SplitPush(pushOffset, StepOf(colliders[i]), StepOf(other), isOtherMovable);
+
+						MoveOut(colliders[i], push.first);
+						MoveOut(other, push.second);
 
 						Collision collision(colliders[i], other, intersection);
 						colliders[i]->OnCollision(collision);
@@ -119,6 +127,8 @@ namespace XYZEngine
 				triggersEnteredPair.erase(triggeredPair);
 			}
 		}
+
+		RememberPlaces();
 	}
 
 	PhysicsSystem::TriggerPair PhysicsSystem::MakeTriggerPair(ColliderComponent* first, ColliderComponent* second)
@@ -175,6 +185,44 @@ namespace XYZEngine
 		return grid.GetCellSize();
 	}
 
+
+	Vector2Df PhysicsSystem::StepOf(ColliderComponent* collider) const
+	{
+		auto place = lastPlaces.find(collider);
+		if (place == lastPlaces.end())
+		{
+			return { 0.f, 0.f };
+		}
+
+		return collider->GetGameObject()->GetTransform()->GetWorldPosition() - place->second;
+	}
+
+	void PhysicsSystem::MoveOut(ColliderComponent* collider, const Vector2Df& offset)
+	{
+		if (offset.IsZero())
+		{
+			return;
+		}
+
+		collider->GetGameObject()->GetTransform()->MoveBy(offset);
+
+		// Bounds must follow the push, otherwise the next collider in the loop pushes the object out twice.
+		sf::FloatRect pushedBounds = collider->bounds;
+		pushedBounds.left += offset.x;
+		pushedBounds.top += offset.y;
+		collider->SetBounds(pushedBounds);
+	}
+
+	void PhysicsSystem::RememberPlaces()
+	{
+		lastPlaces.clear();
+
+		for (ColliderComponent* collider : colliders)
+		{
+			lastPlaces[collider] = collider->GetGameObject()->GetTransform()->GetWorldPosition();
+		}
+	}
+
 	void PhysicsSystem::Subscribe(ColliderComponent* collider)
 	{
 		assert(collider != nullptr);
@@ -194,6 +242,19 @@ namespace XYZEngine
 		}
 
 		colliders.erase(std::remove_if(colliders.begin(), colliders.end(), [collider](ColliderComponent* obj) { return obj == collider; }), colliders.end());
+
+		lastPlaces.erase(collider);
+
+		for (auto pair = separatedPairs.cbegin(); pair != separatedPairs.cend(); )
+		{
+			if (pair->first == collider || pair->second == collider)
+			{
+				pair = separatedPairs.erase(pair);
+				continue;
+			}
+
+			++pair;
+		}
 
 		// A destroyed collider must not stay in trigger pairs, they are checked after the object is gone.
 		for (auto pair = triggersEnteredPair.cbegin(); pair != triggersEnteredPair.cend(); )

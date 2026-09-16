@@ -175,3 +175,24 @@ TEST_F(ShippedBlastsTest, TheBarrelIsQuickerAndTheCarIsWider)
 	EXPECT_LT(barrel->blastRadius, car->blastRadius);
 	EXPECT_LT(barrel->health, car->health);
 }
+
+TEST(PropBlastTests, AWreckKeepsItsColliderWhileARegularPropOpensUp)
+{
+	PropCatalog catalog = CatalogOf(
+		"[prop car]\n"
+		"name Car\n"
+		"health 90\n"
+		"size 120\n"
+		"wreck true\n"
+		"\n"
+		"[prop crate]\n"
+		"name Crate\n"
+		"health 20\n"
+		"size 48\n");
+
+	ASSERT_NE(catalog.Find("car"), nullptr);
+	ASSERT_NE(catalog.Find("crate"), nullptr);
+
+	EXPECT_TRUE(catalog.Find("car")->leavesWreck);
+	EXPECT_FALSE(catalog.Find("crate")->leavesWreck) << "a crate should open the way once broken";
+}

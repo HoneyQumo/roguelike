@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "ProjectFiles.h"
+#include "GameSettings.h"
 #include "PropCatalog.h"
 #include <SFML/Graphics/Image.hpp>
 #include <sstream>
@@ -116,4 +117,61 @@ TEST_F(ShippedBridgePropsTest, TheBridgeAtlasHoldsEveryFrameItPromises)
 		EXPECT_LE(prop->frame.left + prop->frame.width, static_cast<int>(atlas.getSize().x)) << id << " reads past the atlas";
 		EXPECT_LE(prop->frame.top + prop->frame.height, static_cast<int>(atlas.getSize().y)) << id << " reads past the atlas";
 	}
+}
+
+TEST_F(ShippedBridgePropsTest, EveryFrameHasTheShapeOfItsBox)
+{
+	ASSERT_TRUE(isFound) << previous.string();
+
+	PropCatalog props = PropCatalog::Load("Resources/Props/props.config");
+
+	for (const char* id : BRIDGE_PROPS)
+	{
+		const PropDefinition* prop = props.Find(id);
+		ASSERT_NE(prop, nullptr) << id;
+		ASSERT_GT(prop->frame.height, 0) << id;
+
+		float frameShape = static_cast<float>(prop->frame.width) / static_cast<float>(prop->frame.height);
+		float boxShape = prop->size / prop->Height();
+
+		// Кадр, растянутый в бокс другой формы, сплющивает рисунок.
+		EXPECT_NEAR(frameShape, boxShape, 0.12f) << id << " is stretched: frame " << frameShape << " box " << boxShape;
+	}
+}
+
+TEST_F(ShippedBridgePropsTest, CarsAreAboutTwoTilesLongAndOneWide)
+{
+	ASSERT_TRUE(isFound) << previous.string();
+
+	PropCatalog props = PropCatalog::Load("Resources/Props/props.config");
+
+	for (const char* id : {"car_sedan", "car_van", "car_wreck"})
+	{
+		const PropDefinition* car = props.Find(id);
+		ASSERT_NE(car, nullptr) << id;
+
+		EXPECT_GE(car->size, 1.7f * RoguelikeGame::TILE_SIZE) << id << " is too short for a car";
+		EXPECT_LE(car->size, 2.2f * RoguelikeGame::TILE_SIZE) << id << " is longer than two tiles";
+		EXPECT_GE(car->Height(), 0.8f * RoguelikeGame::TILE_SIZE) << id << " is too narrow";
+		EXPECT_LE(car->Height(), 1.1f * RoguelikeGame::TILE_SIZE) << id << " is wider than a lane";
+	}
+}
+
+TEST_F(ShippedBridgePropsTest, ABurntOutCarStaysInTheWay)
+{
+	ASSERT_TRUE(isFound) << previous.string();
+
+	PropCatalog props = PropCatalog::Load("Resources/Props/props.config");
+
+	for (const char* id : {"car_sedan", "car_van", "car_small"})
+	{
+		const PropDefinition* car = props.Find(id);
+		ASSERT_NE(car, nullptr) << id;
+
+		EXPECT_TRUE(car->leavesWreck) << id << " can be walked through once it burns out";
+	}
+
+	const PropDefinition* barrel = props.Find("fuel_barrel");
+	ASSERT_NE(barrel, nullptr);
+	EXPECT_FALSE(barrel->leavesWreck) << "a burst barrel should not block the road";
 }

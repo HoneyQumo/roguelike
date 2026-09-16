@@ -31,6 +31,7 @@ namespace RoguelikeGame
         bool isSolid = true;
         bool isCover = false;
         bool isPanel = false;
+        bool leavesWreck = false;
 
         // Высота по умолчанию равна ширине: почти все пропы квадратные.
         float Height() const;

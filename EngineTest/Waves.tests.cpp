@@ -272,6 +272,179 @@ TEST_F(WaveDirectorTest, WithoutWavesTheDirectorSitsStill)
 
 namespace
 {
+	constexpr float NEAR_POINT = RoguelikeGame::WAVE_SPAWN_GAP + 64.f;
+	constexpr float FAR_POINT = RoguelikeGame::WAVE_SPAWN_REACH * 4.f;
+}
+
+TEST_F(WaveDirectorTest, AWaveComesOutBesideTheHeroAndNotAcrossTheMap)
+{
+	GameObject* hero = GameWorld::Instance()->CreateGameObject("Hero");
+	hero->GetTransform()->SetWorldPosition({0.f, 0.f});
+	director->SetHero(hero);
+
+	// Половина точек рядом, половина на другом конце моста.
+	director->SetPoints({{FAR_POINT, 0.f}, {NEAR_POINT, 0.f}, {FAR_POINT * 2.f, 0.f}, {0.f, NEAR_POINT}});
+	director->SetWaves({{0.f, {{TileType::MarauderSpawn, 2}}}});
+
+	Run(0.3f);
+
+	ASSERT_EQ(places.size(), 2u);
+	for (const Vector2Df& place : places)
+	{
+		EXPECT_LE(place.GetLength(), RoguelikeGame::WAVE_SPAWN_REACH) << "the wave spawned where the hero is not";
+		EXPECT_GE(place.GetLength(), RoguelikeGame::WAVE_SPAWN_GAP) << "the wave spawned on top of the hero";
+	}
+}
+
+TEST_F(WaveDirectorTest, WithNothingNearbyTheWaveTakesTheClosestPointItCanFind)
+{
+	GameObject* hero = GameWorld::Instance()->CreateGameObject("Hero");
+	hero->GetTransform()->SetWorldPosition({0.f, 0.f});
+	director->SetHero(hero);
+
+	director->SetPoints({{FAR_POINT * 3.f, 0.f}, {FAR_POINT, 0.f}});
+	director->SetWaves({{0.f, {{TileType::MarauderSpawn, 1}}}});
+
+	Run(0.3f);
+
+	ASSERT_EQ(places.size(), 1u);
+	EXPECT_FLOAT_EQ(places[0].x, FAR_POINT) << "the wave went to the far end when a nearer point existed";
+}
+
+TEST_F(WaveDirectorTest, AStragglerLeftBehindDoesNotHoldTheNextWave)
+{
+	GameObject* hero = GameWorld::Instance()->CreateGameObject("Hero");
+	hero->GetTransform()->SetWorldPosition({0.f, 0.f});
+	director->SetHero(hero);
+	director->SetPoints({{NEAR_POINT, 0.f}});
+
+	director->SetWaves({{0.f, {{TileType::MarauderSpawn, 1}}}, {0.f, {{TileType::AssaultSpawn, 1}}}});
+
+	Run(0.3f);
+	ASSERT_EQ(born.size(), 1u) << "the first wave never came";
+
+	// Игрок уходит дальше по мосту, живой враг остаётся позади.
+	hero->GetTransform()->SetWorldPosition({RoguelikeGame::WAVE_ADVANCE_STEP + 640.f, 0.f});
+	Run(0.5f);
+
+	EXPECT_EQ(born.size(), 2u) << "one enemy left behind froze the chase forever";
+}
+
+TEST_F(WaveDirectorTest, StandingStillTheHeroMustActuallyFightTheWaveOff)
+{
+	GameObject* hero = GameWorld::Instance()->CreateGameObject("Hero");
+	hero->GetTransform()->SetWorldPosition({0.f, 0.f});
+	director->SetHero(hero);
+	director->SetPoints({{NEAR_POINT, 0.f}});
+
+	director->SetWaves({{0.f, {{TileType::MarauderSpawn, 1}}}, {0.f, {{TileType::AssaultSpawn, 1}}}});
+
+	Run(0.3f);
+	ASSERT_EQ(born.size(), 1u);
+
+	Run(2.f);
+
+	EXPECT_EQ(born.size(), 1u) << "the next wave came while the previous one was still standing";
+
+	KillAll();
+	Run(0.5f);
+
+	EXPECT_EQ(born.size(), 2u);
+}
+
+TEST_F(WaveDirectorTest, TheLastWaveIsNotOverWhileItBreathesDownTheNeck)
+{
+	GameObject* hero = GameWorld::Instance()->CreateGameObject("Hero");
+	hero->GetTransform()->SetWorldPosition({0.f, 0.f});
+	director->SetHero(hero);
+	director->SetPoints({{NEAR_POINT, 0.f}});
+
+	director->SetWaves({{0.f, {{TileType::MarauderSpawn, 1}}}});
+
+	Run(0.3f);
+	ASSERT_EQ(born.size(), 1u);
+
+	// Игрок отбежал, но враг бежит следом - машина ещё не ждёт.
+	hero->GetTransform()->SetWorldPosition({RoguelikeGame::WAVE_ADVANCE_STEP + 100.f, 0.f});
+	born[0]->GetTransform()->SetWorldPosition({RoguelikeGame::WAVE_ADVANCE_STEP, 0.f});
+	Run(0.5f);
+
+	EXPECT_EQ(clears, 0) << "the escape opened with the chase still on the hero";
+
+	KillAll();
+	Run(0.5f);
+
+	EXPECT_EQ(clears, 1);
+	EXPECT_TRUE(director->IsCleared());
+}
+
+TEST_F(WaveDirectorTest, RunningAwayIsNotReportedAsAVictory)
+{
+	std::vector<int> beaten;
+	director->SubscribeWaveCleared([&beaten](int current, int) { beaten.push_back(current); });
+
+	GameObject* hero = GameWorld::Instance()->CreateGameObject("Hero");
+	hero->GetTransform()->SetWorldPosition({0.f, 0.f});
+	director->SetHero(hero);
+	director->SetPoints({{NEAR_POINT, 0.f}});
+
+	director->SetWaves({{0.f, {{TileType::MarauderSpawn, 1}}}, {0.f, {{TileType::AssaultSpawn, 1}}}});
+
+	Run(0.3f);
+	ASSERT_EQ(born.size(), 1u);
+
+	hero->GetTransform()->SetWorldPosition({RoguelikeGame::WAVE_ADVANCE_STEP + 640.f, 0.f});
+	Run(0.5f);
+
+	ASSERT_EQ(born.size(), 2u) << "the chase did not move on";
+	EXPECT_TRUE(beaten.empty()) << "the hero was congratulated for running away";
+}
+
+TEST_F(WaveDirectorTest, AWaveFoughtOffIsReportedOnce)
+{
+	std::vector<int> beaten;
+	director->SubscribeWaveCleared([&beaten](int current, int) { beaten.push_back(current); });
+
+	GameObject* hero = GameWorld::Instance()->CreateGameObject("Hero");
+	hero->GetTransform()->SetWorldPosition({0.f, 0.f});
+	director->SetHero(hero);
+	director->SetPoints({{NEAR_POINT, 0.f}});
+
+	director->SetWaves({{0.f, {{TileType::MarauderSpawn, 1}}}, {5.f, {{TileType::AssaultSpawn, 1}}}});
+
+	Run(0.3f);
+	ASSERT_EQ(born.size(), 1u);
+
+	KillAll();
+	Run(0.5f);
+
+	ASSERT_EQ(beaten.size(), 1u);
+	EXPECT_EQ(beaten[0], 1);
+}
+
+TEST_F(WaveDirectorTest, OnlyWhatIsStillOnTheHeroCountsAsAlive)
+{
+	GameObject* hero = GameWorld::Instance()->CreateGameObject("Hero");
+	hero->GetTransform()->SetWorldPosition({0.f, 0.f});
+	director->SetHero(hero);
+	director->SetPoints({{NEAR_POINT, 0.f}});
+
+	director->SetWaves({{0.f, {{TileType::MarauderSpawn, 1}}}});
+
+	Run(0.3f);
+	ASSERT_EQ(born.size(), 1u);
+
+	EXPECT_EQ(director->CountAlive(), 1);
+	EXPECT_EQ(director->CountAliveNearby(), 1);
+
+	born[0]->GetTransform()->SetWorldPosition({RoguelikeGame::WAVE_KEEP_RANGE * 2.f, 0.f});
+
+	EXPECT_EQ(director->CountAlive(), 1) << "the enemy is still alive, just far away";
+	EXPECT_EQ(director->CountAliveNearby(), 0);
+}
+
+namespace
+{
 	class ShippedWavesTest : public ProjectFiles::Test
 	{
 	};
@@ -303,6 +476,61 @@ TEST_F(ShippedWavesTest, TheBridgeHasWavesAndSomewhereToPutThem)
 
 	EXPECT_GT(points, 0) << "waves have nowhere to spawn";
 	EXPECT_EQ(bridge.waves.size(), plan.waves.size()) << "waves were lost while assembling the act";
+}
+
+TEST_F(ShippedWavesTest, TheBridgeHasEnoughWavesForItsLength)
+{
+	ASSERT_TRUE(isFound) << previous.string();
+
+	LevelData bridge = RoguelikeGame::LoadAct("Resources/Acts/act1_bridge.config");
+
+	// Волна нагоняет игрока раз в WAVE_ADVANCE_STEP пути - на всю длину моста их должно хватить.
+	float length = static_cast<float>(bridge.width) * RoguelikeGame::TILE_SIZE;
+	auto needed = static_cast<std::size_t>(length / RoguelikeGame::WAVE_ADVANCE_STEP);
+
+	EXPECT_GE(bridge.waves.size(), needed)
+		<< "the bridge runs out of waves " << needed << " were needed for " << bridge.width << " tiles";
+}
+
+TEST_F(ShippedWavesTest, TheBridgeWavesGrowHeavier)
+{
+	ASSERT_TRUE(isFound) << previous.string();
+
+	ActPlan plan = ActLoader::Load("Resources/Acts/act1_bridge.config");
+	ASSERT_GE(plan.waves.size(), 2u);
+
+	EXPECT_LT(plan.waves.front().Size(), plan.waves.back().Size())
+		<< "the last wave is no bigger than the first";
+}
+
+TEST_F(ShippedWavesTest, SpawnPointsAreSpreadAlongTheWholeBridge)
+{
+	ASSERT_TRUE(isFound) << previous.string();
+
+	LevelData bridge = RoguelikeGame::LoadAct("Resources/Acts/act1_bridge.config");
+
+	int leftmost = bridge.width;
+	int rightmost = 0;
+	for (int row = 0; row < bridge.height; row++)
+	{
+		for (int column = 0; column < static_cast<int>(bridge.tiles[row].size()); column++)
+		{
+			if (bridge.tiles[row][column] != TileType::WaveSpawn)
+			{
+				continue;
+			}
+
+			leftmost = column < leftmost ? column : leftmost;
+			rightmost = column > rightmost ? column : rightmost;
+		}
+	}
+
+	ASSERT_LT(leftmost, rightmost) << "the bridge has no spawn points at all";
+
+	// Между крайними точками не должно быть половины моста без единого места для волны.
+	EXPECT_LE(leftmost * RoguelikeGame::TILE_SIZE, RoguelikeGame::WAVE_ADVANCE_STEP) << "the first stretch has nowhere to spawn";
+	EXPECT_GE(rightmost, bridge.width - static_cast<int>(RoguelikeGame::WAVE_ADVANCE_STEP / RoguelikeGame::TILE_SIZE))
+		<< "the last stretch has nowhere to spawn";
 }
 
 namespace

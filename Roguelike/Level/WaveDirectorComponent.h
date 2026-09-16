@@ -28,6 +28,9 @@ namespace RoguelikeGame
         int GetCurrentWave() const;
         int GetWavesCount() const;
         int CountAlive() const;
+
+        // Только те, кто ещё висит у игрока на хвосте: отставшие в счёт не идут.
+        int CountAliveNearby() const;
         bool IsCleared() const;
 
         XYZEngine::SubscriptionId SubscribeWaveStarted(std::function<void(int, int)> onWaveStarted);
@@ -48,6 +51,9 @@ namespace RoguelikeGame
         std::size_t nextPoint = 0u;
         bool isCleared = false;
         bool isWaiting = true;
+        bool isWaveReported = false;
+        bool hasWaveStart = false;
+        XYZEngine::Vector2Df waveStart = {0.f, 0.f};
 
         XYZEngine::EventList<int, int> waveStartedEvent;
         XYZEngine::EventList<int, int> waveClearedEvent;
@@ -57,5 +63,8 @@ namespace RoguelikeGame
         void StartWave();
         void SpawnOne(TileType enemy);
         XYZEngine::Vector2Df PickPoint();
+        bool IsWaveOver() const;
+        bool HasAdvanced() const;
+        float DistanceToHero(const XYZEngine::Vector2Df& place) const;
     };
 }

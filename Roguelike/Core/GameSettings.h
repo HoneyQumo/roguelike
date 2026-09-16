@@ -321,7 +321,20 @@ namespace RoguelikeGame
     constexpr float ESCAPE_CAR_SPEED = 540.f;
     constexpr float ESCAPE_CAR_PICKUP = 320.f;
     constexpr auto ESCAPE_NOTICE = u8"Гони!";
-    constexpr float WAVE_SPAWN_GAP = 1.5f * TILE_SIZE;
+    /**
+    *	Волна выходит из окна вокруг игрока: не под ногами, но и не за горизонтом.
+    *	На длинной карте точки разбросаны на сотни клеток, и без окна волна
+    *	рождается там, куда игрок придёт через минуту.
+    */
+    constexpr float WAVE_SPAWN_GAP = 7.f * TILE_SIZE;
+    constexpr float WAVE_SPAWN_REACH = 15.f * TILE_SIZE;
+
+    // Отставшие позади не держат следующую волну: погоня должна нагонять, а не ждать.
+    constexpr float WAVE_KEEP_RANGE = 24.f * TILE_SIZE;
+
+    // Сколько игрок должен пройти, чтобы его нагнала следующая волна.
+    constexpr float WAVE_ADVANCE_STEP = 56.f * TILE_SIZE;
+
     constexpr auto WAVE_GATE_NOTICE = u8"Выход закрыт: отбей все волны";
     constexpr auto WAVE_STARTED_NOTICE = u8"Волна ";
     constexpr auto WAVE_OF_NOTICE = u8" из ";

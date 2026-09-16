@@ -194,3 +194,133 @@ TEST_F(LevelTest, MoveAssignedLevelKeepsItsBoss)
 	EXPECT_EQ(target.GetBoss(), boss);
 	EXPECT_EQ(source.GetBoss(), nullptr);
 }
+
+namespace
+{
+	using RoguelikeGame::LevelRole;
+
+	constexpr std::size_t ROLES = static_cast<std::size_t>(LevelRole::Count);
+
+	LevelRole RoleAt(std::size_t index)
+	{
+		return static_cast<LevelRole>(index);
+	}
+
+	std::string RoleName(std::size_t index)
+	{
+		return "role " + std::to_string(index) + " of " + std::to_string(ROLES);
+	}
+
+	// Каждой роли свой объект: так видно, если перенос перепутает их местами.
+	void FillEveryRole(Level& level)
+	{
+		for (std::size_t index = 0u; index < ROLES; index++)
+		{
+			GameObject* marker = GameWorld::Instance()->CreateGameObject("Role" + std::to_string(index));
+			level.Add(marker);
+			level.Set(RoleAt(index), marker);
+		}
+	}
+}
+
+TEST_F(LevelTest, EveryRoleSurvivesTheMove)
+{
+	Level source;
+	FillEveryRole(source);
+
+	std::vector<GameObject*> before;
+	for (std::size_t index = 0u; index < ROLES; index++)
+	{
+		before.push_back(source.Get(RoleAt(index)));
+	}
+
+	Level moved = std::move(source);
+
+	for (std::size_t index = 0u; index < ROLES; index++)
+	{
+		EXPECT_EQ(moved.Get(RoleAt(index)), before[index]) << RoleName(index) << " was lost on the way";
+		EXPECT_EQ(source.Get(RoleAt(index)), nullptr) << RoleName(index) << " stayed with the old level";
+	}
+}
+
+TEST_F(LevelTest, EveryRoleSurvivesTheMoveAssignment)
+{
+	Level source;
+	FillEveryRole(source);
+
+	std::vector<GameObject*> before;
+	for (std::size_t index = 0u; index < ROLES; index++)
+	{
+		before.push_back(source.Get(RoleAt(index)));
+	}
+
+	Level target;
+	FillEveryRole(target);
+
+	target = std::move(source);
+
+	for (std::size_t index = 0u; index < ROLES; index++)
+	{
+		EXPECT_EQ(target.Get(RoleAt(index)), before[index]) << RoleName(index) << " was lost on the way";
+		EXPECT_EQ(source.Get(RoleAt(index)), nullptr) << RoleName(index) << " stayed with the old level";
+	}
+}
+
+TEST_F(LevelTest, ClearForgetsEveryRoleNotJustSome)
+{
+	Level level;
+	FillEveryRole(level);
+
+	level.Clear();
+
+	for (std::size_t index = 0u; index < ROLES; index++)
+	{
+		EXPECT_EQ(level.Get(RoleAt(index)), nullptr) << RoleName(index) << " outlived the level";
+	}
+}
+
+TEST_F(LevelTest, TheNamedGettersReadTheSameRoles)
+{
+	Level level;
+
+	GameObject* exitObject = GameWorld::Instance()->CreateGameObject("Exit");
+	GameObject* boss = GameWorld::Instance()->CreateGameObject("Boss");
+	GameObject* director = GameWorld::Instance()->CreateGameObject("WaveDirector");
+	GameObject* car = GameWorld::Instance()->CreateGameObject("EscapeCar");
+
+	level.SetExit(exitObject);
+	level.SetBoss(boss);
+	level.SetWaveDirector(director);
+	level.SetEscapeCar(car);
+
+	EXPECT_EQ(level.Get(LevelRole::Exit), exitObject);
+	EXPECT_EQ(level.Get(LevelRole::Boss), boss);
+	EXPECT_EQ(level.Get(LevelRole::WaveDirector), director);
+	EXPECT_EQ(level.Get(LevelRole::EscapeCar), car);
+}
+
+TEST_F(LevelTest, TheWaveDirectorAndTheCarComeAlongWithTheLevel)
+{
+	Level source;
+	GameObject* director = GameWorld::Instance()->CreateGameObject("WaveDirector");
+	GameObject* car = GameWorld::Instance()->CreateGameObject("EscapeCar");
+	source.Add(director);
+	source.Add(car);
+	source.SetWaveDirector(director);
+	source.SetEscapeCar(car);
+
+	Level target;
+	target = std::move(source);
+
+	EXPECT_EQ(target.GetWaveDirector(), director) << "waves lose the hero and the hud on every level change";
+	EXPECT_EQ(target.GetEscapeCar(), car) << "the escape car can never be unlocked";
+}
+
+TEST_F(LevelTest, AskingForNoRoleAtAllIsHarmless)
+{
+	Level level;
+
+	level.Set(LevelRole::Count, GameWorld::Instance()->CreateGameObject("Nobody"));
+
+	EXPECT_EQ(level.Get(LevelRole::Count), nullptr);
+}

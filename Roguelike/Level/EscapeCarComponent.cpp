@@ -72,7 +72,7 @@ namespace RoguelikeGame
 
     XYZEngine::InputAction EscapeCarComponent::GetAction() const
     {
-        return XYZEngine::InputAction::Flee;
+        return XYZEngine::InputAction::Pass;
     }
 
     XYZEngine::SubscriptionId EscapeCarComponent::SubscribeBoarded(std::function<void()> onBoarded)

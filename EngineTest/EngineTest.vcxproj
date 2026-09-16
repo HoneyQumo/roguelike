@@ -146,6 +146,7 @@
     <ClCompile Include="PatrolRoutes.tests.cpp" />
     <ClCompile Include="PatrolComponent.tests.cpp" />
     <ClCompile Include="InventoryComponent.tests.cpp" />
+    <ClCompile Include="InteractKeys.tests.cpp" />
     <ClCompile Include="Interaction.tests.cpp" />
     <ClCompile Include="InventoryScreen.tests.cpp" />
     <ClCompile Include="LevelCatalog.tests.cpp" />

@@ -129,7 +129,7 @@ namespace RoguelikeGame
 
     XYZEngine::InputAction HatchComponent::GetAction() const
     {
-        return XYZEngine::InputAction::Flee;
+        return XYZEngine::InputAction::Pass;
     }
 
     XYZEngine::SubscriptionId HatchComponent::SubscribeFled(std::function<void()> onFled)

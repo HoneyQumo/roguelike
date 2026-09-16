@@ -27,7 +27,7 @@ namespace RoguelikeGame
         void Update(float deltaTime) override;
         void Render() override;
 
-        void SetSize(float newSize);
+        void SetSize(float newSize, float newHeight);
         void SetSpentColor(const sf::Color& newSpentColor);
         void SetSpentTexture(const sf::Texture* newSpentTexture);
         void SetSpentLayer(int newSpentLayer);
@@ -42,6 +42,7 @@ namespace RoguelikeGame
         const sf::Texture* spentTexture = nullptr;
         sf::Color spentColor = {80, 60, 35};
         float size = 0.f;
+        float height = 0.f;
         int spentLayer = KEEP_RENDER_LAYER;
         bool isSpent = false;
     };

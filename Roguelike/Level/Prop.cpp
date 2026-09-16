@@ -38,17 +38,17 @@ namespace RoguelikeGame
             {
                 auto renderer = gameObject->AddComponent<XYZEngine::SpriteRendererComponent>();
                 renderer->SetTexture(*frame);
-                renderer->SetPixelSize(static_cast<int>(definition.size), static_cast<int>(definition.size));
+                renderer->SetPixelSize(static_cast<int>(definition.size), static_cast<int>(definition.Height()));
             }
             else
             {
                 auto renderer = gameObject->AddComponent<XYZEngine::RectangleRendererComponent>();
-                renderer->SetSize(definition.size, definition.size);
+                renderer->SetSize(definition.size, definition.Height());
                 renderer->SetColor(definition.color);
             }
 
             auto visual = gameObject->AddComponent<PropVisualComponent>();
-            visual->SetSize(definition.size);
+            visual->SetSize(definition.size, definition.Height());
 
             if (definition.HasSpentFrame())
             {
@@ -62,7 +62,7 @@ namespace RoguelikeGame
             PropVisualComponent* visual)
         {
             auto reach = gameObject->AddComponent<XYZEngine::BoxColliderComponent>();
-            reach->SetSize(definition.size + CONTAINER_REACH_MARGIN, definition.size + CONTAINER_REACH_MARGIN);
+            reach->SetSize(definition.size + CONTAINER_REACH_MARGIN, definition.Height() + CONTAINER_REACH_MARGIN);
             reach->SetTrigger(true);
             reach->SetCollisionLayer(ITEM_COLLISION_LAYER);
 
@@ -121,7 +121,7 @@ namespace RoguelikeGame
         if (definition.isSolid)
         {
             auto collider = gameObject->AddComponent<XYZEngine::BoxColliderComponent>();
-            collider->SetSize(definition.size, definition.size);
+            collider->SetSize(definition.size, definition.Height());
         }
 
         if (definition.IsOpenable())

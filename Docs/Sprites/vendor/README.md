@@ -10,6 +10,12 @@
 |---|---|---|---|
 | `sbs_dungeon.zip` | Screaming Brain Studios | 14 полов и 38 стен, бесшовные: камень, бетон, кирпич, земля, металл, дерево | CC0 |
 | `kenney_tds.zip` | Kenney Vleugels | 524 тайла ровно 64x64: полы и стены помещений, мебель, ящики, разметка | CC0 |
+| `kenney_racing.zip` | Kenney Vleugels | 50 машин сверху, барьеры, конусы, бочки, покрышки, масляные пятна | CC0 |
 
-Источники: https://opengameart.org/content/top-down-dungeon-pack и
-https://kenney.nl/assets/top-down-shooter
+Источники: https://opengameart.org/content/top-down-dungeon-pack,
+https://kenney.nl/assets/top-down-shooter и https://kenney.nl/assets/racing-pack
+
+Кадр у гоночного набора не 64x64: машины вертикальные, примерно 71x131, а плитки 128x128.
+Дорожные плитки оттуда в игру не идут - это гоночная трасса с бирюзовым асфальтом и
+красно-белыми поребриками, в палитру игры она не ложится. Асфальт и разметку моста рисует
+`make_tileset.py`, а из набора берутся только машины и дорожные объекты.

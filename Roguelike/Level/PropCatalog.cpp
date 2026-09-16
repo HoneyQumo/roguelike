@@ -30,6 +30,11 @@ namespace RoguelikeGame
         }
     }
 
+    float PropDefinition::Height() const
+    {
+        return height > 0.f ? height : size;
+    }
+
     bool PropDefinition::IsDestructible() const
     {
         return health > 0.f;
@@ -204,6 +209,12 @@ namespace RoguelikeGame
 
                 current.texturePath = path;
                 (key == "frame" ? current.frame : current.spentFrame) = {x, y, width, height};
+                continue;
+            }
+
+            if (key == "height")
+            {
+                stream >> current.height;
                 continue;
             }
 

@@ -65,6 +65,21 @@ namespace RoguelikeGame
             }
         }
 
+        if (!room.overlay.empty())
+        {
+            moved.overlay.assign(moved.height, std::vector<TileType>(moved.width, TileType::Empty));
+
+            for (int row = 0; row < height; row++)
+            {
+                int columns = row < static_cast<int>(room.overlay.size()) ? static_cast<int>(room.overlay[row].size()) : 0;
+                for (int column = 0; column < columns; column++)
+                {
+                    Placement to = Move({column, row}, width, height, turns, isMirrored);
+                    moved.overlay[to.row][to.column] = room.overlay[row][column];
+                }
+            }
+        }
+
         for (const ItemPlacement& item : room.items)
         {
             Placement to = Move({item.column, item.row}, width, height, turns, isMirrored);

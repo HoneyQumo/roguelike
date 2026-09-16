@@ -57,6 +57,7 @@ namespace RoguelikeGame
         }
 
         int tilesCount = BuildTiles(levelData, level);
+        int overlayCount = BuildOverlay(levelData, level);
         int wallsCount = 0;
         int enemiesCount = 0;
 
@@ -181,6 +182,7 @@ namespace RoguelikeGame
         int pursuitCount = BuildPursuit(levelData, level);
 
         LOG_INFO("Level built: tiles " + std::to_string(tilesCount)
+            + ", overlay " + std::to_string(overlayCount)
             + ", walls " + std::to_string(wallsCount)
             + ", enemies " + std::to_string(enemiesCount)
             + ", items " + std::to_string(itemsCount)
@@ -563,6 +565,52 @@ namespace RoguelikeGame
         }
 
         return propsCount;
+    }
+
+    /**
+    *	Верхний слой: накладка поверх пола. Отдельный массив вершин и один
+    *	лишний вызов отрисовки на всю карту - зато клетка перестаёт быть
+    *	«либо асфальт, либо вода» и под дырой видно то, что лежит ниже.
+    *
+    *	Проходимость слой не меняет: коллизии и сетка путей строятся по нижнему.
+    */
+    int LevelBuilder::BuildOverlay(const LevelData& levelData, Level& level)
+    {
+        if (levelData.overlay.empty())
+        {
+            return 0;
+        }
+
+        const sf::Texture* tiles = LoadTileset(levelData.info.tileset);
+        if (tiles == nullptr)
+        {
+            return 0;
+        }
+
+        auto overlayObject = XYZEngine::GameWorld::Instance()->CreateGameObject("LevelOverlay");
+        overlayObject->SetRenderLayer(OVERLAY_RENDER_LAYER);
+        level.Add(overlayObject);
+
+        auto renderer = overlayObject->AddComponent<XYZEngine::VertexArrayRendererComponent>();
+        renderer->SetTexture(tiles);
+
+        const XYZEngine::Vector2Df tileSize = {TILE_SIZE, TILE_SIZE};
+
+        for (int row = 0; row < levelData.height; row++)
+        {
+            for (int column = 0; column < levelData.width; column++)
+            {
+                if (OverlayAt(levelData, column, row) == TileType::Empty)
+                {
+                    continue;
+                }
+
+                renderer->AddQuad(TileToWorldPosition(column, row, levelData.height), tileSize,
+                    OverlayFrameFor(levelData, column, row));
+            }
+        }
+
+        return static_cast<int>(renderer->GetQuadsCount());
     }
 
     int LevelBuilder::BuildTiles(const LevelData& levelData, Level& level)

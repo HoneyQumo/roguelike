@@ -91,14 +91,14 @@ TEST(WaterTileTests, MarkingLiesAcrossItsOwnRow)
 
 	EXPECT_EQ(frame.top, TILE_LINE_ROW * TILE_FRAME_SIZE);
 	EXPECT_EQ(frame.left, TILE_LINE_ACROSS * TILE_FRAME_SIZE);
-	EXPECT_EQ(LineFrame(level, 2, 3), TILE_LINE_ACROSS);
+	EXPECT_EQ(LineFrame(level.tiles, 2, 3), TILE_LINE_ACROSS);
 }
 
 TEST(WaterTileTests, MarkingInAColumnTurnsAlongIt)
 {
 	LevelData level = LevelOf(ALONG_STRIP);
 
-	EXPECT_EQ(LineFrame(level, 2, 2), TILE_LINE_ALONG);
+	EXPECT_EQ(LineFrame(level.tiles, 2, 2), TILE_LINE_ALONG);
 }
 
 TEST(WaterTileTests, YouCannotWalkOnWaterButYouCanWalkOnMarkings)

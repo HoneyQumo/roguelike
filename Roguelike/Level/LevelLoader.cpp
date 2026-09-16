@@ -12,6 +12,7 @@ namespace RoguelikeGame
     const std::string MAP_SECTION = "map";
     const std::string WAVES_SECTION = "waves";
     const std::string PURSUIT_SECTION = "pursuit";
+    const std::string OVERLAY_SECTION = "overlay";
     const std::string WAVE_KEYWORD = "wave";
     const std::string LEVEL_SECTION = "level";
     const std::string ITEM_PREFIX = "Item:";
@@ -48,6 +49,7 @@ namespace RoguelikeGame
         bool isLevelSection = false;
         bool isWavesSection = false;
         bool isPursuitSection = false;
+        bool isOverlaySection = false;
 
         std::string line;
         int lineNumber = 0;
@@ -105,6 +107,16 @@ namespace RoguelikeGame
                 isLevelSection = false;
                 isWavesSection = false;
                 isPursuitSection = false;
+                isOverlaySection = false;
+                continue;
+            }
+            if (IsSection(line, OVERLAY_SECTION))
+            {
+                isOverlaySection = true;
+                isLegendSection = false;
+                isLevelSection = false;
+                isWavesSection = false;
+                isPursuitSection = false;
                 continue;
             }
 
@@ -129,6 +141,12 @@ namespace RoguelikeGame
             if (isPursuitSection)
             {
                 ReadPursuitLine(line, lineNumber, levelData.pursuit);
+                continue;
+            }
+
+            if (isOverlaySection)
+            {
+                ReadOverlayLine(line, legend, levelData);
                 continue;
             }
 
@@ -469,6 +487,25 @@ namespace RoguelikeGame
         }
 
         legend[symbol] = {tileType, "", "", "", 0, false, "", ""};
+    }
+
+    /**
+    *	Строка верхнего слоя. Символы те же, что и на карте, но кладётся только
+    *	рисунок: предметы, двери и прочее из легенды здесь игнорируются - иначе
+    *	один символ означал бы разное в зависимости от того, в какую карту попал.
+    */
+    void LevelLoader::ReadOverlayLine(const std::string& line, const Legend& legend, LevelData& levelData)
+    {
+        std::vector<TileType> tiles;
+        tiles.reserve(line.size());
+
+        for (char symbol : line)
+        {
+            auto found = legend.find(symbol);
+            tiles.push_back(found == legend.end() ? TileType::Empty : found->second.tile);
+        }
+
+        levelData.overlay.push_back(std::move(tiles));
     }
 
     void LevelLoader::ReadMapLine(const std::string& line, const Legend& legend, LevelData& levelData)

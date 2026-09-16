@@ -172,11 +172,29 @@ namespace RoguelikeGame
         BossSpec boss;
     };
 
+    using TileGrid = std::vector<std::vector<TileType>>;
+
+    inline TileType GridAt(const TileGrid& grid, int column, int row)
+    {
+        if (row < 0 || row >= static_cast<int>(grid.size()))
+        {
+            return TileType::Empty;
+        }
+
+        const std::vector<TileType>& line = grid[row];
+
+        return column < 0 || column >= static_cast<int>(line.size()) ? TileType::Empty : line[column];
+    }
+
     struct LevelData
     {
         int width = 0;
         int height = 0;
-        std::vector<std::vector<TileType>> tiles;
+        TileGrid tiles;
+
+        // Верхний слой: только рисунок. Проходимость и коллизии решает нижний,
+        // иначе пришлось бы разбирать, что делать, когда слои спорят.
+        TileGrid overlay;
         std::vector<ItemPlacement> items;
         std::vector<PropPlacement> props;
         std::vector<PatrolPoint> patrols;
@@ -192,18 +210,12 @@ namespace RoguelikeGame
 
     inline TileType TileAt(const LevelData& levelData, int column, int row)
     {
-        if (row < 0 || row >= static_cast<int>(levelData.tiles.size()))
-        {
-            return TileType::Empty;
-        }
+        return GridAt(levelData.tiles, column, row);
+    }
 
-        const std::vector<TileType>& line = levelData.tiles[row];
-        if (column < 0 || column >= static_cast<int>(line.size()))
-        {
-            return TileType::Empty;
-        }
-
-        return line[column];
+    inline TileType OverlayAt(const LevelData& levelData, int column, int row)
+    {
+        return GridAt(levelData.overlay, column, row);
     }
 
     inline int CountTiles(const LevelData& levelData, TileType tileType)

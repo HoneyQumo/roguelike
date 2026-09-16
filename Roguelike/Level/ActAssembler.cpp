@@ -128,6 +128,19 @@ namespace RoguelikeGame
 
         act.tiles.assign(act.height, std::vector<TileType>(act.width, TileType::Empty));
 
+        // Верхний слой заводим, только если хоть одна комната его несёт:
+        // пустая сетка на всю карту заняла бы память впустую.
+        bool hasOverlay = false;
+        for (const PlacedRoom& room : placed)
+        {
+            hasOverlay = hasOverlay || !room.layout.overlay.empty();
+        }
+
+        if (hasOverlay)
+        {
+            act.overlay.assign(act.height, std::vector<TileType>(act.width, TileType::Empty));
+        }
+
         for (const PlacedRoom& room : placed)
         {
             for (int row = 0; row < room.layout.height; row++)
@@ -135,6 +148,17 @@ namespace RoguelikeGame
                 for (int column = 0; column < room.layout.width; column++)
                 {
                     act.tiles[room.row + row][room.column + column] = room.layout.tiles[row][column];
+                }
+            }
+
+            if (hasOverlay)
+            {
+                for (int row = 0; row < room.layout.height; row++)
+                {
+                    for (int column = 0; column < room.layout.width; column++)
+                    {
+                        act.overlay[room.row + row][room.column + column] = GridAt(room.layout.overlay, column, row);
+                    }
                 }
             }
 

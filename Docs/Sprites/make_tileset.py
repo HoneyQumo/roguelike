@@ -12,7 +12,7 @@ TILE = 64
 FLOOR_FRAMES = 4
 WALL_FRAMES = 16
 ATLAS_COLUMNS = 16
-ATLAS_ROWS = 4
+ATLAS_ROWS = 5
 
 WALL_NEIGHBOUR_UP = 1
 WALL_NEIGHBOUR_RIGHT = 2
@@ -23,6 +23,7 @@ FLOOR_ROW = 0
 WALL_ROW = 1
 LINE_ROW = 2
 WATER_ROW = 3
+OVERLAY_ROW = 4
 
 RAMPS = {
     'catacombs': {
@@ -131,6 +132,31 @@ def Marking(seed, floor, colour, isVertical, isSolid):
                 tile[step, band, :3] = paint
             else:
                 tile[band, step, :3] = paint
+
+    return tile
+
+
+def OverlayMarking(colour, isVertical, isSolid):
+    """Разметка для верхнего слоя: та же линия, но на прозрачном фоне.
+
+    В нижнем слое каждый кадр разметки тащит с собой кусок асфальта, поэтому
+    их приходится держать столько же, сколько вариантов покрытия. Накладка
+    ложится на любое покрытие и ни от чего не зависит.
+    """
+    tile = np.zeros((TILE, TILE, 4))
+    paint = np.array(colour, dtype=float)
+    middle = TILE // 2
+    half = LINE_THICKNESS // 2
+
+    for offset in range(-half, half + 1):
+        band = middle + offset
+        for step in range(TILE):
+            if not isSolid and (step % LINE_DASH) >= LINE_STROKE:
+                continue
+
+            row, column = (step, band) if isVertical else (band, step)
+            tile[row, column, :3] = paint
+            tile[row, column, 3] = 255
 
     return tile
 
@@ -244,7 +270,12 @@ def Build(name):
         out[WATER_ROW * TILE:(WATER_ROW + 1) * TILE, frame * TILE:(frame + 1) * TILE] = \
             Water(frame + 1, ramp['water'])
 
-    out[..., 3] = 255
+    # Непрозрачны только нижние слои: накладке прозрачность и нужна.
+    out[0:OVERLAY_ROW * TILE, ..., 3] = 255
+
+    for frame in range(FLOOR_FRAMES):
+        out[OVERLAY_ROW * TILE:(OVERLAY_ROW + 1) * TILE, frame * TILE:(frame + 1) * TILE] = \
+            OverlayMarking(ramp['line'], frame % 2 == 1, frame >= 2)
     target = os.path.join(TEXTURES, 'tiles_' + name + '.png')
     Image.fromarray(np.clip(out, 0, 255).astype(np.uint8), 'RGBA').save(target)
     print('built', target, out.shape[1], 'x', out.shape[0])

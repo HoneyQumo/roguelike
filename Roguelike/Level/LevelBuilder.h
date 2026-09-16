@@ -20,6 +20,7 @@ namespace RoguelikeGame
 
     private:
         static int BuildTiles(const LevelData& levelData, Level& level);
+        static int BuildOverlay(const LevelData& levelData, Level& level);
         static RoomWakeComponent* CreateRoomWake(const std::vector<LevelZone>& zones, Level& level);
         static void PutToSleep(RoomWakeComponent* rooms, const std::vector<LevelZone>& zones, int column, int row, XYZEngine::GameObject* enemy);
         static int BuildDoors(const LevelData& levelData, const ItemCatalog& items, Level& level);

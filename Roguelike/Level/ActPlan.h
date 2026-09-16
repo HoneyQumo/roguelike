@@ -22,6 +22,7 @@ namespace RoguelikeGame
         LevelInfo info;
         std::map<std::string, std::string> library;
         std::vector<RoomPlacement> rooms;
+        std::vector<WaveSpec> waves;
 
         bool IsEmpty() const { return rooms.empty(); }
     };

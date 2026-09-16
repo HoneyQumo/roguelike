@@ -71,6 +71,7 @@
     <ClCompile Include="WaterTiles.tests.cpp" />
     <ClCompile Include="BridgeProps.tests.cpp" />
     <ClCompile Include="Blast.tests.cpp" />
+    <ClCompile Include="Waves.tests.cpp" />
     <ClCompile Include="LevelLoader.tests.cpp" />
     <ClCompile Include="GameWorld.tests.cpp" />
     <ClCompile Include="Logger.tests.cpp" />
@@ -250,6 +251,9 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\Roguelike\Weapons\FuseComponent.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Roguelike\Level\WaveDirectorComponent.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\Roguelike\Characters\StaminaComponent.cpp">

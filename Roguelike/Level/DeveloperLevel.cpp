@@ -10,6 +10,7 @@
 #include "Crosshair.h"
 #include "Particles.h"
 #include "BossBrainComponent.h"
+#include "WaveDirectorComponent.h"
 #include "Fx.h"
 #include "LevelExitComponent.h"
 #include "UiRoot.h"
@@ -67,6 +68,7 @@ namespace RoguelikeGame
 
         SubscribeExit();
         SubscribeBoss();
+        SubscribeWaves();
 
         music = CreateMusic(MAIN_THEME_MUSIC, MUSIC_VOLUME);
 
@@ -132,7 +134,7 @@ namespace RoguelikeGame
         {
             if (hudScreen != nullptr)
             {
-                hudScreen->ShowNotice(BOSS_GATE_NOTICE);
+                hudScreen->ShowNotice(level.GetWaveDirector() != nullptr ? WAVE_GATE_NOTICE : BOSS_GATE_NOTICE);
             }
         });
     }
@@ -155,6 +157,69 @@ namespace RoguelikeGame
         if (brain != nullptr)
         {
             brain->SubscribeMinionSpawned([this](XYZEngine::GameObject* minion) { level.Add(minion); });
+        }
+    }
+
+    void DeveloperLevel::SubscribeWaves()
+    {
+        XYZEngine::GameObject* directorObject = level.GetWaveDirector();
+        if (directorObject == nullptr)
+        {
+            return;
+        }
+
+        auto director = directorObject->GetComponent<WaveDirectorComponent>();
+        if (director == nullptr)
+        {
+            return;
+        }
+
+        director->SetHero(player);
+
+        // Врагов волны кладём в уровень, иначе они переживут смену локации.
+        director->SubscribeEnemySpawned([this](XYZEngine::GameObject* enemy) { level.Add(enemy); });
+
+        director->SubscribeWaveStarted([this](int current, int total)
+        {
+            if (hudScreen != nullptr)
+            {
+                hudScreen->ShowNotice(std::string(WAVE_STARTED_NOTICE) + std::to_string(current)
+                    + WAVE_OF_NOTICE + std::to_string(total));
+            }
+        });
+
+        director->SubscribeWaveCleared([this](int current, int total)
+        {
+            if (hudScreen != nullptr && current < total)
+            {
+                hudScreen->ShowNotice(std::string(WAVE_STARTED_NOTICE) + std::to_string(current) + WAVE_CLEARED_NOTICE);
+            }
+        });
+
+        director->SubscribeCleared([this]() { OnWavesCleared(); });
+    }
+
+    void DeveloperLevel::OnWavesCleared()
+    {
+        XYZEngine::GameObject* exitObject = level.GetExit();
+        if (exitObject != nullptr)
+        {
+            auto exitComponent = exitObject->GetComponent<LevelExitComponent>();
+            if (exitComponent != nullptr)
+            {
+                exitComponent->SetLocked(false);
+            }
+
+            auto renderer = exitObject->GetComponent<XYZEngine::RectangleRendererComponent>();
+            if (renderer != nullptr)
+            {
+                renderer->SetColor(LEVEL_EXIT_COLOR);
+            }
+        }
+
+        if (hudScreen != nullptr)
+        {
+            hudScreen->ShowNotice(WAVES_DONE_NOTICE);
         }
     }
 
@@ -248,6 +313,7 @@ namespace RoguelikeGame
 
         SubscribeExit();
         SubscribeBoss();
+        SubscribeWaves();
         ShowLevelTitle();
 
         LOG_INFO("Level changed to " + entry->id + ", objects in world "

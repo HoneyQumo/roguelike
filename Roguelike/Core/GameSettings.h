@@ -298,6 +298,15 @@ namespace RoguelikeGame
     constexpr float RELOAD_VOLUME = 45.f;
     constexpr float HURT_VOLUME = 35.f;
     constexpr float VOICE_VOLUME = 70.f;
+    // Враг волны не появляется ближе полутора клеток к игроку.
+    constexpr auto WAVE_DIRECTOR_OBJECT_NAME = "WaveDirector";
+    constexpr float WAVE_SPAWN_GAP = 1.5f * TILE_SIZE;
+    constexpr auto WAVE_GATE_NOTICE = u8"Выход закрыт: отбей все волны";
+    constexpr auto WAVE_STARTED_NOTICE = u8"Волна ";
+    constexpr auto WAVE_OF_NOTICE = u8" из ";
+    constexpr auto WAVE_CLEARED_NOTICE = u8" отбита";
+    constexpr auto WAVES_DONE_NOTICE = u8"Волны отбиты, выход открыт";
+
     constexpr float PROP_BLAST_EDGE_PART = 0.35f;
     constexpr float PROP_BLAST_NOISE_SCALE = 3.5f;
     constexpr float PROP_NOISE_RADIUS = 320.f;

@@ -117,6 +117,7 @@ namespace RoguelikeGame
 
         LevelData act;
         act.info = plan.info;
+        act.waves = plan.waves;
 
         for (const PlacedRoom& room : placed)
         {

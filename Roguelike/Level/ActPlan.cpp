@@ -1,4 +1,5 @@
 #include "ActPlan.h"
+#include "EnemyCatalog.h"
 #include <LoggerRegistry.h>
 #include <fstream>
 #include <sstream>
@@ -11,6 +12,7 @@ namespace RoguelikeGame
         const std::string ACT_SECTION = "[act]";
         const std::string ROOMS_SECTION = "[rooms]";
         const std::string LIBRARY_SECTION = "[library]";
+        const std::string WAVES_SECTION = "[waves]";
         const std::string UTF8_BOM = "\xEF\xBB\xBF";
         constexpr char COMMENT_SYMBOL = ';';
 
@@ -106,6 +108,67 @@ namespace RoguelikeGame
             library[id] = path;
         }
 
+        /**
+        *	Строка волны акта: wave <пауза> <символ><сколько> ...
+        *	Символ здесь - из каталога врагов, а не из легенды комнаты: у акта своей легенды нет.
+        */
+        void ReadActWaveLine(const std::string& line, int lineNumber, std::vector<WaveSpec>& waves)
+        {
+            std::istringstream stream(line);
+            std::string keyword;
+            stream >> keyword;
+
+            if (keyword != "wave")
+            {
+                LOG_ERROR("Act wave line " + std::to_string(lineNumber) + " does not start with wave");
+                throw std::runtime_error("Unknown act wave line");
+            }
+
+            WaveSpec wave;
+            if (!(stream >> wave.delay) || wave.delay < 0.f)
+            {
+                LOG_ERROR("Act wave line " + std::to_string(lineNumber) + " has no delay");
+                throw std::runtime_error("Act wave line has no delay");
+            }
+
+            std::string group;
+            while (stream >> group)
+            {
+                const EnemyDefinition* enemy = group.empty() ? nullptr : FindEnemyBySymbol(group.front());
+                if (enemy == nullptr || group.size() < 2)
+                {
+                    LOG_ERROR("Act wave line " + std::to_string(lineNumber) + " has a bad group: " + group);
+                    throw std::runtime_error("Bad act wave group");
+                }
+
+                int count = 0;
+                try
+                {
+                    count = std::stoi(group.substr(1));
+                }
+                catch (const std::exception&)
+                {
+                    count = 0;
+                }
+
+                if (count <= 0)
+                {
+                    LOG_ERROR("Act wave line " + std::to_string(lineNumber) + " asks for a non-positive count: " + group);
+                    throw std::runtime_error("Act wave count must be positive");
+                }
+
+                wave.entries.push_back({enemy->tile, count});
+            }
+
+            if (wave.entries.empty())
+            {
+                LOG_ERROR("Act wave line " + std::to_string(lineNumber) + " is empty");
+                throw std::runtime_error("Act wave has no enemies");
+            }
+
+            waves.push_back(std::move(wave));
+        }
+
         void ReadRoomLine(const std::string& line, int lineNumber, std::vector<RoomPlacement>& rooms)
         {
             std::istringstream stream(line);
@@ -162,6 +225,7 @@ namespace RoguelikeGame
         bool isActSection = false;
         bool isRoomsSection = false;
         bool isLibrarySection = false;
+        bool isWavesSection = false;
 
         std::string line;
         int lineNumber = 0;
@@ -185,6 +249,7 @@ namespace RoguelikeGame
                 isActSection = true;
                 isRoomsSection = false;
                 isLibrarySection = false;
+                isWavesSection = false;
                 continue;
             }
 
@@ -193,6 +258,7 @@ namespace RoguelikeGame
                 isActSection = false;
                 isRoomsSection = false;
                 isLibrarySection = true;
+                isWavesSection = false;
                 continue;
             }
 
@@ -201,6 +267,16 @@ namespace RoguelikeGame
                 isActSection = false;
                 isRoomsSection = true;
                 isLibrarySection = false;
+                isWavesSection = false;
+                continue;
+            }
+
+            if (line == WAVES_SECTION)
+            {
+                isActSection = false;
+                isRoomsSection = false;
+                isLibrarySection = false;
+                isWavesSection = true;
                 continue;
             }
 
@@ -213,6 +289,12 @@ namespace RoguelikeGame
             if (isLibrarySection)
             {
                 ReadLibraryLine(line, lineNumber, plan.library);
+                continue;
+            }
+
+            if (isWavesSection)
+            {
+                ReadActWaveLine(line, lineNumber, plan.waves);
                 continue;
             }
 

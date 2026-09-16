@@ -58,6 +58,19 @@ namespace RoguelikeGame
         }
     };
 
+    constexpr const EnemyDefinition* FindEnemyBySymbol(char symbol)
+    {
+        for (const EnemyDefinition& enemy : ENEMIES)
+        {
+            if (enemy.levelSymbol == symbol)
+            {
+                return &enemy;
+            }
+        }
+
+        return nullptr;
+    }
+
     constexpr const EnemyDefinition* FindEnemy(TileType tile)
     {
         for (const EnemyDefinition& enemy : ENEMIES)

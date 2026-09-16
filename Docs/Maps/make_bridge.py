@@ -14,7 +14,7 @@ ACTS = os.path.normpath(os.path.join(HERE, '..', '..', 'Roguelike', 'Resources',
 
 WIDTH = 32
 HEIGHT = 24
-SECTIONS = 22
+SECTIONS = 13
 
 
 WATER_TOP = 5
@@ -300,7 +300,7 @@ def Collapse(rows, rng):
             rows[row][column] = WATER
 
     # Куски плиты, выброшенные на уцелевшее полотно: обвал не бывает аккуратным.
-    for _ in range(rng.randint(4, 7)):
+    for _ in range(rng.randint(6, 9)):
         column = rng.randint(max(2, left - 3), min(WIDTH - 3, left + width + 3))
         row = rng.randint(ROAD_TOP, ROAD_BOTTOM)
         if rows[row][column] == ROAD:
@@ -338,6 +338,35 @@ def Breach(rows, fromColumn, toColumn, top, bottom):
     return edges
 
 
+def Cover(rows, rng, count):
+    """Укрытия в открытых местах: за ними отстреливаются от погони.
+
+    Без них длинный прямой участок - это коридор, где остаётся только бежать.
+    """
+    placed = 0
+    guard = 0
+    while placed < count and guard < 200:
+        guard += 1
+        column = rng.randint(3, WIDTH - 4)
+        row = rng.choice([ROAD_TOP + 1, ROAD_TOP + 3, ROAD_BOTTOM - 3, ROAD_BOTTOM - 1])
+
+        if Put(rows, column, row, rng.choice('btt')):
+            placed += 1
+
+
+def Supplies(rows, rng, count):
+    """Припасы у отбойника: свернуть за ними стоит, но это стоит времени."""
+    placed = 0
+    guard = 0
+    while placed < count and guard < 200:
+        guard += 1
+        column = rng.randint(3, WIDTH - 4)
+        row = rng.choice([ROAD_TOP, ROAD_TOP + 1, ROAD_BOTTOM - 1, ROAD_BOTTOM])
+
+        if Put(rows, column, row, rng.choice('mmxxa')):
+            placed += 1
+
+
 def WavePoints(rows, index):
     for column in (6, 16, 26):
         for row in (ROAD_TOP, ROAD_BOTTOM):
@@ -365,10 +394,12 @@ def Enemies(rows, rng, count, kinds):
 
 # Ритм задан руками: обрушения и пандусы должны встречаться регулярно,
 # а не выпадать как придётся из арифметики по номеру секции.
+#
+# Мост короткий, поэтому ни один шаблон не повторяется подряд, а два
+# блокпоста нужны для чередования караула - иначе он не выйдет ни разу.
 SHAPES = [
-    Plain, Jam, Wreck, Ramp, Fuel, Collapse, Jam, Checkpoint,
-    Ramp, Wreck, Collapse, Fuel, Jam, Ramp, Checkpoint, Collapse,
-    Wreck, Fuel, Jam, Ramp, Collapse, Plain,
+    Plain, Jam, Ramp, Collapse, Checkpoint, Wreck, Fuel,
+    Ramp, Wreck, Checkpoint, Fuel, Collapse, Plain,
 ]
 
 
@@ -402,6 +433,10 @@ def Section(index, rng):
         # Гарнизон блокпоста идёт в общий счёт секции: иначе случайная расстановка
         # доставляет людей поверх заслона и сводит его ослабление на нет.
         Enemies(rows, rng, max(0, count - CountEnemies(rows)), kinds)
+
+        # Мост стал короче, значит каждая секция обязана стоить того, чтобы по ней бежать.
+        Cover(rows, rng, rng.randint(2, 4))
+        Supplies(rows, rng, rng.randint(1, 2))
 
     return rows, edges
 

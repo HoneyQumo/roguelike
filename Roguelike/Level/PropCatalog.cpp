@@ -35,6 +35,12 @@ namespace RoguelikeGame
         return height > 0.f ? height : size;
     }
 
+    // Взрыв имеет смысл только у того, что можно сломать: детонирует остов, а не целая бочка.
+    bool PropDefinition::IsExplosive() const
+    {
+        return blastRadius > 0.f && blastDamage > 0.f && IsDestructible();
+    }
+
     bool PropDefinition::IsDestructible() const
     {
         return health > 0.f;
@@ -209,6 +215,12 @@ namespace RoguelikeGame
 
                 current.texturePath = path;
                 (key == "frame" ? current.frame : current.spentFrame) = {x, y, width, height};
+                continue;
+            }
+
+            if (key == "blast")
+            {
+                stream >> current.blastRadius >> current.blastDamage >> current.blastFuse;
                 continue;
             }
 

@@ -17,6 +17,9 @@ namespace RoguelikeGame
         float health = 0.f;
         float size = 48.f;
         float height = 0.f;
+        float blastRadius = 0.f;
+        float blastDamage = 0.f;
+        float blastFuse = 0.f;
         sf::Color color = {150, 110, 60};
         sf::Color brokenColor = {80, 60, 35};
         sf::Color openedColor = {90, 80, 55};
@@ -32,6 +35,7 @@ namespace RoguelikeGame
         // Высота по умолчанию равна ширине: почти все пропы квадратные.
         float Height() const;
         bool IsDestructible() const;
+        bool IsExplosive() const;
         bool IsOpenable() const;
         bool HasFrame() const;
         bool HasSpentFrame() const;

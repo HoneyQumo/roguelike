@@ -215,6 +215,55 @@ namespace RoguelikeGame
         return fire == nullptr ? 0.f : fire->spreadDegrees;
     }
 
+    /**
+    *	Снаряжённый вес ствола в килограммах.
+    */
+    struct WeaponWeight
+    {
+        WeaponId weapon;
+        float kilograms;
+    };
+
+    constexpr WeaponWeight WEAPON_WEIGHTS[] = {
+        {WeaponId::Ak47, 4.30f},
+        {WeaponId::M16, 3.90f},
+        {WeaponId::ShotgunDouble, 3.20f},
+        {WeaponId::ShotgunPump, 3.60f},
+        {WeaponId::SmgSuppressed, 3.00f},
+        {WeaponId::Glock, 0.90f},
+        {WeaponId::Deagle, 2.00f},
+        {WeaponId::PistolSuppressed, 1.20f},
+        {WeaponId::Knife, 0.30f},
+        {WeaponId::Bat, 1.00f},
+        {WeaponId::Rpg, 7.00f}
+    };
+
+    static_assert(static_cast<int>(std::size(WEAPON_WEIGHTS)) == WEAPON_COUNT, "every weapon needs a weight");
+
+    // Боец со снаряжением в той же шкале: ствол оттягивает руки тем сильнее, чем он весомее рядом с самим бойцом.
+    constexpr float CARRIER_WEIGHT = 20.f;
+    constexpr float LIGHTEST_WEAPON_WEIGHT = 0.30f;
+
+    constexpr float WeightOf(WeaponId id)
+    {
+        for (const WeaponWeight& entry : WEAPON_WEIGHTS)
+        {
+            if (entry.weapon == id)
+            {
+                return entry.kilograms;
+            }
+        }
+
+        return LIGHTEST_WEAPON_WEIGHT;
+    }
+
+    /**
+    *	Во сколько раз ствол укорачивает шаг: налегке единица, с РПГ около трёх четвертей.
+    */
+    constexpr float MovePaceOf(WeaponId id)
+    {
+        return (CARRIER_WEIGHT + LIGHTEST_WEAPON_WEIGHT) / (CARRIER_WEIGHT + WeightOf(id));
+    }
 
     struct AmmoKindName
     {

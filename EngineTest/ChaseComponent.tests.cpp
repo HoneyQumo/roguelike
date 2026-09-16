@@ -866,3 +866,49 @@ TEST_F(ChaseComponentTest, ProvokedEnemyWalksToTheGivenPlace)
 
 	EXPECT_GT(enemy->GetTransform()->GetWorldPosition().x, before);
 }
+
+TEST_F(ChaseComponentTest, WithoutAChaseSpeedThePaceNeverChanges)
+{
+	ChaseComponent* chase = CreateEnemy(1, 1, 0.f);
+	auto movement = chase->GetGameObject()->GetComponent<MovementComponent>();
+	CreateHero(2, 1);
+
+	Run(0.5f);
+
+	ASSERT_TRUE(chase->IsChasing());
+	EXPECT_FLOAT_EQ(movement->GetSpeed(), 120.f) << "an enemy without a chase speed sped up on its own";
+}
+
+TEST_F(ChaseComponentTest, SpottingTheTargetSwitchesTheWalkToARun)
+{
+	ChaseComponent* chase = CreateEnemy(1, 1, 0.f);
+	chase->SetChaseSpeed(200.f);
+	auto movement = chase->GetGameObject()->GetComponent<MovementComponent>();
+	CreateHero(2, 1);
+
+	Run(0.5f);
+
+	ASSERT_TRUE(chase->IsChasing());
+	EXPECT_FLOAT_EQ(movement->GetSpeed(), 200.f);
+}
+
+TEST_F(ChaseComponentTest, AnEnemyWhoSeesNobodyKeepsWalking)
+{
+	ChaseComponent* chase = CreateEnemy(1, 1, 0.f);
+	chase->SetChaseSpeed(200.f);
+	auto movement = chase->GetGameObject()->GetComponent<MovementComponent>();
+
+	Run(0.5f);
+
+	ASSERT_FALSE(chase->IsChasing());
+	EXPECT_FLOAT_EQ(movement->GetSpeed(), chase->GetWalkSpeed()) << "the patrol is running for no reason";
+}
+
+TEST_F(ChaseComponentTest, ANegativeChaseSpeedIsRefused)
+{
+	ChaseComponent* chase = CreateEnemy(1, 1, 0.f);
+
+	chase->SetChaseSpeed(-100.f);
+
+	EXPECT_FLOAT_EQ(chase->GetChaseSpeed(), 0.f);
+}

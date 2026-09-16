@@ -60,6 +60,7 @@ namespace RoguelikeGame
             chase->SetAwareness(config.awarenessGain, config.awarenessDecay);
             chase->SetPeripheryHalfAngle(config.peripheryHalfAngle);
             chase->SetShoutRadius(config.shoutRadius);
+            chase->SetChaseSpeed(config.chaseSpeed * MovePaceOf(config.weapon));
 
             object->AddComponent<AwarenessGaugeComponent>();
 

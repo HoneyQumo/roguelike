@@ -6,6 +6,7 @@
 #include "MeleeWeaponComponent.h"
 #include "DodgeRollComponent.h"
 #include "HealthComponent.h"
+#include <MovementComponent.h>
 #include <SpriteMovementAnimationComponent.h>
 #include "GameSettings.h"
 #include "Weapon.h"
@@ -48,6 +49,7 @@ namespace RoguelikeGame
         WeaponComponent* rangedWeapon = nullptr;
         MeleeWeaponComponent* meleeWeapon = nullptr;
         DodgeRollComponent* dodgeRoll = nullptr;
+        XYZEngine::MovementComponent* movement = nullptr;
         HealthComponent* health = nullptr;
 
         XYZEngine::AudioComponent* shotAudio = nullptr;

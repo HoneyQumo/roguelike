@@ -394,15 +394,19 @@ namespace RoguelikeGame
             animation->PlayReload();
         }
 
+        // Свита меняется от призыва к призыву, а в ярости зовутся только тяжёлые отряды.
+        const MinionSquad& squad = BossSquadAt(summonCalls, isEnraged);
+        summonCalls++;
+
         XYZEngine::Vector2Df center = transform->GetWorldPosition();
         for (int index = 0; index < spec.count; index++)
         {
             float angle = 360.f * index / spec.count;
             XYZEngine::Vector2Df offset = XYZEngine::RotateByDegrees({1.f, 0.f}, angle) * spec.radius;
-            summonEvent.Invoke(center + offset);
+            summonEvent.Invoke(center + offset, BossMinionAt(squad, index));
         }
 
-        LOG_INFO(gameObject->GetName() + " calls minions");
+        LOG_INFO(gameObject->GetName() + " calls minions: " + squad.name);
     }
 
     void BossBrainComponent::CastBlast(const BossAbilitySpec& spec)
@@ -543,6 +547,11 @@ namespace RoguelikeGame
         return slot < 0 ? 0 : abilityUses[slot];
     }
 
+    int BossBrainComponent::GetSummonCalls() const
+    {
+        return summonCalls;
+    }
+
     void BossBrainComponent::RegisterMinion(XYZEngine::GameObject* minion)
     {
         if (minion == nullptr)
@@ -575,7 +584,7 @@ namespace RoguelikeGame
         return shotEvent.Subscribe(std::move(onShot));
     }
 
-    XYZEngine::SubscriptionId BossBrainComponent::SubscribeSummon(std::function<void(const XYZEngine::Vector2Df&)> onSummon)
+    XYZEngine::SubscriptionId BossBrainComponent::SubscribeSummon(std::function<void(const XYZEngine::Vector2Df&, TileType)> onSummon)
     {
         return summonEvent.Subscribe(std::move(onSummon));
     }

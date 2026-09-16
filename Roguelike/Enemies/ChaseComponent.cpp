@@ -28,6 +28,11 @@ namespace RoguelikeGame
 		aim = gameObject->GetComponent<AimRotationComponent>();
 		health = gameObject->GetComponent<HealthComponent>();
 
+		if (movement != nullptr)
+		{
+			walkSpeed = movement->GetSpeed();
+		}
+
 		if (health != nullptr)
 		{
 			health->SubscribeDamage([this](const DamageInfo& damage) { OnDamage(damage); });
@@ -203,6 +208,7 @@ namespace RoguelikeGame
 		isInSight = false;
 		band = VisionBand::None;
 		movement->SetDirection({ 0.f, 0.f });
+		ApplyPace();
 
 		if (targetName.empty() || detectionRadius <= 0.f)
 		{
@@ -261,6 +267,7 @@ namespace RoguelikeGame
 		isEngaged = RoguelikeGame::IsEngaged(sense);
 		isChasing = RoguelikeGame::IsTargetDetected(sense);
 		isTargetVisible = sense.isVisible;
+		ApplyPace();
 
 		ApplyAim(sense);
 
@@ -569,6 +576,32 @@ namespace RoguelikeGame
 	void ChaseComponent::SetForcedChase(bool newIsForced)
 	{
 		isForced = newIsForced;
+	}
+
+	void ChaseComponent::SetChaseSpeed(float newChaseSpeed)
+	{
+		chaseSpeed = newChaseSpeed < 0.f ? 0.f : newChaseSpeed;
+	}
+
+	float ChaseComponent::GetChaseSpeed() const
+	{
+		return chaseSpeed;
+	}
+
+	float ChaseComponent::GetWalkSpeed() const
+	{
+		return walkSpeed;
+	}
+
+	// Патруль остаётся шагом, а вот погоня идёт бегом - и тяжёлый ствол укорачивает именно бег.
+	void ChaseComponent::ApplyPace()
+	{
+		if (movement == nullptr || chaseSpeed <= 0.f)
+		{
+			return;
+		}
+
+		movement->SetSpeed(isChasing ? chaseSpeed : walkSpeed);
 	}
 
 	bool ChaseComponent::IsChasing() const

@@ -65,6 +65,7 @@
     <ClCompile Include="Vector.tests.cpp" />
     <ClCompile Include="Matrix2D.tests.cpp" />
     <ClCompile Include="WeaponCatalog.tests.cpp" />
+    <ClCompile Include="WeaponWeight.tests.cpp" />
     <ClCompile Include="WeaponAmmo.tests.cpp" />
     <ClCompile Include="Separation.tests.cpp" />
     <ClCompile Include="PropAlign.tests.cpp" />
@@ -148,6 +149,7 @@
     <ClCompile Include="LevelCatalog.tests.cpp" />
     <ClCompile Include="LevelProgression.tests.cpp" />
     <ClCompile Include="BossCatalog.tests.cpp" />
+    <ClCompile Include="BossSquads.tests.cpp" />
     <ClCompile Include="LevelExitGate.tests.cpp" />
     <ClCompile Include="BossBrain.tests.cpp" />
     <ClCompile Include="CastMark.tests.cpp" />

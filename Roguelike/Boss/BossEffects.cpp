@@ -36,11 +36,11 @@ namespace RoguelikeGame
             }
         });
 
-        brain->SubscribeSummon([brain](const XYZEngine::Vector2Df& point)
+        brain->SubscribeSummon([brain](const XYZEngine::Vector2Df& point, TileType kind)
         {
             Fx::SpawnPuppeteerRift(point, BOSS_MINION_RIFT_RADIUS);
 
-            const EnemyConfig* config = FindEnemyConfig(BOSS_MINION_TILE);
+            const EnemyConfig* config = FindEnemyConfig(kind);
             if (config == nullptr)
             {
                 return;
@@ -53,6 +53,9 @@ namespace RoguelikeGame
                 {
                     XYZEngine::GameObject* target = XYZEngine::GameWorld::Instance()->FindGameObject(chase->GetTargetName());
                     chase->Provoke(target == nullptr ? point : target->GetTransform()->GetWorldPosition());
+
+                    // Свита выходит из портала уже зная, за кем пришла, и цель больше не теряет.
+                    chase->SetForcedChase(true);
                 }
 
                 brain->RegisterMinion(minion);
@@ -155,7 +158,7 @@ namespace RoguelikeGame
             }
         });
 
-        brain->SubscribeSummon([animation](const XYZEngine::Vector2Df&) { animation->ReleaseWindup(); });
+        brain->SubscribeSummon([animation](const XYZEngine::Vector2Df&, TileType) { animation->ReleaseWindup(); });
         brain->SubscribeCastMark([animation](const XYZEngine::Vector2Df&, float, float) { animation->ReleaseWindup(); });
 
         if (health != nullptr)

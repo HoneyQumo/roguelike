@@ -1,7 +1,9 @@
 #pragma once
 
+#include <iterator>
 #include <string_view>
 #include "EnemyConfig.h"
+#include "LevelData.h"
 
 namespace RoguelikeGame
 {
@@ -109,11 +111,54 @@ namespace RoguelikeGame
     inline constexpr BossAbilitySpec BOSS_ABILITIES[] = {
         {BossAbility::Volley, 220.f, 700.f, 0.55f, 0.35f, 6.f, 0.8f, 0.f, 1.f, 7, 90.f},
         {BossAbility::Dash, 260.f, 620.f, 0.45f, 0.45f, 7.f, 2.f, 110.f, 4.f, 0, 0.f},
-        {BossAbility::Summon, 0.f, 900.f, 0.80f, 0.40f, 14.f, 0.f, 90.f, 1.f, 3, 0.f},
+        {BossAbility::Summon, 0.f, 900.f, 0.80f, 0.40f, 11.f, 0.f, 90.f, 1.f, 3, 0.f},
         {BossAbility::Blast, 0.f, 420.f, 0.60f, 0.30f, 9.f, 1.5f, 190.f, 1.f, 0, 0.f}
     };
 
-    constexpr int BOSS_MINION_LIMIT = 4;
+    constexpr int BOSS_MINION_LIMIT = 6;
+
+    /**
+    *	Кого босс зовёт на помощь. Отряды идут от лёгкого к тяжёлому,
+    *	каждый призыв берёт следующий по кругу - свита не повторяется подряд.
+    */
+    constexpr int BOSS_SQUAD_SIZE = 3;
+
+    struct MinionSquad
+    {
+        const char* name;
+        TileType members[BOSS_SQUAD_SIZE];
+    };
+
+    inline constexpr MinionSquad BOSS_SQUADS[] = {
+        {"fists", {TileType::GruntSpawn, TileType::GruntSpawn, TileType::GruntSpawn}},
+        {"guns", {TileType::MarauderSpawn, TileType::MarauderSpawn, TileType::AssaultSpawn}},
+        {"shields", {TileType::ShieldSpawn, TileType::ShieldSpawn, TileType::GruntSpawn}},
+        {"storm", {TileType::AssaultSpawn, TileType::HeavySpawn, TileType::MarauderSpawn}}
+    };
+
+    constexpr int BOSS_SQUAD_COUNT = static_cast<int>(std::size(BOSS_SQUADS));
+
+    // В ярости лёгкие отряды больше не выходят: с этого места и до конца списка.
+    constexpr int BOSS_HARD_SQUAD_FROM = 2;
+
+    static_assert(BOSS_HARD_SQUAD_FROM < BOSS_SQUAD_COUNT, "enraged boss needs squads to call");
+
+    constexpr const MinionSquad& BossSquadAt(int callNumber, bool isEnraged)
+    {
+        int call = callNumber < 0 ? 0 : callNumber;
+
+        if (!isEnraged)
+        {
+            return BOSS_SQUADS[call % BOSS_SQUAD_COUNT];
+        }
+
+        return BOSS_SQUADS[BOSS_HARD_SQUAD_FROM + call % (BOSS_SQUAD_COUNT - BOSS_HARD_SQUAD_FROM)];
+    }
+
+    constexpr TileType BossMinionAt(const MinionSquad& squad, int index)
+    {
+        return squad.members[(index < 0 ? 0 : index) % BOSS_SQUAD_SIZE];
+    }
 
     constexpr bool HasWeaponLayer(const BossDefinition& boss)
     {

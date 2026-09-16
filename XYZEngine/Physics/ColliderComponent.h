@@ -8,6 +8,7 @@
 #include "EventList.h"
 #include "Trigger.h"
 #include "PhysicsSystem.h"
+#include "Vector.h"
 
 namespace XYZEngine
 {
@@ -52,6 +53,7 @@ namespace XYZEngine
 
 		sf::FloatRect bounds;
 		sf::FloatRect gridBounds;
+		Vector2Df lastPlace = {0.f, 0.f};
 		bool isInGrid = false;
 		unsigned int order = 0u;
 		RigidbodyComponent* body = nullptr;

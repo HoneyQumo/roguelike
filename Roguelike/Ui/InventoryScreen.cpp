@@ -351,15 +351,15 @@ namespace RoguelikeGame
                 continue;
             }
 
-            const sf::Texture* texture = XYZEngine::ResourceSystem::Instance()->GetTextureShared(ItemTextureName(slot.item->id));
+            const sf::Texture* texture = XYZEngine::ResourceSystem::Instance()->GetTextureShared(ItemTextureName(slot.item.id));
             if (texture != nullptr)
             {
                 widgets.icon->SetTexture(texture);
-                widgets.icon->SetColor(slot.item->icon.tint);
+                widgets.icon->SetColor(slot.item.icon.tint);
                 widgets.icon->SetVisible(true);
             }
 
-            widgets.name->SetUtf8Text(slot.item->name.c_str());
+            widgets.name->SetUtf8Text(slot.item.name.c_str());
             widgets.count->SetVisible(slot.count > 1);
             widgets.count->SetText(sf::String(std::to_string(slot.count)));
             widgets.panel->SetFillColor(isSelected ? INVENTORY_SLOT_SELECTED_COLOR : INVENTORY_SLOT_FILLED_COLOR);
@@ -374,7 +374,8 @@ namespace RoguelikeGame
 
         if (inventory != nullptr && selectedSlot >= 0 && selectedSlot < inventory->GetCapacity())
         {
-            item = inventory->GetSlot(selectedSlot).item;
+            const InventorySlot& slot = inventory->GetSlot(selectedSlot);
+            item = slot.IsEmpty() ? nullptr : &slot.item;
         }
 
         hint->SetUtf8Text(InventoryHint(item).c_str());

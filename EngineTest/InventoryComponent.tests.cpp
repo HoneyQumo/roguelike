@@ -261,3 +261,50 @@ TEST_F(InventoryTest, StacksFillGapsBeforeTakingNewSlots)
 	EXPECT_EQ(inventory->GetSlot(0).count, 5);
 	EXPECT_TRUE(inventory->GetSlot(1).Holds("key_rusty"));
 }
+
+TEST_F(InventoryTest, AStoredItemOutlivesTheDefinitionItCameFrom)
+{
+	InventoryComponent* inventory = CreateInventory(6);
+
+	{
+		ItemDefinition passing = MakePotion();
+		ASSERT_TRUE(inventory->TryAdd(passing));
+	}
+
+	EXPECT_TRUE(inventory->GetSlot(0).Holds("potion_small"));
+	EXPECT_EQ(inventory->GetSlot(0).item.name, "Potion");
+	EXPECT_EQ(inventory->CountOf("potion_small"), 1);
+}
+
+TEST_F(InventoryTest, ASecondItemStacksOntoOneWhoseDefinitionIsLongGone)
+{
+	InventoryComponent* inventory = CreateInventory(6);
+
+	{
+		ItemDefinition first = MakePotion();
+		ASSERT_TRUE(inventory->TryAdd(first));
+	}
+
+	ItemDefinition second = MakePotion();
+
+	EXPECT_TRUE(inventory->TryAdd(second));
+	EXPECT_EQ(inventory->GetUsedSlots(), 1);
+	EXPECT_EQ(inventory->GetSlot(0).count, 2);
+}
+
+TEST_F(InventoryTest, RemovingTellsWhatLeftEvenAfterTheSlotIsCleared)
+{
+	InventoryComponent* inventory = CreateInventory(6);
+	std::string removedId;
+
+	{
+		ItemDefinition passing = MakeKey();
+		ASSERT_TRUE(inventory->TryAdd(passing));
+	}
+
+	inventory->SubscribeRemoved([&removedId](const ItemDefinition& item, int) { removedId = item.id; });
+
+	EXPECT_TRUE(inventory->Remove(0));
+	EXPECT_EQ(removedId, "key_rusty");
+	EXPECT_TRUE(inventory->GetSlot(0).IsEmpty());
+}

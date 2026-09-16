@@ -11,7 +11,7 @@ namespace RoguelikeGame
 {
     struct InventorySlot
     {
-        const ItemDefinition* item = nullptr;
+        ItemDefinition item;
         int count = 0;
 
         bool IsEmpty() const;

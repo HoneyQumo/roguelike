@@ -12,6 +12,7 @@
 #include "BossBrainComponent.h"
 #include "CameraDirectorComponent.h"
 #include "CarArrival.h"
+#include "TireMark.h"
 #include "SwitchComponent.h"
 #include "CutscenePlayerComponent.h"
 #include "PlayerHudBinderComponent.h"
@@ -67,6 +68,7 @@ namespace RoguelikeGame
                     {
                         state = State::PlayerDied;
                         gameOverDelay.Start(GAME_OVER_DELAY);
+                        SilenceCar();
                     });
                 }
             }
@@ -365,6 +367,9 @@ namespace RoguelikeGame
         }
 
         arrivalTime = 0.f;
+        smokeTime = 0.f;
+        markDrift = {0.f, 0.f};
+        wasSkidding = false;
 
         scene->SetHandler(ARRIVAL_BEAT_DRIVE, [this, carObject](float deltaTime)
         {
@@ -376,14 +381,84 @@ namespace RoguelikeGame
             if (beat == ARRIVAL_BEAT_DRIVE)
             {
                 ShowCar(carObject, true);
+                car->StartEngine();
             }
 
             if (beat == ARRIVAL_BEAT_DOOR)
             {
                 OpenCarDoor(carObject, true);
                 car->SetArrived(true);
+                car->StopEngine();
             }
         });
+    }
+
+    /**
+    *	Дым и следы идут, пока машину тащит юзом, и тем гуще, чем сильнее занос.
+    *
+    *	След ложится по направлению движения, а не по корпусу: в заносе машина развёрнута
+    *	поперёк, а тащит её вперёд - в этом вся картинка.
+    */
+    void DeveloperLevel::TrailSkid(EscapeCarComponent* car, const CarPose& pose, const XYZEngine::Vector2Df& step, float deltaTime)
+    {
+        if (pose.skid <= 0.f)
+        {
+            return;
+        }
+
+        if (!wasSkidding)
+        {
+            wasSkidding = true;
+            car->Screech();
+        }
+
+        smokeTime += deltaTime * pose.skid;
+        while (smokeTime >= ARRIVAL_SMOKE_STEP)
+        {
+            smokeTime -= ARRIVAL_SMOKE_STEP;
+
+            for (bool isLeft : {true, false})
+            {
+                Fx::SpawnTireSmoke(WheelPlace(pose, isLeft), ARRIVAL_SMOKE_SCALE);
+            }
+        }
+
+        // Сдвиг копится целиком: направление одного кадра у почти вставшей машины - шум,
+        // и последние следы ложатся поперёк дороги.
+        if (deltaTime <= 0.f || step.GetLength() / deltaTime < ARRIVAL_MARK_MIN_SPEED)
+        {
+            markDrift = {0.f, 0.f};
+            return;
+        }
+
+        markDrift = markDrift + step;
+        if (markDrift.GetLength() < ARRIVAL_MARK_STEP)
+        {
+            return;
+        }
+
+        float along = XYZEngine::DegreesFromDirection(markDrift.Normalized());
+        markDrift = {0.f, 0.f};
+
+        for (bool isLeft : {true, false})
+        {
+            TireMark::Spawn(WheelPlace(pose, isLeft), along);
+        }
+    }
+
+    void DeveloperLevel::SilenceCar()
+    {
+        XYZEngine::GameObject* carObject = level.GetEscapeCar();
+        if (carObject == nullptr)
+        {
+            return;
+        }
+
+        auto car = carObject->GetComponent<EscapeCarComponent>();
+        if (car != nullptr)
+        {
+            car->StopEngine();
+        }
     }
 
     void DeveloperLevel::DriveArrival(XYZEngine::GameObject* carObject, float deltaTime)
@@ -397,8 +472,12 @@ namespace RoguelikeGame
         arrivalTime += deltaTime;
 
         CarPose pose = ArrivalPose(car->GetParkPlace(), arrivalTime / ARRIVAL_DRIVE_TIME);
+        XYZEngine::Vector2Df step = pose.place - carObject->GetTransform()->GetWorldPosition();
+
         carObject->GetTransform()->SetWorldPosition(pose.place);
         carObject->GetTransform()->SetWorldRotation(pose.angle);
+
+        TrailSkid(car, pose, step, deltaTime);
     }
 
     /**
@@ -506,16 +585,38 @@ namespace RoguelikeGame
                 TakeControl();
                 OpenCarDoor(carObject, false);
 
+                auto car = carObject->GetComponent<EscapeCarComponent>();
+                if (car != nullptr)
+                {
+                    car->StartEngine();
+                }
+
                 if (hudScreen != nullptr)
                 {
                     hudScreen->ShowNotice(ESCAPE_NOTICE);
                 }
             }
 
+            // Длинный кадр может перешагнуть весь такт посадки - тогда доворот не успеет
+            // отыграться ни разу, и машина уедет боком.
+            if (beat == ESCAPE_BEAT_DRIVE)
+            {
+                carObject->GetTransform()->SetWorldRotation(ESCAPE_FACING_OUT);
+            }
+
             if (beat == ESCAPE_BEAT_LEAVE && fadeScreen != nullptr)
             {
                 fadeScreen->FadeOut(ESCAPE_LEAVE_TIME);
             }
+        });
+
+        boardTime = 0.f;
+
+        // Машина стоит поперёк, а ехать ей направо: доворачивает, пока закрывается дверь.
+        scene->SetHandler(ESCAPE_BEAT_BOARD, [this, carObject](float deltaTime)
+        {
+            boardTime += deltaTime;
+            carObject->GetTransform()->SetWorldRotation(BoardingAngle(boardTime / ESCAPE_BOARD_TIME));
         });
 
         scene->SetHandler(ESCAPE_BEAT_DRIVE, [this, carObject](float deltaTime)
@@ -715,7 +816,7 @@ namespace RoguelikeGame
         level.Clear();
 
         for (const char* temporaryName : {BLOOD_POOL_OBJECT_NAME, FX_OBJECT_NAME, PROJECTILE_OBJECT_NAME,
-                                          ROCKET_OBJECT_NAME, CAST_MARK_OBJECT_NAME})
+                                          ROCKET_OBJECT_NAME, CAST_MARK_OBJECT_NAME, TIRE_MARK_OBJECT_NAME})
         {
             GameWorld::Instance()->DestroyGameObjects(temporaryName);
         }
@@ -900,6 +1001,7 @@ namespace RoguelikeGame
         camera = nullptr;
         takenParts.clear();
         arrivalTime = 0.f;
+        boardTime = 0.f;
         particles = nullptr;
 
         level.Clear();

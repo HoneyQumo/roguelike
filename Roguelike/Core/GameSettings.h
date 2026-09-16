@@ -383,13 +383,47 @@ namespace RoguelikeGame
     constexpr auto ARRIVAL_BEAT_DRIVE = "car_drive";
     constexpr auto ARRIVAL_BEAT_DOOR = "car_door";
     constexpr float ARRIVAL_CALL_RANGE = 12.f * TILE_SIZE;
-    constexpr float ARRIVAL_ENTRY_OFFSET = 22.f * TILE_SIZE;
+    constexpr float ARRIVAL_ENTRY_OFFSET = 16.f * TILE_SIZE;
     constexpr float ARRIVAL_LOOK_TIME = 0.8f;
     constexpr float ARRIVAL_DRIVE_TIME = 2.f;
     constexpr float ARRIVAL_DOOR_TIME = 0.9f;
     constexpr float ARRIVAL_SKID_START = 0.55f;
     constexpr float ARRIVAL_SKID_SLIDE = 28.f;
     constexpr float ARRIVAL_FACING_IN = 180.f;
+
+    // Машина встаёт поперёк дороги дверью на запад - туда, откуда бежит игрок.
+    constexpr float ARRIVAL_FACING_PARKED = 270.f;
+
+    // Доворот записан как 360, а не как 0: вращение продолжает занос, а не отматывает его.
+    constexpr float ESCAPE_FACING_OUT = 360.f;
+
+    // Задняя ось и колея считаются от кузова: изменится машина - следы переедут сами.
+    constexpr float CAR_REAR_AXLE_OFFSET = ESCAPE_CAR_WIDTH * 0.30f;
+    constexpr float CAR_WHEEL_SPACING = ESCAPE_CAR_HEIGHT * 0.36f;
+
+    // Дым и следы во время заноса.
+    constexpr auto SMOKE_TEXTURE = "tire_smoke";
+    constexpr auto SMOKE_TEXTURE_FILE = "Resources/Textures/smoke.png";
+    constexpr float ARRIVAL_SMOKE_STEP = 0.03f;
+    constexpr float ARRIVAL_SMOKE_SCALE = 0.75f;
+
+    constexpr auto TIRE_MARK_OBJECT_NAME = "TireMark";
+    constexpr auto TIRE_MARK_PROP = "skid_mark";
+    constexpr int TIRE_MARK_RENDER_LAYER = 8;
+    constexpr float TIRE_MARK_LENGTH = 72.f;
+    constexpr float TIRE_MARK_WIDTH = 18.f;
+    constexpr float ARRIVAL_MARK_STEP = 16.f;
+
+    // Вставшая машина больше не чертит: последние крупицы хода - это возврат заноса,
+    // и след от них ложится поперёк дороги.
+    constexpr float ARRIVAL_MARK_MIN_SPEED = 160.f;
+
+    constexpr auto CAR_ENGINE_SOUND = "car_engine";
+    constexpr auto CAR_ENGINE_SOUND_FILE = "Resources/Audio/car_engine.wav";
+    constexpr auto CAR_SKID_SOUND = "car_skid";
+    constexpr auto CAR_SKID_SOUND_FILE = "Resources/Audio/car_skid.wav";
+    constexpr float CAR_ENGINE_VOLUME = 28.f;
+    constexpr float CAR_SKID_VOLUME = 42.f;
     /**
     *	Волна выходит из окна вокруг игрока: не под ногами, но и не за горизонтом.
     *	На длинной карте точки разбросаны на сотни клеток, и без окна волна

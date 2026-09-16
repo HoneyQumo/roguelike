@@ -50,6 +50,7 @@ FRAMES = [
 ]
 
 OPEN_DOOR_FRAME = 'car_van_open'
+SKID_FRAME = 'skid_mark'
 
 WRECK_SOURCE = 'PNG/Cars/car_black_1.png'
 SOOT = (26, 24, 24)
@@ -180,6 +181,22 @@ def OpenDoor(tile):
     return tile
 
 
+SKID_ALPHA = 165
+
+
+def Solidify(image, top):
+    """Kenney рисует след почти прозрачным - он рассчитан на светлый трек.
+
+    На нашем тёмном асфальте исходных 10% непрозрачности не видно вовсе.
+    """
+    pixels = np.asarray(image).astype(float)
+    highest = pixels[..., 3].max()
+    if highest > 0:
+        pixels[..., 3] *= top / highest
+
+    return Image.fromarray(np.clip(pixels, 0, 255).astype(np.uint8), 'RGBA')
+
+
 def Fit(image, width, height, isSideways):
     if isSideways:
         image = image.rotate(-90, expand=True)
@@ -213,6 +230,9 @@ def Build():
             if ramp is not None:
                 pixels = Recolour(np.asarray(image).astype(float), ramp)
                 image = Image.fromarray(np.clip(pixels, 0, 255).astype(np.uint8), 'RGBA')
+
+            if name == SKID_FRAME:
+                image = Solidify(image, SKID_ALPHA)
 
             tile = Fit(image, frameWidth, frameHeight, isSideways)
             if name == OPEN_DOOR_FRAME:

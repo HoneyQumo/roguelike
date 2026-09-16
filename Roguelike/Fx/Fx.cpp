@@ -70,6 +70,12 @@ namespace RoguelikeGame
         Spawn(EXPLOSION_TEXTURE, FX_EXPLOSION, position, 0.f, 2.f * radius / static_cast<float>(FX_EXPLOSION.width));
     }
 
+    // Клуб случайно повёрнут: одинаково лежащие клубы выдают один и тот же спрайт.
+    void Fx::SpawnTireSmoke(const XYZEngine::Vector2Df& position, float scale)
+    {
+        Spawn(SMOKE_TEXTURE, FX_TIRE_SMOKE, position, random<float>(0.f, 360.f), scale);
+    }
+
     void Fx::SpawnHit(const std::string& effect, const XYZEngine::Vector2Df& position, const XYZEngine::Vector2Df& direction)
     {
         if (effect == "none")

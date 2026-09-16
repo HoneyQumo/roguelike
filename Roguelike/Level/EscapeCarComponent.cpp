@@ -2,6 +2,7 @@
 #include "GameSettings.h"
 #include <ColliderComponent.h>
 #include <GameObject.h>
+#include <ResourceSystem.h>
 #include <TransformComponent.h>
 #include <LoggerRegistry.h>
 
@@ -118,6 +119,61 @@ namespace RoguelikeGame
     void EscapeCarComponent::SetHero(XYZEngine::GameObject* newHero)
     {
         hero = newHero;
+    }
+
+    void EscapeCarComponent::SetEngineAudio(XYZEngine::AudioComponent* audio)
+    {
+        engineAudio = audio;
+    }
+
+    void EscapeCarComponent::SetSkidAudio(XYZEngine::AudioComponent* audio)
+    {
+        skidAudio = audio;
+    }
+
+    void EscapeCarComponent::StartEngine()
+    {
+        if (engineAudio == nullptr || engineAudio->IsPlaying())
+        {
+            return;
+        }
+
+        const sf::SoundBuffer* loop = XYZEngine::ResourceSystem::Instance()->GetSound(CAR_ENGINE_SOUND);
+        if (loop == nullptr)
+        {
+            return;
+        }
+
+        engineAudio->SetSound(loop);
+        engineAudio->SetLoop(true);
+        engineAudio->SetVolume(CAR_ENGINE_VOLUME);
+        engineAudio->Play();
+    }
+
+    void EscapeCarComponent::StopEngine()
+    {
+        if (engineAudio != nullptr)
+        {
+            engineAudio->Stop();
+        }
+    }
+
+    void EscapeCarComponent::Screech()
+    {
+        if (skidAudio == nullptr)
+        {
+            return;
+        }
+
+        const sf::SoundBuffer* screech = XYZEngine::ResourceSystem::Instance()->GetSound(CAR_SKID_SOUND);
+        if (screech == nullptr)
+        {
+            return;
+        }
+
+        skidAudio->SetSound(screech);
+        skidAudio->SetVolume(CAR_SKID_VOLUME);
+        skidAudio->Play();
     }
 
     void EscapeCarComponent::SetArrived(bool newHasArrived)

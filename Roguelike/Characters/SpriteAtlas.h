@@ -172,6 +172,8 @@ namespace RoguelikeGame
     // Огонь живёт в своём атласе: большое пламя сверху, мелкие очаги под ним.
     constexpr FxStrip FX_FIRE_BIG = {0, 0, 64, 64, 8, 32.f, 32.f, 0.09f};
     constexpr FxStrip FX_FIRE_SMALL = {0, 64, 32, 32, 8, 16.f, 16.f, 0.07f};
+    // Дым от покрышек тоже в своём атласе: один прогон от клуба до ничего.
+    constexpr FxStrip FX_TIRE_SMOKE = {0, 0, 48, 48, 6, 24.f, 24.f, 0.075f};
     constexpr FxStrip FX_BLOOD_HIT = {0, 152, 32, 24, 4, 6.f, 12.f, 0.045f};
     constexpr FxStrip FX_BLOOD_SPECK = {0, 176, 32, 24, 1, 6.f, 12.f, 0.045f};
     constexpr FxStrip FX_IMPACT = {0, 200, 24, 24, 4, 4.f, 12.f, 0.040f};

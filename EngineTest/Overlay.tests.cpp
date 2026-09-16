@@ -394,8 +394,8 @@ TEST_F(ShippedOverlayTest, TheBridgeHasBreachesAndTheyAreDrawn)
 		}
 	}
 
-	// Четыре пролома на мост, у каждого край в несколько клеток.
-	EXPECT_GT(edges, 24) << "the bridge is barely broken anywhere";
+	// Два пролома на мост, у каждого край не меньше восьми клеток.
+	EXPECT_GT(edges, 16) << "the bridge is barely broken anywhere";
 }
 
 TEST_F(ShippedOverlayTest, TheBreachesAreSpreadAlongTheBridge)

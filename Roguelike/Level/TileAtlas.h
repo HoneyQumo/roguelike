@@ -136,8 +136,10 @@ namespace RoguelikeGame
     {
         TileType tile = TileAt(level, column, row);
 
-        return tile == TileType::Floor || tile == TileType::Line || tile == TileType::WaveSpawn
-            || tile == TileType::PlayerSpawn || tile == TileType::Entrance || tile == TileType::Exit;
+        // Дорога - это всё, по чему ходят. Перечислять её виды нельзя: клетка со
+        // спавном врага или с дверью выпала бы из списка, и край пролома рядом
+        // с ней не нарисовался бы.
+        return tile != TileType::Empty && tile != TileType::Water && tile != TileType::Wall;
     }
 
     inline int BreachMask(const LevelData& level, int column, int row)

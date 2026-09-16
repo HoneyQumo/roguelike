@@ -401,12 +401,22 @@ TEST_F(ShippedBridgeGuardsTest, EveryRoadBlockHasSomebodyHoldingIt)
 	RoguelikeGame::LevelData bridge = RoguelikeGame::LoadAct("Resources/Acts/act1_bridge.config");
 
 	// Барьеры стоят столбом поперёк дороги - весь блокпост это одна колонка.
-	std::set<int> blocks;
+	// Одиночные барьеры разбросаны по мосту как укрытия, они постом не считаются.
+	std::map<int, int> barriers;
 	for (const RoguelikeGame::PropPlacement& prop : bridge.props)
 	{
 		if (prop.propId == "road_barrier")
 		{
-			blocks.insert(prop.column);
+			barriers[prop.column]++;
+		}
+	}
+
+	std::set<int> blocks;
+	for (const auto& column : barriers)
+	{
+		if (column.second >= 4)
+		{
+			blocks.insert(column.first);
 		}
 	}
 
@@ -453,7 +463,7 @@ TEST_F(ShippedBridgeGuardsTest, ABlockLetsTheRunnerThroughInsteadOfSealingTheBri
 	// Между отбойниками 12 полос движения: заслон обязан оставить проход.
 	for (const auto& block : barriers)
 	{
-		EXPECT_LT(block.second, 11) << "the block at column " << block.first << " walls the bridge off completely";
+		EXPECT_LT(block.second, 11) << "the barriers at column " << block.first << " wall the bridge off completely";
 	}
 }
 

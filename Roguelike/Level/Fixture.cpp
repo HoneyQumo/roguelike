@@ -104,6 +104,11 @@ namespace RoguelikeGame
         car->SetReachCollider(reach);
         car->SetParkPlace(position);
 
+        // Звук живёт на машине, а не на сцене: сцена умирает сразу и оборвала бы его.
+        // Мотор и визг звучат вместе, поэтому компонентов два: в одном помещается один звук.
+        car->SetEngineAudio(gameObject->AddComponent<XYZEngine::AudioComponent>());
+        car->SetSkidAudio(gameObject->AddComponent<XYZEngine::AudioComponent>());
+
         return gameObject;
     }
 }

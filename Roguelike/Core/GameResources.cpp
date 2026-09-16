@@ -106,6 +106,10 @@ namespace RoguelikeGame
                                                                {FX_FIRE_SMALL.x, FX_FIRE_SMALL.y, FX_FIRE_SMALL.width, FX_FIRE_SMALL.height},
                                                                FX_FIRE_SMALL.frames, false);
 
+        XYZEngine::ResourceSystem::Instance()->LoadTextureStrip(SMOKE_TEXTURE, SMOKE_TEXTURE_FILE,
+                                                               {FX_TIRE_SMOKE.x, FX_TIRE_SMOKE.y, FX_TIRE_SMOKE.width, FX_TIRE_SMOKE.height},
+                                                               FX_TIRE_SMOKE.frames, false);
+
         LoadBossFxStrip(PUPPETEER_RIFT_TEXTURE, FX_PUPPETEER_RIFT);
         LoadBossFxStrip(PUPPETEER_CLOUD_TEXTURE, FX_PUPPETEER_CLOUD);
         LoadBossFxStrip(PUPPETEER_SNAP_TEXTURE, FX_PUPPETEER_SNAP);
@@ -128,6 +132,8 @@ namespace RoguelikeGame
         XYZEngine::ResourceSystem::Instance()->LoadSound(DOOR_OPEN_SOUND, DOOR_OPEN_SOUND_FILE);
         XYZEngine::ResourceSystem::Instance()->LoadSound(LEVER_SOUND, LEVER_SOUND_FILE);
         XYZEngine::ResourceSystem::Instance()->LoadSound(HATCH_SOUND, HATCH_SOUND_FILE);
+        XYZEngine::ResourceSystem::Instance()->LoadSound(CAR_ENGINE_SOUND, CAR_ENGINE_SOUND_FILE);
+        XYZEngine::ResourceSystem::Instance()->LoadSound(CAR_SKID_SOUND, CAR_SKID_SOUND_FILE);
         LoadFixtures();
         LoadVoiceLines();
 

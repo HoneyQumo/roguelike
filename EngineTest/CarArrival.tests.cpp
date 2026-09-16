@@ -8,6 +8,11 @@
 
 using RoguelikeGame::ARRIVAL_CALL_RANGE;
 using RoguelikeGame::ARRIVAL_ENTRY_OFFSET;
+using RoguelikeGame::ARRIVAL_FACING_PARKED;
+using RoguelikeGame::BoardingAngle;
+using RoguelikeGame::CAR_WHEEL_SPACING;
+using RoguelikeGame::ESCAPE_FACING_OUT;
+using RoguelikeGame::WheelPlace;
 using RoguelikeGame::ArrivalPose;
 using RoguelikeGame::CarPose;
 using RoguelikeGame::CheckLevel;
@@ -38,16 +43,86 @@ TEST(CarArrivalTest, TheCarWaitsOffTheMapNoseFirst)
 
 	EXPECT_FLOAT_EQ(start.place.x, PARK.x + ARRIVAL_ENTRY_OFFSET);
 	EXPECT_FLOAT_EQ(start.place.y, PARK.y);
-	EXPECT_GT(start.angle, 90.f) << "the car arrives driving backwards";
+
+	// Машина едет налево, значит и нос смотрит налево.
+	EXPECT_LT(XYZEngine::DirectionFromDegrees(start.angle).x, -0.9f) << "the car arrives driving backwards";
 }
 
-TEST(CarArrivalTest, ItStopsExactlyOnItsPlaceFacingTheWayOut)
+TEST(CarArrivalTest, ItStopsAcrossTheRoadWithTheDoorTowardsTheRunner)
 {
 	CarPose parked = ArrivalPose(PARK, 1.f);
 
 	EXPECT_FLOAT_EQ(parked.place.x, PARK.x);
-	EXPECT_FLOAT_EQ(parked.place.y, PARK.y) << "the car stayed sideways after the skid";
-	EXPECT_FLOAT_EQ(parked.angle, 0.f);
+	EXPECT_FLOAT_EQ(parked.place.y, PARK.y) << "the car never settled after the skid";
+	EXPECT_FLOAT_EQ(parked.angle, ARRIVAL_FACING_PARKED);
+
+	// Дверь нарисована на нижней кромке кадра, то есть на -90 от носа.
+	XYZEngine::Vector2Df door = XYZEngine::DirectionFromDegrees(parked.angle - 90.f);
+
+	EXPECT_LT(door.x, -0.9f) << "the open door does not face the way the hero runs from";
+}
+
+TEST(CarArrivalTest, TheCarTurnsOnlyAQuarterAndAlwaysTheSameWay)
+{
+	float previous = ArrivalPose(PARK, 0.f).angle;
+	for (int step = 1; step <= 20; step++)
+	{
+		float now = ArrivalPose(PARK, step / 20.f).angle;
+
+		EXPECT_GE(now, previous) << "the car swung back at step " << step;
+		previous = now;
+	}
+
+	EXPECT_FLOAT_EQ(ArrivalPose(PARK, 1.f).angle - ArrivalPose(PARK, 0.f).angle, 90.f);
+}
+
+TEST(CarArrivalTest, TheSkidStrengthRisesWithTheTurn)
+{
+	EXPECT_FLOAT_EQ(ArrivalPose(PARK, 0.3f).skid, 0.f) << "smoke would start while the car is still far away";
+	EXPECT_GT(ArrivalPose(PARK, 0.8f).skid, 0.f);
+	EXPECT_FLOAT_EQ(ArrivalPose(PARK, 1.f).skid, 1.f);
+}
+
+TEST(CarArrivalTest, TheWheelsSitUnderTheCarAndTurnWithIt)
+{
+	CarPose straight;
+	straight.place = PARK;
+	straight.angle = 0.f;
+
+	XYZEngine::Vector2Df left = WheelPlace(straight, true);
+	XYZEngine::Vector2Df right = WheelPlace(straight, false);
+
+	// Нос смотрит на восток: задняя ось позади, колёса разнесены по вертикали.
+	EXPECT_LT(left.x, PARK.x);
+	EXPECT_FLOAT_EQ(left.x, right.x);
+	EXPECT_GT(left.y, right.y);
+
+	CarPose across = straight;
+	across.angle = ARRIVAL_FACING_PARKED;
+
+	// Развернули поперёк - колёса разъехались уже по горизонтали.
+	EXPECT_NEAR(WheelPlace(across, true).x - WheelPlace(across, false).x, 2.f * CAR_WHEEL_SPACING, 0.01f);
+	EXPECT_GT(WheelPlace(across, true).y, PARK.y) << "the rear axle ended up in front of the car";
+}
+
+TEST(CarArrivalTest, BoardingStraightensTheCarOutForTheWayItLeaves)
+{
+	EXPECT_FLOAT_EQ(BoardingAngle(0.f), ARRIVAL_FACING_PARKED) << "the car jumped before the door even closed";
+	EXPECT_FLOAT_EQ(BoardingAngle(1.f), ESCAPE_FACING_OUT);
+
+	// Доворот продолжает занос, а не отматывает его назад.
+	float previous = BoardingAngle(0.f);
+	for (int step = 1; step <= 10; step++)
+	{
+		float now = BoardingAngle(step / 10.f);
+
+		EXPECT_GE(now, previous) << "the car unwound instead of finishing the turn";
+		previous = now;
+	}
+
+	XYZEngine::Vector2Df nose = XYZEngine::DirectionFromDegrees(BoardingAngle(1.f));
+
+	EXPECT_GT(nose.x, 0.9f) << "the car would drive away sideways";
 }
 
 TEST(CarArrivalTest, ItOnlyEverDrivesTowardsThePlace)
@@ -65,9 +140,10 @@ TEST(CarArrivalTest, ItOnlyEverDrivesTowardsThePlace)
 TEST(CarArrivalTest, ItBrakesInsteadOfCruisingIn)
 {
 	float half = ArrivalPose(PARK, 0.5f).place.x - PARK.x;
+	float before = ARRIVAL_ENTRY_OFFSET - half;
 
-	// Половина времени - и почти весь путь позади: остальное машина уже тормозит.
-	EXPECT_LT(half, ARRIVAL_ENTRY_OFFSET * 0.25f) << "the car crawled in at an even pace";
+	// За первую половину времени машина проходит заметно больше, чем за вторую.
+	EXPECT_GT(before, half * 2.f) << "the car crawled in at an even pace";
 }
 
 TEST(CarArrivalTest, TheSkidComesWithTheBrakingAndNotBefore)
@@ -77,8 +153,8 @@ TEST(CarArrivalTest, TheSkidComesWithTheBrakingAndNotBefore)
 
 	float turning = ArrivalPose(PARK, 0.8f).angle;
 
-	EXPECT_LT(turning, ArrivalPose(PARK, 0.f).angle);
-	EXPECT_GT(turning, 0.f);
+	EXPECT_GT(turning, ArrivalPose(PARK, 0.f).angle);
+	EXPECT_LT(turning, ARRIVAL_FACING_PARKED);
 }
 
 TEST(CarArrivalTest, TheTailSlidesOutAndComesBack)

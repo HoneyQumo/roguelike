@@ -75,6 +75,46 @@ def Write(name, samples, loudness):
         name, len(frames) / float(RATE), np.sqrt((ready ** 2).mean()), np.abs(ready).max()))
 
 
+def Seam(samples, seconds=0.03):
+    """Стык петли: хвост подмешивается в начало, иначе на повторе слышен щелчок."""
+    blend = min(int(RATE * seconds), len(samples) // 4)
+    if blend <= 0:
+        return samples
+
+    out = samples[:-blend].copy()
+    ramp = np.linspace(0.0, 1.0, blend)
+    out[:blend] = out[:blend] * ramp + samples[-blend:] * (1.0 - ramp)
+
+    return out
+
+
+def Resonate(samples, fromHz, toHz, sharpness, passes=2):
+    """Двухполюсный резонатор с уползающей частотой - из шума получается визг.
+
+    Один проход оставляет вокруг полосы слишком много шипения, поэтому по
+    умолчанию фильтр проходит дважды: склоны становятся вдвое круче.
+    """
+    track = np.linspace(fromHz, toHz, len(samples))
+    radius = np.exp(-np.pi * sharpness / RATE)
+    turn = 2.0 * radius * np.cos(2.0 * np.pi * track / RATE)
+
+    out = samples
+    for _ in range(passes):
+        source = out
+        out = np.zeros(len(samples))
+        back1 = 0.0
+        back2 = 0.0
+        for index in range(len(samples)):
+            value = source[index] + turn[index] * back1 - radius * radius * back2
+            out[index] = value
+            back2 = back1
+            back1 = value
+
+        out = out * (1.0 - radius)
+
+    return out
+
+
 def Door():
     return Fade(Trim(Read('door_open_01')))
 
@@ -96,7 +136,36 @@ def Hatch():
     return Fade(track, 0.004, 0.08)
 
 
+def Engine():
+    return Seam(Read('car_engine_loop'))
+
+
+def Skid():
+    """Визг покрышек синтезируется: записи заноса под CC0 в открытом доступе не нашлось.
+
+    Резина на асфальте - это узкая резонансная полоса в шуме, которая ползёт вниз
+    вместе со скоростью, и частая дрожь поверх: колесо то цепляется, то срывается.
+    """
+    rng = np.random.default_rng(7)
+    length = int(RATE * 1.05)
+    noise = rng.normal(0.0, 1.0, length)
+
+    squeal = Resonate(noise, 1650.0, 620.0, 55.0)
+    upper = Resonate(noise, 3300.0, 1240.0, 120.0) * 0.35
+    road = Resonate(noise, 220.0, 150.0, 600.0, 1) * 0.18
+
+    at = np.arange(length) / float(RATE)
+    chirp = 1.0 + 0.22 * np.sin(2.0 * np.pi * 27.0 * at)
+
+    # Срыв резкий, а затихает визг вместе с машиной - хвост длиннее атаки.
+    body = np.clip(at / 0.05, 0.0, 1.0) * np.clip(1.0 - (at - 0.45) / 0.60, 0.0, 1.0)
+
+    return Fade((squeal + upper) * chirp * body + road * body, 0.01, 0.12)
+
+
 if __name__ == '__main__':
     Write('door_open.wav', Door(), 0.070)
     Write('lever.wav', Lever(), 0.085)
     Write('hatch_open.wav', Hatch(), 0.095)
+    Write('car_engine.wav', Engine(), 0.075)
+    Write('car_skid.wav', Skid(), 0.085)

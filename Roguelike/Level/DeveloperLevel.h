@@ -2,6 +2,7 @@
 
 #include "Scene.h"
 #include "Level.h"
+#include "CarArrival.h"
 #include "CutsceneTimeline.h"
 #include "HudScreen.h"
 #include "InventoryScreen.h"
@@ -42,6 +43,10 @@ namespace RoguelikeGame
         std::vector<XYZEngine::Component*> takenParts;
         float escapeSpeed = 0.f;
         float arrivalTime = 0.f;
+        float boardTime = 0.f;
+        float smokeTime = 0.f;
+        XYZEngine::Vector2Df markDrift = {0.f, 0.f};
+        bool wasSkidding = false;
         XYZEngine::GameObject* particles = nullptr;
         XYZEngine::GameObject* uiRoot = nullptr;
         std::unique_ptr<HudScreen> hudScreen;
@@ -81,6 +86,8 @@ namespace RoguelikeGame
         void OpenCarDoor(XYZEngine::GameObject* carObject, bool isOpen);
         void PlayArrival();
         void DriveArrival(XYZEngine::GameObject* carObject, float deltaTime);
+        void TrailSkid(EscapeCarComponent* car, const CarPose& pose, const XYZEngine::Vector2Df& step, float deltaTime);
+        void SilenceCar();
         void OnWavesCleared();
         void OnBossDefeated();
         void RequestNextLevel();

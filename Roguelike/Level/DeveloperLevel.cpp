@@ -597,6 +597,13 @@ namespace RoguelikeGame
                 }
             }
 
+            // Длинный кадр может перешагнуть весь такт посадки - тогда доворот не успеет
+            // отыграться ни разу, и машина уедет боком.
+            if (beat == ESCAPE_BEAT_DRIVE)
+            {
+                carObject->GetTransform()->SetWorldRotation(ESCAPE_FACING_OUT);
+            }
+
             if (beat == ESCAPE_BEAT_LEAVE && fadeScreen != nullptr)
             {
                 fadeScreen->FadeOut(ESCAPE_LEAVE_TIME);

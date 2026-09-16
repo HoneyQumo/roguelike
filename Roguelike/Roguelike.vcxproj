@@ -104,6 +104,8 @@
         <ClCompile Include="Weapons\ReloadIndicatorComponent.cpp"/>
         <ClCompile Include="Ui\Crosshair.cpp"/>
         <ClCompile Include="Fx\Fx.cpp"/>
+        <ClCompile Include="Fx\Fire.cpp"/>
+        <ClCompile Include="Fx\FireComponent.cpp"/>
         <ClCompile Include="Fx\Particles.cpp"/>
         <ClCompile Include="Characters\StaminaComponent.cpp"/>
         <ClCompile Include="Items\ItemCatalog.cpp"/>
@@ -287,6 +289,8 @@
         <ClInclude Include="Weapons\ReloadIndicatorComponent.h"/>
         <ClInclude Include="Ui\Crosshair.h"/>
         <ClInclude Include="Fx\Fx.h"/>
+        <ClInclude Include="Fx\Fire.h"/>
+        <ClInclude Include="Fx\FireComponent.h"/>
         <ClInclude Include="Core\GameResources.h"/>
         <ClInclude Include="Characters\HitFlashComponent.h"/>
         <ClInclude Include="Characters\SpriteAtlas.h"/>

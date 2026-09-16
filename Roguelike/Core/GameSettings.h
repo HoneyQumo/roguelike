@@ -181,6 +181,7 @@ namespace RoguelikeGame
     constexpr int ENEMY_RENDER_LAYER = 30;
     constexpr int STOWED_WEAPON_RENDER_LAYER = 40;
     constexpr int PLAYER_RENDER_LAYER = 50;
+    constexpr int FIRE_RENDER_LAYER = 55;
     constexpr int EFFECT_RENDER_LAYER = 60;
     constexpr int UI_RENDER_LAYER = 70;
 
@@ -323,6 +324,27 @@ namespace RoguelikeGame
     constexpr auto WAVE_OF_NOTICE = u8" из ";
     constexpr auto WAVE_CLEARED_NOTICE = u8" отбита";
     constexpr auto WAVES_DONE_NOTICE = u8"Волны отбиты, выход открыт";
+
+    constexpr auto FIRE_OBJECT_NAME = "Fire";
+    constexpr auto FIRE_BIG_TEXTURE = "fire_big";
+    constexpr auto FIRE_SMALL_TEXTURE = "fire_small";
+    constexpr auto FIRE_TEXTURE_FILE = "Resources/Textures/fire.png";
+
+    // Огонь жжёт всех, кто в нём стоит, и бьёт не каждый кадр, а раз в такт.
+    constexpr float FIRE_BEAT_TIME = 0.45f;
+    constexpr float FIRE_RADIUS = 46.f;
+    constexpr float FIRE_DAMAGE = 7.f;
+    constexpr float EMBER_RADIUS = 26.f;
+    constexpr float EMBER_DAMAGE = 4.f;
+
+    constexpr float EMBER_FLIGHT_TIME = 0.35f;
+    constexpr float FIRE_THROW_HOP = 26.f;
+    constexpr float EMBER_NEAR_PART = 0.35f;
+    constexpr float EMBER_BURN_MIN = 3.5f;
+    constexpr float EMBER_BURN_MAX = 8.5f;
+    constexpr int EMBER_MIN_COUNT = 3;
+    constexpr int EMBER_MAX_COUNT = 7;
+    constexpr float EMBER_SCATTER_PART = 0.85f;
 
     constexpr float PROP_BLAST_EDGE_PART = 0.35f;
     constexpr float PROP_BLAST_NOISE_SCALE = 3.5f;

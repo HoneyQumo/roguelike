@@ -72,6 +72,7 @@
     <ClCompile Include="WaterTiles.tests.cpp" />
     <ClCompile Include="BridgeProps.tests.cpp" />
     <ClCompile Include="Blast.tests.cpp" />
+    <ClCompile Include="Fire.tests.cpp" />
     <ClCompile Include="Waves.tests.cpp" />
     <ClCompile Include="Cutscene.tests.cpp" />
     <ClCompile Include="LevelLoader.tests.cpp" />
@@ -250,6 +251,9 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\Roguelike\Weapons\ExplosiveComponent.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Roguelike\Fx\FireComponent.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\Roguelike\Weapons\FuseComponent.cpp">

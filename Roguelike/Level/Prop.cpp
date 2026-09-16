@@ -2,6 +2,7 @@
 #include "ContainerComponent.h"
 #include "DestructibleComponent.h"
 #include "ExplosiveComponent.h"
+#include "Fire.h"
 #include "FuseComponent.h"
 #include "Fx.h"
 #include "GameSettings.h"
@@ -16,6 +17,7 @@
 #include <GameWorld.h>
 #include <RectangleRendererComponent.h>
 #include <ResourceSystem.h>
+#include <randomizer.h>
 #include <SpriteRendererComponent.h>
 #include <LoggerRegistry.h>
 
@@ -124,10 +126,21 @@ namespace RoguelikeGame
             blast->SetSelfDamagePart(0.f);
             blast->SetOwner(gameObject->GetId(), gameObject->GetName(), Faction::Neutral);
 
-            blast->SubscribeExplode([radius](const XYZEngine::Vector2Df& place)
+            float burnTime = definition.burnTime;
+            float burnSpread = definition.burnSpread;
+
+            blast->SubscribeExplode([radius, burnTime, burnSpread](const XYZEngine::Vector2Df& place)
             {
                 Fx::SpawnExplosion(place, radius);
                 Fx::ShakeCamera(CAMERA_SHAKE_BLAST);
+
+                if (burnTime > 0.f)
+                {
+                    CreateFire(place, random<float>(burnTime - burnSpread, burnTime + burnSpread));
+                }
+
+                ScatterEmbers(place, radius * EMBER_SCATTER_PART,
+                    random<int>(EMBER_MIN_COUNT, EMBER_MAX_COUNT));
 
                 Noise noise;
                 noise.position = place;

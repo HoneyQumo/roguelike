@@ -36,9 +36,10 @@ namespace RoguelikeGame
             }
 
             std::vector<const ItemDefinition*> carried;
-            for (int slot = 0; slot < inventory->GetCapacity(); slot++)
+            for (int index = 0; index < inventory->GetCapacity(); index++)
             {
-                carried.push_back(inventory->GetSlot(slot).item);
+                const InventorySlot& slot = inventory->GetSlot(index);
+                carried.push_back(slot.IsEmpty() ? nullptr : &slot.item);
             }
 
             return FindKeyFor(carried, doorId);

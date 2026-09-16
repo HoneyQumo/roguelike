@@ -8,12 +8,12 @@ namespace RoguelikeGame
 {
     bool InventorySlot::IsEmpty() const
     {
-        return item == nullptr || count <= 0;
+        return count <= 0;
     }
 
     bool InventorySlot::Holds(const std::string& itemId) const
     {
-        return !IsEmpty() && item->id == itemId;
+        return !IsEmpty() && item.id == itemId;
     }
 
     int InventorySlot::FreeSpace() const
@@ -23,7 +23,7 @@ namespace RoguelikeGame
             return 0;
         }
 
-        int maxStack = item->stackable ? std::max(item->maxStack, 1) : 1;
+        int maxStack = item.stackable ? std::max(item.maxStack, 1) : 1;
         return maxStack - count;
     }
 
@@ -150,7 +150,7 @@ namespace RoguelikeGame
             InventorySlot& slot = slots[slotIndex];
             if (slot.IsEmpty())
             {
-                slot.item = &item;
+                slot.item = item;
                 slot.count = 0;
             }
 
@@ -178,16 +178,16 @@ namespace RoguelikeGame
             return false;
         }
 
-        const ItemDefinition& item = *slot.item;
+        ItemDefinition removed = slot.item;
         slot.count -= count;
 
         if (slot.count <= 0)
         {
-            slot.item = nullptr;
+            slot.item = ItemDefinition();
             slot.count = 0;
         }
 
-        removedEvent.Invoke(item, count);
+        removedEvent.Invoke(removed, count);
         changedEvent.Invoke();
 
         return true;
@@ -206,13 +206,13 @@ namespace RoguelikeGame
             return false;
         }
 
-        const ItemDefinition& item = *slot.item;
-        if (useHandler != nullptr && !useHandler(item))
+        ItemDefinition used = slot.item;
+        if (useHandler != nullptr && !useHandler(used))
         {
             return false;
         }
 
-        usedEvent.Invoke(item);
+        usedEvent.Invoke(used);
 
         return Remove(slotIndex, 1);
     }

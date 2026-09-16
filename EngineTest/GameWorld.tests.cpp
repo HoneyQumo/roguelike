@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "GameWorld.h"
+#include "Level.h"
 #include <chrono>
 
 using XYZEngine::GameObject;
@@ -172,5 +173,50 @@ TEST_F(GameWorldTest, ChildCreatedWithAParentDiesWithIt)
 
 	EXPECT_EQ(GameWorld::Instance()->FindGameObject("Corpse"), nullptr);
 	EXPECT_EQ(GameWorld::Instance()->FindGameObject("Item_glock"), nullptr);
+	EXPECT_EQ(GameWorld::Instance()->GetObjectsCount(), 0u);
+}
+
+TEST_F(GameWorldTest, DestroyingAnObjectAgainAfterItIsGoneIsIgnored)
+{
+	GameObject* enemy = GameWorld::Instance()->CreateGameObject("Enemy");
+	GameWorld::Instance()->CreateGameObject("Player");
+
+	GameWorld::Instance()->DestroyGameObject(enemy);
+	GameWorld::Instance()->LateUpdate();
+
+	// Указатель уже мёртв, но держат его многие: половина игры хранит GameObject* без всякой пометки.
+	GameWorld::Instance()->DestroyGameObject(enemy);
+	GameWorld::Instance()->LateUpdate();
+
+	EXPECT_EQ(GameWorld::Instance()->GetObjectsCount(), 1u) << "the world lost an object it was never asked to destroy";
+	EXPECT_NE(GameWorld::Instance()->FindGameObject("Player"), nullptr);
+}
+
+TEST_F(GameWorldTest, DestroyingNobodyIsHarmless)
+{
+	GameWorld::Instance()->CreateGameObject("Player");
+
+	GameWorld::Instance()->DestroyGameObject(nullptr);
+	GameWorld::Instance()->LateUpdate();
+
+	EXPECT_EQ(GameWorld::Instance()->GetObjectsCount(), 1u);
+}
+
+TEST_F(GameWorldTest, ALevelSurvivesAnObjectThatLeftItEarly)
+{
+	RoguelikeGame::Level level;
+
+	GameObject* wall = GameWorld::Instance()->CreateGameObject("Wall");
+	GameObject* scene = GameWorld::Instance()->CreateGameObject("Cutscene");
+	level.Add(wall);
+	level.Add(scene);
+
+	// Сцена доигрывает и убирает себя сама, а уровень всё ещё держит на неё указатель.
+	GameWorld::Instance()->DestroyGameObject(scene);
+	GameWorld::Instance()->LateUpdate();
+
+	level.Clear();
+	GameWorld::Instance()->LateUpdate();
+
 	EXPECT_EQ(GameWorld::Instance()->GetObjectsCount(), 0u);
 }

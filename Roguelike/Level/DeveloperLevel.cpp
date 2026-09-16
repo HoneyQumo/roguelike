@@ -13,6 +13,7 @@
 #include "CutscenePlayerComponent.h"
 #include "PlayerHudBinderComponent.h"
 #include "EscapeCarComponent.h"
+#include "PursuitComponent.h"
 #include "WaveDirectorComponent.h"
 #include "Fx.h"
 #include "LevelExitComponent.h"
@@ -72,6 +73,7 @@ namespace RoguelikeGame
         SubscribeExit();
         SubscribeBoss();
         SubscribeWaves();
+        SubscribePursuit();
         SubscribeEscape();
 
         music = CreateMusic(MAIN_THEME_MUSIC, MUSIC_VOLUME);
@@ -203,6 +205,45 @@ namespace RoguelikeGame
         director->SubscribeCleared([this]() { OnWavesCleared(); });
     }
 
+
+    /**
+    *	Погоня бежит за игроком от входа до машины: этот отрезок и есть её маршрут.
+    *	Гейта у неё нет - машина открыта сразу, преградой служит сама дистанция.
+    */
+    void DeveloperLevel::SubscribePursuit()
+    {
+        XYZEngine::GameObject* pursuitObject = level.GetPursuit();
+        if (pursuitObject == nullptr)
+        {
+            return;
+        }
+
+        auto pursuit = pursuitObject->GetComponent<PursuitComponent>();
+        if (pursuit == nullptr)
+        {
+            return;
+        }
+
+        pursuit->SetHero(player);
+
+        XYZEngine::GameObject* carObject = level.GetEscapeCar();
+        XYZEngine::Vector2Df finish = carObject != nullptr
+            ? carObject->GetTransform()->GetWorldPosition()
+            : level.GetStartPosition();
+        pursuit->SetRoute(level.GetStartPosition(), finish);
+
+        // Преследователей кладём в уровень, иначе они переживут смену локации.
+        pursuit->SubscribeEnemySpawned([this](XYZEngine::GameObject* enemy) { level.Add(enemy); });
+
+        if (carObject != nullptr)
+        {
+            auto car = carObject->GetComponent<EscapeCarComponent>();
+            if (car != nullptr)
+            {
+                car->SetReady(true);
+            }
+        }
+    }
 
     void DeveloperLevel::SubscribeEscape()
     {
@@ -438,6 +479,7 @@ namespace RoguelikeGame
         SubscribeExit();
         SubscribeBoss();
         SubscribeWaves();
+        SubscribePursuit();
         SubscribeEscape();
         ShowLevelTitle();
 
@@ -494,6 +536,7 @@ namespace RoguelikeGame
         }
 
         UpdateWavePanel();
+        UpdateChasePanel();
 
         if (state == State::PlayerDied)
         {
@@ -547,6 +590,28 @@ namespace RoguelikeGame
         }
 
         hudScreen->SetWaves(state);
+    }
+
+    void DeveloperLevel::UpdateChasePanel()
+    {
+        if (hudScreen == nullptr)
+        {
+            return;
+        }
+
+        ChaseHudState state;
+
+        XYZEngine::GameObject* pursuitObject = level.GetPursuit();
+        auto pursuit = pursuitObject != nullptr ? pursuitObject->GetComponent<PursuitComponent>() : nullptr;
+
+        if (pursuit != nullptr)
+        {
+            state.isRunning = true;
+            state.progress = pursuit->GetProgress();
+            state.isClose = pursuit->IsCloseBehind();
+        }
+
+        hudScreen->SetChase(state);
     }
 
     void DeveloperLevel::Restart()

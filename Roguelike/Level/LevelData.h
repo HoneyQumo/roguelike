@@ -96,6 +96,45 @@ namespace RoguelikeGame
         }
     };
 
+    /**
+    *	Погоня вместо волн: за игроком постоянно висит несколько преследователей,
+    *	убитого заменяет следующий, и кончается это только побегом.
+    *	Кто именно выбегает, зависит от того, сколько пути позади.
+    */
+    struct PursuitEntry
+    {
+        TileType enemy = TileType::Empty;
+        int weight = 0;
+    };
+
+    struct PursuitEchelon
+    {
+        // С какой доли пути этот состав выходит на сцену.
+        float fromPart = 0.f;
+        std::vector<PursuitEntry> entries;
+
+        int TotalWeight() const
+        {
+            int total = 0;
+            for (const PursuitEntry& entry : entries)
+            {
+                total += entry.weight;
+            }
+
+            return total;
+        }
+    };
+
+    struct PursuitSpec
+    {
+        int keep = 0;
+        int grow = 0;
+        float respawn = 0.f;
+        std::vector<PursuitEchelon> echelons;
+
+        bool IsEmpty() const { return keep <= 0 || echelons.empty(); }
+    };
+
     struct ZonePlacement
     {
         int column = 0;
@@ -144,6 +183,7 @@ namespace RoguelikeGame
         std::vector<DoorPlacement> doors;
         std::vector<ZonePlacement> zones;
         std::vector<WaveSpec> waves;
+        PursuitSpec pursuit;
         std::vector<FixturePlacement> levers;
         std::vector<FixturePlacement> hatches;
         std::vector<FixturePlacement> escapes;

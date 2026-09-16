@@ -95,6 +95,11 @@ namespace RoguelikeGame
         Set(LevelRole::WaveDirector, newDirectorObject);
     }
 
+    void Level::SetPursuit(XYZEngine::GameObject* newPursuitObject)
+    {
+        Set(LevelRole::Pursuit, newPursuitObject);
+    }
+
     void Level::SetEscapeCar(XYZEngine::GameObject* newCarObject)
     {
         Set(LevelRole::EscapeCar, newCarObject);
@@ -113,6 +118,11 @@ namespace RoguelikeGame
     XYZEngine::GameObject* Level::GetWaveDirector() const
     {
         return Get(LevelRole::WaveDirector);
+    }
+
+    XYZEngine::GameObject* Level::GetPursuit() const
+    {
+        return Get(LevelRole::Pursuit);
     }
 
     XYZEngine::GameObject* Level::GetEscapeCar() const

@@ -212,12 +212,14 @@ TEST_F(ShippedEscapeTest, TheBridgeEndsWithACarStandingAtTheExit)
 	EXPECT_LE(std::abs(bridge.escapes.front().column - exitColumn), 2) << "the car is far from the exit";
 }
 
-TEST_F(ShippedEscapeTest, TheCarWaitsForTheWavesToBeOver)
+TEST_F(ShippedEscapeTest, TheCarIsTheFinishOfAChaseAndNotAReward)
 {
 	ASSERT_TRUE(isFound) << previous.string();
 
 	LevelData bridge = RoguelikeGame::LoadAct("Resources/Acts/act1_bridge.config");
 
-	ASSERT_FALSE(bridge.waves.empty()) << "the bridge has no waves to gate the car";
-	ASSERT_FALSE(bridge.escapes.empty());
+	// Мост - беговая локация: гейтом служит расстояние, а не зачистка.
+	ASSERT_FALSE(bridge.escapes.empty()) << "there is nothing to run towards";
+	EXPECT_TRUE(bridge.waves.empty()) << "waves would make the player stop and clear";
+	EXPECT_FALSE(bridge.pursuit.IsEmpty()) << "nobody chases the player across the bridge";
 }

@@ -51,12 +51,14 @@ namespace RoguelikeGame
         void ShowGameOver();
         void UpdateOverlay();
         void UpdateWavePanel();
+        void UpdateChasePanel();
         void ShowLevelTitle();
 
         bool LoadLevel(int levelIndex);
         void SubscribeExit();
         void SubscribeBoss();
         void SubscribeWaves();
+        void SubscribePursuit();
         void SubscribeEscape();
         void PlayEscape();
         void TakeControl();

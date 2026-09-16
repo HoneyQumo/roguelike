@@ -13,6 +13,7 @@ namespace RoguelikeGame
         const std::string ROOMS_SECTION = "[rooms]";
         const std::string LIBRARY_SECTION = "[library]";
         const std::string WAVES_SECTION = "[waves]";
+        const std::string PURSUIT_SECTION = "[pursuit]";
         const std::string UTF8_BOM = "\xEF\xBB\xBF";
         constexpr char COMMENT_SYMBOL = ';';
 
@@ -112,6 +113,101 @@ namespace RoguelikeGame
         *	Строка волны акта: wave <пауза> <символ><сколько> ...
         *	Символ здесь - из каталога врагов, а не из легенды комнаты: у акта своей легенды нет.
         */
+
+        /**
+        *	Строки погони: keep / grow / respawn задают напор,
+        *	from <доля пути> <символ><вес> ... - кто выбегает на этом отрезке.
+        */
+        void ReadPursuitLine(const std::string& line, int lineNumber, PursuitSpec& pursuit)
+        {
+            std::istringstream stream(line);
+            std::string keyword;
+            stream >> keyword;
+
+            if (keyword == "keep" || keyword == "grow")
+            {
+                int value = 0;
+                if (!(stream >> value) || value <= 0)
+                {
+                    LOG_ERROR("Pursuit line " + std::to_string(lineNumber) + " needs a positive count");
+                    throw std::runtime_error("Bad pursuit count");
+                }
+
+                (keyword == "keep" ? pursuit.keep : pursuit.grow) = value;
+                return;
+            }
+
+            if (keyword == "respawn")
+            {
+                float seconds = 0.f;
+                if (!(stream >> seconds) || seconds < 0.f)
+                {
+                    LOG_ERROR("Pursuit line " + std::to_string(lineNumber) + " needs a respawn time");
+                    throw std::runtime_error("Bad pursuit respawn");
+                }
+
+                pursuit.respawn = seconds;
+                return;
+            }
+
+            if (keyword != "from")
+            {
+                LOG_ERROR("Pursuit line " + std::to_string(lineNumber) + " starts with an unknown word: " + keyword);
+                throw std::runtime_error("Unknown pursuit line");
+            }
+
+            PursuitEchelon echelon;
+            if (!(stream >> echelon.fromPart) || echelon.fromPart < 0.f || echelon.fromPart > 1.f)
+            {
+                LOG_ERROR("Pursuit line " + std::to_string(lineNumber) + " needs a part of the way between 0 and 1");
+                throw std::runtime_error("Bad pursuit part");
+            }
+
+            std::string group;
+            while (stream >> group)
+            {
+                const EnemyDefinition* enemy = group.empty() ? nullptr : FindEnemyBySymbol(group.front());
+                if (enemy == nullptr || group.size() < 2)
+                {
+                    LOG_ERROR("Pursuit line " + std::to_string(lineNumber) + " has a bad group: " + group);
+                    throw std::runtime_error("Bad pursuit group");
+                }
+
+                int weight = 0;
+                try
+                {
+                    weight = std::stoi(group.substr(1));
+                }
+                catch (const std::exception&)
+                {
+                    weight = 0;
+                }
+
+                if (weight <= 0)
+                {
+                    LOG_ERROR("Pursuit line " + std::to_string(lineNumber) + " asks for a non-positive weight: " + group);
+                    throw std::runtime_error("Pursuit weight must be positive");
+                }
+
+                echelon.entries.push_back({enemy->tile, weight});
+            }
+
+            if (echelon.entries.empty())
+            {
+                LOG_ERROR("Pursuit line " + std::to_string(lineNumber) + " has nobody to send");
+                throw std::runtime_error("Pursuit echelon is empty");
+            }
+
+            // Отрезки идут по возрастанию: иначе выбор по прогрессу читал бы не ту строку.
+            if (!pursuit.echelons.empty() && echelon.fromPart <= pursuit.echelons.back().fromPart)
+            {
+                LOG_ERROR("Pursuit line " + std::to_string(lineNumber) + " goes back along the way");
+                throw std::runtime_error("Pursuit echelons must grow");
+            }
+
+            pursuit.echelons.push_back(std::move(echelon));
+        }
+
         void ReadActWaveLine(const std::string& line, int lineNumber, std::vector<WaveSpec>& waves)
         {
             std::istringstream stream(line);
@@ -226,6 +322,7 @@ namespace RoguelikeGame
         bool isRoomsSection = false;
         bool isLibrarySection = false;
         bool isWavesSection = false;
+        bool isPursuitSection = false;
 
         std::string line;
         int lineNumber = 0;
@@ -250,6 +347,7 @@ namespace RoguelikeGame
                 isRoomsSection = false;
                 isLibrarySection = false;
                 isWavesSection = false;
+                isPursuitSection = false;
                 continue;
             }
 
@@ -259,6 +357,7 @@ namespace RoguelikeGame
                 isRoomsSection = false;
                 isLibrarySection = true;
                 isWavesSection = false;
+                isPursuitSection = false;
                 continue;
             }
 
@@ -268,6 +367,7 @@ namespace RoguelikeGame
                 isRoomsSection = true;
                 isLibrarySection = false;
                 isWavesSection = false;
+                isPursuitSection = false;
                 continue;
             }
 
@@ -277,6 +377,17 @@ namespace RoguelikeGame
                 isRoomsSection = false;
                 isLibrarySection = false;
                 isWavesSection = true;
+                isPursuitSection = false;
+                continue;
+            }
+
+            if (line == PURSUIT_SECTION)
+            {
+                isActSection = false;
+                isRoomsSection = false;
+                isLibrarySection = false;
+                isWavesSection = false;
+                isPursuitSection = true;
                 continue;
             }
 
@@ -295,6 +406,12 @@ namespace RoguelikeGame
             if (isWavesSection)
             {
                 ReadActWaveLine(line, lineNumber, plan.waves);
+                continue;
+            }
+
+            if (isPursuitSection)
+            {
+                ReadPursuitLine(line, lineNumber, plan.pursuit);
                 continue;
             }
 

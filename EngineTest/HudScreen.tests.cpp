@@ -265,3 +265,76 @@ TEST_F(HudScreenTest, TheWavePanelKeepsClearOfTheVitals)
 
 	EXPECT_FALSE(panel.intersects(vitals)) << "the wave panel sits on top of the health bar";
 }
+
+namespace
+{
+	RoguelikeGame::ChaseHudState Chasing(float progress, bool isClose)
+	{
+		RoguelikeGame::ChaseHudState state;
+		state.isRunning = true;
+		state.progress = progress;
+		state.isClose = isClose;
+
+		return state;
+	}
+}
+
+TEST_F(HudScreenTest, WithoutAChaseThePanelIsNotOnScreen)
+{
+	HudScreen screen;
+	screen.Resize({1280.f, 720.f});
+
+	screen.SetChase({});
+
+	EXPECT_FALSE(screen.IsChasePanelShown());
+}
+
+TEST_F(HudScreenTest, TheChaseBarShowsHowMuchOfTheBridgeIsBehind)
+{
+	HudScreen screen;
+	screen.Resize({1280.f, 720.f});
+
+	screen.SetChase(Chasing(0.25f, false));
+	EXPECT_TRUE(screen.IsChasePanelShown());
+	EXPECT_FLOAT_EQ(screen.GetChaseBar().GetValue(), 0.25f);
+
+	screen.SetChase(Chasing(0.8f, false));
+	EXPECT_FLOAT_EQ(screen.GetChaseBar().GetValue(), 0.8f);
+}
+
+TEST_F(HudScreenTest, TheChaseBarNeverRunsPastItsEnds)
+{
+	HudScreen screen;
+	screen.Resize({1280.f, 720.f});
+
+	screen.SetChase(Chasing(-1.f, false));
+	EXPECT_FLOAT_EQ(screen.GetChaseBar().GetValue(), 0.f);
+
+	screen.SetChase(Chasing(3.f, false));
+	EXPECT_FLOAT_EQ(screen.GetChaseBar().GetValue(), 1.f);
+}
+
+TEST_F(HudScreenTest, TheRunnerIsToldWhetherTheChaseIsOnHisHeels)
+{
+	HudScreen screen;
+	screen.Resize({1280.f, 720.f});
+
+	screen.SetChase(Chasing(0.5f, true));
+	EXPECT_EQ(TextOf(screen.GetChaseLabel()), u8"Погоня близко");
+	EXPECT_EQ(screen.GetChaseBar().GetFillColor(), RoguelikeGame::CHASE_HUD_CLOSE_COLOR);
+
+	screen.SetChase(Chasing(0.5f, false));
+	EXPECT_EQ(TextOf(screen.GetChaseLabel()), u8"Оторвался");
+	EXPECT_EQ(screen.GetChaseBar().GetFillColor(), RoguelikeGame::CHASE_HUD_AWAY_COLOR);
+}
+
+TEST_F(HudScreenTest, TheChasePanelKeepsClearOfTheVitals)
+{
+	HudScreen screen;
+	screen.Resize({1280.f, 720.f});
+
+	screen.SetChase(Chasing(0.1f, true));
+
+	EXPECT_FALSE(screen.GetChaseBar().GetBounds().intersects(screen.GetHealthBar().GetBounds()))
+		<< "the chase bar sits on top of the health bar";
+}

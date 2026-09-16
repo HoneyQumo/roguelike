@@ -19,6 +19,7 @@ namespace RoguelikeGame
         Exit,
         Boss,
         WaveDirector,
+        Pursuit,
         EscapeCar,
         Count
     };
@@ -45,6 +46,7 @@ namespace RoguelikeGame
         void SetExit(XYZEngine::GameObject* exitObject);
         void SetBoss(XYZEngine::GameObject* bossObject);
         void SetWaveDirector(XYZEngine::GameObject* directorObject);
+        void SetPursuit(XYZEngine::GameObject* pursuitObject);
         void SetEscapeCar(XYZEngine::GameObject* carObject);
 
         std::optional<XYZEngine::Vector2Df> GetPlayerSpawn() const;
@@ -54,6 +56,7 @@ namespace RoguelikeGame
         XYZEngine::GameObject* GetExit() const;
         XYZEngine::GameObject* GetBoss() const;
         XYZEngine::GameObject* GetWaveDirector() const;
+        XYZEngine::GameObject* GetPursuit() const;
         XYZEngine::GameObject* GetEscapeCar() const;
         std::size_t GetObjectsCount() const;
 

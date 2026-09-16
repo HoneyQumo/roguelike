@@ -110,6 +110,29 @@ namespace RoguelikeGame
         waveCountLabel->SetOutline(AMMO_HUD_OUTLINE, AMMO_HUD_OUTLINE_COLOR);
         waveCountLabel->SetFont(font);
 
+        chasePanel = GetRoot().AddChild<XYZEngine::UiWidget>();
+        chasePanel->SetAnchor(XYZEngine::UiAnchor::Top);
+        chasePanel->SetPivot(XYZEngine::UiAnchor::Top);
+        chasePanel->SetOffset({0.f, WAVE_HUD_MARGIN_Y});
+        chasePanel->SetSize({WAVE_HUD_WIDTH, WAVE_HUD_BAR_HEIGHT + WAVE_HUD_GAP + WAVE_HUD_COUNT_HEIGHT});
+        chasePanel->SetVisible(false);
+
+        chaseBar = chasePanel->AddChild<XYZEngine::UiProgressBar>();
+        chaseBar->SetAnchor(XYZEngine::UiAnchor::Top);
+        chaseBar->SetPivot(XYZEngine::UiAnchor::Top);
+        chaseBar->SetSize({WAVE_HUD_WIDTH, WAVE_HUD_BAR_HEIGHT});
+        chaseBar->SetColors(CHASE_HUD_AWAY_COLOR, VITALS_HUD_BACK_COLOR);
+
+        chaseLabel = chasePanel->AddChild<XYZEngine::UiLabel>();
+        chaseLabel->SetAnchor(XYZEngine::UiAnchor::Bottom);
+        chaseLabel->SetPivot(XYZEngine::UiAnchor::Bottom);
+        chaseLabel->SetSize({WAVE_HUD_WIDTH, WAVE_HUD_COUNT_HEIGHT});
+        chaseLabel->SetAlign(XYZEngine::UiAnchor::Center);
+        chaseLabel->SetCharacterSize(WAVE_HUD_COUNT_FONT_SIZE);
+        chaseLabel->SetColor(WAVE_HUD_COLOR);
+        chaseLabel->SetOutline(AMMO_HUD_OUTLINE, AMMO_HUD_OUTLINE_COLOR);
+        chaseLabel->SetFont(font);
+
         promptLabel = GetRoot().AddChild<XYZEngine::UiLabel>();
         promptLabel->SetAnchor(XYZEngine::UiAnchor::Bottom);
         promptLabel->SetPivot(XYZEngine::UiAnchor::Bottom);
@@ -243,6 +266,44 @@ namespace RoguelikeGame
     bool HudScreen::IsWavePanelShown() const
     {
         return wavePanel->IsVisible();
+    }
+
+    /**
+    *	В беге считать нечего: важно, сколько моста позади и дышат ли в спину.
+    */
+    void HudScreen::SetChase(const ChaseHudState& state)
+    {
+        chasePanel->SetVisible(state.isRunning);
+        if (!state.isRunning)
+        {
+            return;
+        }
+
+        float part = state.progress < 0.f ? 0.f : (state.progress > 1.f ? 1.f : state.progress);
+        chaseBar->SetValue(part);
+        chaseBar->SetColors(state.isClose ? CHASE_HUD_CLOSE_COLOR : CHASE_HUD_AWAY_COLOR, VITALS_HUD_BACK_COLOR);
+
+        std::string text = state.isClose ? CHASE_HUD_CLOSE : CHASE_HUD_AWAY;
+        if (shownChase != text)
+        {
+            shownChase = text;
+            chaseLabel->SetUtf8Text(text.c_str());
+        }
+    }
+
+    const XYZEngine::UiLabel& HudScreen::GetChaseLabel() const
+    {
+        return *chaseLabel;
+    }
+
+    const XYZEngine::UiProgressBar& HudScreen::GetChaseBar() const
+    {
+        return *chaseBar;
+    }
+
+    bool HudScreen::IsChasePanelShown() const
+    {
+        return chasePanel->IsVisible();
     }
 
     void HudScreen::SetAmmo(const AmmoHudState& state)

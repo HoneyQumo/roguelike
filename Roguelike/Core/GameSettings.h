@@ -165,7 +165,11 @@ namespace RoguelikeGame
     constexpr float PROJECTILE_LIFETIME = 2.f;
     constexpr float ROCKET_SPRITE_SCALE = 2.f;
     constexpr float ROCKET_BODY_OFFSET = 12.f * ROCKET_SPRITE_SCALE;
-    constexpr float EXPLOSION_CORE_RADIUS = 0.5f * TILE_SIZE;
+    /**
+    *	Ядро взрыва: внутри него урон полный и от укрытия толку нет.
+    *	Радиус подобран так, чтобы стоящий вплотную к машине попадал в ядро.
+    */
+    constexpr float EXPLOSION_CORE_RADIUS = 1.2f * TILE_SIZE;
 
     constexpr float SHOT_FORWARD_OFFSET = 0.5f * CHARACTER_COLLIDER_SIZE + 4.f;
 
@@ -401,7 +405,11 @@ namespace RoguelikeGame
     constexpr int EMBER_MAX_COUNT = 7;
     constexpr float EMBER_SCATTER_PART = 0.85f;
 
-    constexpr float PROP_BLAST_EDGE_PART = 0.35f;
+    // На границе радиуса остаётся чувствительный удар, но не смертельный.
+    constexpr float PROP_BLAST_EDGE_PART = 0.15f;
+
+    // Машина рвёт заметно громче бочки - встряска это показывает.
+    constexpr float HEAVY_BLAST_RADIUS = 4.f * TILE_SIZE;
     constexpr float PROP_BLAST_NOISE_SCALE = 3.5f;
     constexpr float PROP_NOISE_RADIUS = 320.f;
     constexpr float MELEE_HIT_VOLUME = 55.f;

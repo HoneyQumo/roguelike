@@ -145,9 +145,20 @@ namespace RoguelikeGame
         return hits;
     }
 
+    /**
+    *	В ядре урон полный: стоящему вплотную всё равно, где именно центр.
+    *	Дальше он падает к краю линейно.
+    */
     float ExplosiveComponent::DamageAt(float distance) const
     {
-        float part = std::clamp(distance / radius, 0.f, 1.f);
+        if (distance <= coreRadius)
+        {
+            return centerDamage;
+        }
+
+        float span = std::max(radius - coreRadius, 1.f);
+        float part = std::clamp((distance - coreRadius) / span, 0.f, 1.f);
+
         return centerDamage * (1.f - part * (1.f - edgeDamagePart));
     }
 

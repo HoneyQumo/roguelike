@@ -139,7 +139,7 @@ namespace RoguelikeGame
             blast->SubscribeExplode([radius, burnTime, burnSpread, visual](const XYZEngine::Vector2Df& place)
             {
                 Fx::SpawnExplosion(place, radius);
-                Fx::ShakeCamera(CAMERA_SHAKE_BLAST);
+                Fx::ShakeCamera(radius >= HEAVY_BLAST_RADIUS ? CAMERA_SHAKE_BLAST : CAMERA_SHAKE_HEAVY);
                 visual->ShowSpent();
 
                 if (burnTime > 0.f)

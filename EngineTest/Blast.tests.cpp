@@ -2,7 +2,9 @@
 #include "FuseComponent.h"
 #include "GameWorld.h"
 #include "ProjectFiles.h"
+#include "GameSettings.h"
 #include "PropCatalog.h"
+#include <algorithm>
 #include <sstream>
 
 using RoguelikeGame::FuseComponent;
@@ -247,5 +249,146 @@ TEST_F(WreckOrderTest, NothingOnTheBridgeBlackensBeforeItsBlast)
 		ASSERT_TRUE(prop->IsExplosive()) << id;
 
 		EXPECT_FALSE(prop->ShowsWreckOnBreak()) << id << " shows its wreck while the fuse is still burning";
+	}
+}
+
+namespace
+{
+	class DeadlyBlastTest : public ProjectFiles::Test
+	{
+	protected:
+		/**
+		*	Сколько урона надо, чтобы наверняка убить игрока в лучшем снаряжении.
+		*	Броня съедает свою долю, пока не кончится, остальное идёт в тело.
+		*/
+		static float EnoughToKill()
+		{
+			return RoguelikeGame::PLAYER_MAX_HEALTH + RoguelikeGame::PLAYER_ARMOR_CAP;
+		}
+
+		// Тот же расчёт, что в ExplosiveComponent::DamageAt.
+		static float DamageAt(const RoguelikeGame::PropDefinition& prop, float distance)
+		{
+			float core = RoguelikeGame::EXPLOSION_CORE_RADIUS;
+			if (distance <= core)
+			{
+				return prop.blastDamage;
+			}
+
+			float span = std::max(prop.blastRadius - core, 1.f);
+			float part = std::min((distance - core) / span, 1.f);
+
+			return prop.blastDamage * (1.f - part * (1.f - RoguelikeGame::PROP_BLAST_EDGE_PART));
+		}
+	};
+
+	const char* BLASTING[] = {"car_sedan", "car_van", "car_small", "fuel_barrel"};
+}
+
+TEST_F(DeadlyBlastTest, StandingNextToItIsCertainDeath)
+{
+	ASSERT_TRUE(isFound) << previous.string();
+
+	PropCatalog props = PropCatalog::Load("Resources/Props/props.config");
+
+	for (const char* id : BLASTING)
+	{
+		const PropDefinition* prop = props.Find(id);
+		ASSERT_NE(prop, nullptr) << id;
+
+		// Вплотную - это борт машины плюс полшага игрока, а не математический центр.
+		float touching = 0.5f * prop->size + 0.5f * RoguelikeGame::CHARACTER_COLLIDER_SIZE;
+
+		EXPECT_GE(DamageAt(*prop, touching), EnoughToKill())
+			<< id << " leaves a fully armoured player alive at point blank";
+	}
+}
+
+TEST_F(DeadlyBlastTest, AtTheEdgeItHurtsButLetsYouLive)
+{
+	ASSERT_TRUE(isFound) << previous.string();
+
+	PropCatalog props = PropCatalog::Load("Resources/Props/props.config");
+
+	for (const char* id : BLASTING)
+	{
+		const PropDefinition* prop = props.Find(id);
+		ASSERT_NE(prop, nullptr) << id;
+
+		float atEdge = DamageAt(*prop, prop->blastRadius);
+
+		EXPECT_LT(atEdge, RoguelikeGame::PLAYER_MAX_HEALTH)
+			<< id << " kills outright even at the rim of its radius";
+		EXPECT_GT(atEdge, 0.1f * RoguelikeGame::PLAYER_MAX_HEALTH)
+			<< id << " is harmless at the rim, so the radius is a lie";
+	}
+}
+
+TEST_F(DeadlyBlastTest, TheDamageOnlyFallsOffAsYouBackAway)
+{
+	ASSERT_TRUE(isFound) << previous.string();
+
+	PropCatalog props = PropCatalog::Load("Resources/Props/props.config");
+
+	for (const char* id : BLASTING)
+	{
+		const PropDefinition* prop = props.Find(id);
+		ASSERT_NE(prop, nullptr) << id;
+
+		float previousDamage = DamageAt(*prop, 0.f);
+		for (float distance = 0.f; distance <= prop->blastRadius; distance += 8.f)
+		{
+			float damage = DamageAt(*prop, distance);
+
+			EXPECT_LE(damage, previousDamage + 0.01f) << id << " hits harder further away, at " << distance;
+			previousDamage = damage;
+		}
+	}
+}
+
+TEST_F(DeadlyBlastTest, InsideTheCoreThereIsNoSafeSpot)
+{
+	ASSERT_TRUE(isFound) << previous.string();
+
+	PropCatalog props = PropCatalog::Load("Resources/Props/props.config");
+	const PropDefinition* car = props.Find("car_sedan");
+	ASSERT_NE(car, nullptr);
+
+	// В эпицентре всё равно, где именно стоишь.
+	EXPECT_FLOAT_EQ(DamageAt(*car, 0.f), DamageAt(*car, RoguelikeGame::EXPLOSION_CORE_RADIUS));
+	EXPECT_LT(DamageAt(*car, RoguelikeGame::EXPLOSION_CORE_RADIUS + 40.f), car->blastDamage);
+}
+
+TEST_F(DeadlyBlastTest, ACarIsWorseThanABarrelWhereverYouStand)
+{
+	ASSERT_TRUE(isFound) << previous.string();
+
+	PropCatalog props = PropCatalog::Load("Resources/Props/props.config");
+	const PropDefinition* car = props.Find("car_van");
+	const PropDefinition* barrel = props.Find("fuel_barrel");
+	ASSERT_NE(car, nullptr);
+	ASSERT_NE(barrel, nullptr);
+
+	EXPECT_GT(car->blastRadius, barrel->blastRadius);
+
+	for (float distance = 0.f; distance <= barrel->blastRadius; distance += 16.f)
+	{
+		EXPECT_GE(DamageAt(*car, distance), DamageAt(*barrel, distance))
+			<< "a barrel out-blasts a van at " << distance;
+	}
+}
+
+TEST_F(DeadlyBlastTest, TheBlastReachesWellPastTheThingThatBlew)
+{
+	ASSERT_TRUE(isFound) << previous.string();
+
+	PropCatalog props = PropCatalog::Load("Resources/Props/props.config");
+
+	for (const char* id : BLASTING)
+	{
+		const PropDefinition* prop = props.Find(id);
+		ASSERT_NE(prop, nullptr) << id;
+
+		EXPECT_GT(prop->blastRadius, 3.f * RoguelikeGame::TILE_SIZE) << id << " barely reaches past its own bumper";
 	}
 }

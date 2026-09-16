@@ -282,3 +282,184 @@ TEST_F(ShippedOverlayTest, TheMarkingsRunAlongTheBridgeNotAcrossIt)
 	// Разделительная идёт вдоль моста, значит каждый её штрих лежит поперёк своей клетки.
 	EXPECT_GT(across, 0) << "the dividing line reads as if it ran across the road";
 }
+
+namespace
+{
+	const char* HOLE =
+	"[level]\n"
+	"kind hole\n"
+	"\n"
+	"[legend]\n"
+	"# Wall\n"
+	". Floor\n"
+	"~ Water\n"
+	"X Breach\n"
+	"@ PlayerSpawn\n"
+	"> Exit\n"
+	"\n"
+	"[map]\n"
+	"#######\n"
+	"#@...>#\n"
+	"#.~~~.#\n"
+	"#.~~~.#\n"
+	"#.....#\n"
+	"#######\n"
+	"\n"
+	"[overlay]\n"
+	"       \n"
+	"       \n"
+	"  XXX  \n"
+	"  XXX  \n"
+	"       \n"
+	"       \n";
+}
+
+TEST(BreachTests, TheEdgeLooksAtTheRoadAroundIt)
+{
+	LevelData level = LevelOf(HOLE);
+
+	// У верхнего ряда пролома дорога сверху, у нижнего - снизу: маски разные.
+	int upper = RoguelikeGame::BreachMask(level, 2, 2);
+	int lower = RoguelikeGame::BreachMask(level, 2, 3);
+
+	EXPECT_TRUE(upper & RoguelikeGame::WALL_NEIGHBOUR_UP) << "the edge does not notice the road above it";
+	EXPECT_FALSE(upper & RoguelikeGame::WALL_NEIGHBOUR_DOWN) << "the edge invented a road where there is water";
+	EXPECT_TRUE(lower & RoguelikeGame::WALL_NEIGHBOUR_DOWN);
+	EXPECT_NE(upper, lower) << "both sides of the hole are drawn with the same piece of concrete";
+}
+
+TEST(BreachTests, TheEdgeTakesItsFrameFromItsOwnRow)
+{
+	LevelData level = LevelOf(HOLE);
+
+	sf::IntRect frame = RoguelikeGame::OverlayFrameFor(level, 2, 2);
+
+	EXPECT_EQ(frame.top, RoguelikeGame::TILE_BREACH_ROW * RoguelikeGame::TILE_FRAME_SIZE);
+	EXPECT_LT(frame.left, RoguelikeGame::TILE_BREACH_FRAMES * RoguelikeGame::TILE_FRAME_SIZE)
+		<< "the frame ran past the end of its row";
+}
+
+TEST(BreachTests, AnyMaskLandsInsideTheRow)
+{
+	for (int mask = -4; mask < 64; mask++)
+	{
+		int frame = RoguelikeGame::BreachFrame(mask);
+
+		EXPECT_GE(frame, 0) << "mask " << mask;
+		EXPECT_LT(frame, RoguelikeGame::TILE_BREACH_FRAMES) << "mask " << mask;
+	}
+}
+
+TEST(BreachTests, UnderTheEdgeThereIsWaterAndNotThinAir)
+{
+	LevelData level = LevelOf(HOLE);
+
+	for (int row = 0; row < level.height; row++)
+	{
+		for (int column = 0; column < level.width; column++)
+		{
+			if (OverlayAt(level, column, row) != TileType::Breach)
+			{
+				continue;
+			}
+
+			EXPECT_EQ(TileAt(level, column, row), TileType::Water)
+				<< "the edge at " << column << ";" << row << " hangs over nothing";
+		}
+	}
+}
+
+TEST_F(ShippedOverlayTest, TheBridgeHasBreachesAndTheyAreDrawn)
+{
+	ASSERT_TRUE(isFound) << previous.string();
+
+	LevelData bridge = RoguelikeGame::LoadAct("Resources/Acts/act1_bridge.config");
+
+	int edges = 0;
+	for (int row = 0; row < bridge.height; row++)
+	{
+		for (int column = 0; column < bridge.width; column++)
+		{
+			if (OverlayAt(bridge, column, row) != TileType::Breach)
+			{
+				continue;
+			}
+
+			edges++;
+
+			EXPECT_EQ(TileAt(bridge, column, row), TileType::Water)
+				<< "a broken edge at " << column << ";" << row << " lies on solid road";
+			EXPECT_NE(RoguelikeGame::BreachMask(bridge, column, row), 0)
+				<< "a broken edge at " << column << ";" << row << " touches no road at all";
+		}
+	}
+
+	// Четыре пролома на мост, у каждого край в несколько клеток.
+	EXPECT_GT(edges, 24) << "the bridge is barely broken anywhere";
+}
+
+TEST_F(ShippedOverlayTest, TheBreachesAreSpreadAlongTheBridge)
+{
+	ASSERT_TRUE(isFound) << previous.string();
+
+	LevelData bridge = RoguelikeGame::LoadAct("Resources/Acts/act1_bridge.config");
+
+	int leftmost = bridge.width;
+	int rightmost = 0;
+
+	for (int row = 0; row < bridge.height; row++)
+	{
+		for (int column = 0; column < bridge.width; column++)
+		{
+			if (OverlayAt(bridge, column, row) != TileType::Breach)
+			{
+				continue;
+			}
+
+			leftmost = column < leftmost ? column : leftmost;
+			rightmost = column > rightmost ? column : rightmost;
+		}
+	}
+
+	ASSERT_LT(leftmost, rightmost) << "the bridge has no breaches at all";
+
+	// Проломы должны встречаться по всей длине, а не кучей в одном месте.
+	EXPECT_GT(rightmost - leftmost, bridge.width / 2)
+		<< "every breach sits within the same stretch of the bridge";
+}
+
+TEST_F(ShippedOverlayTest, ABreachNeverCutsTheBridgeInTwo)
+{
+	ASSERT_TRUE(isFound) << previous.string();
+
+	LevelData bridge = RoguelikeGame::LoadAct("Resources/Acts/act1_bridge.config");
+
+	// В каждой колонке обязан остаться хоть один проходимый ряд, иначе мост заперт.
+	// Торцы не в счёт: они закрыты отбойником, там ехать некуда по замыслу.
+	for (int column = 1; column < bridge.width - 1; column++)
+	{
+		int passable = 0;
+		for (int row = 0; row < bridge.height; row++)
+		{
+			TileType tile = TileAt(bridge, column, row);
+			passable += tile == TileType::Floor || tile == TileType::Line || tile == TileType::WaveSpawn ? 1 : 0;
+		}
+
+		EXPECT_GT(passable, 0) << "column " << column << " is water from rail to rail";
+	}
+}
+
+TEST_F(ShippedOverlayTest, BrokenSpansLeaveConcreteOnTheRoad)
+{
+	ASSERT_TRUE(isFound) << previous.string();
+
+	LevelData bridge = RoguelikeGame::LoadAct("Resources/Acts/act1_bridge.config");
+
+	int rubble = 0;
+	for (const RoguelikeGame::PropPlacement& prop : bridge.props)
+	{
+		rubble += prop.propId.rfind("bridge_rubble", 0) == 0 ? 1 : 0;
+	}
+
+	EXPECT_GT(rubble, 10) << "a collapse that threw no concrete onto the deck";
+}

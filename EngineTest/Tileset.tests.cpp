@@ -84,8 +84,8 @@ namespace
 {
 	constexpr unsigned int ATLAS_WIDTH = 1024u;
 
-	// Пол, стены, разметка, вода и накладка - по строке на каждое, у всех тайлсетов одинаково.
-	constexpr unsigned int ATLAS_ROWS = 5u;
+	// Пол, стены, разметка, вода, накладка и край пролома - по строке на каждое.
+	constexpr unsigned int ATLAS_ROWS = 6u;
 	constexpr unsigned int ATLAS_HEIGHT = ATLAS_ROWS * RoguelikeGame::TILE_FRAME_SIZE;
 
 	class ShippedTilesetsTest : public ProjectFiles::Test

@@ -23,7 +23,8 @@ namespace RoguelikeGame
         Door,
         Line,
         Water,
-        WaveSpawn
+        WaveSpawn,
+        Breach
     };
 
     struct TileTypeName
@@ -41,7 +42,8 @@ namespace RoguelikeGame
         {"Exit", TileType::Exit},
         {"Line", TileType::Line},
         {"Water", TileType::Water},
-        {"WaveSpawn", TileType::WaveSpawn}
+        {"WaveSpawn", TileType::WaveSpawn},
+        {"Breach", TileType::Breach}
     };
 
     struct PropPlacement

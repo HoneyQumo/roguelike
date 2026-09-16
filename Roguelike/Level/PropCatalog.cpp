@@ -41,6 +41,11 @@ namespace RoguelikeGame
         return blastRadius > 0.f && blastDamage > 0.f && IsDestructible();
     }
 
+    bool PropDefinition::ShowsWreckOnBreak() const
+    {
+        return !IsExplosive();
+    }
+
     bool PropDefinition::IsDestructible() const
     {
         return health > 0.f;

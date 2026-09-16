@@ -143,7 +143,7 @@ namespace RoguelikeGame
             }
 
             DamageSource source;
-            source.kind = DamageKind::Explosion;
+            source.kind = DamageKind::Burn;
             source.attackerName = gameObject->GetName();
             source.attackerFaction = Faction::Neutral;
             source.position = transform->GetWorldPosition();

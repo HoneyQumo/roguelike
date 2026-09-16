@@ -100,15 +100,22 @@ namespace RoguelikeGame
             destructible->SetLeavesWreck(definition.leavesWreck);
 
             std::string lootTable = definition.lootTable;
-            destructible->SubscribeBroken([gameObject, lootTable, visual](const XYZEngine::Vector2Df& place)
+
+            bool showsWreckNow = definition.ShowsWreckOnBreak();
+
+            destructible->SubscribeBroken([gameObject, lootTable, visual, showsWreckNow](const XYZEngine::Vector2Df& place)
             {
-                visual->ShowSpent();
+                if (showsWreckNow)
+                {
+                    visual->ShowSpent();
+                }
+
                 Fx::SpawnImpact(place, {0.f, 1.f});
                 DropLoot(lootTable, gameObject, place);
             });
         }
 
-        void AddBlast(XYZEngine::GameObject* gameObject, const PropDefinition& definition)
+        void AddBlast(XYZEngine::GameObject* gameObject, const PropDefinition& definition, PropVisualComponent* visual)
         {
             auto destructible = gameObject->GetComponent<DestructibleComponent>();
             if (destructible == nullptr)
@@ -129,10 +136,11 @@ namespace RoguelikeGame
             float burnTime = definition.burnTime;
             float burnSpread = definition.burnSpread;
 
-            blast->SubscribeExplode([radius, burnTime, burnSpread](const XYZEngine::Vector2Df& place)
+            blast->SubscribeExplode([radius, burnTime, burnSpread, visual](const XYZEngine::Vector2Df& place)
             {
                 Fx::SpawnExplosion(place, radius);
                 Fx::ShakeCamera(CAMERA_SHAKE_BLAST);
+                visual->ShowSpent();
 
                 if (burnTime > 0.f)
                 {
@@ -213,7 +221,7 @@ namespace RoguelikeGame
 
             if (definition.IsExplosive())
             {
-                AddBlast(gameObject, definition);
+                AddBlast(gameObject, definition, visual);
             }
         }
 

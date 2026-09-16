@@ -21,6 +21,10 @@ WATER_TOP = 5
 RAIL_TOP = 5
 ROAD_TOP = 6
 LANE_LINE = 11
+
+# Сколько клеток дороги остаётся позади машины: чуть больше, чем
+# ARRIVAL_ENTRY_OFFSET в GameSettings.h - с него она начинает разгон.
+ARRIVAL_RUNWAY = 21
 ROAD_BOTTOM = 16
 RAIL_BOTTOM = 17
 
@@ -423,7 +427,17 @@ def Section(index, rng):
             rows[row][WIDTH - 1] = RAIL
 
         # Переходом служит сама машина, тайл выхода рядом с ней был вторым путём никуда.
-        rows[LANE_LINE][WIDTH - 4] = 'E'
+        #
+        # Место отодвинуто от торца: машина приезжает справа и без этого запаса
+        # стартовала бы за краем карты и выезжала из-за отбойника.
+        place = WIDTH - 1 - ARRIVAL_RUNWAY
+
+        # Полоса подъезда чистая: иначе машина въезжает сквозь остов.
+        for column in range(place, WIDTH - 1):
+            if rows[LANE_LINE][column] != LINE:
+                rows[LANE_LINE][column] = ROAD
+
+        rows[LANE_LINE][place] = 'E'
     else:
         share = index / float(SECTIONS - 1)
         count = 1 + int(share * 4)

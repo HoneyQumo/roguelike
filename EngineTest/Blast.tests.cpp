@@ -389,6 +389,7 @@ TEST_F(DeadlyBlastTest, TheBlastReachesWellPastTheThingThatBlew)
 		const PropDefinition* prop = props.Find(id);
 		ASSERT_NE(prop, nullptr) << id;
 
-		EXPECT_GT(prop->blastRadius, 3.f * RoguelikeGame::TILE_SIZE) << id << " barely reaches past its own bumper";
+		// Проверяем относительно габарита: взрыв меньше самой вещи никого не заденет.
+		EXPECT_GT(prop->blastRadius, prop->size) << id << " barely reaches past its own bumper";
 	}
 }

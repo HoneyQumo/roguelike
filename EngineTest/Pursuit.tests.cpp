@@ -1,9 +1,16 @@
 #include "pch.h"
+#include "ActAssembler.h"
 #include "ActPlan.h"
 #include "GameSettings.h"
+#include "GuardFacing.h"
+#include "LevelLoader.h"
 #include "GameWorld.h"
 #include "HealthComponent.h"
 #include "PursuitComponent.h"
+#include "ProjectFiles.h"
+#include "EnemyCatalog.h"
+#include <map>
+#include <set>
 #include <sstream>
 
 using RoguelikeGame::ActLoader;
@@ -354,4 +361,224 @@ TEST_F(PursuitTest, TheChaseNeverEndsOnItsOwn)
 
 	EXPECT_GE(pursuit->CountChasing(), 2) << "the chase can be wiped out and walked away from";
 	EXPECT_GT(born.size(), 6u);
+}
+
+namespace
+{
+	class ShippedBridgeGuardsTest : public ProjectFiles::Test
+	{
+	};
+
+	int CountTilesOf(const RoguelikeGame::LevelData& level, TileType tile)
+	{
+		int total = 0;
+		for (const auto& row : level.tiles)
+		{
+			for (TileType each : row)
+			{
+				total += each == tile ? 1 : 0;
+			}
+		}
+
+		return total;
+	}
+}
+
+TEST_F(ShippedBridgeGuardsTest, TheChaseKeepsEnoughOnTheHeels)
+{
+	ASSERT_TRUE(isFound) << previous.string();
+
+	ActPlan plan = ActLoader::Load("Resources/Acts/act1_bridge.config");
+
+	EXPECT_GE(plan.pursuit.keep, 6) << "the chase is too thin to be felt on a wide bridge";
+	EXPECT_GE(plan.pursuit.grow - plan.pursuit.keep, 4) << "standing still barely costs the player anything";
+}
+
+TEST_F(ShippedBridgeGuardsTest, EveryRoadBlockHasSomebodyHoldingIt)
+{
+	ASSERT_TRUE(isFound) << previous.string();
+
+	RoguelikeGame::LevelData bridge = RoguelikeGame::LoadAct("Resources/Acts/act1_bridge.config");
+
+	// Барьеры стоят столбом поперёк дороги - весь блокпост это одна колонка.
+	std::set<int> blocks;
+	for (const RoguelikeGame::PropPlacement& prop : bridge.props)
+	{
+		if (prop.propId == "road_barrier")
+		{
+			blocks.insert(prop.column);
+		}
+	}
+
+	ASSERT_FALSE(blocks.empty()) << "the bridge has no road blocks at all";
+
+	constexpr int REACH = 6;
+	for (int column : blocks)
+	{
+		int guards = 0;
+		for (int row = 0; row < bridge.height; row++)
+		{
+			for (int near = column - REACH; near <= column + REACH; near++)
+			{
+				if (near < 0 || near >= static_cast<int>(bridge.tiles[row].size()))
+				{
+					continue;
+				}
+
+				guards += RoguelikeGame::FindEnemyConfig(bridge.tiles[row][near]) != nullptr ? 1 : 0;
+			}
+		}
+
+		EXPECT_GE(guards, 3) << "the block at column " << column << " is left standing on its own";
+	}
+}
+
+TEST_F(ShippedBridgeGuardsTest, ABlockLetsTheRunnerThroughInsteadOfSealingTheBridge)
+{
+	ASSERT_TRUE(isFound) << previous.string();
+
+	RoguelikeGame::LevelData bridge = RoguelikeGame::LoadAct("Resources/Acts/act1_bridge.config");
+
+	std::map<int, int> barriers;
+	for (const RoguelikeGame::PropPlacement& prop : bridge.props)
+	{
+		if (prop.propId == "road_barrier")
+		{
+			barriers[prop.column]++;
+		}
+	}
+
+	ASSERT_FALSE(barriers.empty());
+
+	// Между отбойниками 12 полос движения: заслон обязан оставить проход.
+	for (const auto& block : barriers)
+	{
+		EXPECT_LT(block.second, 11) << "the block at column " << block.first << " walls the bridge off completely";
+	}
+}
+
+TEST_F(ShippedBridgeGuardsTest, TheGuardsOfABlockWalkTheirOwnBeat)
+{
+	ASSERT_TRUE(isFound) << previous.string();
+
+	RoguelikeGame::LevelData bridge = RoguelikeGame::LoadAct("Resources/Acts/act1_bridge.config");
+
+	ASSERT_FALSE(bridge.patrols.empty()) << "nobody on the bridge walks a beat";
+
+	std::map<std::string, int> beats;
+	for (const RoguelikeGame::PatrolPoint& point : bridge.patrols)
+	{
+		beats[point.routeId]++;
+	}
+
+	for (const auto& beat : beats)
+	{
+		EXPECT_GE(beat.second, 2) << "route " << beat.first << " is a single point, there is nowhere to walk";
+	}
+
+	// Один маршрут на весь мост склеил бы посты в обход длиной в 704 клетки.
+	EXPECT_GT(beats.size(), 1u) << "every block shares one route across the whole bridge";
+}
+
+TEST_F(ShippedBridgeGuardsTest, EachBeatStaysInsideItsOwnSection)
+{
+	ASSERT_TRUE(isFound) << previous.string();
+
+	RoguelikeGame::LevelData bridge = RoguelikeGame::LoadAct("Resources/Acts/act1_bridge.config");
+
+	std::map<std::string, std::pair<int, int>> spread;
+	for (const RoguelikeGame::PatrolPoint& point : bridge.patrols)
+	{
+		auto found = spread.find(point.routeId);
+		if (found == spread.end())
+		{
+			spread[point.routeId] = {point.column, point.column};
+			continue;
+		}
+
+		found->second.first = point.column < found->second.first ? point.column : found->second.first;
+		found->second.second = point.column > found->second.second ? point.column : found->second.second;
+	}
+
+	for (const auto& beat : spread)
+	{
+		EXPECT_LE(beat.second.second - beat.second.first, 32)
+			<< "route " << beat.first << " stretches across more than one section";
+	}
+}
+
+namespace
+{
+	RoguelikeGame::LevelData RoomOf(const std::string& text)
+	{
+		std::istringstream input(text);
+
+		return RoguelikeGame::LevelLoader::Parse(input, "guards");
+	}
+
+	// Вход слева, выход справа: игрок бежит направо, значит караул смотрит налево.
+	const char* RUNWAY =
+		"[level]\n"
+		"kind runway\n"
+		"\n"
+		"[legend]\n"
+		"# Wall\n"
+		". Floor\n"
+		"< Entrance\n"
+		"> Exit\n"
+		"g MarauderSpawn\n"
+		"\n"
+		"[pursuit]\n"
+		"keep 2\n"
+		"grow 4\n"
+		"respawn 1\n"
+		"from 0.0 g1\n"
+		"\n"
+		"[map]\n"
+		"#########\n"
+		"#<..g..>#\n"
+		"#########\n";
+
+	const char* QUIET_ROOM =
+		"[level]\n"
+		"kind quiet\n"
+		"\n"
+		"[legend]\n"
+		"# Wall\n"
+		". Floor\n"
+		"< Entrance\n"
+		"> Exit\n"
+		"g MarauderSpawn\n"
+		"\n"
+		"[map]\n"
+		"#########\n"
+		"#<..g..>#\n"
+		"#########\n";
+}
+
+TEST(GuardFacingTests, OnARunTheGuardsTurnToMeetTheRunner)
+{
+	std::optional<float> facing = RoguelikeGame::FacingAgainstTheRun(RoomOf(RUNWAY));
+
+	ASSERT_TRUE(facing.has_value()) << "the guards were left staring the wrong way";
+
+	// 180 градусов - взгляд навстречу тому, кто бежит слева направо.
+	EXPECT_NEAR(std::abs(*facing), 180.f, 1.f);
+}
+
+TEST(GuardFacingTests, WithoutAChaseNobodyIsTurnedAround)
+{
+	EXPECT_FALSE(RoguelikeGame::FacingAgainstTheRun(RoomOf(QUIET_ROOM)).has_value())
+		<< "an ordinary level had its guards turned by the bridge rule";
+}
+
+TEST_F(ShippedBridgeGuardsTest, TheBridgeGuardsWatchTheWayThePlayerComesFrom)
+{
+	ASSERT_TRUE(isFound) << previous.string();
+
+	RoguelikeGame::LevelData bridge = RoguelikeGame::LoadAct("Resources/Acts/act1_bridge.config");
+	std::optional<float> facing = RoguelikeGame::FacingAgainstTheRun(bridge);
+
+	ASSERT_TRUE(facing.has_value()) << "the bridge guards keep their backs to the chase";
+	EXPECT_NEAR(std::abs(*facing), 180.f, 5.f);
 }

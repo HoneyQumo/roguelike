@@ -1,4 +1,5 @@
 ﻿#include "LevelLoader.h"
+#include "PursuitFormat.h"
 #include "EnemyCatalog.h"
 #include <LoggerRegistry.h>
 #include <fstream>
@@ -10,6 +11,7 @@ namespace RoguelikeGame
     const std::string LEGEND_SECTION = "legend";
     const std::string MAP_SECTION = "map";
     const std::string WAVES_SECTION = "waves";
+    const std::string PURSUIT_SECTION = "pursuit";
     const std::string WAVE_KEYWORD = "wave";
     const std::string LEVEL_SECTION = "level";
     const std::string ITEM_PREFIX = "Item:";
@@ -45,6 +47,7 @@ namespace RoguelikeGame
         bool isLegendSection = false;
         bool isLevelSection = false;
         bool isWavesSection = false;
+        bool isPursuitSection = false;
 
         std::string line;
         int lineNumber = 0;
@@ -83,6 +86,15 @@ namespace RoguelikeGame
             if (IsSection(line, WAVES_SECTION))
             {
                 isWavesSection = true;
+                isPursuitSection = false;
+                isLegendSection = false;
+                isLevelSection = false;
+                continue;
+            }
+            if (IsSection(line, PURSUIT_SECTION))
+            {
+                isPursuitSection = true;
+                isWavesSection = false;
                 isLegendSection = false;
                 isLevelSection = false;
                 continue;
@@ -92,6 +104,7 @@ namespace RoguelikeGame
                 isLegendSection = false;
                 isLevelSection = false;
                 isWavesSection = false;
+                isPursuitSection = false;
                 continue;
             }
 
@@ -110,6 +123,12 @@ namespace RoguelikeGame
             if (isWavesSection)
             {
                 ReadWaveLine(line, lineNumber, legend, levelData);
+                continue;
+            }
+
+            if (isPursuitSection)
+            {
+                ReadPursuitLine(line, lineNumber, levelData.pursuit);
                 continue;
             }
 

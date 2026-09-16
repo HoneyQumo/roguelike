@@ -5,6 +5,7 @@
 #include "Level.h"
 #include "LevelData.h"
 #include "LevelZones.h"
+#include <optional>
 #include <Vector.h>
 
 namespace RoguelikeGame

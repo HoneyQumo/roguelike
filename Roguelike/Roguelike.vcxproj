@@ -247,7 +247,9 @@
         <ClInclude Include="Level\PropAlign.h"/>
         <ClInclude Include="Level\HatchComponent.h"/>
         <ClInclude Include="Level\SwitchComponent.h"/>
+        <ClInclude Include="Level\GuardFacing.h"/>
         <ClInclude Include="Level\PursuitComponent.h"/>
+        <ClInclude Include="Level\PursuitFormat.h"/>
         <ClInclude Include="Level\WaveDirectorComponent.h"/>
         <ClInclude Include="Level\TileAnimationComponent.h"/>
         <ClInclude Include="Level\EscapeCarComponent.h"/>

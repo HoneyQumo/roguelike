@@ -15,6 +15,7 @@
 #include "HealthComponent.h"
 #include "DamageInfo.h"
 #include "Prop.h"
+#include "GuardFacing.h"
 #include "PropAlign.h"
 #include "TileAnimationComponent.h"
 #include "PursuitComponent.h"
@@ -36,6 +37,8 @@
 #include <VertexArrayRendererComponent.h>
 #include <LoggerRegistry.h>
 #include <cassert>
+#include <MathUtils.h>
+#include <optional>
 
 namespace RoguelikeGame
 {
@@ -57,6 +60,7 @@ namespace RoguelikeGame
         int wallsCount = 0;
         int enemiesCount = 0;
 
+        std::optional<float> guardFacing = FacingAgainstTheRun(levelData);
         std::vector<LevelZone> zones = BuildZones(levelData);
         RoomWakeComponent* rooms = CreateRoomWake(zones, level);
 
@@ -139,6 +143,13 @@ namespace RoguelikeGame
                         if (const EnemyConfig* config = FindEnemyConfig(tile))
                         {
                             XYZEngine::GameObject* enemyObject = CreateEnemy(*config, position);
+
+                            // Заслон ждёт бегущего: стоять к нему спиной ему незачем.
+                            if (guardFacing.has_value())
+                            {
+                                enemyObject->GetTransform()->SetWorldRotation(*guardFacing);
+                            }
+
                             level.Add(enemyObject);
                             PutToSleep(rooms, zones, column, row, enemyObject);
                             enemiesCount++;

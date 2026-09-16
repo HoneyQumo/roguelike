@@ -157,19 +157,29 @@ def Checkpoint(rows, rng):
     PutWide(rows, column - 6, LANE_LINE - 2, 'v')
     PutWide(rows, column + 3, LANE_LINE + 2, 'c')
 
-    Garrison(rows, column)
+    Garrison(rows, column, rng)
 
 
-def Garrison(rows, column):
-    """Охрана блокпоста: щитовик в проходе, стрелки за барьером, патруль вдоль него.
+# Сколько блокпостов уже поставлено: караул выходит через один.
+# Монетка тут не годится - блокпостов на мосту всего два, и она легко
+# оставляет без патруля оба сразу.
+BLOCKS_BUILT = [0]
 
-    Патруль ходит по своей стороне барьера - тот, кто держит заслон,
-    не должен стоять истуканом, пока игрок обходит его по краю.
+
+def Garrison(rows, column, rng):
+    """Охрана блокпоста: щитовик в проходе, стрелок за барьером, через раз патруль.
+
+    Щитовик - суть заслона, без него блокпост становится декорацией.
+    А вот двое стрелков с фланга вместе с погоней за спиной оказались
+    перебором, поэтому остался один.
     """
     Put(rows, column + 1, LANE_LINE, 'h')
 
-    for row in (LANE_LINE - 4, LANE_LINE + 4):
-        Put(rows, column + 2, row, 'r')
+    Put(rows, column + 2, LANE_LINE - 4 if rng.random() < 0.5 else LANE_LINE + 4, 'r')
+
+    BLOCKS_BUILT[0] += 1
+    if BLOCKS_BUILT[0] % 2 == 0:
+        return
 
     # Две точки на разных концах барьера: между ними и ходит караул.
     Put(rows, column + 3, ROAD_TOP + 1, PATROL_SYMBOLS[0])
@@ -335,6 +345,13 @@ def WavePoints(rows, index):
                 rows[row][column] = '*'
 
 
+ENEMY_SYMBOLS = 'grhed'
+
+
+def CountEnemies(rows):
+    return sum(row.count(symbol) for row in rows for symbol in ENEMY_SYMBOLS)
+
+
 def Enemies(rows, rng, count, kinds):
     placed = 0
     guard = 0
@@ -381,7 +398,10 @@ def Section(index, rng):
         share = index / float(SECTIONS - 1)
         count = 1 + int(share * 4)
         kinds = 'gg' if share < 0.3 else ('ggrh' if share < 0.7 else 'grhed')
-        Enemies(rows, rng, count, kinds)
+
+        # Гарнизон блокпоста идёт в общий счёт секции: иначе случайная расстановка
+        # доставляет людей поверх заслона и сводит его ослабление на нет.
+        Enemies(rows, rng, max(0, count - CountEnemies(rows)), kinds)
 
     return rows, edges
 
@@ -437,6 +457,7 @@ def Write(index, rows, edges):
 
 def Build(seed=20260916):
     rng = random.Random(seed)
+    BLOCKS_BUILT[0] = 0
 
     names = []
     for index in range(SECTIONS):

@@ -48,7 +48,8 @@ namespace RoguelikeGame
 
     constexpr float CHARACTER_COLLIDER_SIZE = 30.f;
 
-    constexpr float PLAYER_SPEED = 250.f;
+    // Скорость налегке: настоящую даёт вес ствола в руках, см. MovePaceOf.
+    constexpr float PLAYER_SPEED = 270.f;
     constexpr float PLAYER_RUN_SPEED_MULTIPLIER = 1.5f;
     constexpr float PLAYER_MAX_HEALTH = 100.f;
     constexpr float PLAYER_ARMOR = 40.f;

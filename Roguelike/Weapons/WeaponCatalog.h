@@ -215,6 +215,72 @@ namespace RoguelikeGame
         return fire == nullptr ? 0.f : fire->spreadDegrees;
     }
 
+    /**
+    *	Вес ствола и вес того, что с ним таскают: магазины, патронташ, ракеты.
+    *	Классы расходятся именно за счёт боекомплекта - сами стволы по массе
+    *	отличаются куда слабее, чем снаряжение вокруг них.
+    */
+    struct WeaponWeight
+    {
+        WeaponId weapon;
+        float kilograms;
+        float ammoKilograms;
+    };
+
+    constexpr WeaponWeight WEAPON_WEIGHTS[] = {
+        {WeaponId::Ak47, 4.30f, 2.40f},
+        {WeaponId::M16, 3.90f, 2.20f},
+        {WeaponId::ShotgunDouble, 3.20f, 0.80f},
+        {WeaponId::ShotgunPump, 3.60f, 1.00f},
+        {WeaponId::SmgSuppressed, 3.00f, 1.50f},
+        {WeaponId::Glock, 0.90f, 0.90f},
+        {WeaponId::Deagle, 2.00f, 1.05f},
+        {WeaponId::PistolSuppressed, 1.20f, 0.90f},
+        {WeaponId::Knife, 0.30f, 0.00f},
+        {WeaponId::Bat, 1.00f, 0.00f},
+        {WeaponId::Rpg, 7.00f, 4.40f}
+    };
+
+    static_assert(static_cast<int>(std::size(WEAPON_WEIGHTS)) == WEAPON_COUNT, "every weapon needs a weight");
+
+    constexpr float LIGHTEST_WEAPON_WEIGHT = 0.30f;
+
+    // Сколько шага съедает лишний килограмм ноши и где замедление упирается в пол.
+    constexpr float PACE_COST_PER_KILOGRAM = 0.034f;
+    constexpr float SLOWEST_PACE = 0.55f;
+
+    constexpr const WeaponWeight* FindWeight(WeaponId id)
+    {
+        for (const WeaponWeight& entry : WEAPON_WEIGHTS)
+        {
+            if (entry.weapon == id)
+            {
+                return &entry;
+            }
+        }
+
+        return nullptr;
+    }
+
+    /**
+    *	Снаряжённый вес: ствол вместе с носимым боекомплектом.
+    */
+    constexpr float WeightOf(WeaponId id)
+    {
+        const WeaponWeight* entry = FindWeight(id);
+
+        return entry == nullptr ? LIGHTEST_WEAPON_WEIGHT : entry->kilograms + entry->ammoKilograms;
+    }
+
+    /**
+    *	Во сколько раз ноша укорачивает шаг: налегке единица, с РПГ около двух третей.
+    */
+    constexpr float MovePaceOf(WeaponId id)
+    {
+        float pace = 1.f - (WeightOf(id) - LIGHTEST_WEAPON_WEIGHT) * PACE_COST_PER_KILOGRAM;
+
+        return pace < SLOWEST_PACE ? SLOWEST_PACE : pace;
+    }
 
     struct AmmoKindName
     {

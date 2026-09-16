@@ -42,5 +42,8 @@ namespace RoguelikeGame
         float peripheryHalfAngle = 0.f;
         float shoutRadius = SHOUT_RADIUS;
         float provokedRangeScale = 1.f;
+
+        // Скорость налегке в погоне: настоящую даёт вес ствола. Ноль - бежит ровно так же, как патрулирует.
+        float chaseSpeed = 0.f;
     };
 }

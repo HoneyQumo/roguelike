@@ -18,6 +18,7 @@ using RoguelikeGame::Faction;
 using RoguelikeGame::FactionComponent;
 using RoguelikeGame::FindBoss;
 using RoguelikeGame::HealthComponent;
+using RoguelikeGame::TileType;
 using XYZEngine::GameObject;
 using XYZEngine::GameWorld;
 using XYZEngine::MovementComponent;
@@ -220,7 +221,7 @@ TEST_F(BossBrainTest, SummonAsksForMinionsAroundTheBoss)
 	CreatePlayer(400.f, 0.f);
 
 	std::vector<Vector2Df> points;
-	brain->SubscribeSummon([&points](const Vector2Df& point) { points.push_back(point); });
+	brain->SubscribeSummon([&points](const Vector2Df& point, TileType) { points.push_back(point); });
 
 	Step(11);
 
@@ -236,7 +237,7 @@ TEST_F(BossBrainTest, MinionLimitStopsTheSummon)
 	CreateBoss("puppeteer");
 	CreatePlayer(480.f, 0.f);
 
-	for (int index = 0; index < 4; index++)
+	for (int index = 0; index < RoguelikeGame::BOSS_MINION_LIMIT; index++)
 	{
 		brain->RegisterMinion(CreateMinion(index));
 	}

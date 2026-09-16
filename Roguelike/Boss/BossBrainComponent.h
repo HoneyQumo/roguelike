@@ -41,6 +41,7 @@ namespace RoguelikeGame
         BossAbility GetCurrentAbility() const;
         bool IsEnraged() const;
         int GetAbilityUses(BossAbility ability) const;
+        int GetSummonCalls() const;
         XYZEngine::Vector2Df GetCastPoint() const;
         void DetonateBlast(const XYZEngine::Vector2Df& center);
         void RegisterMinion(XYZEngine::GameObject* minion);
@@ -49,7 +50,7 @@ namespace RoguelikeGame
         XYZEngine::SubscriptionId SubscribeAbilityUsed(std::function<void(BossAbility)> onAbilityUsed);
         XYZEngine::SubscriptionId SubscribeEnraged(std::function<void()> onEnraged);
         XYZEngine::SubscriptionId SubscribeShot(std::function<void(const XYZEngine::Vector2Df&, const XYZEngine::Vector2Df&, float, float)> onShot);
-        XYZEngine::SubscriptionId SubscribeSummon(std::function<void(const XYZEngine::Vector2Df&)> onSummon);
+        XYZEngine::SubscriptionId SubscribeSummon(std::function<void(const XYZEngine::Vector2Df&, TileType)> onSummon);
         XYZEngine::SubscriptionId SubscribeBlast(std::function<void(const XYZEngine::Vector2Df&, float)> onBlast);
         XYZEngine::SubscriptionId SubscribeCastMark(std::function<void(const XYZEngine::Vector2Df&, float, float)> onCastMark);
         XYZEngine::SubscriptionId SubscribeMinionSpawned(std::function<void(XYZEngine::GameObject*)> onMinionSpawned);
@@ -81,6 +82,7 @@ namespace RoguelikeGame
         XYZEngine::Vector2Df castPoint = {0.f, 0.f};
         std::vector<XYZEngine::GameObject*> minions;
         int abilityUses[BOSS_ABILITY_SLOTS] = {0, 0};
+        int summonCalls = 0;
 
         XYZEngine::Cooldown actionTimer;
         XYZEngine::Cooldown recoveryTimer;
@@ -91,7 +93,7 @@ namespace RoguelikeGame
         XYZEngine::EventList<BossAbility> abilityUsedEvent;
         XYZEngine::EventList<> enragedEvent;
         XYZEngine::EventList<const XYZEngine::Vector2Df&, const XYZEngine::Vector2Df&, float, float> shotEvent;
-        XYZEngine::EventList<const XYZEngine::Vector2Df&> summonEvent;
+        XYZEngine::EventList<const XYZEngine::Vector2Df&, TileType> summonEvent;
         XYZEngine::EventList<const XYZEngine::Vector2Df&, float> blastEvent;
         XYZEngine::EventList<const XYZEngine::Vector2Df&, float, float> castMarkEvent;
         XYZEngine::EventList<XYZEngine::GameObject*> minionSpawnedEvent;

@@ -237,6 +237,7 @@ namespace RoguelikeGame
         rangedWeapon = gameObject->GetComponent<WeaponComponent>();
         meleeWeapon = gameObject->GetComponent<MeleeWeaponComponent>();
         dodgeRoll = gameObject->GetComponent<DodgeRollComponent>();
+        movement = gameObject->GetComponent<XYZEngine::MovementComponent>();
         health = gameObject->GetComponent<HealthComponent>();
     }
 
@@ -254,6 +255,11 @@ namespace RoguelikeGame
 
         ApplyRangedWeapon(id, slots[slot].magazine);
         ApplyMeleeWeapon(FindMelee(id));
+
+        if (movement != nullptr)
+        {
+            movement->SetSpeed(PLAYER_SPEED * MovePaceOf(id));
+        }
 
         if (animation != nullptr)
         {

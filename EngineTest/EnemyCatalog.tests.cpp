@@ -1,5 +1,4 @@
 #include "pch.h"
-#include "BossEffects.h"
 #include "EnemyCatalog.h"
 #include "Vision.h"
 #include <set>
@@ -193,14 +192,6 @@ TEST(NoiseTest, ShootingEnemiesReachFurtherWhenProvoked)
 		EXPECT_GT(enemy.config.attackRange * enemy.config.provokedRangeScale, enemy.config.detectionRadius)
 			<< enemy.config.objectName;
 	}
-}
-
-TEST(NoiseTest, TheBossCallsSomebodyWhoShoots)
-{
-	const RoguelikeGame::EnemyConfig* minion = RoguelikeGame::FindEnemyConfig(RoguelikeGame::BOSS_MINION_TILE);
-
-	ASSERT_NE(minion, nullptr);
-	EXPECT_NE(minion->weapon, RoguelikeGame::WeaponId::Knife) << minion->objectName;
 }
 
 TEST(EnemyCatalogTest, ArmorIsEitherAbsentOrWorthShowing)

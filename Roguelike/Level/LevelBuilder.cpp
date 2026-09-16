@@ -365,8 +365,16 @@ namespace RoguelikeGame
         director->SetSpawner([](TileType enemy, const XYZEngine::Vector2Df& place) -> XYZEngine::GameObject*
         {
             const EnemyConfig* config = FindEnemyConfig(enemy);
+            if (config == nullptr)
+            {
+                return nullptr;
+            }
 
-            return config == nullptr ? nullptr : CreateEnemy(*config, place);
+            // Волна приходит по душу игрока: стоять в карауле ей незачем.
+            XYZEngine::GameObject* born = CreateEnemy(*config, place);
+            SendAfterPlayer(born, place);
+
+            return born;
         });
 
         level.Add(gameObject);

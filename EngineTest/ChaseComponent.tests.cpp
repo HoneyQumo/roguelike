@@ -913,6 +913,54 @@ TEST_F(ChaseComponentTest, ANegativeChaseSpeedIsRefused)
 	EXPECT_FLOAT_EQ(chase->GetChaseSpeed(), 0.f);
 }
 
+TEST_F(ChaseComponentTest, AnOrdinaryEnemyFacingAwayNeverNoticesAnybody)
+{
+	ChaseComponent* chase = CreateEnemy(1, 1, 180.f);
+	CreateHero(5, 1);
+
+	Run(2.f);
+
+	EXPECT_FALSE(chase->IsChasing()) << "an enemy with its back turned saw through itself";
+}
+
+TEST_F(ChaseComponentTest, AHunterKnowsWhoItCameForWithoutLookingAtHim)
+{
+	ChaseComponent* chase = CreateEnemy(1, 1, 180.f);
+	CreateHero(5, 1);
+	chase->SetForcedChase(true);
+
+	Run(2.f);
+
+	EXPECT_TRUE(chase->IsChasing()) << "the hunter waits to be shown its target";
+}
+
+TEST_F(ChaseComponentTest, AHunterKeepsComingLongAfterTheAlarmWouldFade)
+{
+	ChaseComponent* chase = CreateEnemy(1, 1, 180.f);
+	GameObject* hero = CreateHero(5, 1);
+	chase->SetForcedChase(true);
+	chase->Provoke(hero->GetTransform()->GetWorldPosition());
+
+	// Заметно дольше, чем живёт обычная тревога: она бы давно выветрилась.
+	Run(3.f * SEARCH_TIME);
+
+	EXPECT_TRUE(chase->IsChasing()) << "the hunter lost the player and went back to patrol";
+}
+
+TEST_F(ChaseComponentTest, AHunterWalksTowardsThePlayerNotJustStandsProvoked)
+{
+	ChaseComponent* chase = CreateEnemy(1, 1, 180.f);
+	CreateHero(9, 1);
+	chase->SetForcedChase(true);
+
+	GameObject* enemy = chase->GetGameObject();
+	float before = enemy->GetTransform()->GetWorldPosition().x;
+
+	Run(1.f);
+
+	EXPECT_GT(enemy->GetTransform()->GetWorldPosition().x, before) << "the hunter knows the target but does not move";
+}
+
 TEST_F(ChaseComponentTest, ADeadEnemyIsNotPutBackOnItsFeet)
 {
 	ChaseComponent* chase = CreateEnemy(1, 1, 0.f);

@@ -278,4 +278,24 @@ namespace RoguelikeGame
         LOG_INFO(std::string("Boss ") + definition.id + " created with health " + std::to_string(static_cast<int>(config.maxHealth)));
         return gameObject;
     }
+
+    void SendAfterPlayer(XYZEngine::GameObject* enemy, const XYZEngine::Vector2Df& lastSeen)
+    {
+        if (enemy == nullptr)
+        {
+            return;
+        }
+
+        auto chase = enemy->GetComponent<ChaseComponent>();
+        if (chase == nullptr)
+        {
+            return;
+        }
+
+        XYZEngine::GameObject* player = XYZEngine::GameWorld::Instance()->FindGameObject(chase->GetTargetName());
+        chase->Provoke(player == nullptr ? lastSeen : player->GetTransform()->GetWorldPosition());
+
+        // Провокация сама по себе выветривается: без этого враг побродит у точки и успокоится.
+        chase->SetForcedChase(true);
+    }
 }

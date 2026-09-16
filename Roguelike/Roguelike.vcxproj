@@ -97,6 +97,7 @@
         <ClCompile Include="Weapons\ProjectileComponent.cpp"/>
         <ClCompile Include="Characters\DodgeRollComponent.cpp"/>
         <ClCompile Include="Weapons\ExplosiveComponent.cpp"/>
+        <ClCompile Include="Weapons\FuseComponent.cpp"/>
         <ClCompile Include="Weapons\MeleeWeaponComponent.cpp"/>
         <ClCompile Include="Weapons\WeaponComponent.cpp"/>
         <ClCompile Include="Fx\BloodPool.cpp"/>
@@ -271,6 +272,7 @@
         <ClInclude Include="Weapons\ProjectileComponent.h"/>
         <ClInclude Include="Characters\DodgeRollComponent.h"/>
         <ClInclude Include="Weapons\ExplosiveComponent.h"/>
+        <ClInclude Include="Weapons\FuseComponent.h"/>
         <ClInclude Include="Weapons\MeleeWeaponComponent.h"/>
         <ClInclude Include="Weapons\WeaponComponent.h"/>
         <ClInclude Include="Fx\BloodPool.h"/>

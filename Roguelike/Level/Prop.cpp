@@ -1,6 +1,8 @@
 #include "Prop.h"
 #include "ContainerComponent.h"
 #include "DestructibleComponent.h"
+#include "ExplosiveComponent.h"
+#include "FuseComponent.h"
 #include "Fx.h"
 #include "GameSettings.h"
 #include "HealthComponent.h"
@@ -102,6 +104,48 @@ namespace RoguelikeGame
                 DropLoot(lootTable, gameObject, place);
             });
         }
+
+        void AddBlast(XYZEngine::GameObject* gameObject, const PropDefinition& definition)
+        {
+            auto destructible = gameObject->GetComponent<DestructibleComponent>();
+            if (destructible == nullptr)
+            {
+                return;
+            }
+
+            float radius = definition.blastRadius;
+
+            auto blast = gameObject->AddComponent<ExplosiveComponent>();
+            blast->SetRadius(radius);
+            blast->SetCoreRadius(EXPLOSION_CORE_RADIUS);
+            blast->SetCenterDamage(definition.blastDamage);
+            blast->SetEdgeDamagePart(PROP_BLAST_EDGE_PART);
+            blast->SetSelfDamagePart(0.f);
+            blast->SetOwner(gameObject->GetId(), gameObject->GetName(), Faction::Neutral);
+
+            blast->SubscribeExplode([radius](const XYZEngine::Vector2Df& place)
+            {
+                Fx::SpawnExplosion(place, radius);
+                Fx::ShakeCamera(CAMERA_SHAKE_BLAST);
+
+                Noise noise;
+                noise.position = place;
+                noise.radius = radius * PROP_BLAST_NOISE_SCALE;
+                RaiseNoise(noise);
+            });
+
+            auto fuse = gameObject->AddComponent<FuseComponent>();
+            fuse->SubscribeBurnedOut([gameObject, blast]()
+            {
+                blast->Explode(gameObject->GetTransform()->GetWorldPosition());
+            });
+
+            float seconds = definition.blastFuse;
+            destructible->SubscribeBroken([fuse, seconds](const XYZEngine::Vector2Df&)
+            {
+                fuse->Light(seconds);
+            });
+        }
     }
 
     std::string PropTextureName(const std::string& propId, bool spent)
@@ -147,6 +191,11 @@ namespace RoguelikeGame
                     noise.radius = PROP_NOISE_RADIUS;
                     RaiseNoise(noise);
                 });
+            }
+
+            if (definition.IsExplosive())
+            {
+                AddBlast(gameObject, definition);
             }
         }
 

@@ -14,6 +14,7 @@
 namespace RoguelikeGame
 {
     class CutscenePlayerComponent;
+    class EscapeCarComponent;
 
     class DeveloperLevel : public XYZEngine::Scene
     {
@@ -40,6 +41,7 @@ namespace RoguelikeGame
         // Что именно выключила сцена: вернуть надо ровно это.
         std::vector<XYZEngine::Component*> takenParts;
         float escapeSpeed = 0.f;
+        float arrivalTime = 0.f;
         XYZEngine::GameObject* particles = nullptr;
         XYZEngine::GameObject* uiRoot = nullptr;
         std::unique_ptr<HudScreen> hudScreen;
@@ -74,6 +76,11 @@ namespace RoguelikeGame
         void TakeControl();
         void SetControlTaken(bool isTaken);
         void DriveEscape(XYZEngine::GameObject* carObject, float deltaTime);
+        void SendCarAway(XYZEngine::GameObject* carObject, EscapeCarComponent* car);
+        void ShowCar(XYZEngine::GameObject* carObject, bool isShown);
+        void OpenCarDoor(XYZEngine::GameObject* carObject, bool isOpen);
+        void PlayArrival();
+        void DriveArrival(XYZEngine::GameObject* carObject, float deltaTime);
         void OnWavesCleared();
         void OnBossDefeated();
         void RequestNextLevel();

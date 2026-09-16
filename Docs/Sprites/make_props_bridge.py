@@ -12,7 +12,7 @@ import os
 import zipfile
 
 import numpy as np
-from PIL import Image
+from PIL import Image, ImageDraw
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 TEXTURES = os.path.normpath(os.path.join(HERE, '..', '..', 'Roguelike', 'Resources', 'Textures'))
@@ -45,7 +45,11 @@ FRAMES = [
     ('oil_slick', 'PNG/Objects/oil.png', 'slick', 96, 72, False),
     ('bridge_rubble', 'rubble', None, 64, 64, False),
     ('bridge_rubble_wide', 'rubble', None, 96, 64, False),
+    # Кадр вдвое выше кузова: дверь висит снаружи, а центр машины остаётся центром кадра.
+    ('car_van_open', 'PNG/Cars/car_blue_4.png', 'paint', 136, 136, True),
 ]
+
+OPEN_DOOR_FRAME = 'car_van_open'
 
 WRECK_SOURCE = 'PNG/Cars/car_black_1.png'
 SOOT = (26, 24, 24)
@@ -153,6 +157,29 @@ def Rubble(pack, seed, width, height):
     return Image.fromarray(np.clip(pixels, 0, 255).astype(np.uint8), 'RGBA')
 
 
+DOOR_SKIN = (74, 122, 164)
+DOOR_EDGE = (20, 34, 48)
+DOOR_GLASS = (126, 172, 210)
+
+
+def OpenDoor(tile):
+    """Открытая водительская дверь: панель вынесена за габарит кузова."""
+    canvas = ImageDraw.Draw(tile)
+
+    top = (tile.height - 68) // 2
+    bottom = top + 68
+
+    # Проём в борту: без него дверь выглядит приклеенной снаружи.
+    canvas.rectangle([84, bottom - 14, 114, bottom - 2], fill=DOOR_EDGE + (255,))
+
+    # Петля у передней стойки, полотно вынесено назад и наружу.
+    panel = [(114, bottom - 9), (126, bottom + 1), (103, bottom + 29), (91, bottom + 19)]
+    canvas.polygon(panel, fill=DOOR_SKIN + (255,), outline=DOOR_EDGE + (255,))
+    canvas.line([(115, bottom + 2), (100, bottom + 20)], fill=DOOR_GLASS + (255,), width=3)
+
+    return tile
+
+
 def Fit(image, width, height, isSideways):
     if isSideways:
         image = image.rotate(-90, expand=True)
@@ -187,7 +214,11 @@ def Build():
                 pixels = Recolour(np.asarray(image).astype(float), ramp)
                 image = Image.fromarray(np.clip(pixels, 0, 255).astype(np.uint8), 'RGBA')
 
-            sheet.paste(Fit(image, frameWidth, frameHeight, isSideways), (left, 0))
+            tile = Fit(image, frameWidth, frameHeight, isSideways)
+            if name == OPEN_DOOR_FRAME:
+                tile = OpenDoor(tile)
+
+            sheet.paste(tile, (left, 0))
             places.append((name, left, frameWidth, frameHeight))
             left += frameWidth
 

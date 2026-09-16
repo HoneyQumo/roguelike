@@ -422,9 +422,8 @@ def Section(index, rng):
         for row in range(HEIGHT):
             rows[row][WIDTH - 1] = RAIL
 
-        # Машина ждёт у самого конца, выход прячется под ней: уехать можно только на ней.
+        # Переходом служит сама машина, тайл выхода рядом с ней был вторым путём никуда.
         rows[LANE_LINE][WIDTH - 4] = 'E'
-        rows[LANE_LINE][WIDTH - 3] = '>'
     else:
         share = index / float(SECTIONS - 1)
         count = 1 + int(share * 4)

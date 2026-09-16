@@ -45,6 +45,13 @@ namespace RoguelikeGame
         }
 
         std::optional<XYZEngine::Vector2Df> to = FindTilePlace(levelData, TileType::Exit);
+        if (!to.has_value() && !levelData.escapes.empty())
+        {
+            // На беговой локации финиш - машина, тайла выхода там может и не быть.
+            const FixturePlacement& car = levelData.escapes.front();
+            to = XYZEngine::Vector2Df{car.column * TILE_SIZE, (levelData.height - 1 - car.row) * TILE_SIZE};
+        }
+
         if (!from.has_value() || !to.has_value())
         {
             return std::nullopt;

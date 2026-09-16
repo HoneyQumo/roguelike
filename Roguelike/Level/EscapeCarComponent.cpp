@@ -2,14 +2,34 @@
 #include "GameSettings.h"
 #include <ColliderComponent.h>
 #include <GameObject.h>
+#include <TransformComponent.h>
 #include <LoggerRegistry.h>
 
 namespace RoguelikeGame
 {
     EscapeCarComponent::EscapeCarComponent(XYZEngine::GameObject* gameObject) : InteractableComponent(gameObject) {}
 
+    /**
+    *	Сторожит подъезд героя к месту, где машина встанет.
+    *
+    *	Считает расстояние до места, а не до себя: на время приезда машина
+    *	едет, и её собственная точка ничего не говорит.
+    */
     void EscapeCarComponent::Update(float deltaTime)
     {
+        if (hero == nullptr || wasCalled || hasArrived)
+        {
+            return;
+        }
+
+        if ((hero->GetTransform()->GetWorldPosition() - parkPlace).GetLength() > ARRIVAL_CALL_RANGE)
+        {
+            return;
+        }
+
+        wasCalled = true;
+        LOG_INFO("Escape car " + carId + " is called");
+        calledEvent.Invoke();
     }
 
     void EscapeCarComponent::Render()
@@ -53,7 +73,7 @@ namespace RoguelikeGame
 
     bool EscapeCarComponent::IsAvailable() const
     {
-        return isReady && !isBoarded;
+        return isReady && hasArrived && !isBoarded;
     }
 
     bool EscapeCarComponent::Interact(XYZEngine::GameObject* actor)
@@ -78,5 +98,35 @@ namespace RoguelikeGame
     XYZEngine::SubscriptionId EscapeCarComponent::SubscribeBoarded(std::function<void()> onBoarded)
     {
         return boardedEvent.Subscribe(std::move(onBoarded));
+    }
+
+    XYZEngine::SubscriptionId EscapeCarComponent::SubscribeCalled(std::function<void()> onCalled)
+    {
+        return calledEvent.Subscribe(std::move(onCalled));
+    }
+
+    void EscapeCarComponent::SetParkPlace(const XYZEngine::Vector2Df& place)
+    {
+        parkPlace = place;
+    }
+
+    const XYZEngine::Vector2Df& EscapeCarComponent::GetParkPlace() const
+    {
+        return parkPlace;
+    }
+
+    void EscapeCarComponent::SetHero(XYZEngine::GameObject* newHero)
+    {
+        hero = newHero;
+    }
+
+    void EscapeCarComponent::SetArrived(bool newHasArrived)
+    {
+        hasArrived = newHasArrived;
+    }
+
+    bool EscapeCarComponent::HasArrived() const
+    {
+        return hasArrived;
     }
 }

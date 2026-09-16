@@ -11,6 +11,7 @@
 #include "Particles.h"
 #include "BossBrainComponent.h"
 #include "CameraDirectorComponent.h"
+#include "CarArrival.h"
 #include "SwitchComponent.h"
 #include "CutscenePlayerComponent.h"
 #include "PlayerHudBinderComponent.h"
@@ -28,6 +29,8 @@
 #include <InputSystem.h>
 #include <RectangleRendererComponent.h>
 #include <RenderSystem.h>
+#include <ResourceSystem.h>
+#include <SpriteRendererComponent.h>
 #include <MusicComponent.h>
 #include "HealthComponent.h"
 #include <LoggerRegistry.h>
@@ -231,9 +234,10 @@ namespace RoguelikeGame
         pursuit->SetHero(player);
 
         XYZEngine::GameObject* carObject = level.GetEscapeCar();
-        XYZEngine::Vector2Df finish = carObject != nullptr
-            ? carObject->GetTransform()->GetWorldPosition()
-            : level.GetStartPosition();
+        auto waiting = carObject != nullptr ? carObject->GetComponent<EscapeCarComponent>() : nullptr;
+
+        // Финиш забега - место машины, а не сама машина: на время приезда она в стороне.
+        XYZEngine::Vector2Df finish = waiting != nullptr ? waiting->GetParkPlace() : level.GetStartPosition();
         pursuit->SetRoute(level.GetStartPosition(), finish);
 
         // Преследователей кладём в уровень, иначе они переживут смену локации.
@@ -264,6 +268,137 @@ namespace RoguelikeGame
         }
 
         car->SubscribeBoarded([this]() { PlayEscape(); });
+
+        car->SetHero(player);
+        car->SubscribeCalled([this]() { PlayArrival(); });
+        SendCarAway(carObject, car);
+    }
+
+    // До приезда машины на карте нет: ни спрайта, ни подсказки.
+    void DeveloperLevel::SendCarAway(XYZEngine::GameObject* carObject, EscapeCarComponent* car)
+    {
+        car->SetArrived(false);
+
+        CarPose start = ArrivalPose(car->GetParkPlace(), 0.f);
+        carObject->GetTransform()->SetWorldPosition(start.place);
+        carObject->GetTransform()->SetWorldRotation(start.angle);
+
+        ShowCar(carObject, false);
+    }
+
+    void DeveloperLevel::ShowCar(XYZEngine::GameObject* carObject, bool isShown)
+    {
+        auto sprite = carObject->GetComponent<XYZEngine::SpriteRendererComponent>();
+        if (sprite != nullptr)
+        {
+            sprite->SetVisible(isShown);
+        }
+    }
+
+    // Дверь - второй кадр, он вдвое выше кузова, поэтому меняется и размер.
+    void DeveloperLevel::OpenCarDoor(XYZEngine::GameObject* carObject, bool isOpen)
+    {
+        auto sprite = carObject->GetComponent<XYZEngine::SpriteRendererComponent>();
+        if (sprite == nullptr)
+        {
+            return;
+        }
+
+        const sf::Texture* body = XYZEngine::ResourceSystem::Instance()->GetTextureShared(
+            isOpen ? ESCAPE_CAR_OPEN_TEXTURE : ESCAPE_CAR_TEXTURE);
+        if (body == nullptr)
+        {
+            return;
+        }
+
+        sprite->SetTexture(*body);
+        sprite->SetPixelSize(static_cast<int>(ESCAPE_CAR_WIDTH),
+            static_cast<int>(isOpen ? ESCAPE_CAR_OPEN_HEIGHT : ESCAPE_CAR_HEIGHT));
+    }
+
+    /**
+    *	Приезд: камера уходит вперёд на пустое место, туда влетает машина.
+    *
+    *	Камера смотрит на точку, а не на машину: иначе кадр уехал бы за горизонт
+    *	и приезжать было бы некуда.
+    */
+    void DeveloperLevel::PlayArrival()
+    {
+        XYZEngine::GameObject* carObject = level.GetEscapeCar();
+        if (carObject == nullptr)
+        {
+            return;
+        }
+
+        auto car = carObject->GetComponent<EscapeCarComponent>();
+        if (car == nullptr)
+        {
+            return;
+        }
+
+        CutsceneBeat hold;
+        hold.command = CutsceneCommand::TakeControl;
+
+        CutsceneBeat look;
+        look.command = CutsceneCommand::LookAtPoint;
+        look.point = car->GetParkPlace();
+        look.travel = ARRIVAL_LOOK_TIME;
+        look.seconds = ARRIVAL_LOOK_TIME;
+
+        CutsceneBeat drive;
+        drive.action = ARRIVAL_BEAT_DRIVE;
+        drive.seconds = ARRIVAL_DRIVE_TIME;
+
+        CutsceneBeat door;
+        door.action = ARRIVAL_BEAT_DOOR;
+        door.seconds = ARRIVAL_DOOR_TIME;
+
+        CutsceneBeat back;
+        back.command = CutsceneCommand::LookAtHero;
+        back.travel = ARRIVAL_LOOK_TIME;
+        back.seconds = ARRIVAL_LOOK_TIME;
+
+        CutscenePlayerComponent* scene = StartCutscene({hold, look, drive, door, back});
+        if (scene == nullptr)
+        {
+            return;
+        }
+
+        arrivalTime = 0.f;
+
+        scene->SetHandler(ARRIVAL_BEAT_DRIVE, [this, carObject](float deltaTime)
+        {
+            DriveArrival(carObject, deltaTime);
+        });
+
+        scene->SubscribeBeatStarted([this, carObject, car](const std::string& beat)
+        {
+            if (beat == ARRIVAL_BEAT_DRIVE)
+            {
+                ShowCar(carObject, true);
+            }
+
+            if (beat == ARRIVAL_BEAT_DOOR)
+            {
+                OpenCarDoor(carObject, true);
+                car->SetArrived(true);
+            }
+        });
+    }
+
+    void DeveloperLevel::DriveArrival(XYZEngine::GameObject* carObject, float deltaTime)
+    {
+        auto car = carObject->GetComponent<EscapeCarComponent>();
+        if (car == nullptr)
+        {
+            return;
+        }
+
+        arrivalTime += deltaTime;
+
+        CarPose pose = ArrivalPose(car->GetParkPlace(), arrivalTime / ARRIVAL_DRIVE_TIME);
+        carObject->GetTransform()->SetWorldPosition(pose.place);
+        carObject->GetTransform()->SetWorldRotation(pose.angle);
     }
 
     /**
@@ -369,6 +504,7 @@ namespace RoguelikeGame
             if (beat == ESCAPE_BEAT_BOARD)
             {
                 TakeControl();
+                OpenCarDoor(carObject, false);
 
                 if (hudScreen != nullptr)
                 {
@@ -763,6 +899,7 @@ namespace RoguelikeGame
         player = nullptr;
         camera = nullptr;
         takenParts.clear();
+        arrivalTime = 0.f;
         particles = nullptr;
 
         level.Clear();

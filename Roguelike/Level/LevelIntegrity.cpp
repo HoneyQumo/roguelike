@@ -293,6 +293,12 @@ namespace RoguelikeGame
             {
                 exits.push_back({hatch.column, hatch.row});
             }
+
+            // Машина увозит с локации наравне с тайлом выхода, значит она тоже выход.
+            for (const FixturePlacement& escape : levelData.escapes)
+            {
+                exits.push_back({escape.column, escape.row});
+            }
             if (exits.empty())
             {
                 if (!levelData.info.nextLevelId.empty())

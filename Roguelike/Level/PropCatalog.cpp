@@ -246,6 +246,12 @@ namespace RoguelikeGame
                 continue;
             }
 
+            if (key == "burn")
+            {
+                stream >> current.burnTime >> current.burnSpread;
+                continue;
+            }
+
             if (key == "jitter")
             {
                 stream >> current.jitterDegrees;

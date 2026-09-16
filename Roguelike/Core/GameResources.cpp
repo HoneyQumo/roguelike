@@ -96,6 +96,14 @@ namespace RoguelikeGame
         LoadFxStrip(ROCKET_TEXTURE, FX_ROCKET);
         LoadFxStrip(EXPLOSION_TEXTURE, FX_EXPLOSION);
 
+        // Огонь лежит в своём атласе, поэтому грузится не через LoadFxStrip.
+        XYZEngine::ResourceSystem::Instance()->LoadTextureStrip(FIRE_BIG_TEXTURE, FIRE_TEXTURE_FILE,
+                                                               {FX_FIRE_BIG.x, FX_FIRE_BIG.y, FX_FIRE_BIG.width, FX_FIRE_BIG.height},
+                                                               FX_FIRE_BIG.frames, false);
+        XYZEngine::ResourceSystem::Instance()->LoadTextureStrip(FIRE_SMALL_TEXTURE, FIRE_TEXTURE_FILE,
+                                                               {FX_FIRE_SMALL.x, FX_FIRE_SMALL.y, FX_FIRE_SMALL.width, FX_FIRE_SMALL.height},
+                                                               FX_FIRE_SMALL.frames, false);
+
         LoadBossFxStrip(PUPPETEER_RIFT_TEXTURE, FX_PUPPETEER_RIFT);
         LoadBossFxStrip(PUPPETEER_CLOUD_TEXTURE, FX_PUPPETEER_CLOUD);
         LoadBossFxStrip(PUPPETEER_SNAP_TEXTURE, FX_PUPPETEER_SNAP);

@@ -95,8 +95,20 @@ namespace XYZEngine
 	{
 		return gameObjects.size();
 	}
+	/**
+	*	Объект, которого в мире уже нет, молча пропускается.
+	*
+	*	Указатели на GameObject разданы половине игры и никак не помечаются
+	*	при удалении, поэтому повторное удаление раньше разыменовывало освобождённую память.
+	*	Значение указателя сравнивать безопасно - разыменовывать нет.
+	*/
 	void GameWorld::DestroyGameObject(GameObject* gameObject)
 	{
+		if (gameObject == nullptr || std::find(gameObjects.begin(), gameObjects.end(), gameObject) == gameObjects.end())
+		{
+			return;
+		}
+
 		markedToDestroyGameObjects.push_back(gameObject);
 	}
 	void GameWorld::DestroyGameObjects(const std::string& name)

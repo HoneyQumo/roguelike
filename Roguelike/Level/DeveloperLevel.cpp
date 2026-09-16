@@ -531,8 +531,9 @@ namespace RoguelikeGame
             return nullptr;
         }
 
+        // Сцена принадлежит только себе: она сама себя убирает по окончании,
+        // а уровень держал бы на неё уже мёртвый указатель до следующей локации.
         cutscene = XYZEngine::GameWorld::Instance()->CreateGameObject(CUTSCENE_OBJECT_NAME);
-        level.Add(cutscene);
 
         auto scene = cutscene->AddComponent<CutscenePlayerComponent>();
         scene->SetBeats(std::move(beats));
@@ -568,7 +569,6 @@ namespace RoguelikeGame
         }
 
         cutscene = XYZEngine::GameWorld::Instance()->CreateGameObject(CUTSCENE_OBJECT_NAME);
-        level.Add(cutscene);
 
         auto scene = cutscene->AddComponent<CutscenePlayerComponent>();
         scene->SetBeats({
@@ -816,10 +816,14 @@ namespace RoguelikeGame
         level.Clear();
 
         for (const char* temporaryName : {BLOOD_POOL_OBJECT_NAME, FX_OBJECT_NAME, PROJECTILE_OBJECT_NAME,
-                                          ROCKET_OBJECT_NAME, CAST_MARK_OBJECT_NAME, TIRE_MARK_OBJECT_NAME})
+                                          ROCKET_OBJECT_NAME, CAST_MARK_OBJECT_NAME, TIRE_MARK_OBJECT_NAME,
+                                          CUTSCENE_OBJECT_NAME})
         {
             GameWorld::Instance()->DestroyGameObjects(temporaryName);
         }
+
+        // Недоигравшая сцена осталась на прежней локации вместе со своим объектом.
+        cutscene = nullptr;
 
         XYZEngine::ParticleSystem::Instance()->Clear();
         GameWorld::Instance()->LateUpdate();
@@ -999,6 +1003,10 @@ namespace RoguelikeGame
         music = nullptr;
         player = nullptr;
         camera = nullptr;
+
+        // Без этого после перезапуска StartCutscene считал бы, что сцена всё ещё идёт,
+        // и ни одна сцена больше не запустилась бы - включая побег на машине.
+        cutscene = nullptr;
         takenParts.clear();
         arrivalTime = 0.f;
         boardTime = 0.f;

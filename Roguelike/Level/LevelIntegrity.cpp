@@ -20,7 +20,7 @@ namespace RoguelikeGame
 
         bool IsSolid(TileType tile)
         {
-            return tile == TileType::Wall || tile == TileType::Empty;
+            return tile == TileType::Wall || tile == TileType::Empty || tile == TileType::Water;
         }
 
         bool IsGate(TileType tile)

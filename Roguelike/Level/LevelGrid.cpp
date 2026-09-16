@@ -25,7 +25,12 @@ namespace RoguelikeGame
                 return LevelCell::Door;
             }
 
-            return tile == TileType::Empty ? LevelCell::Gap : LevelCell::Floor;
+            if (tile == TileType::Empty || tile == TileType::Water)
+            {
+                return LevelCell::Gap;
+            }
+
+            return LevelCell::Floor;
         }
     }
 

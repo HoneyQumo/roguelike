@@ -68,6 +68,7 @@
     <ClCompile Include="WeaponAmmo.tests.cpp" />
     <ClCompile Include="Separation.tests.cpp" />
     <ClCompile Include="PropAlign.tests.cpp" />
+    <ClCompile Include="WaterTiles.tests.cpp" />
     <ClCompile Include="LevelLoader.tests.cpp" />
     <ClCompile Include="GameWorld.tests.cpp" />
     <ClCompile Include="Logger.tests.cpp" />

@@ -82,7 +82,8 @@ TEST(TilesetTest, LevelFileWithoutTheseFieldsLeavesThemEmpty)
 namespace
 {
 	constexpr unsigned int ATLAS_WIDTH = 1024u;
-	constexpr unsigned int ATLAS_HEIGHT = 128u;
+	// Пол, стены, разметка и вода - по строке на каждое, у всех тайлсетов одинаково.
+	constexpr unsigned int ATLAS_HEIGHT = 256u;
 
 	class ShippedTilesetsTest : public ProjectFiles::Test
 	{

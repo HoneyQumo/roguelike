@@ -71,6 +71,7 @@ namespace RoguelikeGame
                         level.Add(CreateWall(position));
                         wallsCount++;
                         break;
+                    case TileType::Water:
                     case TileType::Empty:
                         if (IsChasmEdge(levelData, column, row))
                         {

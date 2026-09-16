@@ -6,13 +6,18 @@ namespace RoguelikeGame
     {
         bool IsWalkable(TileType tile)
         {
-            return tile != TileType::Empty && tile != TileType::Wall;
+            return tile != TileType::Empty && tile != TileType::Wall && tile != TileType::Water;
+        }
+
+        bool IsVoid(TileType tile)
+        {
+            return tile == TileType::Empty || tile == TileType::Water;
         }
     }
 
     bool IsChasmEdge(const LevelData& levelData, int column, int row)
     {
-        if (TileAt(levelData, column, row) != TileType::Empty)
+        if (!IsVoid(TileAt(levelData, column, row)))
         {
             return false;
         }

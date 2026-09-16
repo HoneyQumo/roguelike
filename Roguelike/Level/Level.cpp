@@ -9,14 +9,8 @@ namespace RoguelikeGame
     }
 
     Level::Level(Level&& other) noexcept
-        : objects(std::move(other.objects)), playerSpawn(other.playerSpawn), entrance(other.entrance),
-          exitObject(other.exitObject), bossObject(other.bossObject), info(std::move(other.info))
     {
-        other.objects.clear();
-        other.playerSpawn.reset();
-        other.entrance.reset();
-        other.exitObject = nullptr;
-        other.bossObject = nullptr;
+        TakeFrom(other);
     }
 
     Level& Level::operator=(Level&& other) noexcept
@@ -24,20 +18,25 @@ namespace RoguelikeGame
         if (this != &other)
         {
             Clear();
-            objects = std::move(other.objects);
-            playerSpawn = other.playerSpawn;
-            entrance = other.entrance;
-            exitObject = other.exitObject;
-            bossObject = other.bossObject;
-            info = std::move(other.info);
-            other.objects.clear();
-            other.playerSpawn.reset();
-            other.entrance.reset();
-            other.exitObject = nullptr;
-            other.bossObject = nullptr;
+            TakeFrom(other);
         }
 
         return *this;
+    }
+
+    // Забирает всё и оставляет источник пустым: забытое здесь поле тихо теряется при смене уровня.
+    void Level::TakeFrom(Level& other) noexcept
+    {
+        objects = std::move(other.objects);
+        playerSpawn = other.playerSpawn;
+        entrance = other.entrance;
+        roles = other.roles;
+        info = std::move(other.info);
+
+        other.objects.clear();
+        other.playerSpawn.reset();
+        other.entrance.reset();
+        other.roles.fill(nullptr);
     }
 
     bool Level::Add(XYZEngine::GameObject* gameObject)
@@ -66,34 +65,59 @@ namespace RoguelikeGame
         info = newInfo;
     }
 
+    void Level::Set(LevelRole role, XYZEngine::GameObject* gameObject)
+    {
+        if (role == LevelRole::Count)
+        {
+            return;
+        }
+
+        roles[static_cast<std::size_t>(role)] = gameObject;
+    }
+
+    XYZEngine::GameObject* Level::Get(LevelRole role) const
+    {
+        return role == LevelRole::Count ? nullptr : roles[static_cast<std::size_t>(role)];
+    }
+
     void Level::SetExit(XYZEngine::GameObject* newExitObject)
     {
-        exitObject = newExitObject;
+        Set(LevelRole::Exit, newExitObject);
     }
 
     void Level::SetBoss(XYZEngine::GameObject* newBossObject)
     {
-        bossObject = newBossObject;
+        Set(LevelRole::Boss, newBossObject);
     }
 
     void Level::SetWaveDirector(XYZEngine::GameObject* newDirectorObject)
     {
-        directorObject = newDirectorObject;
-    }
-
-    XYZEngine::GameObject* Level::GetWaveDirector() const
-    {
-        return directorObject;
-    }
-
-    XYZEngine::GameObject* Level::GetEscapeCar() const
-    {
-        return carObject;
+        Set(LevelRole::WaveDirector, newDirectorObject);
     }
 
     void Level::SetEscapeCar(XYZEngine::GameObject* newCarObject)
     {
-        carObject = newCarObject;
+        Set(LevelRole::EscapeCar, newCarObject);
+    }
+
+    XYZEngine::GameObject* Level::GetExit() const
+    {
+        return Get(LevelRole::Exit);
+    }
+
+    XYZEngine::GameObject* Level::GetBoss() const
+    {
+        return Get(LevelRole::Boss);
+    }
+
+    XYZEngine::GameObject* Level::GetWaveDirector() const
+    {
+        return Get(LevelRole::WaveDirector);
+    }
+
+    XYZEngine::GameObject* Level::GetEscapeCar() const
+    {
+        return Get(LevelRole::EscapeCar);
     }
 
     std::optional<XYZEngine::Vector2Df> Level::GetEntrance() const
@@ -116,16 +140,6 @@ namespace RoguelikeGame
         return info;
     }
 
-    XYZEngine::GameObject* Level::GetExit() const
-    {
-        return exitObject;
-    }
-
-    XYZEngine::GameObject* Level::GetBoss() const
-    {
-        return bossObject;
-    }
-
     std::optional<XYZEngine::Vector2Df> Level::GetPlayerSpawn() const
     {
         return playerSpawn;
@@ -146,8 +160,7 @@ namespace RoguelikeGame
         objects.clear();
         playerSpawn.reset();
         entrance.reset();
-        exitObject = nullptr;
-        bossObject = nullptr;
+        roles.fill(nullptr);
         info = LevelInfo();
     }
 }

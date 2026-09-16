@@ -1,5 +1,6 @@
 #pragma once
 
+#include <array>
 #include <optional>
 #include <vector>
 #include <GameObject.h>
@@ -8,6 +9,20 @@
 
 namespace RoguelikeGame
 {
+    /**
+    *	Объекты, которые уровень помнит поимённо: их ищут снаружи, чтобы связать
+    *	между собой - выход запирается боссом, машина ждёт конца волн.
+    *	Новая роль добавляется сюда, и переносится при перемещении уровня сама.
+    */
+    enum class LevelRole
+    {
+        Exit,
+        Boss,
+        WaveDirector,
+        EscapeCar,
+        Count
+    };
+
     class Level
     {
     public:
@@ -23,9 +38,14 @@ namespace RoguelikeGame
         void SetPlayerSpawn(const XYZEngine::Vector2Df& position);
         void SetEntrance(const XYZEngine::Vector2Df& position);
         void SetInfo(const LevelInfo& newInfo);
+
+        void Set(LevelRole role, XYZEngine::GameObject* gameObject);
+        XYZEngine::GameObject* Get(LevelRole role) const;
+
         void SetExit(XYZEngine::GameObject* exitObject);
         void SetBoss(XYZEngine::GameObject* bossObject);
         void SetWaveDirector(XYZEngine::GameObject* directorObject);
+        void SetEscapeCar(XYZEngine::GameObject* carObject);
 
         std::optional<XYZEngine::Vector2Df> GetPlayerSpawn() const;
         std::optional<XYZEngine::Vector2Df> GetEntrance() const;
@@ -35,19 +55,21 @@ namespace RoguelikeGame
         XYZEngine::GameObject* GetBoss() const;
         XYZEngine::GameObject* GetWaveDirector() const;
         XYZEngine::GameObject* GetEscapeCar() const;
-        void SetEscapeCar(XYZEngine::GameObject* carObject);
         std::size_t GetObjectsCount() const;
 
         void Clear();
 
     private:
+        static constexpr std::size_t ROLES_COUNT = static_cast<std::size_t>(LevelRole::Count);
+
+        using Roles = std::array<XYZEngine::GameObject*, ROLES_COUNT>;
+
         std::vector<XYZEngine::GameObject*> objects;
         std::optional<XYZEngine::Vector2Df> playerSpawn;
         std::optional<XYZEngine::Vector2Df> entrance;
-        XYZEngine::GameObject* exitObject = nullptr;
-        XYZEngine::GameObject* bossObject = nullptr;
-        XYZEngine::GameObject* directorObject = nullptr;
-        XYZEngine::GameObject* carObject = nullptr;
+        Roles roles{};
         LevelInfo info;
+
+        void TakeFrom(Level& other) noexcept;
     };
 }

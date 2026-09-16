@@ -601,6 +601,12 @@ namespace RoguelikeGame
 			return;
 		}
 
+		// Мёртвого разгонять нечем: смерть обнуляет скорость, и вернуть её - значит пустить труп по полу.
+		if (health != nullptr && !health->IsAlive())
+		{
+			return;
+		}
+
 		movement->SetSpeed(isChasing ? chaseSpeed : walkSpeed);
 	}
 

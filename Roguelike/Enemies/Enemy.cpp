@@ -43,7 +43,8 @@ namespace RoguelikeGame
         spec.hasWeaponLayer = definition == nullptr || HasWeaponLayer(*definition);
 
         ChaseComponent* chase = nullptr;
-        CharacterParts parts = CreateCharacter(spec, [&chase, &config, &position, definition](XYZEngine::GameObject* object)
+        PatrolComponent* patrol = nullptr;
+        CharacterParts parts = CreateCharacter(spec, [&chase, &patrol, &config, &position, definition](XYZEngine::GameObject* object)
         {
             chase = object->AddComponent<ChaseComponent>();
             chase->SetTargetName(PLAYER_OBJECT_NAME);
@@ -74,7 +75,7 @@ namespace RoguelikeGame
                 return;
             }
 
-            auto patrol = object->AddComponent<PatrolComponent>();
+            patrol = object->AddComponent<PatrolComponent>();
             patrol->SetLook(config.lookTime, config.lookHalfSweep);
             const PatrolRoute* route = PatrolRoutes::Current().Nearest(position, PATROL_JOIN_DISTANCE);
             if (route != nullptr)
@@ -169,7 +170,7 @@ namespace RoguelikeGame
 
         auto weaponComponent = gameObject->GetComponent<WeaponComponent>();
         const char* lootTable = config.lootTable;
-        health->SubscribeDeath([gameObject, animation, movement, chase, collider, aim, weaponComponent, meleeComponent, lootTable, settle](const DeathInfo& death)
+        health->SubscribeDeath([gameObject, animation, movement, chase, patrol, collider, aim, weaponComponent, meleeComponent, lootTable, settle](const DeathInfo& death)
         {
             if (weaponComponent != nullptr)
             {
@@ -186,6 +187,12 @@ namespace RoguelikeGame
             if (chase != nullptr)
             {
                 chase->SetDetectionRadius(0.f);
+            }
+
+            // Маршрут доведёт труп до следующей точки, если его не остановить.
+            if (patrol != nullptr)
+            {
+                patrol->SetEnabled(false);
             }
 
             collider->SetTrigger(true);

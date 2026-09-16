@@ -300,6 +300,23 @@ namespace RoguelikeGame
     constexpr float VOICE_VOLUME = 70.f;
     // Враг волны не появляется ближе полутора клеток к игроку.
     constexpr auto WAVE_DIRECTOR_OBJECT_NAME = "WaveDirector";
+    constexpr auto ESCAPE_CAR_OBJECT_NAME = "EscapeCar";
+    constexpr auto CUTSCENE_OBJECT_NAME = "Cutscene";
+    constexpr auto ESCAPE_CAR_TEXTURE = "prop_car_van";
+    constexpr auto ESCAPE_CAR_PROMPT = u8"[F] Уехать";
+    constexpr float ESCAPE_CAR_WIDTH = 124.f;
+    constexpr float ESCAPE_CAR_HEIGHT = 66.f;
+
+    // Побег: сел, поехал, экран погас.
+    constexpr auto ESCAPE_BEAT_BOARD = "board";
+    constexpr auto ESCAPE_BEAT_DRIVE = "drive";
+    constexpr auto ESCAPE_BEAT_LEAVE = "leave";
+    constexpr float ESCAPE_BOARD_TIME = 0.8f;
+    constexpr float ESCAPE_DRIVE_TIME = 6.5f;
+    constexpr float ESCAPE_LEAVE_TIME = 1.4f;
+    constexpr float ESCAPE_CAR_SPEED = 540.f;
+    constexpr float ESCAPE_CAR_PICKUP = 320.f;
+    constexpr auto ESCAPE_NOTICE = u8"Гони!";
     constexpr float WAVE_SPAWN_GAP = 1.5f * TILE_SIZE;
     constexpr auto WAVE_GATE_NOTICE = u8"Выход закрыт: отбей все волны";
     constexpr auto WAVE_STARTED_NOTICE = u8"Волна ";

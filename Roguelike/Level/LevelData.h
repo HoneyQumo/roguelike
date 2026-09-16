@@ -145,6 +145,7 @@ namespace RoguelikeGame
         std::vector<WaveSpec> waves;
         std::vector<FixturePlacement> levers;
         std::vector<FixturePlacement> hatches;
+        std::vector<FixturePlacement> escapes;
         LevelInfo info;
     };
 

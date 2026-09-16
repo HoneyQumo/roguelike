@@ -56,7 +56,7 @@
     <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
         <ClCompile>
             <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-            <AdditionalIncludeDirectories>$(SolutionDir)XYZEngine;$(SolutionDir)XYZEngine\Animation;$(SolutionDir)XYZEngine\Audio;$(SolutionDir)XYZEngine\Core;$(SolutionDir)XYZEngine\Input;$(SolutionDir)XYZEngine\Logging;$(SolutionDir)XYZEngine\Math;$(SolutionDir)XYZEngine\Particles;$(SolutionDir)XYZEngine\Physics;$(SolutionDir)XYZEngine\Rendering;$(SolutionDir)XYZEngine\Resources;$(SolutionDir)XYZEngine\Ui;$(ProjectDir)Boss;$(ProjectDir)Characters;$(ProjectDir)Core;$(ProjectDir)Enemies;$(ProjectDir)Fx;$(ProjectDir)Items;$(ProjectDir)Level;$(ProjectDir)Player;$(ProjectDir)Ui;$(ProjectDir)Weapons;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+            <AdditionalIncludeDirectories>$(SolutionDir)XYZEngine;$(SolutionDir)XYZEngine\Animation;$(SolutionDir)XYZEngine\Audio;$(SolutionDir)XYZEngine\Core;$(SolutionDir)XYZEngine\Input;$(SolutionDir)XYZEngine\Logging;$(SolutionDir)XYZEngine\Math;$(SolutionDir)XYZEngine\Particles;$(SolutionDir)XYZEngine\Physics;$(SolutionDir)XYZEngine\Rendering;$(SolutionDir)XYZEngine\Resources;$(SolutionDir)XYZEngine\Ui;$(ProjectDir)Boss;$(ProjectDir)Characters;$(ProjectDir)Core;$(ProjectDir)Cutscene;$(ProjectDir)Enemies;$(ProjectDir)Fx;$(ProjectDir)Items;$(ProjectDir)Level;$(ProjectDir)Player;$(ProjectDir)Ui;$(ProjectDir)Weapons;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
         </ClCompile>
         <Link>
             <SubSystem>Windows</SubSystem>
@@ -73,7 +73,7 @@
             <FunctionLevelLinking>true</FunctionLevelLinking>
             <IntrinsicFunctions>true</IntrinsicFunctions>
             <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-            <AdditionalIncludeDirectories>$(SolutionDir)XYZEngine;$(SolutionDir)XYZEngine\Animation;$(SolutionDir)XYZEngine\Audio;$(SolutionDir)XYZEngine\Core;$(SolutionDir)XYZEngine\Input;$(SolutionDir)XYZEngine\Logging;$(SolutionDir)XYZEngine\Math;$(SolutionDir)XYZEngine\Particles;$(SolutionDir)XYZEngine\Physics;$(SolutionDir)XYZEngine\Rendering;$(SolutionDir)XYZEngine\Resources;$(SolutionDir)XYZEngine\Ui;$(ProjectDir)Boss;$(ProjectDir)Characters;$(ProjectDir)Core;$(ProjectDir)Enemies;$(ProjectDir)Fx;$(ProjectDir)Items;$(ProjectDir)Level;$(ProjectDir)Player;$(ProjectDir)Ui;$(ProjectDir)Weapons;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+            <AdditionalIncludeDirectories>$(SolutionDir)XYZEngine;$(SolutionDir)XYZEngine\Animation;$(SolutionDir)XYZEngine\Audio;$(SolutionDir)XYZEngine\Core;$(SolutionDir)XYZEngine\Input;$(SolutionDir)XYZEngine\Logging;$(SolutionDir)XYZEngine\Math;$(SolutionDir)XYZEngine\Particles;$(SolutionDir)XYZEngine\Physics;$(SolutionDir)XYZEngine\Rendering;$(SolutionDir)XYZEngine\Resources;$(SolutionDir)XYZEngine\Ui;$(ProjectDir)Boss;$(ProjectDir)Characters;$(ProjectDir)Core;$(ProjectDir)Cutscene;$(ProjectDir)Enemies;$(ProjectDir)Fx;$(ProjectDir)Items;$(ProjectDir)Level;$(ProjectDir)Player;$(ProjectDir)Ui;$(ProjectDir)Weapons;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
         </ClCompile>
         <Link>
             <SubSystem>Windows</SubSystem>
@@ -157,6 +157,9 @@
         <ClCompile Include="Level\HatchComponent.cpp"/>
         <ClCompile Include="Level\SwitchComponent.cpp"/>
         <ClCompile Include="Level\WaveDirectorComponent.cpp"/>
+        <ClCompile Include="Level\EscapeCarComponent.cpp"/>
+        <ClCompile Include="Cutscene\CutscenePlayerComponent.cpp"/>
+        <ClCompile Include="Cutscene\CutsceneTimeline.cpp"/>
         <ClCompile Include="Level\LevelGrid.cpp"/>
         <ClCompile Include="Level\LevelIntegrity.cpp"/>
         <ClCompile Include="Level\PathField.cpp"/>
@@ -241,6 +244,9 @@
         <ClInclude Include="Level\HatchComponent.h"/>
         <ClInclude Include="Level\SwitchComponent.h"/>
         <ClInclude Include="Level\WaveDirectorComponent.h"/>
+        <ClInclude Include="Level\EscapeCarComponent.h"/>
+        <ClInclude Include="Cutscene\CutscenePlayerComponent.h"/>
+        <ClInclude Include="Cutscene\CutsceneTimeline.h"/>
         <ClInclude Include="Level\LevelGrid.h"/>
         <ClInclude Include="Level\LevelIntegrity.h"/>
         <ClInclude Include="Level\PathField.h"/>

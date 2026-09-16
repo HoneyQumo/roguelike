@@ -6,6 +6,7 @@
 #include "HealthComponent.h"
 #include "LevelLoader.h"
 #include "ProjectFiles.h"
+#include "EscapeCarComponent.h"
 #include "WaveDirectorComponent.h"
 #include <sstream>
 
@@ -302,4 +303,49 @@ TEST_F(ShippedWavesTest, TheBridgeHasWavesAndSomewhereToPutThem)
 
 	EXPECT_GT(points, 0) << "waves have nowhere to spawn";
 	EXPECT_EQ(bridge.waves.size(), plan.waves.size()) << "waves were lost while assembling the act";
+}
+
+namespace
+{
+	class EscapeCarGateTest : public ::testing::Test
+	{
+	protected:
+		void SetUp() override
+		{
+			GameWorld::Instance()->Clear();
+
+			GameObject* body = GameWorld::Instance()->CreateGameObject("EscapeCar");
+			car = body->AddComponent<RoguelikeGame::EscapeCarComponent>();
+
+			boarded = 0;
+			car->SubscribeBoarded([this]() { boarded++; });
+
+			GameWorld::Instance()->Update(0.016f);
+		}
+
+		void TearDown() override { GameWorld::Instance()->Clear(); }
+
+		RoguelikeGame::EscapeCarComponent* car = nullptr;
+		int boarded = 0;
+	};
+}
+
+TEST_F(EscapeCarGateTest, ACarThatIsNotReadyRefusesToTakeThePlayer)
+{
+	car->SetReady(false);
+
+	EXPECT_FALSE(car->IsAvailable());
+	EXPECT_FALSE(car->Interact(nullptr));
+	EXPECT_EQ(boarded, 0);
+}
+
+TEST_F(EscapeCarGateTest, OnceReadyTheCarTakesThePlayerOnce)
+{
+	car->SetReady(true);
+
+	EXPECT_TRUE(car->Interact(nullptr));
+	EXPECT_EQ(boarded, 1);
+
+	EXPECT_FALSE(car->Interact(nullptr)) << "boarded twice";
+	EXPECT_EQ(boarded, 1);
 }

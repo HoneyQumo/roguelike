@@ -22,6 +22,7 @@
 #include "Wall.h"
 #include "Door.h"
 #include "Fixture.h"
+#include "EscapeCarComponent.h"
 #include "HatchComponent.h"
 #include "SwitchComponent.h"
 #include "LevelExitComponent.h"
@@ -392,6 +393,24 @@ namespace RoguelikeGame
             }
         }
 
+        for (const FixturePlacement& placement : levelData.escapes)
+        {
+            auto position = TileToWorldPosition(placement.column, placement.row, levelData.height);
+
+            XYZEngine::GameObject* car = CreateEscapeCar(placement.id, position);
+            if (!level.Add(car))
+            {
+                continue;
+            }
+
+            level.SetEscapeCar(car);
+
+            if (!levelData.waves.empty())
+            {
+                car->GetComponent<EscapeCarComponent>()->SetReady(false);
+            }
+        }
+
         for (const FixturePlacement& placement : levelData.levers)
         {
             auto position = TileToWorldPosition(placement.column, placement.row, levelData.height);
@@ -438,7 +457,7 @@ namespace RoguelikeGame
             }
         }
 
-        return static_cast<int>(levers.size() + hatches.size());
+        return static_cast<int>(levers.size() + hatches.size() + levelData.escapes.size());
     }
 
     int LevelBuilder::BuildProps(const LevelData& levelData, const PropCatalog& props, const ItemCatalog& items, Level& level)

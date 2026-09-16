@@ -1,0 +1,223 @@
+#include "pch.h"
+#include "ActAssembler.h"
+#include "CutscenePlayerComponent.h"
+#include "CutsceneTimeline.h"
+#include "GameWorld.h"
+#include "LevelLoader.h"
+#include "ProjectFiles.h"
+#include <sstream>
+
+using RoguelikeGame::CutsceneBeat;
+using RoguelikeGame::CutscenePlayerComponent;
+using RoguelikeGame::CutsceneTimeline;
+using RoguelikeGame::LevelData;
+using RoguelikeGame::LevelLoader;
+using XYZEngine::GameObject;
+using XYZEngine::GameWorld;
+
+namespace
+{
+	constexpr float STEP = 0.1f;
+
+	class CutscenePlayerTest : public ::testing::Test
+	{
+	protected:
+		void SetUp() override
+		{
+			GameWorld::Instance()->Clear();
+
+			GameObject* holder = GameWorld::Instance()->CreateGameObject("Cutscene");
+			scene = holder->AddComponent<CutscenePlayerComponent>();
+
+			started.clear();
+			finished = 0;
+			driven = 0.f;
+
+			scene->SubscribeBeatStarted([this](const std::string& beat) { started.push_back(beat); });
+			scene->SubscribeFinished([this]() { finished++; });
+			scene->SetHandler("drive", [this](float deltaTime) { driven += deltaTime; });
+		}
+
+		void TearDown() override { GameWorld::Instance()->Clear(); }
+
+		void Run(float seconds)
+		{
+			for (float passed = 0.f; passed < seconds; passed += STEP)
+			{
+				GameWorld::Instance()->Update(STEP);
+			}
+		}
+
+		CutscenePlayerComponent* scene = nullptr;
+		std::vector<std::string> started;
+		int finished = 0;
+		float driven = 0.f;
+	};
+}
+
+TEST(CutsceneTimelineTests, AnEmptyTimelineIsOverBeforeItStarts)
+{
+	CutsceneTimeline timeline;
+	timeline.SetBeats({});
+
+	EXPECT_TRUE(timeline.IsOver());
+	EXPECT_TRUE(timeline.IsEmpty());
+	EXPECT_FALSE(timeline.Advance(1.f));
+}
+
+TEST(CutsceneTimelineTests, TheFirstStepEntersTheFirstBeat)
+{
+	CutsceneTimeline timeline;
+	timeline.SetBeats({{"one", 1.f}, {"two", 1.f}});
+
+	EXPECT_TRUE(timeline.Advance(0.f));
+	EXPECT_EQ(timeline.GetCurrentAction(), "one");
+	EXPECT_EQ(timeline.GetCurrent(), 0);
+}
+
+TEST(CutsceneTimelineTests, BeatsFollowEachOtherInOrder)
+{
+	CutsceneTimeline timeline;
+	timeline.SetBeats({{"one", 1.f}, {"two", 1.f}, {"three", 1.f}});
+
+	timeline.Advance(0.f);
+	EXPECT_FALSE(timeline.Advance(0.5f));
+	EXPECT_EQ(timeline.GetCurrentAction(), "one");
+
+	EXPECT_TRUE(timeline.Advance(0.6f));
+	EXPECT_EQ(timeline.GetCurrentAction(), "two");
+
+	EXPECT_TRUE(timeline.Advance(1.f));
+	EXPECT_EQ(timeline.GetCurrentAction(), "three");
+}
+
+TEST(CutsceneTimelineTests, OneLongStepCanCrossSeveralBeats)
+{
+	CutsceneTimeline timeline;
+	timeline.SetBeats({{"one", 0.2f}, {"two", 0.2f}, {"three", 5.f}});
+
+	timeline.Advance(0.f);
+	timeline.Advance(0.5f);
+
+	EXPECT_EQ(timeline.GetCurrentAction(), "three");
+	EXPECT_FALSE(timeline.IsOver());
+}
+
+TEST(CutsceneTimelineTests, TheTimelineEndsAfterTheLastBeat)
+{
+	CutsceneTimeline timeline;
+	timeline.SetBeats({{"only", 1.f}});
+
+	timeline.Advance(0.f);
+	timeline.Advance(1.5f);
+
+	EXPECT_TRUE(timeline.IsOver());
+}
+
+TEST(CutsceneTimelineTests, ProgressGrowsInsideABeat)
+{
+	CutsceneTimeline timeline;
+	timeline.SetBeats({{"only", 2.f}});
+
+	timeline.Advance(0.f);
+	EXPECT_FLOAT_EQ(timeline.GetBeatProgress(), 0.f);
+
+	timeline.Advance(1.f);
+
+	EXPECT_NEAR(timeline.GetBeatProgress(), 0.5f, 0.01f);
+}
+
+TEST_F(CutscenePlayerTest, NothingHappensUntilItIsPlayed)
+{
+	scene->SetBeats({{"drive", 1.f}});
+
+	Run(1.f);
+
+	EXPECT_TRUE(started.empty());
+	EXPECT_FLOAT_EQ(driven, 0.f);
+}
+
+TEST_F(CutscenePlayerTest, BeatsAreAnnouncedInOrderAndTheEndIsReportedOnce)
+{
+	scene->SetBeats({{"board", 0.2f}, {"drive", 0.3f}, {"leave", 0.2f}});
+	scene->Play();
+
+	Run(2.f);
+
+	ASSERT_EQ(started.size(), 3u);
+	EXPECT_EQ(started[0], "board");
+	EXPECT_EQ(started[1], "drive");
+	EXPECT_EQ(started[2], "leave");
+	EXPECT_EQ(finished, 1);
+	EXPECT_FALSE(scene->IsPlaying());
+
+	Run(1.f);
+
+	EXPECT_EQ(finished, 1) << "the end was reported twice";
+}
+
+TEST_F(CutscenePlayerTest, TheHandlerRunsOnlyWhileItsBeatIsOn)
+{
+	scene->SetBeats({{"board", 0.5f}, {"drive", 0.5f}, {"leave", 0.5f}});
+	scene->Play();
+
+	Run(2.f);
+
+	EXPECT_GT(driven, 0.2f) << "the handler never ran";
+	EXPECT_LT(driven, 0.9f) << "the handler ran outside its beat";
+}
+
+TEST_F(CutscenePlayerTest, AnEmptySceneRefusesToPlay)
+{
+	scene->Play();
+
+	Run(1.f);
+
+	EXPECT_FALSE(scene->IsPlaying());
+	EXPECT_EQ(finished, 0);
+}
+
+namespace
+{
+	class ShippedEscapeTest : public ProjectFiles::Test
+	{
+	};
+}
+
+TEST_F(ShippedEscapeTest, TheBridgeEndsWithACarStandingAtTheExit)
+{
+	ASSERT_TRUE(isFound) << previous.string();
+
+	LevelData bridge = RoguelikeGame::LoadAct("Resources/Acts/act1_bridge.config");
+
+	ASSERT_EQ(bridge.escapes.size(), 1u) << "the bridge needs exactly one escape car";
+
+	int exitColumn = -1;
+	int exitRow = -1;
+	for (int row = 0; row < bridge.height; row++)
+	{
+		for (int column = 0; column < static_cast<int>(bridge.tiles[row].size()); column++)
+		{
+			if (bridge.tiles[row][column] == RoguelikeGame::TileType::Exit)
+			{
+				exitColumn = column;
+				exitRow = row;
+			}
+		}
+	}
+
+	ASSERT_GE(exitColumn, 0) << "the bridge has no exit";
+
+	EXPECT_EQ(bridge.escapes.front().row, exitRow) << "the car is not on the exit lane";
+	EXPECT_LE(std::abs(bridge.escapes.front().column - exitColumn), 2) << "the car is far from the exit";
+}
+
+TEST_F(ShippedEscapeTest, TheCarWaitsForTheWavesToBeOver)
+{
+	ASSERT_TRUE(isFound) << previous.string();
+
+	LevelData bridge = RoguelikeGame::LoadAct("Resources/Acts/act1_bridge.config");
+
+	ASSERT_FALSE(bridge.waves.empty()) << "the bridge has no waves to gate the car";
+	ASSERT_FALSE(bridge.escapes.empty());
+}

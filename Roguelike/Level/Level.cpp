@@ -86,6 +86,16 @@ namespace RoguelikeGame
         return directorObject;
     }
 
+    XYZEngine::GameObject* Level::GetEscapeCar() const
+    {
+        return carObject;
+    }
+
+    void Level::SetEscapeCar(XYZEngine::GameObject* newCarObject)
+    {
+        carObject = newCarObject;
+    }
+
     std::optional<XYZEngine::Vector2Df> Level::GetEntrance() const
     {
         return entrance;

@@ -101,6 +101,12 @@ namespace RoguelikeGame
             moved.hatches.push_back({to.column, to.row, hatch.id});
         }
 
+        for (const FixturePlacement& escape : room.escapes)
+        {
+            Placement to = Move({escape.column, escape.row}, width, height, turns, isMirrored);
+            moved.escapes.push_back({to.column, to.row, escape.id});
+        }
+
         for (const ZonePlacement& zone : room.zones)
         {
             Placement to = Move({zone.column, zone.row}, width, height, turns, isMirrored);

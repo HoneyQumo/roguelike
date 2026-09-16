@@ -10,6 +10,9 @@
 #include "Crosshair.h"
 #include "Particles.h"
 #include "BossBrainComponent.h"
+#include "CutscenePlayerComponent.h"
+#include "PlayerHudBinderComponent.h"
+#include "EscapeCarComponent.h"
 #include "WaveDirectorComponent.h"
 #include "Fx.h"
 #include "LevelExitComponent.h"
@@ -69,6 +72,7 @@ namespace RoguelikeGame
         SubscribeExit();
         SubscribeBoss();
         SubscribeWaves();
+        SubscribeEscape();
 
         music = CreateMusic(MAIN_THEME_MUSIC, MUSIC_VOLUME);
 
@@ -199,6 +203,116 @@ namespace RoguelikeGame
         director->SubscribeCleared([this]() { OnWavesCleared(); });
     }
 
+
+    void DeveloperLevel::SubscribeEscape()
+    {
+        XYZEngine::GameObject* carObject = level.GetEscapeCar();
+        if (carObject == nullptr)
+        {
+            return;
+        }
+
+        auto car = carObject->GetComponent<EscapeCarComponent>();
+        if (car == nullptr)
+        {
+            return;
+        }
+
+        car->SubscribeBoarded([this]() { PlayEscape(); });
+    }
+
+    void DeveloperLevel::PlayEscape()
+    {
+        XYZEngine::GameObject* carObject = level.GetEscapeCar();
+        if (carObject == nullptr || player == nullptr || cutscene != nullptr)
+        {
+            return;
+        }
+
+        cutscene = XYZEngine::GameWorld::Instance()->CreateGameObject(CUTSCENE_OBJECT_NAME);
+        level.Add(cutscene);
+
+        auto scene = cutscene->AddComponent<CutscenePlayerComponent>();
+        scene->SetBeats({
+            {ESCAPE_BEAT_BOARD, ESCAPE_BOARD_TIME},
+            {ESCAPE_BEAT_DRIVE, ESCAPE_DRIVE_TIME},
+            {ESCAPE_BEAT_LEAVE, ESCAPE_LEAVE_TIME},
+        });
+
+        // Игрок становится пассажиром: его выключают, а камера едет вместе с машиной.
+        scene->SubscribeBeatStarted([this, carObject](const std::string& beat)
+        {
+            if (beat == ESCAPE_BEAT_BOARD)
+            {
+                TakeControl();
+
+                if (hudScreen != nullptr)
+                {
+                    hudScreen->ShowNotice(ESCAPE_NOTICE);
+                }
+            }
+
+            if (beat == ESCAPE_BEAT_LEAVE && fadeScreen != nullptr)
+            {
+                fadeScreen->FadeOut(ESCAPE_LEAVE_TIME);
+            }
+        });
+
+        scene->SetHandler(ESCAPE_BEAT_DRIVE, [this, carObject](float deltaTime)
+        {
+            DriveEscape(carObject, deltaTime);
+        });
+
+        scene->SetHandler(ESCAPE_BEAT_LEAVE, [this, carObject](float deltaTime)
+        {
+            DriveEscape(carObject, deltaTime);
+        });
+
+        scene->SubscribeFinished([this]() { RequestNextLevel(); });
+        scene->Play();
+    }
+
+    void DeveloperLevel::TakeControl()
+    {
+        if (player == nullptr)
+        {
+            return;
+        }
+
+        for (XYZEngine::Component* part : player->GetComponents<XYZEngine::Component>())
+        {
+            bool isDriving = dynamic_cast<XYZEngine::CameraComponent*>(part) != nullptr
+                || dynamic_cast<XYZEngine::TransformComponent*>(part) != nullptr
+                || dynamic_cast<PlayerHudBinderComponent*>(part) != nullptr;
+
+            if (!isDriving)
+            {
+                part->SetEnabled(false);
+            }
+        }
+
+        if (crosshair != nullptr)
+        {
+            crosshair->SetActive(false);
+        }
+    }
+
+    void DeveloperLevel::DriveEscape(XYZEngine::GameObject* carObject, float deltaTime)
+    {
+        if (carObject == nullptr)
+        {
+            return;
+        }
+
+        escapeSpeed = std::min(ESCAPE_CAR_SPEED, escapeSpeed + ESCAPE_CAR_PICKUP * deltaTime);
+        carObject->GetTransform()->MoveBy({escapeSpeed * deltaTime, 0.f});
+
+        if (player != nullptr)
+        {
+            player->GetTransform()->SetWorldPosition(carObject->GetTransform()->GetWorldPosition());
+        }
+    }
+
     void DeveloperLevel::OnWavesCleared()
     {
         XYZEngine::GameObject* exitObject = level.GetExit();
@@ -214,6 +328,16 @@ namespace RoguelikeGame
             if (renderer != nullptr)
             {
                 renderer->SetColor(LEVEL_EXIT_COLOR);
+            }
+        }
+
+        XYZEngine::GameObject* carObject = level.GetEscapeCar();
+        if (carObject != nullptr)
+        {
+            auto car = carObject->GetComponent<EscapeCarComponent>();
+            if (car != nullptr)
+            {
+                car->SetReady(true);
             }
         }
 
@@ -314,6 +438,7 @@ namespace RoguelikeGame
         SubscribeExit();
         SubscribeBoss();
         SubscribeWaves();
+        SubscribeEscape();
         ShowLevelTitle();
 
         LOG_INFO("Level changed to " + entry->id + ", objects in world "

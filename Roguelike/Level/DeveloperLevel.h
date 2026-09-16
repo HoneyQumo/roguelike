@@ -31,6 +31,8 @@ namespace RoguelikeGame
 
         Level level;
         XYZEngine::GameObject* player = nullptr;
+        XYZEngine::GameObject* cutscene = nullptr;
+        float escapeSpeed = 0.f;
         XYZEngine::GameObject* particles = nullptr;
         XYZEngine::GameObject* uiRoot = nullptr;
         std::unique_ptr<HudScreen> hudScreen;
@@ -54,6 +56,10 @@ namespace RoguelikeGame
         void SubscribeExit();
         void SubscribeBoss();
         void SubscribeWaves();
+        void SubscribeEscape();
+        void PlayEscape();
+        void TakeControl();
+        void DriveEscape(XYZEngine::GameObject* carObject, float deltaTime);
         void OnWavesCleared();
         void OnBossDefeated();
         void RequestNextLevel();

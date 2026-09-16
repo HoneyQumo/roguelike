@@ -162,6 +162,11 @@ namespace RoguelikeGame
                 act.hatches.push_back({room.column + hatch.column, room.row + hatch.row, hatch.id});
             }
 
+            for (const FixturePlacement& escape : room.layout.escapes)
+            {
+                act.escapes.push_back({room.column + escape.column, room.row + escape.row, escape.id});
+            }
+
             for (const PatrolPoint& point : room.layout.patrols)
             {
                 act.patrols.push_back({room.column + point.column, room.row + point.row,

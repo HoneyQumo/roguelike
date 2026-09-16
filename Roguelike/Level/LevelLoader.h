@@ -27,6 +27,7 @@ namespace RoguelikeGame
             std::string leverId;
             std::string hatchId;
             std::string escapeId;
+            float propAngle = 0.f;
         };
 
         using Legend = std::map<char, LegendEntry>;

@@ -246,6 +246,12 @@ namespace RoguelikeGame
                 continue;
             }
 
+            if (key == "jitter")
+            {
+                stream >> current.jitterDegrees;
+                continue;
+            }
+
             if (key == "wreck")
             {
                 std::string value;

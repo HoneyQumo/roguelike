@@ -58,6 +58,12 @@ LEGEND = [
     ('d', 'RadioSpawn'),
     ('*', 'WaveSpawn'),
     ('E', 'Escape:city_car'),
+    ('R', 'Prop:bridge_rubble'),
+    ('U', 'Prop:bridge_rubble_wide'),
+    ('C', 'Prop:car_sedan@72'),
+    ('V', 'Prop:car_van@104'),
+    ('S', 'Prop:car_small@58'),
+    ('W', 'Prop:car_wreck@84'),
 ]
 
 # Проп шириной в две клетки: ставим его через одну, чтобы машины не слипались.
@@ -116,7 +122,7 @@ def Jam(rows, rng):
     for lane in (ROAD_TOP + 1, ROAD_BOTTOM - 1, LANE_LINE - 2, LANE_LINE + 2):
         column = rng.randint(2, 6)
         while column < WIDTH - 5:
-            PutWide(rows, column, lane, rng.choice('cvsw'))
+            PutWide(rows, column, lane, rng.choice('cvswcvsCVS'))
             column += rng.randint(4, 8)
 
     for _ in range(rng.randint(1, 3)):
@@ -143,16 +149,23 @@ def Checkpoint(rows, rng):
 
 
 def Wreck(rows, rng):
+    """ДТП: машины сбились в кучу и стоят поперёк, а не по линейке."""
     heart = rng.randint(8, WIDTH - 12)
-    PutWide(rows, heart, LANE_LINE - 1, 'w')
-    PutWide(rows, heart + 3, LANE_LINE + 1, 'w')
-    PutWide(rows, heart - 4, LANE_LINE + 2, 's')
 
-    for _ in range(4):
-        Put(rows, heart + rng.randint(-5, 6), rng.randint(ROAD_TOP, ROAD_BOTTOM), 'l')
+    PutWide(rows, heart, LANE_LINE - 1, 'W')
+    PutWide(rows, heart + 2, LANE_LINE + 1, 'C')
+    PutWide(rows, heart - 3, LANE_LINE, 'V')
+    PutWide(rows, heart + 4, LANE_LINE - 2, 's')
+    PutWide(rows, heart - 5, LANE_LINE + 2, 'S')
+
+    for _ in range(5):
+        Put(rows, heart + rng.randint(-6, 7), rng.randint(ROAD_TOP, ROAD_BOTTOM), 'l')
 
     for _ in range(3):
         Put(rows, heart + rng.randint(-8, 8), rng.choice([ROAD_TOP, ROAD_BOTTOM]), 'k')
+
+    for _ in range(2):
+        Put(rows, heart + rng.randint(-7, 8), rng.randint(ROAD_TOP, ROAD_BOTTOM), 'o')
 
 
 def Fuel(rows, rng):
@@ -214,10 +227,21 @@ def Collapse(rows, rng):
         for column in range(left, left + width):
             rows[row][column] = WATER
 
+    # По краю пролома - обломки бетона с торчащей арматурой.
+    for column in range(left, left + width):
+        rim = top - 1 if isTop else bottom + 1
+        if ROAD_TOP <= rim <= ROAD_BOTTOM and rng.random() < 0.55:
+            Put(rows, column, rim, rng.choice('RRU'))
+
+    for column in (left - 1, left + width):
+        for row in range(top, bottom + 1):
+            if rng.random() < 0.4:
+                Put(rows, column, row, 'R')
+
     for _ in range(3):
         Put(rows, left - 2, rng.randint(ROAD_TOP, ROAD_BOTTOM), 'o')
 
-    PutWide(rows, left + width + 1, LANE_LINE + 2 if isTop else LANE_LINE - 2, 'w')
+    PutWide(rows, left + width + 1, LANE_LINE + 2 if isTop else LANE_LINE - 2, 'W')
 
 
 def WavePoints(rows, index):

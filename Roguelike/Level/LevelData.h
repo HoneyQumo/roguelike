@@ -49,6 +49,7 @@ namespace RoguelikeGame
         int column = 0;
         int row = 0;
         std::string propId;
+        float angle = 0.f;
     };
 
     struct ItemPlacement

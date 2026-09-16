@@ -74,7 +74,7 @@ namespace RoguelikeGame
         for (const PropPlacement& prop : room.props)
         {
             Placement to = Move({prop.column, prop.row}, width, height, turns, isMirrored);
-            moved.props.push_back({to.column, to.row, prop.propId});
+            moved.props.push_back({to.column, to.row, prop.propId, prop.angle + turns * 90.f});
         }
 
         for (const PatrolPoint& point : room.patrols)

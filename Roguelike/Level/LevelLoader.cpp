@@ -329,13 +329,36 @@ namespace RoguelikeGame
         if (name.compare(0, PROP_PREFIX.size(), PROP_PREFIX) == 0)
         {
             std::string propId = Trim(name.substr(PROP_PREFIX.size()));
+            float propAngle = 0.f;
+
+            std::size_t turn = propId.find('@');
+            if (turn != std::string::npos)
+            {
+                try
+                {
+                    propAngle = std::stof(propId.substr(turn + 1));
+                }
+                catch (const std::exception&)
+                {
+                    LOG_ERROR("Level legend line " + std::to_string(lineNumber) + " has a bad prop angle");
+                    throw std::runtime_error("Level legend line has a bad prop angle");
+                }
+
+                propId = Trim(propId.substr(0, turn));
+            }
+
             if (propId.empty())
             {
                 LOG_ERROR("Level legend line " + std::to_string(lineNumber) + " has no prop id");
                 throw std::runtime_error("Level legend line has no prop id");
             }
 
-            legend[symbol] = {TileType::Floor, "", propId, "", 0, false, "", ""};
+            LegendEntry entry;
+            entry.tile = TileType::Floor;
+            entry.propId = propId;
+            entry.propAngle = propAngle;
+
+            legend[symbol] = entry;
             return;
         }
 
@@ -450,7 +473,7 @@ namespace RoguelikeGame
 
                 if (!tile->second.propId.empty())
                 {
-                    levelData.props.push_back({column, row, tile->second.propId});
+                    levelData.props.push_back({column, row, tile->second.propId, tile->second.propAngle});
                 }
 
                 if (!tile->second.patrolId.empty())

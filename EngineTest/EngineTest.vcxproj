@@ -68,6 +68,7 @@
     <ClCompile Include="WeaponAmmo.tests.cpp" />
     <ClCompile Include="Separation.tests.cpp" />
     <ClCompile Include="PropAlign.tests.cpp" />
+    <ClCompile Include="PropAngle.tests.cpp" />
     <ClCompile Include="WaterTiles.tests.cpp" />
     <ClCompile Include="BridgeProps.tests.cpp" />
     <ClCompile Include="Blast.tests.cpp" />

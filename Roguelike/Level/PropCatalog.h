@@ -32,6 +32,7 @@ namespace RoguelikeGame
         bool isCover = false;
         bool isPanel = false;
         bool leavesWreck = false;
+        float jitterDegrees = 0.f;
 
         // Высота по умолчанию равна ширине: почти все пропы квадратные.
         float Height() const;

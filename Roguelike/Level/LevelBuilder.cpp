@@ -484,6 +484,10 @@ namespace RoguelikeGame
                     PanelSupport support = ReadPanelSupport(levelData, placement.propId, placement.column, placement.row);
                     gameObject->GetTransform()->SetWorldRotation(PanelAngle(support));
                 }
+                else if (gameObject != nullptr)
+                {
+                    gameObject->GetTransform()->SetWorldRotation(PropAngle(*definition, placement));
+                }
 
                 if (level.Add(gameObject))
                 {

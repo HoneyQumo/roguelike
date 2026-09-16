@@ -66,6 +66,9 @@ LEGEND = [
     ('W', 'Prop:car_wreck@84'),
 ]
 
+# Край пролома: символ один, а каким куском бетона он обернётся, решает движок по соседям.
+BREACH = 'X'
+
 # Точки маршрута для охраны блокпоста: 1 - пост, 2 - дальний конец обхода.
 PATROL_SYMBOLS = ('1', '2')
 
@@ -156,8 +159,6 @@ def Checkpoint(rows, rng):
 
     Garrison(rows, column)
 
-    return True
-
 
 def Garrison(rows, column):
     """Охрана блокпоста: щитовик в проходе, стрелки за барьером, патруль вдоль него.
@@ -243,7 +244,12 @@ def Ramp(rows, rng):
 
 
 def Collapse(rows, rng):
-    """Пролёт обвалился: полотно съедено водой, остаётся полоса вдоль отбойника."""
+    """Пролом: полотно обрывается рваным краем, под ним вода.
+
+    Граница нарочно неровная - ровный прямоугольник читался бы как вырез
+    ножницами, а не как обвалившийся пролёт. Проход вдоль отбойника остаётся
+    всегда: пролом должен пугать и тормозить, а не запирать мост.
+    """
     left = rng.randint(8, WIDTH - 16)
     width = rng.randint(7, 10)
     isTop = rng.random() < 0.5
@@ -251,25 +257,75 @@ def Collapse(rows, rng):
     top = ROAD_TOP if isTop else LANE_LINE + 1
     bottom = LANE_LINE if isTop else ROAD_BOTTOM
 
-    for row in range(top, bottom + 1):
-        for column in range(left, left + width):
+    # Сколько рядов съедено в каждой колонке. Глубина гуляет вокруг середины,
+    # а не копится шаг за шагом: от накопления край выходил ровной лестницей.
+    span = bottom - top + 1
+    middle = max(2, int(span * 0.6))
+
+    # Уступы редкие и крупные: если менять глубину каждую колонку,
+    # край превращается в мелкую корону вместо обломанной плиты.
+    marks = []
+    column = 0
+    while column < width:
+        marks.append((column, middle + rng.randint(-2, 1)))
+        column += rng.randint(2, 4)
+    marks.append((width - 1, middle + rng.randint(-2, 1)))
+
+    eaten = []
+    for column in range(width):
+        before = max(mark for mark in marks if mark[0] <= column)
+        after = min((mark for mark in marks if mark[0] >= column), default=before)
+
+        depth = before[1] if column - before[0] <= after[0] - column else after[1]
+
+        # Края пролома мельче середины: так он читается как провалившийся кусок.
+        toEdge = min(column, width - 1 - column)
+        depth = depth if toEdge >= 2 else int(round(depth * (0.45 + 0.3 * toEdge)))
+
+        eaten.append(max(2, min(span, depth)))
+
+    for step, column in enumerate(range(left, left + width)):
+        for into in range(eaten[step]):
+            row = top + into if isTop else bottom - into
             rows[row][column] = WATER
 
-    # По краю пролома - обломки бетона с торчащей арматурой.
-    for column in range(left, left + width):
-        rim = top - 1 if isTop else bottom + 1
-        if ROAD_TOP <= rim <= ROAD_BOTTOM and rng.random() < 0.55:
-            Put(rows, column, rim, rng.choice('RRU'))
-
-    for column in (left - 1, left + width):
-        for row in range(top, bottom + 1):
-            if rng.random() < 0.4:
-                Put(rows, column, row, 'R')
+    # Куски плиты, выброшенные на уцелевшее полотно: обвал не бывает аккуратным.
+    for _ in range(rng.randint(4, 7)):
+        column = rng.randint(max(2, left - 3), min(WIDTH - 3, left + width + 3))
+        row = rng.randint(ROAD_TOP, ROAD_BOTTOM)
+        if rows[row][column] == ROAD:
+            Put(rows, column, row, rng.choice('RRU'))
 
     for _ in range(3):
         Put(rows, left - 2, rng.randint(ROAD_TOP, ROAD_BOTTOM), 'o')
 
     PutWide(rows, left + width + 1, LANE_LINE + 2 if isTop else LANE_LINE - 2, 'W')
+
+    return Breach(rows, left - 1, left + width, top, bottom)
+
+
+def Breach(rows, fromColumn, toColumn, top, bottom):
+    """Обводит воду краем пролома в верхнем слое.
+
+    Символ ставится на каждую клетку воды, у которой есть сосед-дорога;
+    какой именно кусок бетона нарисовать, решает движок по маске соседей.
+    """
+    edges = []
+
+    for row in range(max(0, top - 1), min(HEIGHT, bottom + 2)):
+        for column in range(max(0, fromColumn), min(WIDTH, toColumn + 1)):
+            if rows[row][column] != WATER:
+                continue
+
+            isEdge = False
+            for nearRow, nearColumn in ((row - 1, column), (row + 1, column), (row, column - 1), (row, column + 1)):
+                if 0 <= nearRow < HEIGHT and 0 <= nearColumn < WIDTH:
+                    isEdge = isEdge or rows[nearRow][nearColumn] in (ROAD, LINE)
+
+            if isEdge:
+                edges.append((column, row))
+
+    return edges
 
 
 def WavePoints(rows, index):
@@ -302,7 +358,9 @@ SHAPES = [
 def Section(index, rng):
     rows = Blank()
 
-    SHAPES[index](rows, rng)
+    # Пролом возвращает клетки своего края, остальные шаблоны ничего не возвращают.
+    edges = SHAPES[index](rows, rng)
+    edges = edges if edges is not None else []
     WavePoints(rows, index)
 
     # Первые секции щадящие, дальше плотнее.
@@ -325,7 +383,7 @@ def Section(index, rng):
         kinds = 'gg' if share < 0.3 else ('ggrh' if share < 0.7 else 'grhed')
         Enemies(rows, rng, count, kinds)
 
-    return rows
+    return rows, edges
 
 
 def SplitOverlay(rows):
@@ -346,7 +404,7 @@ def SplitOverlay(rows):
     return overlay
 
 
-def Write(index, rows):
+def Write(index, rows, edges):
     name = 'act1_bridge_%02d' % (index + 1)
     lines = ['[level]', 'kind %s' % name, 'tileset bridge', '', '[legend]']
     lines += ['%s %s' % (symbol, meaning) for symbol, meaning in LEGEND]
@@ -355,12 +413,18 @@ def Write(index, rows):
     if any(symbol in ''.join(''.join(row) for row in rows) for symbol in PATROL_SYMBOLS):
         route = 'block%02d' % (index + 1)
         lines += ['%s Patrol:%s' % (symbol, route) for symbol in PATROL_SYMBOLS]
+
+    if edges:
+        lines += ['%s Breach' % BREACH]
     overlay = SplitOverlay(rows)
+
+    for column, row in edges:
+        overlay[row][column] = BREACH
 
     lines += ['', '[map]']
     lines += [''.join(row) for row in rows]
 
-    if any(LINE in row for row in overlay):
+    if any(LINE in row or BREACH in row for row in overlay):
         lines += ['', '[overlay]']
         lines += [''.join(row) for row in overlay]
 
@@ -376,7 +440,8 @@ def Build(seed=20260916):
 
     names = []
     for index in range(SECTIONS):
-        names.append(Write(index, Section(index, rng)))
+        rows, edges = Section(index, rng)
+        names.append(Write(index, rows, edges))
 
     lines = ['[act]', 'title Мост', 'next street', 'tileset bridge', 'music march', '', '[library]']
     lines += ['%s Resources/Rooms/%s.config' % (name, name) for name in names]

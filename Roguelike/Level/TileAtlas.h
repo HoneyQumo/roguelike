@@ -11,6 +11,8 @@ namespace RoguelikeGame
     constexpr int TILE_LINE_ROW = 2;
     constexpr int TILE_WATER_ROW = 3;
     constexpr int TILE_OVERLAY_ROW = 4;
+    constexpr int TILE_BREACH_ROW = 5;
+    constexpr int TILE_BREACH_FRAMES = 16;
 
     constexpr int TILE_LINE_ACROSS = 0;
     constexpr int TILE_LINE_ALONG = 1;
@@ -126,6 +128,36 @@ namespace RoguelikeGame
     }
 
     /**
+    *	Край пролома. Клетка сама смотрит, с каких сторон к ней примыкает дорога,
+    *	и рисует обрыв бетона именно с них - как стены выбирают кадр по соседям.
+    *	Так на карте ставится один символ, а шестнадцать вариантов помнит движок.
+    */
+    inline bool IsRoadAt(const LevelData& level, int column, int row)
+    {
+        TileType tile = TileAt(level, column, row);
+
+        return tile == TileType::Floor || tile == TileType::Line || tile == TileType::WaveSpawn
+            || tile == TileType::PlayerSpawn || tile == TileType::Entrance || tile == TileType::Exit;
+    }
+
+    inline int BreachMask(const LevelData& level, int column, int row)
+    {
+        int mask = 0;
+
+        mask |= IsRoadAt(level, column, row - 1) ? WALL_NEIGHBOUR_UP : 0;
+        mask |= IsRoadAt(level, column + 1, row) ? WALL_NEIGHBOUR_RIGHT : 0;
+        mask |= IsRoadAt(level, column, row + 1) ? WALL_NEIGHBOUR_DOWN : 0;
+        mask |= IsRoadAt(level, column - 1, row) ? WALL_NEIGHBOUR_LEFT : 0;
+
+        return mask;
+    }
+
+    constexpr int BreachFrame(int mask)
+    {
+        return mask < 0 ? 0 : mask % TILE_BREACH_FRAMES;
+    }
+
+    /**
     *	Кадр верхнего слоя. Разметка здесь берётся из своей строки атласа - без
     *	подложки, поэтому ложится на любое покрытие. Всё остальное рисуется тем же
     *	кадром, что и внизу: накладке незачем иметь свой вид у каждого тайла.
@@ -137,6 +169,11 @@ namespace RoguelikeGame
         if (tile == TileType::Line)
         {
             return TileFrameRect(TILE_OVERLAY_ROW, LineFrame(level.overlay, column, row));
+        }
+
+        if (tile == TileType::Breach)
+        {
+            return TileFrameRect(TILE_BREACH_ROW, BreachFrame(BreachMask(level, column, row)));
         }
 
         if (tile == TileType::Water)

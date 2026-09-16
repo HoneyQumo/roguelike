@@ -12,7 +12,7 @@ TILE = 64
 FLOOR_FRAMES = 4
 WALL_FRAMES = 16
 ATLAS_COLUMNS = 16
-ATLAS_ROWS = 5
+ATLAS_ROWS = 6
 
 WALL_NEIGHBOUR_UP = 1
 WALL_NEIGHBOUR_RIGHT = 2
@@ -24,6 +24,7 @@ WALL_ROW = 1
 LINE_ROW = 2
 WATER_ROW = 3
 OVERLAY_ROW = 4
+BREACH_ROW = 5
 
 RAMPS = {
     'catacombs': {
@@ -132,6 +133,86 @@ def Marking(seed, floor, colour, isVertical, isSolid):
                 tile[step, band, :3] = paint
             else:
                 tile[band, step, :3] = paint
+
+    return tile
+
+
+CONCRETE = (116, 114, 108)
+CONCRETE_DARK = (58, 56, 52)
+REBAR = (122, 82, 56)
+
+BREACH_DEPTH = 13
+REBAR_COUNT = 3
+
+
+def BreachEdge(mask, seed):
+    """Обрыв бетона по краю пролома.
+
+    Кадр выбирается по маске соседей: бит стоит там, где к клетке примыкает
+    дорога, и именно с той стороны полотно обрывается. Внутри клетки пусто -
+    сквозь неё видно нижний слой, то есть воду.
+    """
+    rng = np.random.default_rng(seed + 900)
+    tile = np.zeros((TILE, TILE, 4))
+
+    concrete = np.array(CONCRETE, dtype=float)
+    shadow = np.array(CONCRETE_DARK, dtype=float)
+    iron = np.array(REBAR, dtype=float)
+
+    def Lay(side):
+        # Кромка рваная: глубина гуляет вдоль стороны, ровный срез выглядел бы распилом.
+        depth = rng.integers(BREACH_DEPTH - 6, BREACH_DEPTH + 5, size=TILE)
+        depth = np.convolve(depth, np.ones(5) / 5.0, mode='same').astype(int)
+
+        for step in range(TILE):
+            for into in range(max(1, depth[step])):
+                if side == 'up':
+                    row, column = into, step
+                elif side == 'down':
+                    row, column = TILE - 1 - into, step
+                elif side == 'left':
+                    row, column = step, into
+                else:
+                    row, column = step, TILE - 1 - into
+
+                # У самого среза плита уходит в тень: там уже обрыв, а не поверхность.
+                edge = max(1, depth[step]) - into
+                shade = 0.0 if edge > 6 else 1.0 - edge / 6.0
+
+                grain = rng.normal(0.0, 9.0)
+                colour = concrete * (1.0 - shade) + shadow * shade + grain
+
+                tile[row, column, :3] = np.clip(colour, 0, 255)
+                tile[row, column, 3] = 255
+
+        # Арматура торчит из среза в пустоту.
+        for _ in range(REBAR_COUNT):
+            at = int(rng.integers(6, TILE - 6))
+            out = int(rng.integers(5, 13))
+            for into in range(depth[at], depth[at] + out):
+                if into >= TILE:
+                    break
+
+                if side == 'up':
+                    row, column = into, at
+                elif side == 'down':
+                    row, column = TILE - 1 - into, at
+                elif side == 'left':
+                    row, column = at, into
+                else:
+                    row, column = at, TILE - 1 - into
+
+                tile[row, column, :3] = iron
+                tile[row, column, 3] = 255
+
+    if mask & WALL_NEIGHBOUR_UP:
+        Lay('up')
+    if mask & WALL_NEIGHBOUR_DOWN:
+        Lay('down')
+    if mask & WALL_NEIGHBOUR_LEFT:
+        Lay('left')
+    if mask & WALL_NEIGHBOUR_RIGHT:
+        Lay('right')
 
     return tile
 
@@ -276,6 +357,9 @@ def Build(name):
     for frame in range(FLOOR_FRAMES):
         out[OVERLAY_ROW * TILE:(OVERLAY_ROW + 1) * TILE, frame * TILE:(frame + 1) * TILE] = \
             OverlayMarking(ramp['line'], frame % 2 == 1, frame >= 2)
+
+    for mask in range(WALL_FRAMES):
+        out[BREACH_ROW * TILE:(BREACH_ROW + 1) * TILE, mask * TILE:(mask + 1) * TILE] = BreachEdge(mask, mask + 1)
     target = os.path.join(TEXTURES, 'tiles_' + name + '.png')
     Image.fromarray(np.clip(out, 0, 255).astype(np.uint8), 'RGBA').save(target)
     print('built', target, out.shape[1], 'x', out.shape[0])

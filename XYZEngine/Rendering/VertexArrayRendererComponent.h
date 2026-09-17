@@ -19,6 +19,10 @@ namespace XYZEngine
 		void Clear();
 		void SetTexture(const sf::Texture* newTexture);
 		void AddQuad(const Vector2Df& center, const Vector2Df& size, const sf::Color& color);
+
+		// Четырёхугольник по углам: лента и любая другая геометрия не по осям.
+		void AddQuad(const Vector2Df& first, const Vector2Df& second, const Vector2Df& third, const Vector2Df& fourth,
+			const sf::Color& color);
 		void AddQuad(const Vector2Df& center, const Vector2Df& size, const sf::IntRect& frame,
 			const sf::Color& tint = sf::Color::White);
 

@@ -104,7 +104,8 @@
         <ClCompile Include="Weapons\ReloadIndicatorComponent.cpp"/>
         <ClCompile Include="Ui\Crosshair.cpp"/>
         <ClCompile Include="Fx\Fx.cpp"/>
-        <ClCompile Include="Fx\TireMark.cpp"/>
+        <ClCompile Include="Fx\Trail.cpp"/>
+        <ClCompile Include="Fx\TrailComponent.cpp"/>
         <ClCompile Include="Fx\Fire.cpp"/>
         <ClCompile Include="Fx\FireComponent.cpp"/>
         <ClCompile Include="Fx\Particles.cpp"/>
@@ -304,7 +305,8 @@
         <ClInclude Include="Fx\Shake.h"/>
         <ClInclude Include="Enemies\BackOffSpot.h"/>
         <ClInclude Include="Enemies\CoverSpot.h"/>
-        <ClInclude Include="Fx\TireMark.h"/>
+        <ClInclude Include="Fx\Trail.h"/>
+        <ClInclude Include="Fx\TrailComponent.h"/>
         <ClInclude Include="Fx\Fire.h"/>
         <ClInclude Include="Fx\FireComponent.h"/>
         <ClInclude Include="Core\GameResources.h"/>

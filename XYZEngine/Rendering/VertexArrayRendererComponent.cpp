@@ -47,6 +47,15 @@ namespace XYZEngine
 		vertices.append({ { left, top }, color });
 	}
 
+	void VertexArrayRendererComponent::AddQuad(const Vector2Df& first, const Vector2Df& second, const Vector2Df& third,
+		const Vector2Df& fourth, const sf::Color& color)
+	{
+		vertices.append({ { first.x, first.y }, color });
+		vertices.append({ { second.x, second.y }, color });
+		vertices.append({ { third.x, third.y }, color });
+		vertices.append({ { fourth.x, fourth.y }, color });
+	}
+
 	void VertexArrayRendererComponent::SetTexture(const sf::Texture* newTexture)
 	{
 		texture = newTexture;

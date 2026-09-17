@@ -279,6 +279,15 @@ namespace RoguelikeGame
         return gameObject;
     }
 
+    void ApplyFightStyle(XYZEngine::GameObject* enemy, const FightStyle& style)
+    {
+        auto chase = enemy != nullptr ? enemy->GetComponent<ChaseComponent>() : nullptr;
+        if (chase != nullptr)
+        {
+            chase->SetFightStyle(style);
+        }
+    }
+
     void SendAfterPlayer(XYZEngine::GameObject* enemy, const XYZEngine::Vector2Df& lastSeen)
     {
         if (enemy == nullptr)

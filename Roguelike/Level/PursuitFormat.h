@@ -12,7 +12,8 @@ namespace RoguelikeGame
 {
     /**
     *	Строки погони: keep / grow / respawn задают напор,
-    *	from <доля пути> <символ><вес> ... - кто выбегает на этом отрезке.
+    *	from <доля пути> <символ><вес> ... - кто выбегает на этом отрезке,
+    *	style - дерутся ли преследователи с оглядкой.
     */
     inline void ReadPursuitLine(const std::string& line, int lineNumber, PursuitSpec& pursuit)
     {
@@ -30,6 +31,12 @@ namespace RoguelikeGame
             }
 
             (keyword == "keep" ? pursuit.keep : pursuit.grow) = value;
+            return;
+        }
+
+        if (keyword == "style")
+        {
+            ReadFightStyle(stream, lineNumber, pursuit.style);
             return;
         }
 

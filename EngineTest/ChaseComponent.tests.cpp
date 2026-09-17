@@ -85,6 +85,15 @@ namespace
 	constexpr float STEP = 0.05f;
 	constexpr float LOOK_TIME = 1.f;
 
+	// Укрытие стоит рядом со стрелком, а не между ним и целью: стрелять ему ничто не мешает.
+	const std::string FIRING_RANGE =
+		"[map]\n"
+		"#############\n"
+		"#.....#.....#\n"
+		"#...........#\n"
+		"#...........#\n"
+		"#############\n";
+
 	class ChaseComponentTest : public ::testing::Test
 	{
 	protected:
@@ -1196,4 +1205,152 @@ TEST_F(ChaseComponentTest, AKnifemanHasNothingToReloadAndNeverHides)
 
 	EXPECT_FALSE(LevelGrid::Current().HasWallBetween(hero->GetTransform()->GetWorldPosition(),
 		enemy->GetTransform()->GetWorldPosition())) << "the knife enemy hid from a fight it should have joined";
+}
+
+TEST_F(ChaseComponentTest, AnEnemyIsTacticalUntilToldOtherwise)
+{
+	ChaseComponent* chase = CreateEnemy(1, 1);
+
+	EXPECT_TRUE(chase->GetFightStyle().keepsDistance);
+	EXPECT_TRUE(chase->GetFightStyle().takesCover);
+}
+
+TEST_F(ChaseComponentTest, ARelentlessShooterGivesNoGround)
+{
+	LoadMap(CORRIDOR);
+
+	ChaseComponent* chase = CreateEnemy(6, 1, 180.f);
+	chase->SetStopDistance(220.f);
+	chase->SetChaseSpeed(200.f);
+	chase->SetFightStyle(RoguelikeGame::RELENTLESS_FIGHT);
+	CreateHero(4, 1);
+
+	GameObject* enemy = chase->GetGameObject();
+	float before = enemy->GetTransform()->GetWorldPosition().x;
+
+	Run(1.f);
+
+	EXPECT_LE(enemy->GetTransform()->GetWorldPosition().x, before) << "a pursuer gave ground instead of pushing";
+}
+
+TEST_F(ChaseComponentTest, ARelentlessShooterReloadsWhereItStands)
+{
+	LoadMap(PILLAR);
+
+	ChaseComponent* chase = CreateEnemy(3, 2, 180.f);
+	chase->SetChaseSpeed(150.f);
+	chase->SetFightStyle(RoguelikeGame::RELENTLESS_FIGHT);
+	GameObject* hero = CreateHero(1, 2);
+
+	GameObject* enemy = chase->GetGameObject();
+	auto weapon = GiveAnEmptyGun(enemy, 5.f);
+
+	Run(0.1f);
+	ASSERT_TRUE(weapon->TryReload());
+
+	Run(4.f);
+
+	EXPECT_FALSE(LevelGrid::Current().HasWallBetween(hero->GetTransform()->GetWorldPosition(),
+		enemy->GetTransform()->GetWorldPosition())) << "a pursuer went looking for cover";
+}
+
+namespace
+{
+	struct Volley
+	{
+		int shots = 0;
+		float walked = 0.f;
+	};
+
+	struct FightSetup
+	{
+		bool isTactical = true;
+		int column = 7;
+		float stopDistance = 384.f;
+	};
+}
+
+/**
+*	Сколько огня стоит осторожность.
+*
+*	Укрытие на 30% магазина забирает у врага время на дорогу туда и обратно.
+*	Тест не сторожит точное число - он ловит тот день, когда тактика превратит
+*	стрелка в бегуна, который почти не стреляет.
+*/
+class FiringRateTest : public ChaseComponentTest
+{
+protected:
+	// Укрытие рядом со стрелком, а не между ним и целью: стрелять ему ничто не мешает.
+	const std::string FIRING_RANGE =
+		"[map]\n"
+		"#############\n"
+		"#.....#.....#\n"
+		"#...........#\n"
+		"#...........#\n"
+		"#############\n";
+
+	Volley Fire(const FightSetup& setup)
+	{
+		GameWorld::Instance()->Clear();
+		LoadMap(FIRING_RANGE);
+
+		ChaseComponent* chase = CreateEnemy(setup.column, 2, 180.f);
+		chase->SetDetectionRadius(1200.f);
+		chase->SetStopDistance(setup.stopDistance);
+		chase->SetChaseSpeed(267.f);
+		chase->SetFightStyle(setup.isTactical ? RoguelikeGame::TACTICAL_FIGHT : RoguelikeGame::RELENTLESS_FIGHT);
+		CreateHero(1, 2);
+
+		GameObject* enemy = chase->GetGameObject();
+
+		// АК: магазин 30, откат 0.7, перезарядка 1.6.
+		auto weapon = enemy->AddComponent<RoguelikeGame::WeaponComponent>();
+		weapon->SetMagazine(30, 0);
+		weapon->SetAmmoInMagazine(30);
+		weapon->SetReloadTime(1.6f);
+		weapon->SetCooldown(0.7f);
+
+		Volley volley;
+		weapon->SubscribeShot([&volley](const Vector2Df&, const Vector2Df&, float, float) { volley.shots++; });
+
+		auto attack = enemy->AddComponent<RoguelikeGame::EnemyAttackComponent>();
+		attack->SetTargetName("Hero");
+		attack->SetAttackRange(900.f);
+
+		Vector2Df was = enemy->GetTransform()->GetWorldPosition();
+		for (float passed = 0.f; passed < MINUTE; passed += STEP)
+		{
+			GameWorld::Instance()->Update(STEP);
+
+			Vector2Df now = enemy->GetTransform()->GetWorldPosition();
+			volley.walked += (now - was).GetLength();
+			was = now;
+		}
+
+		return volley;
+	}
+
+	static constexpr float MINUTE = 60.f;
+};
+
+TEST_F(FiringRateTest, CoverNextDoorCostsAlmostNothing)
+{
+	int relentless = Fire({false, 7, 384.f}).shots;
+	Volley tactical = Fire({true, 7, 384.f});
+
+	ASSERT_GT(relentless, 0);
+	EXPECT_GT(tactical.walked, 0.f) << "the shooter never went for cover, so there is nothing to compare";
+	EXPECT_GE(tactical.shots * 100 / relentless, 90)
+		<< "cover right next to the shooter cost it " << relentless - tactical.shots << " shots a minute";
+}
+
+TEST_F(FiringRateTest, ALongWalkToCoverCostsMore)
+{
+	int relentless = Fire({false, 11, 640.f}).shots;
+	Volley tactical = Fire({true, 11, 640.f});
+
+	ASSERT_GT(relentless, 0);
+	EXPECT_GE(tactical.shots * 100 / relentless, 80)
+		<< "the shooter spends the fight walking: " << tactical.walked << " px, "
+		<< relentless - tactical.shots << " shots a minute lost";
 }

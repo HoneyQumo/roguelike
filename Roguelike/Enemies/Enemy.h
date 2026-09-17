@@ -2,6 +2,7 @@
 
 #include "BossCatalog.h"
 #include "EnemyConfig.h"
+#include "FightStyle.h"
 #include <GameObject.h>
 #include <Vector.h>
 
@@ -16,4 +17,7 @@ namespace RoguelikeGame
     *	Так выходят и свита босса, и волны - те, кого зовут по игрока, а не ставят в караул.
     */
     void SendAfterPlayer(XYZEngine::GameObject* enemy, const XYZEngine::Vector2Df& lastSeen);
+
+    // Тихо проходит мимо тех, у кого погони нет: не всякий созданный объект - враг.
+    void ApplyFightStyle(XYZEngine::GameObject* enemy, const FightStyle& style);
 }

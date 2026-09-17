@@ -14,6 +14,7 @@ namespace RoguelikeGame
     const std::string PURSUIT_SECTION = "pursuit";
     const std::string OVERLAY_SECTION = "overlay";
     const std::string WAVE_KEYWORD = "wave";
+    const std::string STYLE_KEYWORD = "style";
     const std::string LEVEL_SECTION = "level";
     const std::string ITEM_PREFIX = "Item:";
     const std::string PROP_PREFIX = "Prop:";
@@ -181,6 +182,12 @@ namespace RoguelikeGame
             return;
         }
 
+        if (key == STYLE_KEYWORD)
+        {
+            ReadFightStyle(stream, lineNumber, info.style);
+            return;
+        }
+
         if (key == "kind")
         {
             stream >> info.kind;
@@ -273,6 +280,12 @@ namespace RoguelikeGame
         std::istringstream stream(Trim(line));
         std::string keyword;
         stream >> keyword;
+
+        if (keyword == STYLE_KEYWORD)
+        {
+            ReadFightStyle(stream, lineNumber, levelData.wavesStyle);
+            return;
+        }
 
         if (keyword != WAVE_KEYWORD)
         {

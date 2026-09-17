@@ -22,6 +22,7 @@ namespace RoguelikeGame
         bool isAlerted = false;
         bool isForced = false;
         bool isReloading = false;
+        bool isLowOnAmmo = false;
         bool hasCover = false;
         bool hasPoint = false;
         bool isVisible = false;
@@ -45,8 +46,8 @@ namespace RoguelikeGame
     constexpr ChaseMove ChooseChaseMove(const ChaseSense& sense)
     {
         // До проверки видимости: из укрытия игрока не видно, и враг бросился бы
-        // его искать, не дозарядив.
-        if (sense.isReloading && sense.hasCover)
+        // его искать, не дозарядив. Стиль боя гасится выше, в ReadSense.
+        if ((sense.isReloading || sense.isLowOnAmmo) && sense.hasCover)
         {
             return ChaseMove::TakeCover;
         }

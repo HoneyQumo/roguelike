@@ -144,6 +144,7 @@ namespace RoguelikeGame
                         if (const EnemyConfig* config = FindEnemyConfig(tile))
                         {
                             XYZEngine::GameObject* enemyObject = CreateEnemy(*config, position);
+                            ApplyFightStyle(enemyObject, levelData.info.style);
 
                             // Заслон ждёт бегущего: стоять к нему спиной ему незачем.
                             if (guardFacing.has_value())
@@ -368,7 +369,7 @@ namespace RoguelikeGame
     }
 
     // Кого ни зови - волну или погоню, - он приходит по душу игрока, а не стоять в карауле.
-    XYZEngine::GameObject* LevelBuilder::SpawnHunter(TileType enemy, const XYZEngine::Vector2Df& place)
+    XYZEngine::GameObject* LevelBuilder::SpawnHunter(TileType enemy, const XYZEngine::Vector2Df& place, const FightStyle& style)
     {
         const EnemyConfig* config = FindEnemyConfig(enemy);
         if (config == nullptr)
@@ -377,6 +378,7 @@ namespace RoguelikeGame
         }
 
         XYZEngine::GameObject* born = CreateEnemy(*config, place);
+        ApplyFightStyle(born, style);
         SendAfterPlayer(born, place);
 
         return born;
@@ -400,7 +402,11 @@ namespace RoguelikeGame
         auto pursuit = gameObject->AddComponent<PursuitComponent>();
         pursuit->SetSpec(levelData.pursuit);
         pursuit->SetPoints(points);
-        pursuit->SetSpawner(&LevelBuilder::SpawnHunter);
+        FightStyle pursuitStyle = levelData.pursuit.style;
+        pursuit->SetSpawner([pursuitStyle](TileType enemy, const XYZEngine::Vector2Df& place)
+        {
+            return SpawnHunter(enemy, place, pursuitStyle);
+        });
 
         level.Add(gameObject);
         level.SetPursuit(gameObject);
@@ -430,7 +436,11 @@ namespace RoguelikeGame
         auto director = gameObject->AddComponent<WaveDirectorComponent>();
         director->SetWaves(levelData.waves);
         director->SetPoints(points);
-        director->SetSpawner(&LevelBuilder::SpawnHunter);
+        FightStyle wavesStyle = levelData.wavesStyle;
+        director->SetSpawner([wavesStyle](TileType enemy, const XYZEngine::Vector2Df& place)
+        {
+            return SpawnHunter(enemy, place, wavesStyle);
+        });
 
         level.Add(gameObject);
         level.SetWaveDirector(gameObject);

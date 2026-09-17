@@ -30,7 +30,7 @@ namespace RoguelikeGame
 
         // Точки и способ рождения общие: волна и погоня отличаются тем, когда звать, а не кого.
         static std::vector<XYZEngine::Vector2Df> CollectSpawnPoints(const LevelData& levelData);
-        static XYZEngine::GameObject* SpawnHunter(TileType enemy, const XYZEngine::Vector2Df& place);
+        static XYZEngine::GameObject* SpawnHunter(TileType enemy, const XYZEngine::Vector2Df& place, const FightStyle& style);
         static int BuildProps(const LevelData& levelData, const PropCatalog& props, const ItemCatalog& items, Level& level);
         static int BuildItems(const LevelData& levelData, const ItemCatalog& items, Level& level);
         static XYZEngine::GameObject* CreateBossObject(const LevelData& levelData, const XYZEngine::Vector2Df& position, Level& level);

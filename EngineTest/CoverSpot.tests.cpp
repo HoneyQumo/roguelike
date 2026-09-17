@@ -161,3 +161,19 @@ TEST(CoverSpotTest, AnEmptyGridIsNotSearched)
 
 	EXPECT_FALSE(FindCoverSpot(grid, field, {0.f, 0.f}, {100.f, 0.f}, RADIUS, spot));
 }
+
+TEST(CoverSpotTest, TheSpotHasRoomToSpare)
+{
+	LevelGrid grid = GridOf(PILLAR);
+	Vector2Df threat = grid.ToWorld(1, 2);
+
+	Spot spot = Ask(grid, 3, 2, 1, 2);
+	ASSERT_TRUE(spot.found);
+
+	const Vector2Df steps[] = {{16.f, 0.f}, {-16.f, 0.f}, {0.f, 16.f}, {0.f, -16.f}};
+	for (const Vector2Df& step : steps)
+	{
+		EXPECT_TRUE(grid.HasWallBetween(threat + step, spot.place))
+			<< "one step of the player and the cover is gone";
+	}
+}

@@ -50,6 +50,9 @@ namespace RoguelikeGame
         int GetReserveAmmo() const;
 
         bool IsMagazineEmpty() const;
+        // Патронов осталось на донышке: врагу пора искать укрытие, не дожидаясь пустого.
+        bool IsMagazineLow() const;
+        int GetLowMagazineMark() const;
         bool IsReloading() const;
         float GetReloadProgress() const;
         bool CanReload() const;

@@ -1,4 +1,5 @@
 ﻿#include "WeaponComponent.h"
+#include "GameSettings.h"
 #include <MathUtils.h>
 #include <GameObject.h>
 #include <LoggerRegistry.h>
@@ -160,6 +161,30 @@ namespace RoguelikeGame
     bool WeaponComponent::IsMagazineEmpty() const
     {
         return HasMagazine() && ammoInMagazine <= 0;
+    }
+
+    /**
+    *	Порог донышка в патронах.
+    *
+    *	Доли одной мало: от шести патронов помпового треть - это два, а от двух
+    *	уже ноль. Нижняя граница держит смысл у маленьких магазинов, верхняя - у РПГ
+    *	с его единственной ракетой, иначе он был бы «на исходе» всегда.
+    */
+    int WeaponComponent::GetLowMagazineMark() const
+    {
+        if (!HasMagazine())
+        {
+            return 0;
+        }
+
+        int mark = static_cast<int>(magazineSize * WEAPON_LOW_MAGAZINE_SHARE + 0.5f);
+
+        return std::min(std::max(1, mark), magazineSize - 1);
+    }
+
+    bool WeaponComponent::IsMagazineLow() const
+    {
+        return HasMagazine() && ammoInMagazine <= GetLowMagazineMark();
     }
 
     bool WeaponComponent::IsReloading() const

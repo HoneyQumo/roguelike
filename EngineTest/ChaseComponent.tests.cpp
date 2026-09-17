@@ -13,6 +13,7 @@
 #include <MovementComponent.h>
 #include "DoorComponent.h"
 #include "EnemyAttackComponent.h"
+#include "WeaponComponent.h"
 #include "InventoryComponent.h"
 #include <BoxColliderComponent.h>
 #include <sstream>
@@ -69,6 +70,15 @@ namespace
 		"#######\n"
 		"#..#..#\n"
 		"#######\n";
+
+	// Столб посреди зала: единственное укрытие на карте.
+	const std::string PILLAR =
+		"[map]\n"
+		"#########\n"
+		"#.......#\n"
+		"#...#...#\n"
+		"#.......#\n"
+		"#########\n";
 
 	constexpr float SEARCH_TIME = 4.f;
 	constexpr float NOTICES_AT_ONCE = 100.f;
@@ -1096,4 +1106,94 @@ TEST_F(ChaseComponentTest, ABackingShooterStopsOnceItIsComfortableAgain)
 
 	EXPECT_GE(gap, 220.f - RoguelikeGame::ENEMY_COMFORT_DEAD_ZONE) << "the shooter never regained its distance";
 	EXPECT_LE(gap, 220.f + RoguelikeGame::TILE_SIZE) << "the shooter ran away instead of holding its ground";
+}
+
+namespace
+{
+	RoguelikeGame::WeaponComponent* GiveAnEmptyGun(GameObject* enemy, float reloadTime)
+	{
+		auto weapon = enemy->AddComponent<RoguelikeGame::WeaponComponent>();
+		weapon->SetMagazine(8, 0);
+		weapon->SetAmmoInMagazine(0);
+		weapon->SetReloadTime(reloadTime);
+
+		return weapon;
+	}
+}
+
+TEST_F(ChaseComponentTest, AReloadingShooterStepsBehindThePillar)
+{
+	LoadMap(PILLAR);
+
+	ChaseComponent* chase = CreateEnemy(3, 2, 180.f);
+	chase->SetChaseSpeed(150.f);
+	GameObject* hero = CreateHero(1, 2);
+
+	GameObject* enemy = chase->GetGameObject();
+	auto weapon = GiveAnEmptyGun(enemy, 5.f);
+
+	Run(0.1f);
+	ASSERT_TRUE(weapon->TryReload());
+
+	Run(4.f);
+
+	EXPECT_TRUE(LevelGrid::Current().HasWallBetween(hero->GetTransform()->GetWorldPosition(),
+		enemy->GetTransform()->GetWorldPosition())) << "the shooter reloaded in plain view";
+}
+
+TEST_F(ChaseComponentTest, AShooterComesBackOutOnceItIsLoaded)
+{
+	LoadMap(PILLAR);
+
+	ChaseComponent* chase = CreateEnemy(3, 2, 180.f);
+	chase->SetChaseSpeed(150.f);
+	GameObject* hero = CreateHero(1, 2);
+
+	GameObject* enemy = chase->GetGameObject();
+	auto weapon = GiveAnEmptyGun(enemy, 2.f);
+
+	Run(0.1f);
+	ASSERT_TRUE(weapon->TryReload());
+
+	Run(8.f);
+
+	ASSERT_FALSE(weapon->IsReloading());
+	EXPECT_FALSE(LevelGrid::Current().HasWallBetween(hero->GetTransform()->GetWorldPosition(),
+		enemy->GetTransform()->GetWorldPosition())) << "the shooter stayed behind cover with a full magazine";
+}
+
+TEST_F(ChaseComponentTest, WithNoCoverAroundTheShooterFightsOnAsBefore)
+{
+	LoadMap(CORRIDOR);
+
+	ChaseComponent* chase = CreateEnemy(8, 1, 180.f);
+	chase->SetChaseSpeed(150.f);
+	CreateHero(2, 1);
+
+	GameObject* enemy = chase->GetGameObject();
+	auto weapon = GiveAnEmptyGun(enemy, 5.f);
+
+	Run(0.1f);
+	ASSERT_TRUE(weapon->TryReload());
+
+	float before = enemy->GetTransform()->GetWorldPosition().x;
+	Run(2.f);
+
+	EXPECT_LT(enemy->GetTransform()->GetWorldPosition().x, before) << "the shooter froze instead of closing in";
+}
+
+TEST_F(ChaseComponentTest, AKnifemanHasNothingToReloadAndNeverHides)
+{
+	LoadMap(PILLAR);
+
+	ChaseComponent* chase = CreateEnemy(3, 2, 180.f);
+	chase->SetChaseSpeed(150.f);
+	GameObject* hero = CreateHero(1, 2);
+
+	GameObject* enemy = chase->GetGameObject();
+
+	Run(3.f);
+
+	EXPECT_FALSE(LevelGrid::Current().HasWallBetween(hero->GetTransform()->GetWorldPosition(),
+		enemy->GetTransform()->GetWorldPosition())) << "the knife enemy hid from a fight it should have joined";
 }

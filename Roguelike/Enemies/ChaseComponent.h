@@ -22,6 +22,7 @@ namespace RoguelikeGame
 {
 	struct DamageInfo;
 	class HealthComponent;
+	class WeaponComponent;
 
 	class ChaseComponent : public XYZEngine::Component
 	{
@@ -123,6 +124,9 @@ namespace RoguelikeGame
 		Navigator navigator;
 		XYZEngine::Vector2Df backOffSpot;
 		bool hasBackOffSpot = false;
+		XYZEngine::Vector2Df coverSpot;
+		bool hasCoverSpot = false;
+		WeaponComponent* weapon = nullptr;
 		bool isBackingOff = false;
 
 		void OnDamage(const DamageInfo& damage);
@@ -135,6 +139,7 @@ namespace RoguelikeGame
 		XYZEngine::Vector2Df Facing() const;
 		void MoveTowards(const XYZEngine::Vector2Df& goal, float deltaTime);
 		void BackAwayFrom(const XYZEngine::Vector2Df& threat, float wanted, float deltaTime);
+		bool TakeCoverFrom(const XYZEngine::Vector2Df& threat);
 		void TakePoint(const XYZEngine::Vector2Df& place, float duration);
 		bool CanReach(const XYZEngine::Vector2Df& place) const;
 		void AimAtAngle(float degrees);

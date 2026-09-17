@@ -45,6 +45,7 @@ namespace RoguelikeGame
     // а не долей: у ножевика она шире его же stopDistance, и отход ему недоступен.
     constexpr float ENEMY_COMFORT_DEAD_ZONE = 60.f;
     constexpr int ENEMY_BACK_OFF_RADIUS = 5;
+    constexpr int ENEMY_COVER_RADIUS = 6;
 
     // Клетка за спиной у игрока формально дальше, но идти туда - значит пройти сквозь него.
     constexpr float BACK_OFF_COSINE = 0.f;

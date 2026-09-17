@@ -178,3 +178,52 @@ TEST(ChaseRulesTest, AnUnseenTargetIsNotBackedAwayFrom)
 
 	EXPECT_NE(ChooseChaseMove(sense), ChaseMove::Withdraw) << "the enemy retreats from a target it cannot see";
 }
+
+namespace
+{
+	ChaseSense Reloading(bool hasCover)
+	{
+		ChaseSense sense = Shooter(300.f);
+		sense.isReloading = true;
+		sense.hasCover = hasCover;
+
+		return sense;
+	}
+}
+
+TEST(ChaseRulesTest, AReloadingShooterGoesForCover)
+{
+	EXPECT_EQ(ChooseChaseMove(Reloading(true)), ChaseMove::TakeCover);
+}
+
+TEST(ChaseRulesTest, CoverBeatsEverythingElseWhileTheMagazineIsEmpty)
+{
+	ChaseSense close = Reloading(true);
+	close.distanceToTarget = 100.f;
+
+	EXPECT_EQ(ChooseChaseMove(close), ChaseMove::TakeCover) << "the enemy backed off instead of hiding";
+}
+
+TEST(ChaseRulesTest, AHiddenReloaderDoesNotRunOffToSearch)
+{
+	ChaseSense sense = Reloading(true);
+	sense.isVisible = false;
+	sense.isAlerted = true;
+	sense.hasPoint = true;
+	sense.distanceToPoint = 400.f;
+
+	EXPECT_EQ(ChooseChaseMove(sense), ChaseMove::TakeCover) << "the enemy left cover to look for a target it just lost";
+}
+
+TEST(ChaseRulesTest, WithoutCoverTheReloaderFightsOnAsBefore)
+{
+	EXPECT_EQ(ChooseChaseMove(Reloading(false)), ChaseMove::Approach);
+}
+
+TEST(ChaseRulesTest, ALoadedShooterStaysOutOfCover)
+{
+	ChaseSense sense = Shooter(300.f);
+	sense.hasCover = true;
+
+	EXPECT_EQ(ChooseChaseMove(sense), ChaseMove::Approach);
+}

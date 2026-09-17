@@ -184,6 +184,7 @@
         <ClCompile Include="Enemies\Navigator.cpp"/>
         <ClCompile Include="Enemies\HidingSpots.cpp"/>
         <ClCompile Include="Enemies\BackOffSpot.cpp"/>
+        <ClCompile Include="Enemies\CoverSpot.cpp"/>
         <ClCompile Include="Level\LevelBuilder.cpp"/>
         <ClCompile Include="Level\LevelLoader.cpp"/>
         <ClCompile Include="Level\Wall.cpp"/>
@@ -302,6 +303,7 @@
         <ClInclude Include="Fx\Fx.h"/>
         <ClInclude Include="Fx\Shake.h"/>
         <ClInclude Include="Enemies\BackOffSpot.h"/>
+        <ClInclude Include="Enemies\CoverSpot.h"/>
         <ClInclude Include="Fx\TireMark.h"/>
         <ClInclude Include="Fx\Fire.h"/>
         <ClInclude Include="Fx\FireComponent.h"/>

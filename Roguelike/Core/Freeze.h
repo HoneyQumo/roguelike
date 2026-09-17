@@ -3,12 +3,26 @@
 #include <vector>
 #include <Component.h>
 #include <GameObject.h>
+#include <GameWorld.h>
 #include <RectangleRendererComponent.h>
 #include <SpriteRendererComponent.h>
 #include <TransformComponent.h>
 
 namespace RoguelikeGame
 {
+    /**
+    *	Выключенный компонент вместе с тем, кому он принадлежит.
+    *
+    *	Хозяин нужен, чтобы узнать, дожил ли компонент до разморозки: физика
+    *	раздаёт столкновения не глядя на выключенность, и замороженная пуля,
+    *	которую сбили за время сцены, успевает себя уничтожить.
+    */
+    struct FrozenPart
+    {
+        XYZEngine::GameObject* owner = nullptr;
+        XYZEngine::Component* part = nullptr;
+    };
+
     // Что нельзя выключать: без этого объект пропадёт с экрана, а не замрёт.
     inline bool KeepsDrawing(XYZEngine::Component* part)
     {
@@ -24,7 +38,7 @@ namespace RoguelikeGame
     *	всё обратно нельзя: у босса, например, есть свой хозяин над компонентом
     *	преследования, и он сам решает, когда тот работает.
     */
-    inline void Freeze(XYZEngine::GameObject* object, std::vector<XYZEngine::Component*>& frozen)
+    inline void Freeze(XYZEngine::GameObject* object, std::vector<FrozenPart>& frozen)
     {
         if (object == nullptr)
         {
@@ -39,18 +53,21 @@ namespace RoguelikeGame
             }
 
             part->SetEnabled(false);
-            frozen.push_back(part);
+            frozen.push_back({object, part});
         }
     }
 
-    inline void Thaw(std::vector<XYZEngine::Component*>& frozen)
+    inline void Thaw(std::vector<FrozenPart>& frozen)
     {
-        for (XYZEngine::Component* part : frozen)
+        for (const FrozenPart& frozenPart : frozen)
         {
-            if (part != nullptr)
+            // Объекта нет - нет и компонента: трогать его значит писать в чужую память.
+            if (frozenPart.part == nullptr || !XYZEngine::GameWorld::Instance()->Contains(frozenPart.owner))
             {
-                part->SetEnabled(true);
+                continue;
             }
+
+            frozenPart.part->SetEnabled(true);
         }
 
         frozen.clear();

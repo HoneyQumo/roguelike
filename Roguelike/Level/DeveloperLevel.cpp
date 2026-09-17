@@ -1,4 +1,4 @@
-#include "DeveloperLevel.h"
+﻿#include "DeveloperLevel.h"
 #include "GameSettings.h"
 #include "GameResources.h"
 #include "LevelBuilder.h"
@@ -684,7 +684,7 @@ namespace RoguelikeGame
             if (bullet->IsEnabled())
             {
                 bullet->SetEnabled(false);
-                takenParts.push_back(bullet);
+                takenParts.push_back({bullet->GetGameObject(), bullet});
             }
         }
 

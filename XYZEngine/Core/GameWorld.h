@@ -23,6 +23,9 @@ namespace XYZEngine
 		GameObject* CreateGameObject(std::string name, GameObject* parent);
 		GameObject* FindGameObject(const std::string& name) const;
 
+		// Жив ли ещё этот объект: единственный способ проверить сохранённый указатель.
+		bool Contains(const GameObject* gameObject) const;
+
 		template <typename T>
 		T* FindComponent(const std::string& name) const
 		{

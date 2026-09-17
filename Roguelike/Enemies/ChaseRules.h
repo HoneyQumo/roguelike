@@ -7,7 +7,8 @@ namespace RoguelikeGame
         Hold,
         Approach,
         Investigate,
-        Withdraw
+        Withdraw,
+        TakeCover
     };
 
     struct ChaseSense
@@ -20,6 +21,8 @@ namespace RoguelikeGame
         float arriveDistance = 0.f;
         bool isAlerted = false;
         bool isForced = false;
+        bool isReloading = false;
+        bool hasCover = false;
         bool hasPoint = false;
         bool isVisible = false;
     };
@@ -41,6 +44,13 @@ namespace RoguelikeGame
 
     constexpr ChaseMove ChooseChaseMove(const ChaseSense& sense)
     {
+        // До проверки видимости: из укрытия игрока не видно, и враг бросился бы
+        // его искать, не дозарядив.
+        if (sense.isReloading && sense.hasCover)
+        {
+            return ChaseMove::TakeCover;
+        }
+
         if (IsTargetDetected(sense))
         {
             if (sense.distanceToTarget > sense.stopDistance)

@@ -5,6 +5,8 @@
 #include "LevelGrid.h"
 #include "Noise.h"
 #include "BackOffSpot.h"
+#include "CoverSpot.h"
+#include "WeaponComponent.h"
 #include "PathService.h"
 #include "HealthComponent.h"
 #include <AimRotationComponent.h>
@@ -28,6 +30,7 @@ namespace RoguelikeGame
 		movement = gameObject->GetComponent<MovementComponent>();
 		aim = gameObject->GetComponent<AimRotationComponent>();
 		health = gameObject->GetComponent<HealthComponent>();
+		weapon = gameObject->GetComponent<WeaponComponent>();
 
 		if (movement != nullptr)
 		{
@@ -236,6 +239,8 @@ namespace RoguelikeGame
 		spottedBefore = state;
 		sense.isVisible = isInSight && state == AwarenessState::Provoked;
 		sense.isAlerted = sense.isAlerted || state == AwarenessState::Alerted;
+		sense.isReloading = target != nullptr && weapon != nullptr && weapon->IsReloading();
+		sense.hasCover = sense.isReloading && TakeCoverFrom(targetPosition);
 
 		if (sense.isVisible)
 		{
@@ -274,6 +279,12 @@ namespace RoguelikeGame
 		if (move == ChaseMove::Approach)
 		{
 			MoveTowards(targetPosition, deltaTime);
+			return;
+		}
+
+		if (move == ChaseMove::TakeCover)
+		{
+			MoveTowards(coverSpot, deltaTime);
 			return;
 		}
 
@@ -341,6 +352,31 @@ namespace RoguelikeGame
 		std::vector<Vector2Df> steps;
 
 		return PathService::Current().RouteTo(transform->GetWorldPosition(), place, steps);
+	}
+
+	/**
+	*	Находит укрытие на время перезарядки.
+	*
+	*	Точка живёт, пока из неё действительно не видно: игрок двигается, и стена
+	*	перестаёт закрывать. Искать каждый кадр нельзя - поле строится от самого врага.
+	*/
+	bool ChaseComponent::TakeCoverFrom(const Vector2Df& threat)
+	{
+		Vector2Df position = transform->GetWorldPosition();
+
+		if (hasCoverSpot && !LevelGrid::Current().HasWallBetween(threat, coverSpot))
+		{
+			hasCoverSpot = false;
+		}
+
+		if (!hasCoverSpot)
+		{
+			const PathField* field = PathService::Current().FieldTo(position);
+			hasCoverSpot = field != nullptr
+				&& FindCoverSpot(LevelGrid::Current(), *field, position, threat, ENEMY_COVER_RADIUS, coverSpot);
+		}
+
+		return hasCoverSpot;
 	}
 
 	void ChaseComponent::MoveTowards(const Vector2Df& goal, float deltaTime)

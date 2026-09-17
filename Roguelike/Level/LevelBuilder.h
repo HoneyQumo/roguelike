@@ -8,9 +8,15 @@
 #include <optional>
 #include <Vector.h>
 
+namespace XYZEngine
+{
+    class VertexArrayRendererComponent;
+}
+
 namespace RoguelikeGame
 {
     class RoomWakeComponent;
+    class TileFogComponent;
 
     class LevelBuilder
     {
@@ -21,6 +27,9 @@ namespace RoguelikeGame
     private:
         static int BuildTiles(const LevelData& levelData, Level& level);
         static int BuildOverlay(const LevelData& levelData, Level& level);
+        static void BuildFog(Level& level);
+        static TileFogComponent* AddFog(XYZEngine::GameObject* chunk,
+            XYZEngine::VertexArrayRendererComponent* renderer);
         static RoomWakeComponent* CreateRoomWake(const std::vector<LevelZone>& zones, Level& level);
         static void PutToSleep(RoomWakeComponent* rooms, const std::vector<LevelZone>& zones, int column, int row, XYZEngine::GameObject* enemy);
         static int BuildDoors(const LevelData& levelData, const ItemCatalog& items, Level& level);

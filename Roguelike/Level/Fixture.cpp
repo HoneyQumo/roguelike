@@ -1,4 +1,5 @@
 #include "Fixture.h"
+#include "FogVisibilityComponent.h"
 #include "Fixtures.h"
 #include "GameSettings.h"
 #include "EscapeCarComponent.h"
@@ -54,6 +55,7 @@ namespace RoguelikeGame
         lever->SetSprite(sprite);
         lever->SetAudio(audio);
         lever->SetReachCollider(reach);
+        HideInFog(gameObject);
 
         return gameObject;
     }
@@ -73,6 +75,7 @@ namespace RoguelikeGame
         hatch->SetSprite(sprite);
         hatch->SetAudio(audio);
         hatch->SetReachCollider(reach);
+        HideInFog(gameObject);
 
         return gameObject;
     }

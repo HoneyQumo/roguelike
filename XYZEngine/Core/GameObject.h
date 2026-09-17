@@ -30,6 +30,11 @@ namespace XYZEngine
 		void SetActive(bool newIsActive);
 		bool IsActive() const;
 
+		// Невидимый объект продолжает жить и думать, просто не попадает на экран:
+		// выключать ради этого рисовалки значит спорить с тем, кто тоже их выключает.
+		void SetVisible(bool newIsVisible);
+		bool IsVisible() const;
+
 		void Update(float deltaTime);
 		void Render();
 
@@ -136,6 +141,7 @@ namespace XYZEngine
 		GameObjectId id = NO_GAME_OBJECT;
 		int renderLayer = 0;
 		bool isActive = true;
+		bool isVisible = true;
 		TransformComponent* transform = nullptr;
 
 		std::vector<GameObject*> children = {};

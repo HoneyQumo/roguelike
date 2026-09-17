@@ -1,4 +1,5 @@
 ﻿#include "LevelLoader.h"
+#include "FogFormat.h"
 #include "PursuitFormat.h"
 #include "EnemyCatalog.h"
 #include <LoggerRegistry.h>
@@ -185,6 +186,12 @@ namespace RoguelikeGame
         if (key == STYLE_KEYWORD)
         {
             ReadFightStyle(stream, lineNumber, info.style);
+            return;
+        }
+
+        if (key == FOG_KEYWORD)
+        {
+            ReadFogRadius(stream, lineNumber, info.fogRadius);
             return;
         }
 

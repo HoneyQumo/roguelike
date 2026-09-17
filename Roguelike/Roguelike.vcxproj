@@ -163,6 +163,10 @@
         <ClCompile Include="Level\PursuitComponent.cpp"/>
         <ClCompile Include="Level\WaveDirectorComponent.cpp"/>
         <ClCompile Include="Level\TileAnimationComponent.cpp"/>
+        <ClCompile Include="Level\FogOfWar.cpp"/>
+        <ClCompile Include="Level\FogRevealComponent.cpp"/>
+        <ClCompile Include="Level\TileFogComponent.cpp"/>
+        <ClCompile Include="Level\FogVisibilityComponent.cpp"/>
         <ClCompile Include="Level\EscapeCarComponent.cpp"/>
         <ClCompile Include="Cutscene\CameraDirectorComponent.cpp"/>
         <ClCompile Include="Cutscene\CutscenePlayerComponent.cpp"/>
@@ -258,6 +262,11 @@
         <ClInclude Include="Level\PursuitFormat.h"/>
         <ClInclude Include="Level\WaveDirectorComponent.h"/>
         <ClInclude Include="Level\TileAnimationComponent.h"/>
+        <ClInclude Include="Level\FogOfWar.h"/>
+        <ClInclude Include="Level\FogFormat.h"/>
+        <ClInclude Include="Level\FogRevealComponent.h"/>
+        <ClInclude Include="Level\TileFogComponent.h"/>
+        <ClInclude Include="Level\FogVisibilityComponent.h"/>
         <ClInclude Include="Level\EscapeCarComponent.h"/>
         <ClInclude Include="Cutscene\CameraDirectorComponent.h"/>
         <ClInclude Include="Cutscene\CutscenePlayerComponent.h"/>

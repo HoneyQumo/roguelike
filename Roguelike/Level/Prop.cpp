@@ -1,4 +1,5 @@
 #include "Prop.h"
+#include "FogVisibilityComponent.h"
 #include "ContainerComponent.h"
 #include "DestructibleComponent.h"
 #include "ExplosiveComponent.h"
@@ -227,6 +228,8 @@ namespace RoguelikeGame
 
         LOG_INFO("Prop " + definition.id + " created at " + std::to_string(static_cast<int>(position.x)) + ";"
             + std::to_string(static_cast<int>(position.y)));
+
+        HideInFog(gameObject);
 
         return gameObject;
     }

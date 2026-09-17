@@ -32,6 +32,14 @@ namespace RoguelikeGame
     // Кусок полотна размером с комнату: весь массив вершин либо на экране, либо нет,
     // и на большой карте один массив гоняет десятки тысяч вершин ради двухсот видимых клеток.
     constexpr int TILE_CHUNK = 32;
+
+    // Обзор игрока в клетках. Закрывает угол экрана целиком: темноту рисуют стены,
+    // а не дуга радиуса посреди комнаты - плавного края у нас пока нет.
+    // Заодно дальше любого врага: стреляющего по тебе видно.
+    constexpr int FOG_SIGHT_RADIUS = 12;
+
+    // Насколько гаснет разведанное: планировка читается, детали нет.
+    constexpr float FOG_KNOWN_LIGHT = 0.42f;
     constexpr float ENEMY_ALERT_ARRIVE_DISTANCE = 48.f;
     constexpr float ENEMY_ALERT_POINT_DISTANCE = 420.f;
     constexpr float ENEMY_REPATH_INTERVAL = 0.4f;

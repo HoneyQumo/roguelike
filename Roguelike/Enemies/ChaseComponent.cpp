@@ -46,8 +46,7 @@ namespace RoguelikeGame
 			return;
 		}
 
-		investigatePoint = place;
-		memory = Remember(memory, alertTime);
+		TakePoint(place, alertTime);
 		awareness = std::max(awareness, AWARENESS_ALERT_AT);
 	}
 
@@ -58,8 +57,7 @@ namespace RoguelikeGame
 			return;
 		}
 
-		investigatePoint = place;
-		memory = Remember(memory, alertTime);
+		TakePoint(place, alertTime);
 		awareness = AWARENESS_PROVOKE_AT;
 		spottedBefore = AwarenessState::Provoked;
 	}
@@ -82,8 +80,7 @@ namespace RoguelikeGame
 
 		if (attacker != nullptr)
 		{
-			investigatePoint = attacker->GetTransform()->GetWorldPosition();
-			memory = Remember(memory, alertTime);
+			TakePoint(attacker->GetTransform()->GetWorldPosition(), alertTime);
 			return;
 		}
 
@@ -94,8 +91,7 @@ namespace RoguelikeGame
 			return;
 		}
 
-		investigatePoint = transform->GetWorldPosition() - back.Normalized() * ENEMY_ALERT_POINT_DISTANCE;
-		memory = Remember(memory, alertTime);
+		TakePoint(transform->GetWorldPosition() - back.Normalized() * ENEMY_ALERT_POINT_DISTANCE, alertTime);
 	}
 
 	ChaseSense ChaseComponent::ReadSense(const Vector2Df& targetPosition, bool hasTarget) const
@@ -200,8 +196,6 @@ namespace RoguelikeGame
 			return;
 		}
 
-		memory = Fade(memory, deltaTime);
-
 		isChasing = false;
 		isEngaged = false;
 		isTargetVisible = false;
@@ -212,6 +206,7 @@ namespace RoguelikeGame
 
 		if (targetName.empty() || detectionRadius <= 0.f)
 		{
+			memory = Tick(memory, deltaTime, false);
 			return;
 		}
 
@@ -255,7 +250,7 @@ namespace RoguelikeGame
 			}
 
 			investigatePoint = targetPosition;
-			memory = Remember(memory, searchTime);
+			memory = Remember(memory, searchTime, SEARCH_TRAVEL_TIME);
 			hasSearched = false;
 			searchSpots.clear();
 			searchSpot = 0u;
@@ -263,6 +258,7 @@ namespace RoguelikeGame
 		}
 
 		ChaseMove move = ChooseChaseMove(sense);
+		memory = Tick(memory, deltaTime, move == ChaseMove::Investigate);
 
 		isEngaged = RoguelikeGame::IsEngaged(sense);
 		isChasing = RoguelikeGame::IsTargetDetected(sense);
@@ -314,6 +310,27 @@ namespace RoguelikeGame
 				memory = GiveUp(memory, 0.f);
 			}
 		}
+	}
+
+	/**
+	*	Берёт точку, если до неё есть дорога.
+	*
+	*	До точки за рекой или в запертой комнате враг будет толкаться в стену
+	*	весь бюджет. Пусть лучше останется настороже на месте: слышал он всё равно.
+	*/
+	void ChaseComponent::TakePoint(const Vector2Df& place, float duration)
+	{
+		investigatePoint = place;
+		memory = CanReach(place)
+			? Remember(memory, duration, SEARCH_TRAVEL_TIME)
+			: Forget(Alarm(memory, duration));
+	}
+
+	bool ChaseComponent::CanReach(const Vector2Df& place) const
+	{
+		std::vector<Vector2Df> steps;
+
+		return PathService::Current().RouteTo(transform->GetWorldPosition(), place, steps);
 	}
 
 	void ChaseComponent::MoveTowards(const Vector2Df& goal, float deltaTime)
@@ -549,7 +566,7 @@ namespace RoguelikeGame
 
 		investigatePoint = searchSpots[searchSpot];
 		searchSpot++;
-		memory = Alarm(memory, searchTime);
+		memory = Remember(memory, searchTime, SEARCH_TRAVEL_TIME);
 
 		return true;
 	}

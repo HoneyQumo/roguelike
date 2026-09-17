@@ -1,4 +1,4 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "Awareness.h"
 #include "FactionComponent.h"
 #include "Noise.h"
@@ -53,6 +53,22 @@ namespace
 		"###############\n"
 		"#.............#\n"
 		"###############\n";
+
+	// Два тайла по прямой, четырнадцать в обход - ровно тот случай, где тревога кончалась раньше пути.
+	const std::string DETOUR =
+		"[map]\n"
+		"#########\n"
+		"#.......#\n"
+		"#######.#\n"
+		"#.......#\n"
+		"#########\n";
+
+	// Стена без прохода: до точки справа не добраться никак.
+	const std::string SPLIT =
+		"[map]\n"
+		"#######\n"
+		"#..#..#\n"
+		"#######\n";
 
 	constexpr float SEARCH_TIME = 4.f;
 	constexpr float NOTICES_AT_ONCE = 100.f;
@@ -981,4 +997,47 @@ TEST_F(ChaseComponentTest, ADeadEnemyIsNotPutBackOnItsFeet)
 	Run(0.5f);
 
 	EXPECT_FLOAT_EQ(movement->GetSpeed(), 0.f) << "the corpse walked off along its route";
+}
+
+TEST_F(ChaseComponentTest, ALongDetourIsWalkedToTheEnd)
+{
+	LoadMap(DETOUR);
+
+	ChaseComponent* chase = CreateEnemy(1, 1);
+	GameObject* enemy = chase->GetGameObject();
+
+	chase->Hear(At(1, 3));
+	Run(9.f);
+
+	float left = (enemy->GetTransform()->GetWorldPosition() - At(1, 3)).GetLength();
+
+	EXPECT_LT(left, RoguelikeGame::TILE_SIZE) << "the enemy turned back before reaching the point";
+}
+
+TEST_F(ChaseComponentTest, AnAlarmOutlivesTheWalkToIt)
+{
+	LoadMap(DETOUR);
+
+	ChaseComponent* chase = CreateEnemy(1, 1);
+
+	chase->Hear(At(1, 3));
+	Run(7.f);
+
+	EXPECT_TRUE(chase->IsAlerted()) << "the alarm ran out while the enemy was still on its way";
+}
+
+TEST_F(ChaseComponentTest, APointBehindASolidWallIsNotEvenTakenUp)
+{
+	LoadMap(SPLIT);
+
+	ChaseComponent* chase = CreateEnemy(1, 1);
+	GameObject* enemy = chase->GetGameObject();
+	Vector2Df before = enemy->GetTransform()->GetWorldPosition();
+
+	chase->Hear(At(4, 1));
+	Run(3.f);
+
+	EXPECT_TRUE(chase->IsAlerted()) << "the enemy heard the shot and ignored it";
+	EXPECT_LT((enemy->GetTransform()->GetWorldPosition() - before).GetLength(), RoguelikeGame::TILE_SIZE)
+		<< "the enemy is pushing into the wall towards a point it cannot reach";
 }

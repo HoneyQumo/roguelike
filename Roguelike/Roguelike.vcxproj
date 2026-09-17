@@ -299,6 +299,7 @@
         <ClInclude Include="Weapons\ReloadIndicatorComponent.h"/>
         <ClInclude Include="Ui\Crosshair.h"/>
         <ClInclude Include="Fx\Fx.h"/>
+        <ClInclude Include="Fx\Shake.h"/>
         <ClInclude Include="Fx\TireMark.h"/>
         <ClInclude Include="Fx\Fire.h"/>
         <ClInclude Include="Fx\FireComponent.h"/>

@@ -1,5 +1,6 @@
 ﻿#include "Fx.h"
 #include "ParticleCatalog.h"
+#include "Shake.h"
 #include <MathUtils.h>
 #include <ParticleSystem.h>
 #include "GameSettings.h"
@@ -38,13 +39,7 @@ namespace RoguelikeGame
 
     void Fx::ShakeCamera(const XYZEngine::CameraShake& shake)
     {
-        auto camera = XYZEngine::GameWorld::Instance()->FindComponent<XYZEngine::CameraComponent>(PLAYER_OBJECT_NAME);
-        if (camera == nullptr)
-        {
-            return;
-        }
-
-        camera->Shake(shake);
+        ShakeEveryCamera(shake);
     }
 
     constexpr int BLOOD_HIT_SPLASHES = 2;

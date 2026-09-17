@@ -81,6 +81,8 @@
     <ClCompile Include="Cutscene.tests.cpp" />
     <ClCompile Include="Freeze.tests.cpp" />
     <ClCompile Include="Shake.tests.cpp" />
+    <ClCompile Include="NoDialogs.cpp" />
+    <ClCompile Include="NoDialogs.tests.cpp" />
     <ClCompile Include="CarArrival.tests.cpp" />
     <ClCompile Include="CutsceneCamera.tests.cpp" />
     <ClCompile Include="LevelLoader.tests.cpp" />

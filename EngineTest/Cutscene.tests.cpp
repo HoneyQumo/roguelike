@@ -4,6 +4,8 @@
 #include "CutsceneTimeline.h"
 #include "GameWorld.h"
 #include "LevelLoader.h"
+#include "GameSettings.h"
+#include "TileAtlas.h"
 #include "ProjectFiles.h"
 #include <sstream>
 
@@ -206,7 +208,31 @@ TEST_F(ShippedEscapeTest, TheOnlyWayOffTheBridgeIsTheCar)
 
 	// Переходом служит машина: второй выход рядом с ней сводил сцену на нет.
 	EXPECT_EQ(teleports, 0) << "the bridge still has a teleport next to the car";
-	EXPECT_LE(bridge.width - bridge.escapes.front().column, 6) << "the car does not wait at the far end";
+
+	const RoguelikeGame::FixturePlacement& car = bridge.escapes.front();
+
+	EXPECT_LT(bridge.width - car.column, 32) << "the car does not wait at the end of the bridge";
+}
+
+TEST_F(ShippedEscapeTest, TheCarHasRoadToArriveOn)
+{
+	ASSERT_TRUE(isFound) << previous.string();
+
+	LevelData bridge = RoguelikeGame::LoadAct("Resources/Acts/act1_bridge.config");
+	ASSERT_EQ(bridge.escapes.size(), 1u);
+
+	const RoguelikeGame::FixturePlacement& car = bridge.escapes.front();
+	int runway = static_cast<int>(RoguelikeGame::ARRIVAL_ENTRY_OFFSET / RoguelikeGame::TILE_SIZE);
+
+	// Машина начинает разгон в runway клетках восточнее своего места: без дороги
+	// на всём этом отрезке она выезжает из-за отбойника или вовсе из-за края карты.
+	ASSERT_LT(car.column + runway, bridge.width) << "the car starts its run beyond the edge of the map";
+
+	for (int step = 0; step <= runway; step++)
+	{
+		EXPECT_TRUE(RoguelikeGame::IsRoadAt(bridge, car.column + step, car.row))
+			<< "nothing to drive on at column " << car.column + step;
+	}
 }
 
 TEST_F(ShippedEscapeTest, TheCarIsTheFinishOfAChaseAndNotAReward)

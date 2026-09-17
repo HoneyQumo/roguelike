@@ -102,6 +102,11 @@ namespace XYZEngine
 	*	при удалении, поэтому повторное удаление раньше разыменовывало освобождённую память.
 	*	Значение указателя сравнивать безопасно - разыменовывать нет.
 	*/
+	bool GameWorld::Contains(const GameObject* gameObject) const
+	{
+		return gameObject != nullptr && std::find(gameObjects.begin(), gameObjects.end(), gameObject) != gameObjects.end();
+	}
+
 	void GameWorld::DestroyGameObject(GameObject* gameObject)
 	{
 		if (gameObject == nullptr || std::find(gameObjects.begin(), gameObjects.end(), gameObject) == gameObjects.end())

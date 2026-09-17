@@ -1,4 +1,5 @@
 ﻿#include "Enemy.h"
+#include "FogVisibilityComponent.h"
 #include "BossBrainComponent.h"
 #include "BossAnimationComponent.h"
 #include "BossEffects.h"
@@ -210,6 +211,7 @@ namespace RoguelikeGame
         });
 
         gameObject->SetRenderLayer(ENEMY_RENDER_LAYER);
+        HideInFog(gameObject);
 
         LOG_INFO(std::string(config.objectName) + " created at " + std::to_string(static_cast<int>(position.x)) + ";" + std::to_string(static_cast<int>(position.y)));
         return gameObject;
@@ -274,6 +276,8 @@ namespace RoguelikeGame
         {
             PlayBossAnimations(brain, bossAnimation, gameObject->GetComponent<HealthComponent>());
         }
+
+        HideInFog(gameObject);
 
         LOG_INFO(std::string("Boss ") + definition.id + " created with health " + std::to_string(static_cast<int>(config.maxHealth)));
         return gameObject;

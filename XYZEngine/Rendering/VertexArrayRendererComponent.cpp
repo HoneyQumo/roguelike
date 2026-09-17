@@ -149,6 +149,20 @@ namespace XYZEngine
 		return vertices;
 	}
 
+	void VertexArrayRendererComponent::SetQuadColor(std::size_t quad, const sf::Color& color)
+	{
+		std::size_t first = quad * 4u;
+		if (first + 3u >= vertices.getVertexCount())
+		{
+			return;
+		}
+
+		for (std::size_t corner = 0u; corner < 4u; corner++)
+		{
+			vertices[first + corner].color = color;
+		}
+	}
+
 	std::size_t VertexArrayRendererComponent::GetQuadsCount() const
 	{
 		return vertices.getVertexCount() / 4;

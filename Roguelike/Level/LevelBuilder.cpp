@@ -18,6 +18,9 @@
 #include "GuardFacing.h"
 #include "PropAlign.h"
 #include "TileAnimationComponent.h"
+#include "TileFogComponent.h"
+#include "FogOfWar.h"
+#include "FogRevealComponent.h"
 #include "PursuitComponent.h"
 #include "WaveDirectorComponent.h"
 #include "LevelExit.h"
@@ -46,6 +49,7 @@ namespace RoguelikeGame
     Level LevelBuilder::Build(const LevelData& levelData, const ItemCatalog& items, const PropCatalog& props)
     {
         LevelGrid::SetCurrent(LevelGrid::Build(levelData, GameResources::GetProps()));
+        FogOfWar::Reset(levelData.width, levelData.height, levelData.info.fogRadius);
         PathService::Reset();
         PatrolRoutes::SetCurrent(PatrolRoutes::Build(levelData, LevelGrid::Current()));
 
@@ -56,6 +60,8 @@ namespace RoguelikeGame
             LOG_ERROR("Level has no player spawn point and no entrance, nothing is built");
             return level;
         }
+
+        BuildFog(level);
 
         int tilesCount = BuildTiles(levelData, level);
         int overlayCount = BuildOverlay(levelData, level);
@@ -585,6 +591,37 @@ namespace RoguelikeGame
     *
     *	Проходимость слой не меняет: коллизии и сетка путей строятся по нижнему.
     */
+    /**
+    *	Туман живёт отдельным объектом уровня, а не компонентом игрока:
+    *	в катсценах игроку выключают все компоненты, и туман застыл бы вместе с ним.
+    */
+    void LevelBuilder::BuildFog(Level& level)
+    {
+        if (!FogOfWar::Current().IsEnabled())
+        {
+            return;
+        }
+
+        auto fogObject = XYZEngine::GameWorld::Instance()->CreateGameObject("Fog");
+        level.Add(fogObject);
+
+        fogObject->AddComponent<FogRevealComponent>()->SetTargetName(PLAYER_OBJECT_NAME);
+    }
+
+    TileFogComponent* LevelBuilder::AddFog(XYZEngine::GameObject* chunk,
+        XYZEngine::VertexArrayRendererComponent* renderer)
+    {
+        if (!FogOfWar::Current().IsEnabled())
+        {
+            return nullptr;
+        }
+
+        TileFogComponent* fog = chunk->AddComponent<TileFogComponent>();
+        fog->SetRenderer(renderer);
+
+        return fog;
+    }
+
     int LevelBuilder::BuildOverlay(const LevelData& levelData, Level& level)
     {
         if (levelData.overlay.empty())
@@ -606,6 +643,7 @@ namespace RoguelikeGame
             for (int chunkColumn = 0; chunkColumn < levelData.width; chunkColumn += TILE_CHUNK)
             {
                 XYZEngine::VertexArrayRendererComponent* renderer = nullptr;
+                TileFogComponent* fog = nullptr;
 
                 for (int row = chunkRow; row < std::min(chunkRow + TILE_CHUNK, levelData.height); row++)
                 {
@@ -624,6 +662,13 @@ namespace RoguelikeGame
 
                             renderer = overlayObject->AddComponent<XYZEngine::VertexArrayRendererComponent>();
                             renderer->SetTexture(tiles);
+
+                            fog = AddFog(overlayObject, renderer);
+                        }
+
+                        if (fog != nullptr)
+                        {
+                            fog->AddCell(renderer->GetQuadsCount(), column, row, sf::Color::White);
                         }
 
                         renderer->AddQuad(TileToWorldPosition(column, row, levelData.height), tileSize,
@@ -651,6 +696,7 @@ namespace RoguelikeGame
             {
                 XYZEngine::VertexArrayRendererComponent* renderer = nullptr;
                 TileAnimationComponent* water = nullptr;
+                TileFogComponent* fog = nullptr;
 
                 for (int row = chunkRow; row < std::min(chunkRow + TILE_CHUNK, levelData.height); row++)
                 {
@@ -676,9 +722,18 @@ namespace RoguelikeGame
                             water = tilesObject->AddComponent<TileAnimationComponent>();
                             water->SetRenderer(renderer);
                             water->SetStrip(TILE_WATER_ROW, TILE_FLOOR_FRAMES, WATER_FRAME_TIME);
+
+                            fog = AddFog(tilesObject, renderer);
                         }
 
                         auto position = TileToWorldPosition(column, row, levelData.height);
+                        sf::Color base = tiles != nullptr ? sf::Color::White
+                            : tile == TileType::Wall ? WALL_COLOR : FLOOR_COLOR;
+
+                        if (fog != nullptr)
+                        {
+                            fog->AddCell(renderer->GetQuadsCount(), column, row, base);
+                        }
 
                         if (tiles != nullptr)
                         {
@@ -691,7 +746,7 @@ namespace RoguelikeGame
                             continue;
                         }
 
-                        renderer->AddQuad(position, tileSize, tile == TileType::Wall ? WALL_COLOR : FLOOR_COLOR);
+                        renderer->AddQuad(position, tileSize, base);
                     }
                 }
 

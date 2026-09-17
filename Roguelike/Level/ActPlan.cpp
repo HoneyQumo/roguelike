@@ -1,4 +1,5 @@
 #include "ActPlan.h"
+#include "FogFormat.h"
 #include "PursuitFormat.h"
 #include "EnemyCatalog.h"
 #include <LoggerRegistry.h>
@@ -48,6 +49,12 @@ namespace RoguelikeGame
             if (key == "next")
             {
                 stream >> info.nextLevelId;
+                return;
+            }
+
+            if (key == FOG_KEYWORD)
+            {
+                ReadFogRadius(stream, lineNumber, info.fogRadius);
                 return;
             }
 

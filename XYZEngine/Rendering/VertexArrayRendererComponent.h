@@ -31,6 +31,7 @@ namespace XYZEngine
 
 		// Меняет кадр уже добавленного квада, не трогая его положение.
 		void SetQuadFrame(std::size_t quad, const sf::IntRect& frame);
+		void SetQuadColor(std::size_t quad, const sf::Color& color);
 
 		std::size_t GetQuadsCount() const;
 		const sf::VertexArray& GetVertices() const;

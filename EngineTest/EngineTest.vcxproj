@@ -86,6 +86,8 @@
     <ClCompile Include="BackOffSpot.tests.cpp" />
     <ClCompile Include="Trail.tests.cpp" />
     <ClCompile Include="VertexArrayBounds.tests.cpp" />
+    <ClCompile Include="FogOfWar.tests.cpp" />
+    <ClCompile Include="FogVisibility.tests.cpp" />
     <ClCompile Include="CoverSpot.tests.cpp" />
     <ClCompile Include="FightStyle.tests.cpp" />
     <ClCompile Include="CarArrival.tests.cpp" />
@@ -175,6 +177,18 @@
     <ClCompile Include="Destructible.tests.cpp" />
     <ClCompile Include="Level.tests.cpp" />
     <ClCompile Include="..\Roguelike\Level\LevelGrid.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Roguelike\Level\FogOfWar.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Roguelike\Level\FogRevealComponent.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Roguelike\Level\TileFogComponent.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Roguelike\Level\FogVisibilityComponent.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\Roguelike\Level\HatchComponent.cpp">

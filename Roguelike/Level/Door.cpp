@@ -1,4 +1,5 @@
 #include "Door.h"
+#include "FogVisibilityComponent.h"
 #include "DoorComponent.h"
 #include <AudioComponent.h>
 #include "DoorHinge.h"
@@ -99,6 +100,8 @@ namespace RoguelikeGame
 
         LOG_INFO("Door " + doorId + " created at " + std::to_string(static_cast<int>(position.x)) + ";"
             + std::to_string(static_cast<int>(position.y)));
+
+        HideInFog(gameObject);
 
         return gameObject;
     }

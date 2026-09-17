@@ -111,7 +111,7 @@ namespace XYZEngine
 	}
 	void GameObject::Render()
 	{
-		if (!isActive)
+		if (!isActive || !isVisible)
 		{
 			return;
 		}
@@ -123,6 +123,25 @@ namespace XYZEngine
 				components[i]->Render();
 			}
 		}
+	}
+
+	void GameObject::SetVisible(bool newIsVisible)
+	{
+		isVisible = newIsVisible;
+
+		// Дети рисуются сами по себе, и без них от спрятанного объекта осталась бы обвеска.
+		for (GameObject* child : children)
+		{
+			if (child != nullptr)
+			{
+				child->SetVisible(newIsVisible);
+			}
+		}
+	}
+
+	bool GameObject::IsVisible() const
+	{
+		return isVisible;
 	}
 
 	void GameObject::SetActive(bool newIsActive)

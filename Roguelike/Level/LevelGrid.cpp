@@ -111,7 +111,13 @@ namespace RoguelikeGame
             || cell == LevelCell::Door)
         {
             current.cells[index] = LevelCell::Floor;
+            current.version++;
         }
+    }
+
+    unsigned int LevelGrid::GetVersion() const
+    {
+        return version;
     }
 
     const LevelGrid& LevelGrid::Current()

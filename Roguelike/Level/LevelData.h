@@ -175,6 +175,7 @@ namespace RoguelikeGame
         std::string tileset;
         std::string music;
         std::string ambient;
+        int fogRadius = 0;
         FightStyle style;
         BossSpec boss;
     };

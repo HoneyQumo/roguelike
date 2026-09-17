@@ -1,4 +1,5 @@
 #include "LevelExit.h"
+#include "FogVisibilityComponent.h"
 #include "GameSettings.h"
 #include "LevelExitComponent.h"
 #include <BoxColliderComponent.h>
@@ -22,6 +23,8 @@ namespace RoguelikeGame
         collider->SetTrigger(true);
 
         gameObject->AddComponent<LevelExitComponent>();
+
+        HideInFog(gameObject);
 
         return gameObject;
     }

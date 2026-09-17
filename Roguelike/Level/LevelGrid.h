@@ -34,6 +34,9 @@ namespace RoguelikeGame
         int GetHeight() const;
         bool IsEmpty() const;
 
+        // Номер правки: открытая дверь меняет линию видимости, и туман пересчитывается.
+        unsigned int GetVersion() const;
+
         LevelCell GetCell(int column, int row) const;
         bool IsPassable(int column, int row) const;
         bool BlocksSight(int column, int row) const;
@@ -60,6 +63,7 @@ namespace RoguelikeGame
 
         int width = 0;
         int height = 0;
+        unsigned int version = 0u;
         std::vector<LevelCell> cells;
     };
 }

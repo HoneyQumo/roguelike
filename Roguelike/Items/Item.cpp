@@ -1,4 +1,5 @@
 ﻿#include "Item.h"
+#include "FogVisibilityComponent.h"
 #include "GameSettings.h"
 #include "ItemIconLayout.h"
 #include "ItemPickupComponent.h"
@@ -43,6 +44,8 @@ namespace RoguelikeGame
         collider->SetCollisionLayer(ITEM_COLLISION_LAYER);
 
         gameObject->AddComponent<ItemPickupComponent>()->SetDefinition(&definition);
+
+        HideInFog(gameObject);
 
         return gameObject;
     }

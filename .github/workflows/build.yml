@@ -11,6 +11,7 @@ on:
 jobs:
   build:
     runs-on: windows-latest # Иcnользуем Windows Runner
+    timeout-minutes: 30 # Что зависло, то красное: дефолтные шесть часов ждать нечего
 
     strategy:
       fail-fast: false # Падение Debug не должно скрывать результат Release

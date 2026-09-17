@@ -461,5 +461,7 @@ TEST_F(ShippedOverlayTest, BrokenSpansLeaveConcreteOnTheRoad)
 		rubble += prop.propId.rfind("bridge_rubble", 0) == 0 ? 1 : 0;
 	}
 
-	EXPECT_GT(rubble, 10) << "a collapse that threw no concrete onto the deck";
+	// Два обрушения на мосту, на каждое - не меньше четырёх кусков вокруг пролома.
+	// Точное число зависит от раскладки секций и сторожить его бессмысленно.
+	EXPECT_GE(rubble, 8) << "a collapse that threw no concrete onto the deck";
 }

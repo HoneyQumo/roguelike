@@ -14,7 +14,7 @@ ACTS = os.path.normpath(os.path.join(HERE, '..', '..', 'Roguelike', 'Resources',
 
 WIDTH = 32
 HEIGHT = 24
-SECTIONS = 13
+SECTIONS = 14
 
 
 WATER_TOP = 5
@@ -25,6 +25,11 @@ LANE_LINE = 11
 # Сколько клеток дороги остаётся позади машины: чуть больше, чем
 # ARRIVAL_ENTRY_OFFSET в GameSettings.h - с него она начинает разгон.
 ARRIVAL_RUNWAY = 21
+
+# Последняя секция - чистая полоса разгона: по ней уезжает машина в катсцене
+# побега, и игрок туда не заходит. Без неё побег упирался в отбойник на
+# третьей секунде и остаток ехал по черноте за краем карты.
+RUNWAY_SECTION = 1
 ROAD_BOTTOM = 16
 RAIL_BOTTOM = 17
 
@@ -401,9 +406,14 @@ def Enemies(rows, rng, count, kinds):
 #
 # Мост короткий, поэтому ни один шаблон не повторяется подряд, а два
 # блокпоста нужны для чередования караула - иначе он не выйдет ни разу.
+def Runway(rows, rng):
+    """Ничего не ставит: голое полотно, по которому уезжает машина."""
+    return []
+
+
 SHAPES = [
     Plain, Jam, Ramp, Collapse, Checkpoint, Wreck, Fuel,
-    Ramp, Wreck, Checkpoint, Fuel, Collapse, Plain,
+    Ramp, Wreck, Checkpoint, Fuel, Collapse, Plain, Runway,
 ]
 
 
@@ -413,7 +423,10 @@ def Section(index, rng):
     # Пролом возвращает клетки своего края, остальные шаблоны ничего не возвращают.
     edges = SHAPES[index](rows, rng)
     edges = edges if edges is not None else []
-    WavePoints(rows, index)
+
+    isRunway = index >= SECTIONS - RUNWAY_SECTION
+    if not isRunway:
+        WavePoints(rows, index)
 
     # Первые секции щадящие, дальше плотнее.
     # Торцы моста закрыты: за первой секцией и за последней ехать некуда.
@@ -423,9 +436,11 @@ def Section(index, rng):
         rows[LANE_LINE - 2][2] = '@'
         rows[LANE_LINE][2] = '<'
     elif index == SECTIONS - 1:
+        # Торец закрыт, но машина до него уже не доезжает: всю полосу она
+        # проходит под затемнением.
         for row in range(HEIGHT):
             rows[row][WIDTH - 1] = RAIL
-
+    elif index == SECTIONS - 1 - RUNWAY_SECTION:
         # Переходом служит сама машина, тайл выхода рядом с ней был вторым путём никуда.
         #
         # Место отодвинуто от торца: машина приезжает справа и без этого запаса
@@ -433,7 +448,8 @@ def Section(index, rng):
         place = WIDTH - 1 - ARRIVAL_RUNWAY
 
         # Полоса подъезда чистая: иначе машина въезжает сквозь остов.
-        for column in range(place, WIDTH - 1):
+        # До самого шва: за ним начинается полоса разгона, и разрыва в ней быть не должно.
+        for column in range(place, WIDTH):
             if rows[LANE_LINE][column] != LINE:
                 rows[LANE_LINE][column] = ROAD
 
@@ -521,6 +537,8 @@ def Build(seed=20260916):
         'keep 6',
         'grow 12',
         'respawn 2.5',
+        '; style - преследователи давят и не прячутся; tactical вернёт им осторожность',
+        'style relentless',
         '',
         '; from <доля пути> <символ врага><вес>: кто выбегает на этом отрезке моста',
         'from 0.0 m4 g3',

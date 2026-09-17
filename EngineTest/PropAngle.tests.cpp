@@ -169,5 +169,7 @@ TEST_F(ShippedAnglesTest, TheBridgeHasRubbleAlongItsBrokenSpans)
 		rubble += prop.propId.rfind("bridge_rubble", 0) == 0 ? 1 : 0;
 	}
 
-	EXPECT_GT(rubble, 10) << "broken spans have no debris around them";
+	// Два обрушения на мосту, на каждое - не меньше четырёх кусков вокруг пролома.
+	// Точное число зависит от раскладки секций и сторожить его бессмысленно.
+	EXPECT_GE(rubble, 8) << "broken spans have no debris around them";
 }

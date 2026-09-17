@@ -28,6 +28,10 @@ namespace RoguelikeGame
     constexpr XYZEngine::CameraShake CAMERA_SHAKE_BLAST = {24.f, 0.45f, 14.f};
 
     constexpr float TILE_SIZE = 64.f;
+
+    // Кусок полотна размером с комнату: весь массив вершин либо на экране, либо нет,
+    // и на большой карте один массив гоняет десятки тысяч вершин ради двухсот видимых клеток.
+    constexpr int TILE_CHUNK = 32;
     constexpr float ENEMY_ALERT_ARRIVE_DISTANCE = 48.f;
     constexpr float ENEMY_ALERT_POINT_DISTANCE = 420.f;
     constexpr float ENEMY_REPATH_INTERVAL = 0.4f;

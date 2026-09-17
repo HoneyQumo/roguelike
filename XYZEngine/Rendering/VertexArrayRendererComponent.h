@@ -17,6 +17,9 @@ namespace XYZEngine
 		void Render() override;
 
 		void Clear();
+
+		// Габариты всей геометрии: по ним массив решает, нужен ли он на этом кадре.
+		sf::FloatRect GetBounds() const;
 		void SetTexture(const sf::Texture* newTexture);
 		void AddQuad(const Vector2Df& center, const Vector2Df& size, const sf::Color& color);
 
@@ -35,5 +38,9 @@ namespace XYZEngine
 	private:
 		sf::VertexArray vertices{ sf::Quads };
 		const sf::Texture* texture = nullptr;
+		sf::FloatRect bounds;
+		bool hasBounds = false;
+
+		void Cover(const Vector2Df& point);
 	};
 }

@@ -35,6 +35,9 @@ namespace XYZEngine
 
 		void ResetFrameStats();
 		int GetDrawnCount() const;
+		// Вызовов отрисовки десятки, а вершин десятки тысяч: узкое место видно только по ним.
+		int GetVertexCount() const;
+		void CountVertices(int count);
 		int GetCulledCount() const;
 
 	private:
@@ -46,6 +49,7 @@ namespace XYZEngine
 		sf::View savedView = sf::View(sf::FloatRect(0.f, 0.f, 0.f, 0.f));
 		bool isUiPass = false;
 		int drawnCount = 0;
+		int vertexCount = 0;
 		mutable int culledCount = 0;
 		EventList<unsigned int, unsigned int> resizeEvent;
 

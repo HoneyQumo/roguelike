@@ -159,6 +159,17 @@ namespace XYZEngine
 	{
 		drawnCount = 0;
 		culledCount = 0;
+		vertexCount = 0;
+	}
+
+	int RenderSystem::GetVertexCount() const
+	{
+		return vertexCount;
+	}
+
+	void RenderSystem::CountVertices(int count)
+	{
+		vertexCount += count;
 	}
 	int RenderSystem::GetDrawnCount() const
 	{

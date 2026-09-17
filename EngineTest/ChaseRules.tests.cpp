@@ -1,5 +1,7 @@
 #include "pch.h"
 #include "ChaseRules.h"
+#include "GameSettings.h"
+#include <algorithm>
 
 using RoguelikeGame::ChaseMove;
 using RoguelikeGame::ChaseSense;
@@ -107,4 +109,72 @@ TEST(ChaseRulesTest, MarauderCannotShootFromBeyondItsSight)
 
 	marauder.isAlerted = true;
 	EXPECT_TRUE(RoguelikeGame::IsEngaged(marauder));
+}
+
+namespace
+{
+	// Штурмовик: встаёт на 220, пятится ближе 160.
+	ChaseSense Shooter(float distanceToTarget)
+	{
+		ChaseSense sense;
+		sense.detectionRadius = 420.f;
+		sense.stopDistance = 220.f;
+		sense.backOffDistance = 220.f - RoguelikeGame::ENEMY_COMFORT_DEAD_ZONE;
+		sense.arriveDistance = 48.f;
+		sense.distanceToTarget = distanceToTarget;
+		sense.isVisible = true;
+
+		return sense;
+	}
+
+	// Ножевик: stopDistance 40, мёртвая зона шире - отход недостижим.
+	ChaseSense Knifeman(float distanceToTarget)
+	{
+		ChaseSense sense = Shooter(distanceToTarget);
+		sense.stopDistance = 40.f;
+		sense.backOffDistance = std::max(0.f, 40.f - RoguelikeGame::ENEMY_COMFORT_DEAD_ZONE);
+
+		return sense;
+	}
+}
+
+TEST(ChaseRulesTest, AShooterBacksOffWhenTheTargetGetsTooClose)
+{
+	EXPECT_EQ(ChooseChaseMove(Shooter(100.f)), ChaseMove::Withdraw);
+}
+
+TEST(ChaseRulesTest, AShooterHoldsInsideTheDeadZone)
+{
+	EXPECT_EQ(ChooseChaseMove(Shooter(200.f)), ChaseMove::Hold);
+	EXPECT_EQ(ChooseChaseMove(Shooter(165.f)), ChaseMove::Hold);
+}
+
+TEST(ChaseRulesTest, AShooterStillWalksUpFromAfar)
+{
+	EXPECT_EQ(ChooseChaseMove(Shooter(300.f)), ChaseMove::Approach);
+}
+
+TEST(ChaseRulesTest, AKnifemanNeverBacksOff)
+{
+	for (float distance : {1.f, 10.f, 25.f, 39.f})
+	{
+		EXPECT_EQ(ChooseChaseMove(Knifeman(distance)), ChaseMove::Hold) << "distance " << distance;
+	}
+}
+
+TEST(ChaseRulesTest, ABackingShooterKeepsTheTargetInSight)
+{
+	ChaseSense sense = Shooter(100.f);
+
+	EXPECT_EQ(ChooseChaseMove(sense), ChaseMove::Withdraw);
+	EXPECT_TRUE(RoguelikeGame::IsTargetDetected(sense)) << "backing off is not the same as losing the target";
+}
+
+TEST(ChaseRulesTest, AnUnseenTargetIsNotBackedAwayFrom)
+{
+	ChaseSense sense = Shooter(100.f);
+	sense.isVisible = false;
+	sense.isAlerted = true;
+
+	EXPECT_NE(ChooseChaseMove(sense), ChaseMove::Withdraw) << "the enemy retreats from a target it cannot see";
 }

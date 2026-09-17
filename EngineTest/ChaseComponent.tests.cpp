@@ -1041,3 +1041,59 @@ TEST_F(ChaseComponentTest, APointBehindASolidWallIsNotEvenTakenUp)
 	EXPECT_LT((enemy->GetTransform()->GetWorldPosition() - before).GetLength(), RoguelikeGame::TILE_SIZE)
 		<< "the enemy is pushing into the wall towards a point it cannot reach";
 }
+
+TEST_F(ChaseComponentTest, AShooterBacksOffWhenTheHeroWalksIntoItsFace)
+{
+	LoadMap(CORRIDOR);
+
+	ChaseComponent* chase = CreateEnemy(6, 1, 180.f);
+	chase->SetStopDistance(220.f);
+	chase->SetChaseSpeed(200.f);
+	CreateHero(4, 1);
+
+	GameObject* enemy = chase->GetGameObject();
+	float before = enemy->GetTransform()->GetWorldPosition().x;
+
+	Run(1.f);
+
+	EXPECT_GT(enemy->GetTransform()->GetWorldPosition().x, before) << "the shooter let the hero walk right up to it";
+	EXPECT_TRUE(chase->IsChasing()) << "backing off is not the same as losing the target";
+}
+
+TEST_F(ChaseComponentTest, AKnifemanDoesNotBackOffAtAll)
+{
+	LoadMap(CORRIDOR);
+
+	ChaseComponent* chase = CreateEnemy(6, 1, 180.f);
+	chase->SetChaseSpeed(200.f);
+	GameObject* hero = CreateHero(4, 1);
+
+	GameObject* enemy = chase->GetGameObject();
+	enemy->GetTransform()->SetWorldPosition(At(4, 1) + Vector2Df{20.f, 0.f});
+
+	auto gap = [enemy, hero] { return (enemy->GetTransform()->GetWorldPosition()
+		- hero->GetTransform()->GetWorldPosition()).GetLength(); };
+	float before = gap();
+
+	Run(1.f);
+
+	EXPECT_LE(gap(), before) << "the knife enemy gave up ground instead of holding it";
+}
+
+TEST_F(ChaseComponentTest, ABackingShooterStopsOnceItIsComfortableAgain)
+{
+	LoadMap(CORRIDOR);
+
+	ChaseComponent* chase = CreateEnemy(6, 1, 180.f);
+	chase->SetStopDistance(220.f);
+	chase->SetChaseSpeed(200.f);
+	GameObject* hero = CreateHero(4, 1);
+
+	Run(3.f);
+
+	GameObject* enemy = chase->GetGameObject();
+	float gap = (enemy->GetTransform()->GetWorldPosition() - hero->GetTransform()->GetWorldPosition()).GetLength();
+
+	EXPECT_GE(gap, 220.f - RoguelikeGame::ENEMY_COMFORT_DEAD_ZONE) << "the shooter never regained its distance";
+	EXPECT_LE(gap, 220.f + RoguelikeGame::TILE_SIZE) << "the shooter ran away instead of holding its ground";
+}

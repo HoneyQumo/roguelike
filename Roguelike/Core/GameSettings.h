@@ -41,6 +41,18 @@ namespace RoguelikeGame
     constexpr int SEARCH_SPOT_GAP = 3;
     constexpr float SEARCH_ARRIVE_DISTANCE = 20.f;
 
+    // Мёртвая зона под stopDistance: ближе враг пятится. Взята абсолютом,
+    // а не долей: у ножевика она шире его же stopDistance, и отход ему недоступен.
+    constexpr float ENEMY_COMFORT_DEAD_ZONE = 60.f;
+    constexpr int ENEMY_BACK_OFF_RADIUS = 5;
+
+    // Клетка за спиной у игрока формально дальше, но идти туда - значит пройти сквозь него.
+    constexpr float BACK_OFF_COSINE = 0.f;
+    constexpr float BACK_OFF_GAIN_STEP = 0.5f * TILE_SIZE;
+
+    // Задним ходом на полной скорости погони читается как баг.
+    constexpr float ENEMY_BACK_OFF_PACE = 0.6f;
+
     // Потолок на дорогу к точке тревоги: с запасом на круговой обход, но не навечно.
     constexpr float SEARCH_TRAVEL_TIME = 12.f;
     constexpr float SEARCH_LOOK_SPREAD = 1.6f;

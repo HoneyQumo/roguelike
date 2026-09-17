@@ -4,6 +4,7 @@
 #include "GameSettings.h"
 #include "LevelGrid.h"
 #include "Noise.h"
+#include "BackOffSpot.h"
 #include "PathService.h"
 #include "HealthComponent.h"
 #include <AimRotationComponent.h>
@@ -99,6 +100,7 @@ namespace RoguelikeGame
 		ChaseSense sense;
 		sense.detectionRadius = detectionRadius;
 		sense.stopDistance = stopDistance;
+		sense.backOffDistance = std::max(0.f, stopDistance - ENEMY_COMFORT_DEAD_ZONE);
 		sense.arriveDistance = SEARCH_ARRIVE_DISTANCE;
 		sense.isAlerted = IsSearching(memory);
 		sense.isForced = isForced && hasTarget;
@@ -198,6 +200,7 @@ namespace RoguelikeGame
 
 		isChasing = false;
 		isEngaged = false;
+		isBackingOff = false;
 		isTargetVisible = false;
 		isInSight = false;
 		band = VisionBand::None;
@@ -262,6 +265,7 @@ namespace RoguelikeGame
 
 		isEngaged = RoguelikeGame::IsEngaged(sense);
 		isChasing = RoguelikeGame::IsTargetDetected(sense);
+		isBackingOff = move == ChaseMove::Withdraw;
 		isTargetVisible = sense.isVisible;
 		ApplyPace();
 
@@ -270,6 +274,12 @@ namespace RoguelikeGame
 		if (move == ChaseMove::Approach)
 		{
 			MoveTowards(targetPosition, deltaTime);
+			return;
+		}
+
+		if (move == ChaseMove::Withdraw)
+		{
+			BackAwayFrom(targetPosition, sense.stopDistance, deltaTime);
 			return;
 		}
 
@@ -337,6 +347,42 @@ namespace RoguelikeGame
 	{
 		Vector2Df position = transform->GetWorldPosition();
 		movement->SetDirection(navigator.Steer(position, goal, movement->GetSpeed(), deltaTime));
+	}
+
+	/**
+	*	Отходит по маршруту, а не спиной в стену.
+	*
+	*	Точка живёт, пока до неё не дошли и пока она дальше от угрозы, чем мы сейчас.
+	*	Искать каждый кадр нельзя: поле строится от самого врага, а слотов кэша четыре.
+	*
+	*	Зажатый в угол остаётся стоять и стрелять - это лучше, чем скрестись в стену.
+	*/
+	void ChaseComponent::BackAwayFrom(const Vector2Df& threat, float wanted, float deltaTime)
+	{
+		Vector2Df position = transform->GetWorldPosition();
+
+		if (hasBackOffSpot)
+		{
+			bool isReached = (backOffSpot - position).GetLength() <= ENEMY_ROUTE_ARRIVE_DISTANCE;
+			bool isPointless = (backOffSpot - threat).GetLength() <= (position - threat).GetLength();
+
+			hasBackOffSpot = !isReached && !isPointless;
+		}
+
+		if (!hasBackOffSpot)
+		{
+			const PathField* field = PathService::Current().FieldTo(position);
+			hasBackOffSpot = field != nullptr
+				&& FindBackOffSpot(LevelGrid::Current(), *field, position, threat, wanted, ENEMY_BACK_OFF_RADIUS, backOffSpot);
+		}
+
+		if (!hasBackOffSpot)
+		{
+			navigator.Reset();
+			return;
+		}
+
+		MoveTowards(backOffSpot, deltaTime);
 	}
 
 	void ChaseComponent::DrawRoute() const
@@ -621,6 +667,12 @@ namespace RoguelikeGame
 		// Мёртвого разгонять нечем: смерть обнуляет скорость, и вернуть её - значит пустить труп по полу.
 		if (health != nullptr && !health->IsAlive())
 		{
+			return;
+		}
+
+		if (isBackingOff)
+		{
+			movement->SetSpeed(chaseSpeed * ENEMY_BACK_OFF_PACE);
 			return;
 		}
 

@@ -121,6 +121,9 @@ namespace RoguelikeGame
 		bool hasSearched = false;
 
 		Navigator navigator;
+		XYZEngine::Vector2Df backOffSpot;
+		bool hasBackOffSpot = false;
+		bool isBackingOff = false;
 
 		void OnDamage(const DamageInfo& damage);
 		ChaseSense ReadSense(const XYZEngine::Vector2Df& targetPosition, bool hasTarget) const;
@@ -131,6 +134,7 @@ namespace RoguelikeGame
 		void ApplyPace();
 		XYZEngine::Vector2Df Facing() const;
 		void MoveTowards(const XYZEngine::Vector2Df& goal, float deltaTime);
+		void BackAwayFrom(const XYZEngine::Vector2Df& threat, float wanted, float deltaTime);
 		void TakePoint(const XYZEngine::Vector2Df& place, float duration);
 		bool CanReach(const XYZEngine::Vector2Df& place) const;
 		void AimAtAngle(float degrees);

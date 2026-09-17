@@ -2,6 +2,7 @@
 #include "VertexArrayRendererComponent.h"
 #include "GameObject.h"
 #include "RenderSystem.h"
+#include "ViewCulling.h"
 
 namespace XYZEngine
 {
@@ -20,6 +21,15 @@ namespace XYZEngine
 			return;
 		}
 
+		// Геометрия не разбирается поквадово: либо весь массив на экране, либо его нет.
+		// Поэтому резать полотно на куски и имеет смысл.
+		if (hasBounds && !RenderSystem::Instance()->IsVisible(bounds))
+		{
+			return;
+		}
+
+		RenderSystem::Instance()->CountVertices(static_cast<int>(vertices.getVertexCount()));
+
 		if (texture != nullptr)
 		{
 			RenderSystem::Instance()->Render(vertices, sf::RenderStates(texture));
@@ -29,9 +39,33 @@ namespace XYZEngine
 		RenderSystem::Instance()->Render(vertices);
 	}
 
+	sf::FloatRect VertexArrayRendererComponent::GetBounds() const
+	{
+		return bounds;
+	}
+
+	void VertexArrayRendererComponent::Cover(const Vector2Df& point)
+	{
+		if (!hasBounds)
+		{
+			bounds = sf::FloatRect(point.x, point.y, 0.f, 0.f);
+			hasBounds = true;
+			return;
+		}
+
+		float left = std::min(bounds.left, point.x);
+		float top = std::min(bounds.top, point.y);
+		float right = std::max(bounds.left + bounds.width, point.x);
+		float bottom = std::max(bounds.top + bounds.height, point.y);
+
+		bounds = sf::FloatRect(left, top, right - left, bottom - top);
+	}
+
 	void VertexArrayRendererComponent::Clear()
 	{
 		vertices.clear();
+		hasBounds = false;
+		bounds = sf::FloatRect();
 	}
 
 	void VertexArrayRendererComponent::AddQuad(const Vector2Df& center, const Vector2Df& size, const sf::Color& color)
@@ -45,6 +79,9 @@ namespace XYZEngine
 		vertices.append({ { right, bottom }, color });
 		vertices.append({ { right, top }, color });
 		vertices.append({ { left, top }, color });
+
+		Cover({ left, bottom });
+		Cover({ right, top });
 	}
 
 	void VertexArrayRendererComponent::AddQuad(const Vector2Df& first, const Vector2Df& second, const Vector2Df& third,
@@ -54,6 +91,11 @@ namespace XYZEngine
 		vertices.append({ { second.x, second.y }, color });
 		vertices.append({ { third.x, third.y }, color });
 		vertices.append({ { fourth.x, fourth.y }, color });
+
+		Cover(first);
+		Cover(second);
+		Cover(third);
+		Cover(fourth);
 	}
 
 	void VertexArrayRendererComponent::SetTexture(const sf::Texture* newTexture)
@@ -78,6 +120,9 @@ namespace XYZEngine
 		vertices.append({ { right, bottom }, tint, { u1, v1 } });
 		vertices.append({ { right, top }, tint, { u1, v0 } });
 		vertices.append({ { left, top }, tint, { u0, v0 } });
+
+		Cover({ left, bottom });
+		Cover({ right, top });
 	}
 
 	void VertexArrayRendererComponent::SetQuadFrame(std::size_t quad, const sf::IntRect& frame)

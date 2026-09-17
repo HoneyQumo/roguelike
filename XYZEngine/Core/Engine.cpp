@@ -97,7 +97,8 @@ namespace XYZEngine
 			if (DebugDraw::Instance()->IsEnabled())
 			{
 				DebugDraw::Instance()->AddText("drawn " + std::to_string(RenderSystem::Instance()->GetDrawnCount())
-					+ ", culled " + std::to_string(RenderSystem::Instance()->GetCulledCount()));
+					+ ", culled " + std::to_string(RenderSystem::Instance()->GetCulledCount())
+					+ ", vertices " + std::to_string(RenderSystem::Instance()->GetVertexCount()));
 			}
 			DebugDraw::Instance()->Render();
 			GameWorld::Instance()->LateUpdate();

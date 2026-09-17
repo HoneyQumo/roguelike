@@ -36,6 +36,7 @@
 #include <RectangleRendererComponent.h>
 #include <VertexArrayRendererComponent.h>
 #include <LoggerRegistry.h>
+#include <algorithm>
 #include <cassert>
 #include <MathUtils.h>
 #include <optional>
@@ -597,78 +598,114 @@ namespace RoguelikeGame
             return 0;
         }
 
-        auto overlayObject = XYZEngine::GameWorld::Instance()->CreateGameObject("LevelOverlay");
-        overlayObject->SetRenderLayer(OVERLAY_RENDER_LAYER);
-        level.Add(overlayObject);
-
-        auto renderer = overlayObject->AddComponent<XYZEngine::VertexArrayRendererComponent>();
-        renderer->SetTexture(tiles);
-
         const XYZEngine::Vector2Df tileSize = {TILE_SIZE, TILE_SIZE};
+        int total = 0;
 
-        for (int row = 0; row < levelData.height; row++)
+        for (int chunkRow = 0; chunkRow < levelData.height; chunkRow += TILE_CHUNK)
         {
-            for (int column = 0; column < levelData.width; column++)
+            for (int chunkColumn = 0; chunkColumn < levelData.width; chunkColumn += TILE_CHUNK)
             {
-                if (OverlayAt(levelData, column, row) == TileType::Empty)
+                XYZEngine::VertexArrayRendererComponent* renderer = nullptr;
+
+                for (int row = chunkRow; row < std::min(chunkRow + TILE_CHUNK, levelData.height); row++)
                 {
-                    continue;
+                    for (int column = chunkColumn; column < std::min(chunkColumn + TILE_CHUNK, levelData.width); column++)
+                    {
+                        if (OverlayAt(levelData, column, row) == TileType::Empty)
+                        {
+                            continue;
+                        }
+
+                        if (renderer == nullptr)
+                        {
+                            auto overlayObject = XYZEngine::GameWorld::Instance()->CreateGameObject("LevelOverlay");
+                            overlayObject->SetRenderLayer(OVERLAY_RENDER_LAYER);
+                            level.Add(overlayObject);
+
+                            renderer = overlayObject->AddComponent<XYZEngine::VertexArrayRendererComponent>();
+                            renderer->SetTexture(tiles);
+                        }
+
+                        renderer->AddQuad(TileToWorldPosition(column, row, levelData.height), tileSize,
+                            OverlayFrameFor(levelData, column, row));
+                    }
                 }
 
-                renderer->AddQuad(TileToWorldPosition(column, row, levelData.height), tileSize,
-                    OverlayFrameFor(levelData, column, row));
+                total += renderer != nullptr ? static_cast<int>(renderer->GetQuadsCount()) : 0;
             }
         }
 
-        return static_cast<int>(renderer->GetQuadsCount());
+        return total;
     }
 
     int LevelBuilder::BuildTiles(const LevelData& levelData, Level& level)
     {
-        auto tilesObject = XYZEngine::GameWorld::Instance()->CreateGameObject("LevelTiles");
-        tilesObject->SetRenderLayer(GROUND_RENDER_LAYER);
-        level.Add(tilesObject);
-
-        auto renderer = tilesObject->AddComponent<XYZEngine::VertexArrayRendererComponent>();
-        const XYZEngine::Vector2Df tileSize = {TILE_SIZE, TILE_SIZE};
-
-        // Вода живёт в том же массиве, что и остальные тайлы: помним её квады,
-        // чтобы менять им кадр, и отрисовка остаётся одним вызовом.
-        auto water = tilesObject->AddComponent<TileAnimationComponent>();
-        water->SetRenderer(renderer);
-        water->SetStrip(TILE_WATER_ROW, TILE_FLOOR_FRAMES, WATER_FRAME_TIME);
-
         const sf::Texture* tiles = LoadTileset(levelData.info.tileset);
-        renderer->SetTexture(tiles);
+        const XYZEngine::Vector2Df tileSize = {TILE_SIZE, TILE_SIZE};
+        int total = 0;
+        int chunks = 0;
 
-        for (int row = 0; row < levelData.height; row++)
+        for (int chunkRow = 0; chunkRow < levelData.height; chunkRow += TILE_CHUNK)
         {
-            for (int column = 0; column < (int)levelData.tiles[row].size(); column++)
+            for (int chunkColumn = 0; chunkColumn < levelData.width; chunkColumn += TILE_CHUNK)
             {
-                TileType tile = levelData.tiles[row][column];
-                if (tile == TileType::Empty)
-                {
-                    continue;
-                }
+                XYZEngine::VertexArrayRendererComponent* renderer = nullptr;
+                TileAnimationComponent* water = nullptr;
 
-                auto position = TileToWorldPosition(column, row, levelData.height);
-
-                if (tiles != nullptr)
+                for (int row = chunkRow; row < std::min(chunkRow + TILE_CHUNK, levelData.height); row++)
                 {
-                    if (tile == TileType::Water)
+                    int rowWidth = static_cast<int>(levelData.tiles[row].size());
+                    for (int column = chunkColumn; column < std::min(chunkColumn + TILE_CHUNK, rowWidth); column++)
                     {
-                        water->AddCell(renderer->GetQuadsCount(), TileHash(column, row));
-                    }
+                        TileType tile = levelData.tiles[row][column];
+                        if (tile == TileType::Empty)
+                        {
+                            continue;
+                        }
 
-                    renderer->AddQuad(position, tileSize, TileFrameFor(levelData, column, row));
-                    continue;
+                        if (renderer == nullptr)
+                        {
+                            auto tilesObject = XYZEngine::GameWorld::Instance()->CreateGameObject("LevelTiles");
+                            tilesObject->SetRenderLayer(GROUND_RENDER_LAYER);
+                            level.Add(tilesObject);
+
+                            renderer = tilesObject->AddComponent<XYZEngine::VertexArrayRendererComponent>();
+                            renderer->SetTexture(tiles);
+
+                            // Вода живёт в массиве своего куска: помним её квады, чтобы менять им кадр.
+                            water = tilesObject->AddComponent<TileAnimationComponent>();
+                            water->SetRenderer(renderer);
+                            water->SetStrip(TILE_WATER_ROW, TILE_FLOOR_FRAMES, WATER_FRAME_TIME);
+                        }
+
+                        auto position = TileToWorldPosition(column, row, levelData.height);
+
+                        if (tiles != nullptr)
+                        {
+                            if (tile == TileType::Water)
+                            {
+                                water->AddCell(renderer->GetQuadsCount(), TileHash(column, row));
+                            }
+
+                            renderer->AddQuad(position, tileSize, TileFrameFor(levelData, column, row));
+                            continue;
+                        }
+
+                        renderer->AddQuad(position, tileSize, tile == TileType::Wall ? WALL_COLOR : FLOOR_COLOR);
+                    }
                 }
 
-                renderer->AddQuad(position, tileSize, tile == TileType::Wall ? WALL_COLOR : FLOOR_COLOR);
+                if (renderer != nullptr)
+                {
+                    total += static_cast<int>(renderer->GetQuadsCount());
+                    chunks++;
+                }
             }
         }
 
-        return (int)renderer->GetQuadsCount();
+        LOG_INFO("Level tiles: " + std::to_string(total) + " quads in " + std::to_string(chunks) + " chunks");
+
+        return total;
     }
 
     // The level file is read top to bottom, while the world axis Y points up.

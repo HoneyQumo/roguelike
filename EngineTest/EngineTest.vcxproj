@@ -85,6 +85,7 @@
     <ClCompile Include="NoDialogs.tests.cpp" />
     <ClCompile Include="BackOffSpot.tests.cpp" />
     <ClCompile Include="Trail.tests.cpp" />
+    <ClCompile Include="VertexArrayBounds.tests.cpp" />
     <ClCompile Include="CoverSpot.tests.cpp" />
     <ClCompile Include="FightStyle.tests.cpp" />
     <ClCompile Include="CarArrival.tests.cpp" />

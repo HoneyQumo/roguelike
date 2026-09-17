@@ -131,6 +131,8 @@ namespace RoguelikeGame
 		void ApplyPace();
 		XYZEngine::Vector2Df Facing() const;
 		void MoveTowards(const XYZEngine::Vector2Df& goal, float deltaTime);
+		void TakePoint(const XYZEngine::Vector2Df& place, float duration);
+		bool CanReach(const XYZEngine::Vector2Df& place) const;
 		void AimAtAngle(float degrees);
 		void PlanSearch();
 		bool TakeNextSpot();

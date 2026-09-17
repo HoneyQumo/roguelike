@@ -40,6 +40,9 @@ namespace RoguelikeGame
     constexpr float LOOK_AIM_DISTANCE = 200.f;
     constexpr int SEARCH_SPOT_GAP = 3;
     constexpr float SEARCH_ARRIVE_DISTANCE = 20.f;
+
+    // Потолок на дорогу к точке тревоги: с запасом на круговой обход, но не навечно.
+    constexpr float SEARCH_TRAVEL_TIME = 12.f;
     constexpr float SEARCH_LOOK_SPREAD = 1.6f;
     constexpr float SEARCH_ESCAPE_COSINE = -0.2f;
     constexpr float SEARCH_ESCAPE_STEP = 48.f;

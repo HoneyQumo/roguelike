@@ -12,6 +12,9 @@
 #include "BossBrainComponent.h"
 #include "CameraDirectorComponent.h"
 #include "CarArrival.h"
+#include "ChaseComponent.h"
+#include "Freeze.h"
+#include "ProjectileComponent.h"
 #include "TireMark.h"
 #include "SwitchComponent.h"
 #include "CutscenePlayerComponent.h"
@@ -591,6 +594,13 @@ namespace RoguelikeGame
                     car->StartEngine();
                 }
 
+                // Герой внутри машины - не видно ни его, ни оружия у него в руках.
+                // Оружие - отдельный дочерний объект, и гасится он только вместе с хозяином.
+                if (player != nullptr)
+                {
+                    player->SetActive(false);
+                }
+
                 if (hudScreen != nullptr)
                 {
                     hudScreen->ShowNotice(ESCAPE_NOTICE);
@@ -611,12 +621,14 @@ namespace RoguelikeGame
         });
 
         boardTime = 0.f;
+        escapeSpeed = 0.f;
 
         // Машина стоит поперёк, а ехать ей направо: доворачивает, пока закрывается дверь.
         scene->SetHandler(ESCAPE_BEAT_BOARD, [this, carObject](float deltaTime)
         {
             boardTime += deltaTime;
             carObject->GetTransform()->SetWorldRotation(BoardingAngle(boardTime / ESCAPE_BOARD_TIME));
+            DriveEscape(carObject, deltaTime);
         });
 
         scene->SetHandler(ESCAPE_BEAT_DRIVE, [this, carObject](float deltaTime)
@@ -634,29 +646,16 @@ namespace RoguelikeGame
     }
 
     /**
-    *	Забирает управление у игрока и возвращает ровно то, что забрало.
+    *	Сцена забирает мир себе: замирает и герой, и противники, и пули в воздухе.
     *
-    *	Список выключенного приходится помнить: слепо включить всё обратно нельзя,
-    *	часть компонентов могла быть выключена не сценой, а чем-то ещё.
+    *	Заморозка гасит только поведение и не трогает рисование: иначе на время
+    *	сцены все пропадут с экрана - включая самого героя, к которому камера возвращается в конце.
     */
     void DeveloperLevel::SetControlTaken(bool isTaken)
     {
-        if (player == nullptr)
-        {
-            return;
-        }
-
         if (!isTaken)
         {
-            for (XYZEngine::Component* part : takenParts)
-            {
-                if (part != nullptr)
-                {
-                    part->SetEnabled(true);
-                }
-            }
-
-            takenParts.clear();
+            Thaw(takenParts);
 
             if (crosshair != nullptr)
             {
@@ -671,18 +670,22 @@ namespace RoguelikeGame
             return;
         }
 
-        for (XYZEngine::Component* part : player->GetComponents<XYZEngine::Component>())
+        RoguelikeGame::Freeze(player, takenParts);
+
+        // Компонент преследования есть на каждом враге, включая босса - по нему их и ищут.
+        for (ChaseComponent* enemy : GameWorld::Instance()->FindComponents<ChaseComponent>())
         {
-            bool isDriving = dynamic_cast<XYZEngine::TransformComponent*>(part) != nullptr
-                || dynamic_cast<PlayerHudBinderComponent*>(part) != nullptr;
+            RoguelikeGame::Freeze(enemy->GetGameObject(), takenParts);
+        }
 
-            if (isDriving || !part->IsEnabled())
+        // Пуля замирает вместе со своим сроком жизни: за время сцены ни одна не истечёт.
+        for (ProjectileComponent* bullet : GameWorld::Instance()->FindComponents<ProjectileComponent>())
+        {
+            if (bullet->IsEnabled())
             {
-                continue;
+                bullet->SetEnabled(false);
+                takenParts.push_back(bullet);
             }
-
-            part->SetEnabled(false);
-            takenParts.push_back(part);
         }
 
         if (crosshair != nullptr)
@@ -690,7 +693,6 @@ namespace RoguelikeGame
             crosshair->SetActive(false);
         }
     }
-
     void DeveloperLevel::TakeControl()
     {
         SetControlTaken(true);
@@ -704,7 +706,11 @@ namespace RoguelikeGame
         }
 
         escapeSpeed = std::min(ESCAPE_CAR_SPEED, escapeSpeed + ESCAPE_CAR_PICKUP * deltaTime);
-        carObject->GetTransform()->MoveBy({escapeSpeed * deltaTime, 0.f});
+
+        // Едет вдоль собственного носа: пока корпус доворачивается, машина уже
+        // катится, и получается дуга, а не пируэт на месте.
+        auto transform = carObject->GetTransform();
+        transform->MoveBy(transform->GetForward() * (escapeSpeed * deltaTime));
 
         if (player != nullptr)
         {
@@ -813,6 +819,11 @@ namespace RoguelikeGame
             return;
         }
 
+        // Сцена кончилась сменой локации: размораживать надо до того, как умрут
+        // замороженные. Иначе список останется с указателями на чужую память,
+        // а игрок приедет на новую локацию с выключенными компонентами.
+        SetControlTaken(false);
+
         level.Clear();
 
         for (const char* temporaryName : {BLOOD_POOL_OBJECT_NAME, FX_OBJECT_NAME, PROJECTILE_OBJECT_NAME,
@@ -835,6 +846,8 @@ namespace RoguelikeGame
 
         if (player != nullptr)
         {
+            // Герой уехал выключенным, сидя в машине - на новой локации он снова на ногах.
+            player->SetActive(true);
             player->GetTransform()->SetWorldPosition(level.GetStartPosition());
         }
 
@@ -1008,6 +1021,7 @@ namespace RoguelikeGame
         // и ни одна сцена больше не запустилась бы - включая побег на машине.
         cutscene = nullptr;
         takenParts.clear();
+        escapeSpeed = 0.f;
         arrivalTime = 0.f;
         boardTime = 0.f;
         particles = nullptr;

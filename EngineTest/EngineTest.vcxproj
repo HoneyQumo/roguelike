@@ -79,6 +79,7 @@
     <ClCompile Include="Fire.tests.cpp" />
     <ClCompile Include="Waves.tests.cpp" />
     <ClCompile Include="Cutscene.tests.cpp" />
+    <ClCompile Include="Freeze.tests.cpp" />
     <ClCompile Include="CarArrival.tests.cpp" />
     <ClCompile Include="CutsceneCamera.tests.cpp" />
     <ClCompile Include="LevelLoader.tests.cpp" />

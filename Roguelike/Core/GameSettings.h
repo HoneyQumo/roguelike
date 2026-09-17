@@ -387,7 +387,7 @@ namespace RoguelikeGame
     constexpr auto ESCAPE_BEAT_DRIVE = "drive";
     constexpr auto ESCAPE_BEAT_LEAVE = "leave";
     constexpr float ESCAPE_BOARD_TIME = 0.8f;
-    constexpr float ESCAPE_DRIVE_TIME = 6.5f;
+    constexpr float ESCAPE_DRIVE_TIME = 4.f;
     constexpr float ESCAPE_LEAVE_TIME = 1.4f;
     constexpr float ESCAPE_CAR_SPEED = 540.f;
     constexpr float ESCAPE_CAR_PICKUP = 320.f;

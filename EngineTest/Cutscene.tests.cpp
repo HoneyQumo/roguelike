@@ -5,6 +5,7 @@
 #include "GameWorld.h"
 #include "LevelLoader.h"
 #include "GameSettings.h"
+#include <cmath>
 #include "TileAtlas.h"
 #include "ProjectFiles.h"
 #include <sstream>
@@ -211,7 +212,40 @@ TEST_F(ShippedEscapeTest, TheOnlyWayOffTheBridgeIsTheCar)
 
 	const RoguelikeGame::FixturePlacement& car = bridge.escapes.front();
 
-	EXPECT_LT(bridge.width - car.column, 32) << "the car does not wait at the end of the bridge";
+	// Машина - финиш забега, а не привал посередине моста.
+	EXPECT_GT(car.column * 2, bridge.width) << "the car waits in the middle of the run";
+}
+
+/**
+*	За машиной нужна полоса разгона на всю видимую часть побега.
+*
+*	Без неё машина проходит сквозь отбойник и остаток сцены едет по черноте.
+*	Длина считается из самих таймингов сцены, а не забита числом: удлинишь
+*	поездку - тест сразу потребует дороги.
+*/
+TEST_F(ShippedEscapeTest, TheCarHasRoadToDriveOffOn)
+{
+	ASSERT_TRUE(isFound) << previous.string();
+
+	LevelData bridge = RoguelikeGame::LoadAct("Resources/Acts/act1_bridge.config");
+	ASSERT_EQ(bridge.escapes.size(), 1u);
+
+	const RoguelikeGame::FixturePlacement& car = bridge.escapes.front();
+
+	float ramp = RoguelikeGame::ESCAPE_CAR_SPEED / RoguelikeGame::ESCAPE_CAR_PICKUP;
+	float visible = RoguelikeGame::ESCAPE_BOARD_TIME + RoguelikeGame::ESCAPE_DRIVE_TIME;
+	float distance = 0.5f * RoguelikeGame::ESCAPE_CAR_SPEED * ramp
+		+ std::max(0.f, visible - ramp) * RoguelikeGame::ESCAPE_CAR_SPEED;
+	int needed = static_cast<int>(std::ceil(distance / RoguelikeGame::TILE_SIZE));
+
+	ASSERT_LT(car.column + needed, bridge.width)
+		<< "the escape drives " << needed << " tiles and the bridge ends after " << bridge.width - car.column;
+
+	for (int step = 0; step <= needed; step++)
+	{
+		EXPECT_TRUE(RoguelikeGame::IsRoadAt(bridge, car.column + step, car.row))
+			<< "nothing to drive on at column " << car.column + step;
+	}
 }
 
 TEST_F(ShippedEscapeTest, TheCarHasRoadToArriveOn)

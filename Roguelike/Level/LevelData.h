@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+#include "FightStyle.h"
 
 namespace RoguelikeGame
 {
@@ -134,6 +135,9 @@ namespace RoguelikeGame
         float respawn = 0.f;
         std::vector<PursuitEchelon> echelons;
 
+        // Погоня должна давить, а не отступать и пережидать за укрытием.
+        FightStyle style = RELENTLESS_FIGHT;
+
         bool IsEmpty() const { return keep <= 0 || echelons.empty(); }
     };
 
@@ -171,6 +175,7 @@ namespace RoguelikeGame
         std::string tileset;
         std::string music;
         std::string ambient;
+        FightStyle style;
         BossSpec boss;
     };
 
@@ -203,6 +208,7 @@ namespace RoguelikeGame
         std::vector<DoorPlacement> doors;
         std::vector<ZonePlacement> zones;
         std::vector<WaveSpec> waves;
+        FightStyle wavesStyle;
         PursuitSpec pursuit;
         std::vector<FixturePlacement> levers;
         std::vector<FixturePlacement> hatches;

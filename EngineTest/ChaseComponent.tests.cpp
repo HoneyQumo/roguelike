@@ -1197,3 +1197,50 @@ TEST_F(ChaseComponentTest, AKnifemanHasNothingToReloadAndNeverHides)
 	EXPECT_FALSE(LevelGrid::Current().HasWallBetween(hero->GetTransform()->GetWorldPosition(),
 		enemy->GetTransform()->GetWorldPosition())) << "the knife enemy hid from a fight it should have joined";
 }
+
+TEST_F(ChaseComponentTest, AnEnemyIsTacticalUntilToldOtherwise)
+{
+	ChaseComponent* chase = CreateEnemy(1, 1);
+
+	EXPECT_TRUE(chase->GetFightStyle().keepsDistance);
+	EXPECT_TRUE(chase->GetFightStyle().takesCover);
+}
+
+TEST_F(ChaseComponentTest, ARelentlessShooterGivesNoGround)
+{
+	LoadMap(CORRIDOR);
+
+	ChaseComponent* chase = CreateEnemy(6, 1, 180.f);
+	chase->SetStopDistance(220.f);
+	chase->SetChaseSpeed(200.f);
+	chase->SetFightStyle(RoguelikeGame::RELENTLESS_FIGHT);
+	CreateHero(4, 1);
+
+	GameObject* enemy = chase->GetGameObject();
+	float before = enemy->GetTransform()->GetWorldPosition().x;
+
+	Run(1.f);
+
+	EXPECT_LE(enemy->GetTransform()->GetWorldPosition().x, before) << "a pursuer gave ground instead of pushing";
+}
+
+TEST_F(ChaseComponentTest, ARelentlessShooterReloadsWhereItStands)
+{
+	LoadMap(PILLAR);
+
+	ChaseComponent* chase = CreateEnemy(3, 2, 180.f);
+	chase->SetChaseSpeed(150.f);
+	chase->SetFightStyle(RoguelikeGame::RELENTLESS_FIGHT);
+	GameObject* hero = CreateHero(1, 2);
+
+	GameObject* enemy = chase->GetGameObject();
+	auto weapon = GiveAnEmptyGun(enemy, 5.f);
+
+	Run(0.1f);
+	ASSERT_TRUE(weapon->TryReload());
+
+	Run(4.f);
+
+	EXPECT_FALSE(LevelGrid::Current().HasWallBetween(hero->GetTransform()->GetWorldPosition(),
+		enemy->GetTransform()->GetWorldPosition())) << "a pursuer went looking for cover";
+}

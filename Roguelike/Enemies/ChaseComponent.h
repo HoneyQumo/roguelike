@@ -6,6 +6,7 @@
 #include <MovementComponent.h>
 #include "Awareness.h"
 #include "ChaseRules.h"
+#include "FightStyle.h"
 #include "HidingSpots.h"
 #include "LookTurn.h"
 #include "Navigator.h"
@@ -55,6 +56,8 @@ namespace RoguelikeGame
 		void SetPeripheryHalfAngle(float newHalfAngle);
 		void SetShoutRadius(float newRadius);
 		void SetForcedChase(bool newIsForced);
+		void SetFightStyle(const FightStyle& newStyle);
+		const FightStyle& GetFightStyle() const;
 		void SetChaseSpeed(float newChaseSpeed);
 		void Hear(const XYZEngine::Vector2Df& place);
 		void Provoke(const XYZEngine::Vector2Df& place);
@@ -127,6 +130,7 @@ namespace RoguelikeGame
 		XYZEngine::Vector2Df coverSpot;
 		bool hasCoverSpot = false;
 		WeaponComponent* weapon = nullptr;
+		FightStyle style;
 		bool isBackingOff = false;
 
 		void OnDamage(const DamageInfo& damage);
@@ -139,7 +143,7 @@ namespace RoguelikeGame
 		XYZEngine::Vector2Df Facing() const;
 		void MoveTowards(const XYZEngine::Vector2Df& goal, float deltaTime);
 		void BackAwayFrom(const XYZEngine::Vector2Df& threat, float wanted, float deltaTime);
-		bool TakeCoverFrom(const XYZEngine::Vector2Df& threat);
+		bool TakeCoverFrom(const XYZEngine::Vector2Df& threat, bool wantsCover);
 		void TakePoint(const XYZEngine::Vector2Df& place, float duration);
 		bool CanReach(const XYZEngine::Vector2Df& place) const;
 		void AimAtAngle(float degrees);

@@ -1,4 +1,4 @@
-#include "ChaseComponent.h"
+﻿#include "ChaseComponent.h"
 #include "DamageInfo.h"
 #include "FactionComponent.h"
 #include "GameSettings.h"
@@ -103,7 +103,7 @@ namespace RoguelikeGame
 		ChaseSense sense;
 		sense.detectionRadius = detectionRadius;
 		sense.stopDistance = stopDistance;
-		sense.backOffDistance = std::max(0.f, stopDistance - ENEMY_COMFORT_DEAD_ZONE);
+		sense.backOffDistance = style.keepsDistance ? std::max(0.f, stopDistance - ENEMY_COMFORT_DEAD_ZONE) : 0.f;
 		sense.arriveDistance = SEARCH_ARRIVE_DISTANCE;
 		sense.isAlerted = IsSearching(memory);
 		sense.isForced = isForced && hasTarget;
@@ -239,8 +239,10 @@ namespace RoguelikeGame
 		spottedBefore = state;
 		sense.isVisible = isInSight && state == AwarenessState::Provoked;
 		sense.isAlerted = sense.isAlerted || state == AwarenessState::Alerted;
-		sense.isReloading = target != nullptr && weapon != nullptr && weapon->IsReloading();
-		sense.hasCover = sense.isReloading && TakeCoverFrom(targetPosition);
+		bool hasGun = style.takesCover && target != nullptr && weapon != nullptr;
+		sense.isReloading = hasGun && weapon->IsReloading();
+		sense.isLowOnAmmo = hasGun && weapon->IsMagazineLow();
+		sense.hasCover = TakeCoverFrom(targetPosition, sense.isReloading || sense.isLowOnAmmo);
 
 		if (sense.isVisible)
 		{
@@ -360,10 +362,18 @@ namespace RoguelikeGame
 	*	Точка живёт, пока из неё действительно не видно: игрок двигается, и стена
 	*	перестаёт закрывать. Искать каждый кадр нельзя - поле строится от самого врага.
 	*/
-	bool ChaseComponent::TakeCoverFrom(const Vector2Df& threat)
+	bool ChaseComponent::TakeCoverFrom(const Vector2Df& threat, bool wantsCover)
 	{
+		if (!wantsCover)
+		{
+			hasCoverSpot = false;
+			return false;
+		}
+
 		Vector2Df position = transform->GetWorldPosition();
 
+		// Стена перестала закрывать - ищем другую тут же, в этом же кадре:
+		// из укрытия враг не выходит, он в нём переходит.
 		if (hasCoverSpot && !LevelGrid::Current().HasWallBetween(threat, coverSpot))
 		{
 			hasCoverSpot = false;
@@ -675,6 +685,16 @@ namespace RoguelikeGame
 	void ChaseComponent::SetForcedChase(bool newIsForced)
 	{
 		isForced = newIsForced;
+	}
+
+	void ChaseComponent::SetFightStyle(const FightStyle& newStyle)
+	{
+		style = newStyle;
+	}
+
+	const FightStyle& ChaseComponent::GetFightStyle() const
+	{
+		return style;
 	}
 
 	void ChaseComponent::SetChaseSpeed(float newChaseSpeed)

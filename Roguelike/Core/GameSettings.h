@@ -47,6 +47,12 @@ namespace RoguelikeGame
     constexpr int ENEMY_BACK_OFF_RADIUS = 5;
     constexpr int ENEMY_COVER_RADIUS = 6;
 
+    // Запас вглубь тени: на самом краю укрытия хватает шага игрока, чтобы врага снова было видно.
+    constexpr float ENEMY_COVER_MARGIN = 0.5f * TILE_SIZE;
+
+    // Доля магазина, ниже которой враг уже ищет, где перезарядиться.
+    constexpr float WEAPON_LOW_MAGAZINE_SHARE = 0.3f;
+
     // Клетка за спиной у игрока формально дальше, но идти туда - значит пройти сквозь него.
     constexpr float BACK_OFF_COSINE = 0.f;
     constexpr float BACK_OFF_GAIN_STEP = 0.5f * TILE_SIZE;

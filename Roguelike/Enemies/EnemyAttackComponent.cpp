@@ -56,6 +56,13 @@ namespace RoguelikeGame
             : XYZEngine::Vector2Df{0.f, 0.f};
         sense.distanceToTarget = (targetPosition - transform->GetWorldPosition()).GetLength();
 
+        // Патроны на исходе, а стрелять всё равно не в кого - самое время перезарядиться.
+        // Без этого враг, ушедший в укрытие с патронами, остался бы там навсегда.
+        if (weapon != nullptr && sense.isAlive && !sense.canSeeTarget && weapon->IsMagazineLow())
+        {
+            weapon->TryReload();
+        }
+
         if (!MayAttack(sense))
         {
             return;

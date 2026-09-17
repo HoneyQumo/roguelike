@@ -432,8 +432,13 @@ namespace RoguelikeGame
     constexpr auto TIRE_MARK_OBJECT_NAME = "TireMark";
     constexpr auto TIRE_MARK_PROP = "skid_mark";
     constexpr int TIRE_MARK_RENDER_LAYER = 8;
-    constexpr float TIRE_MARK_LENGTH = 72.f;
     constexpr float TIRE_MARK_WIDTH = 18.f;
+
+    // Резина на асфальте: не чёрная, иначе читается как дыра в полотне.
+    inline const sf::Color TIRE_MARK_COLOR = sf::Color(22, 20, 22, 230);
+
+    // Чем глубже занос, тем чернее полоса, но не до прозрачности.
+    constexpr float TIRE_MARK_MIN_ALPHA = 0.55f;
     constexpr float ARRIVAL_MARK_STEP = 16.f;
 
     // Вставшая машина больше не чертит: последние крупицы хода - это возврат заноса,

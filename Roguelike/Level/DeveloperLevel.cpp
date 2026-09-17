@@ -1,4 +1,4 @@
-#include "DeveloperLevel.h"
+﻿#include "DeveloperLevel.h"
 #include "GameSettings.h"
 #include "GameResources.h"
 #include "LevelBuilder.h"
@@ -15,7 +15,7 @@
 #include "ChaseComponent.h"
 #include "Freeze.h"
 #include "ProjectileComponent.h"
-#include "TireMark.h"
+#include "TrailComponent.h"
 #include "SwitchComponent.h"
 #include "CutscenePlayerComponent.h"
 #include "PlayerHudBinderComponent.h"
@@ -371,7 +371,6 @@ namespace RoguelikeGame
 
         arrivalTime = 0.f;
         smokeTime = 0.f;
-        markDrift = {0.f, 0.f};
         wasSkidding = false;
 
         scene->SetHandler(ARRIVAL_BEAT_DRIVE, [this, carObject](float deltaTime)
@@ -426,27 +425,50 @@ namespace RoguelikeGame
             }
         }
 
-        // Сдвиг копится целиком: направление одного кадра у почти вставшей машины - шум,
-        // и последние следы ложатся поперёк дороги.
+        // Почти вставшая машина резину не жжёт, а её направление - уже шум.
         if (deltaTime <= 0.f || step.GetLength() / deltaTime < ARRIVAL_MARK_MIN_SPEED)
         {
-            markDrift = {0.f, 0.f};
             return;
         }
 
-        markDrift = markDrift + step;
-        if (markDrift.GetLength() < ARRIVAL_MARK_STEP)
+        float alpha = TIRE_MARK_MIN_ALPHA + (1.f - TIRE_MARK_MIN_ALPHA) * std::min(1.f, pose.skid);
+
+        for (int wheel = 0; wheel < 2; wheel++)
         {
-            return;
+            TrailComponent* trail = SkidTrail(wheel);
+            if (trail != nullptr)
+            {
+                trail->Add(WheelPlace(pose, wheel == 0), alpha);
+            }
+        }
+    }
+
+    /**
+    *	Лента следа под одним колесом, создаётся при первом же заносе.
+    *
+    *	Имя то же, что у прежних штампов: смена локации выметает их по нему.
+    */
+    TrailComponent* DeveloperLevel::SkidTrail(int wheel)
+    {
+        if (wheel < 0 || wheel > 1)
+        {
+            return nullptr;
         }
 
-        float along = XYZEngine::DegreesFromDirection(markDrift.Normalized());
-        markDrift = {0.f, 0.f};
-
-        for (bool isLeft : {true, false})
+        if (skidTrails[wheel] == nullptr)
         {
-            TireMark::Spawn(WheelPlace(pose, isLeft), along);
+            auto gameObject = GameWorld::Instance()->CreateGameObject(TIRE_MARK_OBJECT_NAME);
+            gameObject->SetRenderLayer(TIRE_MARK_RENDER_LAYER);
+
+            auto trail = gameObject->AddComponent<TrailComponent>();
+            trail->SetColour(TIRE_MARK_COLOR);
+            trail->SetWidth(TIRE_MARK_WIDTH);
+            trail->SetStep(ARRIVAL_MARK_STEP);
+
+            skidTrails[wheel] = trail;
         }
+
+        return skidTrails[wheel];
     }
 
     void DeveloperLevel::SilenceCar()
@@ -1021,6 +1043,8 @@ namespace RoguelikeGame
         // и ни одна сцена больше не запустилась бы - включая побег на машине.
         cutscene = nullptr;
         takenParts.clear();
+        skidTrails[0] = nullptr;
+        skidTrails[1] = nullptr;
         escapeSpeed = 0.f;
         arrivalTime = 0.f;
         boardTime = 0.f;

@@ -3,6 +3,7 @@
 #include "Scene.h"
 #include "Level.h"
 #include "CarArrival.h"
+#include "TrailComponent.h"
 #include "CutsceneTimeline.h"
 #include "HudScreen.h"
 #include "InventoryScreen.h"
@@ -45,7 +46,8 @@ namespace RoguelikeGame
         float arrivalTime = 0.f;
         float boardTime = 0.f;
         float smokeTime = 0.f;
-        XYZEngine::Vector2Df markDrift = {0.f, 0.f};
+        // По ленте на колесо: два шлейфа живут одной геометрией каждый.
+        TrailComponent* skidTrails[2] = {nullptr, nullptr};
         bool wasSkidding = false;
         XYZEngine::GameObject* particles = nullptr;
         XYZEngine::GameObject* uiRoot = nullptr;
@@ -87,6 +89,7 @@ namespace RoguelikeGame
         void PlayArrival();
         void DriveArrival(XYZEngine::GameObject* carObject, float deltaTime);
         void TrailSkid(EscapeCarComponent* car, const CarPose& pose, const XYZEngine::Vector2Df& step, float deltaTime);
+        TrailComponent* SkidTrail(int wheel);
         void SilenceCar();
         void OnWavesCleared();
         void OnBossDefeated();

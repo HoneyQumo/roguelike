@@ -83,6 +83,7 @@
     <ClCompile Include="Shake.tests.cpp" />
     <ClCompile Include="NoDialogs.cpp" />
     <ClCompile Include="NoDialogs.tests.cpp" />
+    <ClCompile Include="BackOffSpot.tests.cpp" />
     <ClCompile Include="CarArrival.tests.cpp" />
     <ClCompile Include="CutsceneCamera.tests.cpp" />
     <ClCompile Include="LevelLoader.tests.cpp" />
@@ -233,6 +234,9 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\Roguelike\Enemies\Navigator.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Roguelike\Enemies\BackOffSpot.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\Roguelike\Enemies\HidingSpots.cpp">

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 namespace RoguelikeGame
 {
@@ -6,7 +6,8 @@ namespace RoguelikeGame
     {
         Hold,
         Approach,
-        Investigate
+        Investigate,
+        Withdraw
     };
 
     struct ChaseSense
@@ -14,6 +15,7 @@ namespace RoguelikeGame
         float distanceToTarget = 0.f;
         float detectionRadius = 0.f;
         float stopDistance = 0.f;
+        float backOffDistance = 0.f;
         float distanceToPoint = 0.f;
         float arriveDistance = 0.f;
         bool isAlerted = false;
@@ -41,7 +43,14 @@ namespace RoguelikeGame
     {
         if (IsTargetDetected(sense))
         {
-            return sense.distanceToTarget > sense.stopDistance ? ChaseMove::Approach : ChaseMove::Hold;
+            if (sense.distanceToTarget > sense.stopDistance)
+            {
+                return ChaseMove::Approach;
+            }
+
+            // Между отходом и остановкой мёртвая зона, иначе враг дёргается на границе.
+            // У ножевика она шире его же stopDistance, и отход недостижим.
+            return sense.distanceToTarget < sense.backOffDistance ? ChaseMove::Withdraw : ChaseMove::Hold;
         }
 
         if (sense.isAlerted && sense.hasPoint && sense.distanceToPoint > sense.arriveDistance)

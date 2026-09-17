@@ -3,7 +3,12 @@
 #include <GameWorld.h>
 #include <SpriteRendererComponent.h>
 
+#ifdef _DEBUG
+#include <crtdbg.h>
+#endif
+
 using RoguelikeGame::Freeze;
+using RoguelikeGame::FrozenPart;
 using RoguelikeGame::KeepsDrawing;
 using RoguelikeGame::Thaw;
 using XYZEngine::Component;
@@ -52,7 +57,7 @@ namespace
 		BrainStub* brain = nullptr;
 		XYZEngine::SpriteRendererComponent* sprite = nullptr;
 		ShotStub* shot = nullptr;
-		std::vector<Component*> frozen;
+		std::vector<FrozenPart> frozen;
 	};
 }
 
@@ -114,4 +119,60 @@ TEST_F(FreezeTest, WhatDrawsIsNeverTouched)
 	EXPECT_TRUE(KeepsDrawing(sprite));
 	EXPECT_TRUE(KeepsDrawing(guard->GetTransform()));
 	EXPECT_FALSE(KeepsDrawing(brain));
+}
+
+TEST_F(FreezeTest, EveryFrozenPartRemembersItsOwner)
+{
+	Freeze(guard, frozen);
+
+	ASSERT_FALSE(frozen.empty());
+	for (const FrozenPart& part : frozen)
+	{
+		EXPECT_EQ(part.owner, guard);
+	}
+}
+
+/**
+*	Замороженного могут убить, пока сцена идёт: физика раздаёт столкновения не
+*	глядя на выключенность, и сбитая пуля уничтожает свой объект сама.
+*
+*	Разморозка такого трогать не должна - это чужая память.
+*/
+TEST_F(FreezeTest, ThawLetsGoOfWhatDiedDuringTheScene)
+{
+	GameObject* bullet = GameWorld::Instance()->CreateGameObject("Bullet");
+	ShotStub* flight = bullet->AddComponent<ShotStub>();
+
+	Freeze(guard, frozen);
+	Freeze(bullet, frozen);
+
+	GameWorld::Instance()->DestroyGameObject(bullet);
+	GameWorld::Instance()->LateUpdate();
+
+	ASSERT_FALSE(GameWorld::Instance()->Contains(bullet)) << "the world still knows a destroyed object";
+
+	Thaw(frozen);
+
+	EXPECT_TRUE(brain->IsEnabled()) << "the living guard was left frozen";
+
+#ifdef _DEBUG
+	// Отладочная куча забивает освобождённое узором: запись туда его ломает,
+	// и это единственный способ поймать обращение к мёртвому тестом, а не глазами.
+	EXPECT_TRUE(_CrtCheckMemory()) << "thaw wrote into memory it had already given back";
+#endif
+
+	(void)flight;
+}
+
+TEST_F(FreezeTest, AWorldKnowsWhoIsStillAlive)
+{
+	GameObject* spark = GameWorld::Instance()->CreateGameObject("Spark");
+
+	EXPECT_TRUE(GameWorld::Instance()->Contains(spark));
+	EXPECT_FALSE(GameWorld::Instance()->Contains(nullptr));
+
+	GameWorld::Instance()->DestroyGameObject(spark);
+	GameWorld::Instance()->LateUpdate();
+
+	EXPECT_FALSE(GameWorld::Instance()->Contains(spark));
 }

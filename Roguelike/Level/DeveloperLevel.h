@@ -1,8 +1,9 @@
-#pragma once
+﻿#pragma once
 
 #include "Scene.h"
 #include "Level.h"
 #include "CarArrival.h"
+#include "Freeze.h"
 #include "TrailComponent.h"
 #include "CutsceneTimeline.h"
 #include "HudScreen.h"
@@ -41,7 +42,7 @@ namespace RoguelikeGame
         XYZEngine::GameObject* camera = nullptr;
 
         // Что именно выключила сцена: вернуть надо ровно это.
-        std::vector<XYZEngine::Component*> takenParts;
+        std::vector<FrozenPart> takenParts;
         float escapeSpeed = 0.f;
         float arrivalTime = 0.f;
         float boardTime = 0.f;

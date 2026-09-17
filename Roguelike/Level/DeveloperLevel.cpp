@@ -706,7 +706,7 @@ namespace RoguelikeGame
             if (bullet->IsEnabled())
             {
                 bullet->SetEnabled(false);
-                takenParts.push_back(bullet);
+                takenParts.push_back({bullet->GetGameObject(), bullet});
             }
         }
 

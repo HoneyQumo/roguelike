@@ -36,6 +36,13 @@ namespace RoguelikeGame
         unsigned int GetVersion() const;
 
         FogState GetState(int column, int row) const;
+
+        // Яркость от 0 до 1 рядом с тремя состояниями, а не вместо них: на состояниях
+        // завязана видимость актёров, а яркость нужна только показу.
+        float GetLight(int column, int row) const;
+
+        // Яркость угла клетки - среднее по четырём, которые этот угол делят.
+        float GetCornerLight(int column, int row) const;
         FogState GetStateAt(const XYZEngine::Vector2Df& position) const;
         int Count(FogState state) const;
 
@@ -44,6 +51,7 @@ namespace RoguelikeGame
 
     private:
         void LightBlockers(const LevelGrid& grid, int fromColumn, int fromRow);
+        void FillLight(int fromColumn, int fromRow);
 
         static FogOfWar current;
 
@@ -52,5 +60,6 @@ namespace RoguelikeGame
         int radius = 0;
         unsigned int version = 0u;
         std::vector<FogState> cells;
+        std::vector<float> light;
     };
 }

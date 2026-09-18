@@ -41,6 +41,11 @@ namespace RoguelikeGame
 
     // Насколько гаснет разведанное: планировка читается, детали нет.
     constexpr float FOG_KNOWN_LIGHT = 0.42f;
+
+    // Доля радиуса, внутри которой светит в полную силу, и яркость на самом краю.
+    // Край светлее памяти: то, что видно сейчас, не должно быть темнее того, что запомнилось.
+    constexpr float FOG_FULL_PART = 0.55f;
+    constexpr float FOG_EDGE_LIGHT = 0.55f;
     constexpr float ENEMY_ALERT_ARRIVE_DISTANCE = 48.f;
     constexpr float ENEMY_ALERT_POINT_DISTANCE = 420.f;
     constexpr float ENEMY_REPATH_INTERVAL = 0.4f;

@@ -33,6 +33,11 @@ namespace XYZEngine
 		void SetQuadFrame(std::size_t quad, const sf::IntRect& frame);
 		void SetQuadColor(std::size_t quad, const sf::Color& color);
 
+		// Цвет каждого угла порознь: между ними видеокарта растягивает градиент сама.
+		// Порядок углов тот же, что у AddQuad: левый низ, правый низ, правый верх, левый верх.
+		void SetQuadCorners(std::size_t quad, const sf::Color& leftBottom, const sf::Color& rightBottom,
+			const sf::Color& rightTop, const sf::Color& leftTop);
+
 		std::size_t GetQuadsCount() const;
 		const sf::VertexArray& GetVertices() const;
 

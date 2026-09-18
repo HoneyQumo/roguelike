@@ -283,3 +283,36 @@ TEST_F(ThreatWatchTest, AnEnemyThePlayerCanSeeIsNoSource)
 
 	EXPECT_TRUE(watch->GetSources().empty()) << "видимый противник всё равно подсвечен";
 }
+
+
+// Без тумана скрывать нечего: знак говорил бы о том, что и так на экране.
+TEST_F(ThreatWatchTest, WithoutFogNothingIsMarkedAtAll)
+{
+	RoguelikeGame::ChaseComponent* chase = CreateEnemy(400.f, 0.f);
+	chase->Provoke(player->GetTransform()->GetWorldPosition());
+
+	watch->Hear({player->GetTransform()->GetWorldPosition().x + 300.f, 0.f});
+	watch->Update(0.f);
+	ASSERT_FALSE(watch->GetSources().empty()) << "с туманом источников нет, проверять нечего";
+
+	FogOfWar::Reset(0, 0, 0);
+	watch->Update(0.f);
+
+	EXPECT_TRUE(watch->GetSources().empty()) << "без тумана знаки всё равно рисуются";
+}
+
+// Иначе накопленные без тумана пинги высыпались бы разом, когда туман вернётся.
+TEST_F(ThreatWatchTest, NoiseHeardWithoutFogDoesNotComeBackWithIt)
+{
+	Vector2Df stand = player->GetTransform()->GetWorldPosition();
+
+	FogOfWar::Reset(0, 0, 0);
+	watch->Hear({stand.x + 300.f, stand.y});
+	watch->Update(0.f);
+	ASSERT_TRUE(watch->GetSources().empty());
+
+	FogOfWar::Reset(grid.GetWidth(), grid.GetHeight(), 6);
+	watch->Update(0.f);
+
+	EXPECT_TRUE(watch->GetSources().empty()) << "старый шум всплыл вместе с туманом";
+}

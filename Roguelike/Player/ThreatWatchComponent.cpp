@@ -34,8 +34,11 @@ namespace RoguelikeGame
     {
         sources.clear();
 
-        if (gameObject == nullptr)
+        // Без тумана скрывать нечего: знак говорил бы о том, что и так на экране.
+        // Проверка здесь, а не у противников: шум их проверку не проходит.
+        if (gameObject == nullptr || !FogOfWar::Current().IsEnabled())
         {
+            pings.clear();
             return;
         }
 

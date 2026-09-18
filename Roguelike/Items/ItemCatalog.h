@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include <string>
+#include <string_view>
 #include <vector>
 #include "ItemDefinition.h"
 
@@ -26,4 +27,21 @@ namespace RoguelikeGame
     private:
         std::vector<ItemDefinition> items;
     };
+
+    /**
+    *	Обратный путь: по стволу найти предмет, которым его кладут в сумку.
+    *	Ствол задан строкой, чтобы слой предметов не знал про каталог оружия.
+    */
+    inline const ItemDefinition* FindWeaponItem(const ItemCatalog& catalog, std::string_view weaponId)
+    {
+        for (const ItemDefinition& item : catalog)
+        {
+            if (item.effect.kind == ItemEffectKind::EquipWeapon && item.effect.target == weaponId)
+            {
+                return &item;
+            }
+        }
+
+        return nullptr;
+    }
 }

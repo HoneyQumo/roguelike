@@ -288,6 +288,7 @@
         <ClInclude Include="Enemies\SightMemory.h"/>
         <ClInclude Include="Enemies\PatrolRules.h"/>
         <ClInclude Include="Enemies\ProgressWatch.h"/>
+        <ClInclude Include="Enemies\LookAhead.h"/>
         <ClInclude Include="Enemies\LookAround.h"/>
         <ClInclude Include="Enemies\LookTurn.h"/>
         <ClInclude Include="Enemies\AttackRules.h"/>

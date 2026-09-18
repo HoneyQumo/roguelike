@@ -1033,6 +1033,36 @@ TEST_F(ChaseComponentTest, ALongDetourIsWalkedToTheEnd)
 	EXPECT_LT(left, RoguelikeGame::TILE_SIZE) << "the enemy turned back before reaching the point";
 }
 
+// Идущий на шум целился в точку и смотрел сквозь стену,
+// а конус зрения едет за прицелом - обойти такого со спины было нельзя.
+TEST_F(ChaseComponentTest, TheEnemyWalkingToANoiseLooksAlongTheRoad)
+{
+	LoadMap(DETOUR);
+
+	ChaseComponent* chase = CreateEnemy(1, 1);
+	GameObject* enemy = chase->GetGameObject();
+
+	chase->Hear(At(1, 3));
+	Run(0.5f);
+
+	Vector2Df before = enemy->GetTransform()->GetWorldPosition();
+	Run(0.3f);
+	Vector2Df after = enemy->GetTransform()->GetWorldPosition();
+
+	Vector2Df moved = after - before;
+	ASSERT_GT(moved.GetLength(), 10.f) << "враг не идёт на шум";
+
+	Vector2Df toPoint = (At(1, 3) - after).Normalized();
+	Vector2Df heading = moved.Normalized();
+
+	ASSERT_LT(heading.DotProduct(toPoint), 0.7f) << "дорога не гнётся, тест ничего не проверяет";
+
+	Vector2Df forward = enemy->GetTransform()->GetForward();
+
+	EXPECT_GT(forward.DotProduct(heading), 0.9f) << "взгляд не по дороге";
+	EXPECT_LT(forward.DotProduct(toPoint), 0.7f) << "смотрит на источник шума сквозь стену";
+}
+
 TEST_F(ChaseComponentTest, AnAlarmOutlivesTheWalkToIt)
 {
 	LoadMap(DETOUR);

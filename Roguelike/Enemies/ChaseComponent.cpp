@@ -2,6 +2,7 @@
 #include "DamageInfo.h"
 #include "FactionComponent.h"
 #include "GameSettings.h"
+#include "LookAhead.h"
 #include "LevelGrid.h"
 #include "Noise.h"
 #include "BackOffSpot.h"
@@ -298,7 +299,10 @@ namespace RoguelikeGame
 
 		if (move == ChaseMove::Investigate)
 		{
-			MoveTowards(investigatePoint, deltaTime);
+			// Идём на шум по дороге, а смотреть должны по дороге же: ApplyAim успел
+			// прицелиться в саму точку, а путь к ней может идти вокруг стены.
+			Vector2Df step = MoveTowards(investigatePoint, deltaTime);
+			AimAlongStep(sense, step, investigatePoint);
 			return;
 		}
 
@@ -389,10 +393,32 @@ namespace RoguelikeGame
 		return hasCoverSpot;
 	}
 
-	void ChaseComponent::MoveTowards(const Vector2Df& goal, float deltaTime)
+	Vector2Df ChaseComponent::MoveTowards(const Vector2Df& goal, float deltaTime)
 	{
 		Vector2Df position = transform->GetWorldPosition();
-		movement->SetDirection(navigator.Steer(position, goal, movement->GetSpeed(), deltaTime));
+		Vector2Df step = navigator.Steer(position, goal, movement->GetSpeed(), deltaTime);
+
+		movement->SetDirection(step);
+
+		return step;
+	}
+
+	/**
+	*	Взгляд по ходу движения.
+	*
+	*	Пока цель видна, смотреть надо на неё - хоть боком, хоть спиной вперёд.
+	*	А вот идущий на шум не знает, где цель, и обязан смотреть туда, куда шагает:
+	*	конус зрения едет за прицелом, и взгляд сквозь стену делал обход бессмысленным.
+	*/
+	void ChaseComponent::AimAlongStep(const ChaseSense& sense, const Vector2Df& step, const Vector2Df& goal)
+	{
+		if (aim == nullptr || RoguelikeGame::IsTargetDetected(sense))
+		{
+			return;
+		}
+
+		aim->AimAtPoint(LookAheadPoint(transform->GetWorldPosition(), step, goal, LOOK_AIM_DISTANCE));
+		aim->SetMaxDistance(0.f);
 	}
 
 	/**

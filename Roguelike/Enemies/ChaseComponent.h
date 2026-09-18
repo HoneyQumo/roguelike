@@ -141,7 +141,9 @@ namespace RoguelikeGame
 		void Shout();
 		void ApplyPace();
 		XYZEngine::Vector2Df Facing() const;
-		void MoveTowards(const XYZEngine::Vector2Df& goal, float deltaTime);
+		// Возвращает сделанный шаг: по нему выставляется взгляд.
+		XYZEngine::Vector2Df MoveTowards(const XYZEngine::Vector2Df& goal, float deltaTime);
+		void AimAlongStep(const ChaseSense& sense, const XYZEngine::Vector2Df& step, const XYZEngine::Vector2Df& goal);
 		void BackAwayFrom(const XYZEngine::Vector2Df& threat, float wanted, float deltaTime);
 		bool TakeCoverFrom(const XYZEngine::Vector2Df& threat, bool wantsCover);
 		void TakePoint(const XYZEngine::Vector2Df& place, float duration);

@@ -1,6 +1,7 @@
 #include "PatrolComponent.h"
 #include "ChaseComponent.h"
 #include "GameSettings.h"
+#include "LookAhead.h"
 #include "LevelGrid.h"
 #include "PathService.h"
 #include <AimRotationComponent.h>
@@ -142,18 +143,24 @@ namespace RoguelikeGame
             navigator.Reset();
         }
 
+        // Сначала шаг, потом взгляд: смотреть надо туда, куда реально идём,
+        // а направление обхода известно только после навигатора.
+        Vector2Df step = WalkTo(points[index].position, deltaTime);
+
         if (aim != nullptr)
         {
-            aim->AimAtPoint(points[index].position);
+            aim->AimAtPoint(LookAheadPoint(position, step, points[index].position, LOOK_AIM_DISTANCE));
         }
-
-        WalkTo(points[index].position, deltaTime);
     }
 
-    void PatrolComponent::WalkTo(const Vector2Df& goal, float deltaTime)
+    Vector2Df PatrolComponent::WalkTo(const Vector2Df& goal, float deltaTime)
     {
         Vector2Df position = transform->GetWorldPosition();
-        movement->SetDirection(navigator.Steer(position, goal, movement->GetSpeed(), deltaTime));
+        Vector2Df step = navigator.Steer(position, goal, movement->GetSpeed(), deltaTime);
+
+        movement->SetDirection(step);
+
+        return step;
     }
 
     void PatrolComponent::DrawRoute() const

@@ -51,7 +51,7 @@ namespace RoguelikeGame
     {
         LOG_INFO("Developer level is starting");
 
-        state = State::Playing;
+        state = RunState::Playing;
         gameOverDelay.Stop();
 
         // Забег начинается с первой сюжетной локации, а не с первой строки реестра:
@@ -94,7 +94,7 @@ namespace RoguelikeGame
                 {
                     health->SubscribeDeath([this](const DeathInfo& death)
                     {
-                        state = State::PlayerDied;
+                        state = RunState::PlayerDied;
                         gameOverDelay.Start(GAME_OVER_DELAY);
                         SilenceCar();
                     });
@@ -845,7 +845,7 @@ namespace RoguelikeGame
         if (step.kind == LevelStepKind::Finished)
         {
             LOG_INFO("No more levels, the run is complete");
-            state = State::Victory;
+            state = RunState::Victory;
             UpdateOverlay();
             return;
         }
@@ -944,13 +944,13 @@ namespace RoguelikeGame
         bool isPaused = Engine::Instance()->IsPaused();
 
         // Escape при открытой сумке закрывает её, а не ставит игру на паузу.
-        if (!XYZEngine::UiManager::Instance()->IsInputCaptured()
+        if (MayPause(state) && !XYZEngine::UiManager::Instance()->IsInputCaptured()
             && input->WasActionPressed(XYZEngine::InputAction::Pause))
         {
             SetPaused(!isPaused);
             return;
         }
-        if (!input->HasFocus() && !isPaused)
+        if (MayPause(state) && !input->HasFocus() && !isPaused)
         {
             SetPaused(true);
             return;
@@ -963,7 +963,7 @@ namespace RoguelikeGame
         UpdateWavePanel();
         UpdateChasePanel();
 
-        if (state == State::PlayerDied)
+        if (state == RunState::PlayerDied)
         {
             gameOverDelay.Tick(deltaTime);
             if (gameOverDelay.IsReady())
@@ -971,7 +971,7 @@ namespace RoguelikeGame
                 ShowGameOver();
             }
         }
-        else if ((state == State::GameOver || state == State::Victory) && input->WasKeyPressed(RESTART_KEY))
+        else if ((state == RunState::GameOver || state == RunState::Victory) && input->WasKeyPressed(RESTART_KEY))
         {
             Restart();
         }
@@ -1103,7 +1103,7 @@ namespace RoguelikeGame
 
     void DeveloperLevel::ShowGameOver()
     {
-        state = State::GameOver;
+        state = RunState::GameOver;
         UpdateOverlay();
 
         LOG_INFO("Game over");
@@ -1120,11 +1120,11 @@ namespace RoguelikeGame
         {
             messageScreen->Show(PAUSE_TITLE, PAUSE_HINT);
         }
-        else if (state == State::GameOver)
+        else if (state == RunState::GameOver)
         {
             messageScreen->Show(GAME_OVER_TITLE, GAME_OVER_HINT);
         }
-        else if (state == State::Victory)
+        else if (state == RunState::Victory)
         {
             messageScreen->Show(VICTORY_TITLE, VICTORY_HINT);
         }

@@ -142,6 +142,7 @@
     <ClCompile Include="ViewCulling.tests.cpp" />
     <ClCompile Include="Settle.tests.cpp" />
     <ClCompile Include="PauseSound.tests.cpp" />
+    <ClCompile Include="RunState.tests.cpp" />
     <ClCompile Include="Threat.tests.cpp" />
     <ClCompile Include="Tileset.tests.cpp" />
     <ClCompile Include="Awareness.tests.cpp" />

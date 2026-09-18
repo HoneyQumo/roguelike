@@ -260,6 +260,19 @@ namespace RoguelikeGame
     inline const sf::Color VITALS_HUD_ARMOR_COLOR = {170, 180, 200};
     constexpr float AMMO_HUD_HEIGHT = AMMO_HUD_NAME_HEIGHT + AMMO_HUD_AMMO_HEIGHT;
 
+    constexpr float WEAPON_ROW_SLOT_SIZE = 58.f;
+    constexpr float WEAPON_ROW_SLOT_GAP = 8.f;
+    constexpr float WEAPON_ROW_GAP = 10.f;
+    constexpr int WEAPON_ROW_KEY_FONT_SIZE = 14;
+    constexpr float WEAPON_ROW_KEY_HEIGHT = 18.f;
+
+    // Цифра берётся из привязки, а не пишется руками: подписи негде разойтись с управлением.
+    constexpr int DigitOfKey(sf::Keyboard::Key key)
+    {
+        return key >= sf::Keyboard::Num0 && key <= sf::Keyboard::Num9
+            ? static_cast<int>(key) - static_cast<int>(sf::Keyboard::Num0) : 0;
+    }
+
     // Красная зона обоймы
     constexpr float AMMO_HUD_LOW_PART = 0.25f;
 

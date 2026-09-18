@@ -1,5 +1,8 @@
 #include "PlayerHudBinderComponent.h"
 #include "GameResources.h"
+#include <ResourceSystem.h>
+#include <InputSystem.h>
+#include "Item.h"
 #include "GameSettings.h"
 #include "WeaponCatalog.h"
 #include <GameWorld.h>
@@ -59,6 +62,7 @@ namespace RoguelikeGame
         if (loadout != nullptr)
         {
             screen->SetAmmo(ReadAmmoState());
+            PushWeaponSlots();
         }
 
         if (health != nullptr || stamina != nullptr)
@@ -69,6 +73,40 @@ namespace RoguelikeGame
 
     void PlayerHudBinderComponent::Render()
     {
+    }
+
+    /**
+    *	Ряд слотов собирает биндер: он один знает и раскладку, и каталог предметов,
+    *	и привязки клавиш. Экран рисует то, что дали, и ни о чём из этого не знает.
+    */
+    void PlayerHudBinderComponent::PushWeaponSlots()
+    {
+        const LoadoutState& state = loadout->GetState();
+        std::vector<WeaponSlotHudState> slots;
+
+        for (int slot = 0; slot < state.slotsCount; slot++)
+        {
+            WeaponSlotHudState shown;
+            shown.hasWeapon = !state.IsEmpty(slot);
+            shown.isCurrent = slot == state.currentSlot;
+
+            auto action = static_cast<XYZEngine::InputAction>(
+                static_cast<int>(XYZEngine::InputAction::WeaponSlot1) + slot);
+            shown.key = DigitOfKey(XYZEngine::InputSystem::Instance()->GetBinding(action).key);
+
+            if (shown.hasWeapon)
+            {
+                const ItemDefinition* item = FindWeaponItem(GameResources::GetItems(), GetWeapon(state.slots[slot].id).id);
+                if (item != nullptr)
+                {
+                    shown.icon = XYZEngine::ResourceSystem::Instance()->GetTextureShared(ItemTextureName(item->id));
+                }
+            }
+
+            slots.push_back(shown);
+        }
+
+        screen->SetWeaponSlots(slots);
     }
 
     void PlayerHudBinderComponent::FindTarget()

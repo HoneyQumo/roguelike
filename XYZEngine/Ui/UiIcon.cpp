@@ -14,11 +14,25 @@ namespace XYZEngine
 		}
 
 		sprite.setTexture(*texture, true);
+
+		FitToBounds();
 	}
 
 	void UiIcon::SetTextureRect(const sf::IntRect& rect)
 	{
 		sprite.setTextureRect(rect);
+
+		FitToBounds();
+	}
+
+	// Новая картинка - новые пропорции. Без пересчёта спрайт остаётся в масштабе прежней
+	// и вылезает за рамку: раскладку виджетов никто не трогает, пока не сменится размер окна.
+	void UiIcon::FitToBounds()
+	{
+		if (GetBounds().width > 0.f && GetBounds().height > 0.f)
+		{
+			OnLayout();
+		}
 	}
 
 	void UiIcon::SetColor(const sf::Color& color)

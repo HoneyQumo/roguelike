@@ -21,6 +21,8 @@ namespace XYZEngine
 		void OnDraw() const override;
 
 	private:
+		void FitToBounds();
+
 		sf::Sprite sprite;
 		const sf::Texture* texture = nullptr;
 		bool isAdditiveBlending = false;

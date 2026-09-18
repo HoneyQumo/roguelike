@@ -31,6 +31,7 @@ namespace RoguelikeGame
         InventoryScreen* inventoryScreen = nullptr;
 
         void ShowRefusal(const std::string& text);
+        void PushWeaponSlots();
         WeaponComponent* weapon = nullptr;
         PlayerLoadoutComponent* loadout = nullptr;
         HealthComponent* health = nullptr;

@@ -61,9 +61,9 @@ TEST_F(ItemEffectTest, UnknownEffectIsRefused)
 	ItemDefinition potion = MakeItem("potion", ItemEffectKind::Heal, 30.f);
 
 	int refusals = 0;
-	effects->SubscribeRefused([&refusals](const ItemDefinition&) { refusals++; });
+	effects->SubscribeRefused([&refusals](const ItemDefinition&, RoguelikeGame::ItemRefuseReason) { refusals++; });
 
-	EXPECT_FALSE(effects->Apply(potion));
+	EXPECT_FALSE(effects->Apply(potion).isApplied);
 	EXPECT_EQ(refusals, 1);
 }
 
@@ -78,7 +78,7 @@ TEST_F(ItemEffectTest, RegisteredHandlerTakesTheEffect)
 
 	ItemDefinition potion = MakeItem("potion", ItemEffectKind::Heal, 30.f);
 
-	EXPECT_TRUE(effects->Apply(potion));
+	EXPECT_TRUE(effects->Apply(potion).isApplied);
 	EXPECT_FLOAT_EQ(healed, 30.f);
 	EXPECT_TRUE(effects->HasHandler(ItemEffectKind::Heal));
 }
@@ -90,9 +90,9 @@ TEST_F(ItemEffectTest, HandlerCanRefuseTheEffect)
 	ItemDefinition key = MakeItem("key", ItemEffectKind::Unlock, 0.f, "door");
 
 	int refusals = 0;
-	effects->SubscribeRefused([&refusals](const ItemDefinition&) { refusals++; });
+	effects->SubscribeRefused([&refusals](const ItemDefinition&, RoguelikeGame::ItemRefuseReason) { refusals++; });
 
-	EXPECT_FALSE(effects->Apply(key));
+	EXPECT_FALSE(effects->Apply(key).isApplied);
 	EXPECT_EQ(refusals, 1);
 }
 

@@ -15,7 +15,7 @@ namespace RoguelikeGame
 {
     class InventoryComponent;
 
-    using ItemEffectHandler = std::function<bool(const ItemEffect&)>;
+    using ItemEffectHandler = std::function<ItemUseResult(const ItemEffect&)>;
     using ItemPickupRule = std::function<bool(const ItemEffect&)>;
 
     class ItemEffectComponent : public XYZEngine::Component
@@ -33,10 +33,11 @@ namespace RoguelikeGame
         void SetPickupRule(ItemEffectKind kind, ItemPickupRule rule);
         bool AppliesOnPickup(const ItemDefinition& item) const;
 
-        bool Apply(const ItemDefinition& item);
+        ItemUseResult Apply(const ItemDefinition& item);
 
         XYZEngine::SubscriptionId SubscribeApplied(std::function<void(const ItemDefinition&)> onApplied);
-        XYZEngine::SubscriptionId SubscribeRefused(std::function<void(const ItemDefinition&)> onRefused);
+        XYZEngine::SubscriptionId SubscribeRefused(
+            std::function<void(const ItemDefinition&, ItemRefuseReason)> onRefused);
 
     private:
         struct Entry
@@ -56,7 +57,7 @@ namespace RoguelikeGame
         std::vector<RuleEntry> pickupRules;
 
         XYZEngine::EventList<const ItemDefinition&> appliedEvent;
-        XYZEngine::EventList<const ItemDefinition&> refusedEvent;
+        XYZEngine::EventList<const ItemDefinition&, ItemRefuseReason> refusedEvent;
 
         const ItemEffectHandler* FindHandler(ItemEffectKind kind) const;
     };

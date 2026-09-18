@@ -42,7 +42,7 @@ namespace RoguelikeGame
         // Кладёт предмет вместо того, что лежало в ячейке: так идёт обмен оружием.
         bool Replace(int slotIndex, const ItemDefinition& item, int charge = NO_CHARGE);
         bool Use(int slotIndex);
-        void SetUseHandler(std::function<bool(const ItemDefinition&)> newUseHandler);
+        void SetUseHandler(std::function<ItemUseResult(const ItemDefinition&)> newUseHandler);
         bool UseSelected();
 
         void SelectSlot(int index);
@@ -66,7 +66,7 @@ namespace RoguelikeGame
     private:
         std::vector<InventorySlot> slots;
         int selectedSlot = 0;
-        std::function<bool(const ItemDefinition&)> useHandler;
+        std::function<ItemUseResult(const ItemDefinition&)> useHandler;
 
         XYZEngine::EventList<const ItemDefinition&, int> addedEvent;
         XYZEngine::EventList<const ItemDefinition&, int> removedEvent;

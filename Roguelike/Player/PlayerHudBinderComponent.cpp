@@ -120,11 +120,11 @@ namespace RoguelikeGame
         auto effects = target->GetComponent<ItemEffectComponent>();
         if (effects != nullptr)
         {
-            effects->SubscribeRefused([this](const ItemDefinition&)
+            effects->SubscribeRefused([this](const ItemDefinition&, ItemRefuseReason reason)
             {
                 if (screen != nullptr)
                 {
-                    screen->ShowNotice(ITEM_REFUSED_NOTICE);
+                    screen->ShowNotice(ItemRefuseText(reason));
                 }
             });
         }

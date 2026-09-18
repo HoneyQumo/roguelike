@@ -65,6 +65,43 @@ namespace RoguelikeGame
         std::string target;
     };
 
+    enum class ItemRefuseReason
+    {
+        None,
+        NoHandler,
+        NotNeeded,
+        Unknown
+    };
+
+    /**
+    *	Ответ на попытку применить предмет: применилось ли, сколько списать и почему нет.
+    *
+    *	Сколько тратить, решает сам эффект, а не сумка: иначе новый вид эффекта
+    *	каждый раз требовал бы правки инвентаря.
+    *
+    *	Превращение из bool неявное нарочно: обработчику, которому причина не нужна,
+    *	по-прежнему хватает да или нет, и ни одна старая регистрация не переписывается.
+    */
+    struct ItemUseResult
+    {
+        bool isApplied = false;
+        int consumed = 0;
+        ItemRefuseReason reason = ItemRefuseReason::None;
+
+        ItemUseResult() = default;
+
+        constexpr ItemUseResult(bool isDone)
+            : isApplied(isDone), consumed(isDone ? 1 : 0),
+              reason(isDone ? ItemRefuseReason::None : ItemRefuseReason::NotNeeded)
+        {
+        }
+
+        constexpr ItemUseResult(bool isDone, int taken, ItemRefuseReason why)
+            : isApplied(isDone), consumed(taken), reason(why)
+        {
+        }
+    };
+
     struct ItemDefinition
     {
         std::string id;

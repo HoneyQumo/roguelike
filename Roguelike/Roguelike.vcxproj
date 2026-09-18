@@ -198,6 +198,7 @@
         <ClCompile Include="Level\LevelBuilder.cpp"/>
         <ClCompile Include="Level\LevelLoader.cpp"/>
         <ClCompile Include="Level\Wall.cpp"/>
+        <ClCompile Include="Core\CrashReport.cpp"/>
         <ClCompile Include="Core\GameMain.cpp"/>
         <ClCompile Include="Fx\Music.cpp"/>
         <ClCompile Include="Player\Player.cpp"/>
@@ -358,6 +359,7 @@
         <ClInclude Include="Weapons\Projectile.h"/>
         <ClInclude Include="Weapons\Weapon.h"/>
         <ClInclude Include="Core\Freeze.h"/>
+        <ClInclude Include="Core\CrashReport.h"/>
         <ClInclude Include="Core\GameSettings.h"/>
         <ClInclude Include="Level\Level.h"/>
         <ClInclude Include="Level\RunState.h"/>

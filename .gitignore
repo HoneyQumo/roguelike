@@ -1,5 +1,6 @@
 # temporary directories
 .vs
+/.idea/
 x64
 x86
 *.user

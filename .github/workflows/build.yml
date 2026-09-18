@@ -3,14 +3,19 @@ name: Build Game Solution
 on:
   push:
     branches:
-      - '**' # Запускать на любой ветке
+      - main # Ветку проверяет pull_request, здесь проверяется main после мержа
   pull_request:
     branches:
-      - main # И на каждый Pull Request в main
+      - main
+
+# Новый пуш обесценивает предыдущий прогон по той же ветке, но не по main.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
   build:
-    runs-on: windows-latest # Иcnользуем Windows Runner
+    runs-on: windows-latest
     timeout-minutes: 30 # Что зависло, то красное: дефолтные шесть часов ждать нечего
 
     strategy:
@@ -21,30 +26,24 @@ jobs:
     name: ${{ matrix.configuration }}|x64
 
     steps:
-      # Step 1: Checkout the repository
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # Step 2: Set up MSBuild and Visual Studio
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v2
 
-      # Step 3: Restore NuGet packages (packages.config в EngineTest)
       - name: Restore NuGet packages
         run: |
           msbuild Roguelike.sln -t:restore -p:RestorePackagesConfig=true
 
-      # Step 4: Build the solution
       - name: Build solution
         run: |
           msbuild Roguelike.sln /p:Configuration=${{ matrix.configuration }} /p:Platform=x64
 
-      # Step 5: Run unit tests
       - name: Run tests
         run: |
           .\x64\${{ matrix.configuration }}\EngineTest.exe --gtest_output=xml:test-results.xml
 
-      # Step 6: Keep the report even when tests fail
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v4
@@ -53,7 +52,6 @@ jobs:
           path: test-results.xml
           if-no-files-found: error
 
-      # Step 7: Playable build: exe, resources and OpenAL next to it
       - name: Upload game build
         if: matrix.configuration == 'Release'
         uses: actions/upload-artifact@v4

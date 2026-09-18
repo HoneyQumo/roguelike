@@ -143,6 +143,7 @@
     <ClCompile Include="Settle.tests.cpp" />
     <ClCompile Include="PauseSound.tests.cpp" />
     <ClCompile Include="RunState.tests.cpp" />
+    <ClCompile Include="ShippedResources.tests.cpp" />
     <ClCompile Include="TurnSpeed.tests.cpp" />
     <ClCompile Include="CameraFollow.tests.cpp" />
     <ClCompile Include="Version.tests.cpp" />

@@ -127,7 +127,6 @@ namespace RoguelikeGame
 
         XYZEngine::ResourceSystem::Instance()->LoadFont(HUD_FONT, HUD_FONT_FILE);
 
-        XYZEngine::ResourceSystem::Instance()->LoadSound(SHOT_SOUND, SHOT_SOUND_FILE);
         XYZEngine::ResourceSystem::Instance()->LoadSound(HURT_SOUND, HURT_SOUND_FILE);
         XYZEngine::ResourceSystem::Instance()->LoadSound(DOOR_OPEN_SOUND, DOOR_OPEN_SOUND_FILE);
         XYZEngine::ResourceSystem::Instance()->LoadSound(LEVER_SOUND, LEVER_SOUND_FILE);

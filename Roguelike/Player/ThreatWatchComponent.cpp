@@ -19,7 +19,7 @@ namespace RoguelikeGame
 
     void ThreatWatchComponent::Start()
     {
-        // Start зовут и после смены локации: без снятия старой подписки их накопится по одной на уровень.
+        // Start зовут и при смене локации - иначе подписки копятся.
         UnsubscribeNoiseRaised(noiseSubscription);
 
         noiseSubscription = SubscribeNoiseRaised([this](const Noise& noise)

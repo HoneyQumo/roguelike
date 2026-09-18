@@ -30,9 +30,6 @@ namespace RoguelikeGame
         Faction attackerFaction = Faction::Neutral;
         XYZEngine::Vector2Df position = {0.f, 0.f};
         XYZEngine::Vector2Df direction = {0.f, 0.f};
-
-        // Удар пришёл в спину. Едет вместе с источником в DamageInfo и DeathInfo,
-        // так что эффектам, звуку и HUD не нужно ничего досчитывать.
         bool isCritical = false;
     };
 

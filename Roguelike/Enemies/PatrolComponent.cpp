@@ -143,8 +143,7 @@ namespace RoguelikeGame
             navigator.Reset();
         }
 
-        // Сначала шаг, потом взгляд: смотреть надо туда, куда реально идём,
-        // а направление обхода известно только после навигатора.
+        // Сначала шаг: направление обхода известно только после навигатора.
         Vector2Df step = WalkTo(points[index].position, deltaTime);
 
         if (aim != nullptr)

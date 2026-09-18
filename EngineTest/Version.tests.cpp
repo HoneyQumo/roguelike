@@ -32,12 +32,7 @@ TEST(VersionTest, TheTitleCarriesTheVersion)
 	EXPECT_NE(title.find(RoguelikeGame::GAME_NAME), std::string::npos) << "в заголовке нет имени игры";
 }
 
-/**
-*	Число из заголовка читает не только компилятор.
-*
-*	Скрипт выпуска вытаскивает его регуляркой, чтобы поставить тег, поэтому
-*	числа обязаны оставаться числами, а не выражениями.
-*/
+// Сборка релиза достаёт их регуляркой, так что это должны быть числа, а не выражения.
 TEST(VersionTest, TheNumbersAreSaneForARelease)
 {
 	EXPECT_GE(RoguelikeGame::VERSION_MAJOR, 0);

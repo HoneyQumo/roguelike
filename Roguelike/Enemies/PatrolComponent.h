@@ -55,7 +55,6 @@ namespace RoguelikeGame
 
         Navigator navigator;
 
-        // Возвращает сделанный шаг: по нему выставляется взгляд.
         XYZEngine::Vector2Df WalkTo(const XYZEngine::Vector2Df& goal, float deltaTime);
         void StartLook();
         void AimAtAngle(float degrees);

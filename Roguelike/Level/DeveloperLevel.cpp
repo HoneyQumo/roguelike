@@ -54,8 +54,7 @@ namespace RoguelikeGame
         state = RunState::Playing;
         gameOverDelay.Stop();
 
-        // Забег начинается с первой сюжетной локации, а не с первой строки реестра:
-        // отладочная карта, положенная сверху, не должна становиться началом игры.
+        // Начинаем с первой сюжетной локации, а не с первой строки реестра.
         int firstLevel = GameResources::GetLevels().FirstIndex(LevelMode::Campaign);
         currentLevelIndex = firstLevel < 0 ? 0 : firstLevel;
         pendingLevelIndex = -1;
@@ -1090,8 +1089,7 @@ namespace RoguelikeGame
 
     void DeveloperLevel::SetPaused(bool isPaused)
     {
-        // Звук глушит движок: музыка, выстрелы и зацикленный мотор - не дело сцены,
-        // и перечислять их поимённо она бы всё равно забывала.
+        // Звук глушит движок: сцена не знает про все источники.
         Engine::Instance()->SetPaused(isPaused);
         RenderSystem::Instance()->GetMainWindow().setMouseCursorVisible(isPaused);
         RenderSystem::Instance()->HoldMouse(!isPaused);

@@ -222,7 +222,7 @@ namespace RoguelikeGame
 
     int LevelCatalog::NextIndex(LevelMode mode, int afterIndex) const
     {
-        // Индекс приходит снаружи и может быть каким угодно: отрицательный старт увёл бы обход за начало вектора.
+        // Индекс приходит снаружи, отрицательный увёл бы обход за начало вектора.
         int start = afterIndex < 0 ? 0 : afterIndex + 1;
 
         for (int index = start; index < static_cast<int>(levels.size()); index++)

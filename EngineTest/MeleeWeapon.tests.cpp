@@ -70,13 +70,7 @@ TEST_F(MeleeWeaponTest, AHeavySwingHoldsTheFighterInPlace)
 	EXPECT_TRUE(melee->IsCharging());
 }
 
-/**
-*	Отмена обязана вернуть движение.
-*
-*	На этом держатся все ветки, которые обрывают удар со стороны: перекат, смена
-*	оружия, полученный урон, смерть и перехват указателя интерфейсом. Стоило одной
-*	из них не позвать отмену - и боец оставался вкопанным, не держа кнопку.
-*/
+// На отмене держатся перекат, смена оружия, урон, смерть и перехват указателя.
 TEST_F(MeleeWeaponTest, CancellingASwingGivesTheLegsBack)
 {
 	ASSERT_TRUE(melee->TryStartHeavyAttack());

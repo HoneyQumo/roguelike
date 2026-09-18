@@ -299,8 +299,6 @@ namespace RoguelikeGame
 
 		if (move == ChaseMove::Investigate)
 		{
-			// Идём на шум по дороге, а смотреть должны по дороге же: ApplyAim успел
-			// прицелиться в саму точку, а путь к ней может идти вокруг стены.
 			Vector2Df step = MoveTowards(investigatePoint, deltaTime);
 			AimAlongStep(sense, step, investigatePoint);
 			return;
@@ -403,13 +401,7 @@ namespace RoguelikeGame
 		return step;
 	}
 
-	/**
-	*	Взгляд по ходу движения.
-	*
-	*	Пока цель видна, смотреть надо на неё - хоть боком, хоть спиной вперёд.
-	*	А вот идущий на шум не знает, где цель, и обязан смотреть туда, куда шагает:
-	*	конус зрения едет за прицелом, и взгляд сквозь стену делал обход бессмысленным.
-	*/
+	// Пока цель видна, смотрим на неё. Идущий на шум смотрит туда, куда шагает.
 	void ChaseComponent::AimAlongStep(const ChaseSense& sense, const Vector2Df& step, const Vector2Df& goal)
 	{
 		if (aim == nullptr || RoguelikeGame::IsTargetDetected(sense))

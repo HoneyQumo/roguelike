@@ -24,6 +24,15 @@ namespace XYZEngine
 		void StopAiming();
 		void SetMaxDistance(float newMaxDistance);
 
+		/**
+		*	Сколько градусов в секунду объект успевает довернуть.
+		*
+		*	Ноль - мгновенно, как было: мышь игрока не должна ждать корпус.
+		*	Врагу скорость нужна, иначе спины у него нет - она появляется
+		*	и исчезает за один кадр, и зайти за неё невозможно.
+		*/
+		void SetTurnSpeed(float newTurnSpeed);
+
 		const Vector2Df& GetAimDirection() const;
 	private:
 		TransformComponent* transform = nullptr;
@@ -34,6 +43,7 @@ namespace XYZEngine
 		bool isCursorAim = false;
 		bool isPointAim = false;
 		float maxDistance = 0.f;
+		float turnSpeed = 0.f;
 
 		Vector2Df aimDirection = { 1.f, 0.f };
 

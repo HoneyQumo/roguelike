@@ -29,6 +29,41 @@ namespace XYZEngine
 		return ToDegrees(std::atan2(direction.y, direction.x));
 	}
 
+	// Кратчайший угол между направлениями: -180..180, без накрутки оборотов.
+	inline float ShortestAngleDegrees(float fromDegrees, float toDegrees)
+	{
+		float difference = std::fmod(toDegrees - fromDegrees, 360.f);
+
+		if (difference > 180.f)
+		{
+			difference -= 360.f;
+		}
+		else if (difference < -180.f)
+		{
+			difference += 360.f;
+		}
+
+		return difference;
+	}
+
+	/**
+	*	Доворот к нужному углу не дальше, чем на maxStep.
+	*
+	*	Шаг ноль или отрицательный означает «без ограничения» - объект встаёт
+	*	на угол сразу. Так ведут себя все, кому скорость поворота не задали.
+	*/
+	inline float TurnTowardsDegrees(float fromDegrees, float toDegrees, float maxStepDegrees)
+	{
+		float difference = ShortestAngleDegrees(fromDegrees, toDegrees);
+
+		if (maxStepDegrees <= 0.f || std::fabs(difference) <= maxStepDegrees)
+		{
+			return toDegrees;
+		}
+
+		return fromDegrees + (difference > 0.f ? maxStepDegrees : -maxStepDegrees);
+	}
+
 	inline Vector2Df RotateByDegrees(const Vector2Df& direction, float degrees)
 	{
 		if (degrees == 0.f)

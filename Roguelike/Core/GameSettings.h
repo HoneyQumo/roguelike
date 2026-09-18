@@ -16,6 +16,10 @@ namespace RoguelikeGame
 
     constexpr float CAMERA_VIEW_HEIGHT = static_cast<float>(SCREEN_HEIGHT);
     constexpr float CAMERA_SHAKE_LIMIT = 40.f;
+
+    // За это время камера проходит около двух третей пути до героя: она не приклеена,
+    // но и не плавает. Ноль вернул бы жёсткую привязку.
+    constexpr float CAMERA_FOLLOW_TIME = 0.12f;
     constexpr std::size_t PARTICLE_POOL_CAPACITY = 1024;
     constexpr sf::Keyboard::Key DEBUG_HEAL_KEY = sf::Keyboard::H;
     constexpr float DEBUG_HEAL_AMOUNT = 25.f;

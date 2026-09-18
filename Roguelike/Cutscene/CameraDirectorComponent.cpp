@@ -1,4 +1,8 @@
 #include "CameraDirectorComponent.h"
+#include "CameraFollow.h"
+#include "GameSettings.h"
+#include "LevelGrid.h"
+#include <CameraComponent.h>
 #include <GameObject.h>
 #include <TransformComponent.h>
 
@@ -16,7 +20,7 @@ namespace RoguelikeGame
             return;
         }
 
-        XYZEngine::Vector2Df wanted = Destination();
+        XYZEngine::Vector2Df wanted = KeepInsideLevel(Destination());
 
         if (travelled < travel)
         {
@@ -31,7 +35,9 @@ namespace RoguelikeGame
         }
         else
         {
-            aim = wanted;
+            // Камера не приклеена к герою: на резком развороте она чуть отстаёт
+            // и догоняет. Жёсткая привязка читается как дрожь, особенно с тряской.
+            aim = ApproachPoint(aim, wanted, CAMERA_FOLLOW_TIME, deltaTime);
         }
 
         transform->SetWorldPosition(aim);
@@ -47,12 +53,49 @@ namespace RoguelikeGame
 
         if (!isAway && follow != nullptr)
         {
-            aim = follow->GetTransform()->GetWorldPosition();
+            Place(follow->GetTransform()->GetWorldPosition());
+        }
+    }
 
-            if (transform != nullptr)
-            {
-                transform->SetWorldPosition(aim);
-            }
+    /**
+    *	Зажимает центр кадра границами карты.
+    *
+    *	Границы берём у сетки уровня, половину кадра - у камеры на том же объекте.
+    *	Нет сетки или камеры - зажимать нечем и не от чего: так бывает на экранах
+    *	вне уровня, и там камера ходит свободно.
+    */
+    XYZEngine::Vector2Df CameraDirectorComponent::KeepInsideLevel(const XYZEngine::Vector2Df& point) const
+    {
+        const LevelGrid& grid = LevelGrid::Current();
+        if (grid.IsEmpty() || gameObject == nullptr)
+        {
+            return point;
+        }
+
+        auto camera = gameObject->GetComponent<XYZEngine::CameraComponent>();
+        if (camera == nullptr)
+        {
+            return point;
+        }
+
+        XYZEngine::Vector2Df size = camera->GetViewSize();
+        XYZEngine::Vector2Df half = {0.5f * size.x, 0.5f * size.y};
+
+        // ToWorld даёт центр клетки, а рисуется она вокруг него - отсюда половина тайла по краям.
+        XYZEngine::Vector2Df corner = grid.ToWorld(grid.GetWidth() - 1, 0);
+        XYZEngine::Vector2Df min = {-0.5f * TILE_SIZE, -0.5f * TILE_SIZE};
+        XYZEngine::Vector2Df max = {corner.x + 0.5f * TILE_SIZE, corner.y + 0.5f * TILE_SIZE};
+
+        return ClampToBounds(point, half, min, max);
+    }
+
+    void CameraDirectorComponent::Place(const XYZEngine::Vector2Df& point)
+    {
+        aim = KeepInsideLevel(point);
+
+        if (transform != nullptr)
+        {
+            transform->SetWorldPosition(aim);
         }
     }
 
@@ -96,12 +139,7 @@ namespace RoguelikeGame
 
         if (follow != nullptr)
         {
-            aim = follow->GetTransform()->GetWorldPosition();
-
-            if (transform != nullptr)
-            {
-                transform->SetWorldPosition(aim);
-            }
+            Place(follow->GetTransform()->GetWorldPosition());
         }
     }
 

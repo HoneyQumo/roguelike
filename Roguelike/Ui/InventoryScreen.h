@@ -35,6 +35,10 @@ namespace RoguelikeGame
         const XYZEngine::UiLabel& GetSlotCount(int index) const;
         const XYZEngine::UiPanel& GetSlotPanel(int index) const;
         const XYZEngine::UiLabel& GetHint() const;
+        const XYZEngine::UiLabel& GetNotice() const;
+
+        // Причина отказа обязана быть видна там, где нажали: HUD лежит под затемнением окна.
+        void ShowNotice(const std::string& text);
 
     private:
         struct SlotWidgets
@@ -51,10 +55,12 @@ namespace RoguelikeGame
         XYZEngine::UiPanel* window = nullptr;
         XYZEngine::UiLabel* title = nullptr;
         XYZEngine::UiLabel* hint = nullptr;
+        XYZEngine::UiLabel* notice = nullptr;
         std::vector<SlotWidgets> slotWidgets;
 
         bool isOpen = false;
         float animation = 0.f;
+        float noticeTimeLeft = 0.f;
         int selectedSlot = 0;
 
         void BuildSlots(const sf::Font* font);

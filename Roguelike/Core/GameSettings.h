@@ -299,6 +299,13 @@ namespace RoguelikeGame
     constexpr auto ITEM_REFUSED_NOTICE = u8"Сейчас это не пригодится";
     constexpr auto ITEM_USELESS_NOTICE = u8"Это ни на что не годится";
     constexpr auto ITEM_UNKNOWN_NOTICE = u8"Непонятная вещь";
+    constexpr auto EQUIP_NOT_A_WEAPON_NOTICE = u8"Это не оружие";
+    constexpr auto EQUIP_NO_SLOT_NOTICE = u8"Такого слота нет";
+    constexpr auto EQUIP_WRONG_KIND_NOTICE = u8"Сюда это не встаёт";
+    constexpr auto EQUIP_ALREADY_NOTICE = u8"Уже в руках";
+    constexpr auto EQUIP_NO_WAY_BACK_NOTICE = u8"Некуда деть то, что снимаешь";
+
+    constexpr float INVENTORY_NOTICE_TIME = 2.5f;
 
     constexpr const char* ItemRefuseText(ItemRefuseReason reason)
     {
@@ -611,6 +618,7 @@ namespace RoguelikeGame
     inline const sf::Color CROSSHAIR_COLOR = {255, 255, 255};
     inline const sf::Color AMMO_HUD_COLOR = {235, 230, 220};
     inline const sf::Color AMMO_HUD_LOW_COLOR = {220, 90, 70};
+    inline const sf::Color INVENTORY_NOTICE_COLOR = {230, 170, 90};
     inline const sf::Color AMMO_HUD_RELOADING_COLOR = {235, 190, 90};
     inline const sf::Color AMMO_HUD_OUTLINE_COLOR = {15, 13, 12, 220};
     inline const sf::Color RELOAD_INDICATOR_COLOR = {235, 190, 90};

@@ -24,6 +24,21 @@ namespace RoguelikeGame
         screen = newScreen;
     }
 
+    // Отказ показывается там, где нажали: HUD лежит под затемнением открытой сумки.
+    void PlayerHudBinderComponent::ShowRefusal(const std::string& text)
+    {
+        if (inventoryScreen != nullptr && inventoryScreen->IsOpen())
+        {
+            inventoryScreen->ShowNotice(text);
+            return;
+        }
+
+        if (screen != nullptr)
+        {
+            screen->ShowNotice(text);
+        }
+    }
+
     void PlayerHudBinderComponent::SetInventoryScreen(InventoryScreen* newInventoryScreen)
     {
         inventoryScreen = newInventoryScreen;
@@ -101,8 +116,18 @@ namespace RoguelikeGame
 
             inventoryScreen->SetEquipHandler([this](int bagSlot, int targetSlot)
             {
-                return inventory != nullptr && loadout != nullptr
-                    && loadout->EquipFromBag(*inventory, bagSlot, targetSlot, GameResources::GetItems()).isDone;
+                if (inventory == nullptr || loadout == nullptr)
+                {
+                    return false;
+                }
+
+                EquipResult result = loadout->EquipFromBag(*inventory, bagSlot, targetSlot, GameResources::GetItems());
+                if (!result.isDone)
+                {
+                    ShowRefusal(EquipRefuseText(result.refusal));
+                }
+
+                return result.isDone;
             });
         }
 
@@ -122,10 +147,7 @@ namespace RoguelikeGame
         {
             effects->SubscribeRefused([this](const ItemDefinition&, ItemRefuseReason reason)
             {
-                if (screen != nullptr)
-                {
-                    screen->ShowNotice(ItemRefuseText(reason));
-                }
+                ShowRefusal(ItemRefuseText(reason));
             });
         }
     }

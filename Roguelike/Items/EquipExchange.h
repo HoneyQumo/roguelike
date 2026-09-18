@@ -37,4 +37,26 @@ namespace RoguelikeGame
     */
     EquipResult TryEquipFromBag(InventoryComponent& bag, int bagSlot, LoadoutState& loadout, int targetSlot,
         const ItemCatalog& catalog);
+
+    // Текст отказа живёт рядом с причиной: некому будет разойтись.
+    constexpr const char* EquipRefuseText(EquipRefusal refusal)
+    {
+        switch (refusal)
+        {
+        case EquipRefusal::NotAWeapon:
+            return EQUIP_NOT_A_WEAPON_NOTICE;
+        case EquipRefusal::UnknownWeapon:
+            return ITEM_UNKNOWN_NOTICE;
+        case EquipRefusal::NoSuchSlot:
+            return EQUIP_NO_SLOT_NOTICE;
+        case EquipRefusal::WrongKind:
+            return EQUIP_WRONG_KIND_NOTICE;
+        case EquipRefusal::AlreadyThere:
+            return EQUIP_ALREADY_NOTICE;
+        case EquipRefusal::NoWayBack:
+            return EQUIP_NO_WAY_BACK_NOTICE;
+        default:
+            return "";
+        }
+    }
 }

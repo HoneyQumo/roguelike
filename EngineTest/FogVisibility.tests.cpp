@@ -212,3 +212,54 @@ TEST_F(FogSceneTest, TheCanvasIsRepaintedOnlyWhenTheFogMoves)
 
 	EXPECT_EQ(fog->GetPaintCount(), 2);
 }
+
+
+// Квад на краю обзора растягивает градиент сам: углы красятся порознь.
+TEST_F(FogSceneTest, TheQuadOnTheEdgeOfSightHasCornersOfItsOwn)
+{
+	GameObject* chunk = GameWorld::Instance()->CreateGameObject("LevelTiles");
+	auto renderer = chunk->AddComponent<VertexArrayRendererComponent>();
+	auto fog = chunk->AddComponent<TileFogComponent>();
+	fog->SetRenderer(renderer);
+
+	const Vector2Df tileSize = {RoguelikeGame::TILE_SIZE, RoguelikeGame::TILE_SIZE};
+	for (int column = 1; column <= 11; column++)
+	{
+		fog->AddCell(renderer->GetQuadsCount(), column, 1, sf::Color::White);
+		renderer->AddQuad(LevelGrid::Current().ToWorld(column, 1), tileSize, sf::Color::White);
+	}
+
+	Reveal(1, 1);
+	fog->Update(0.f);
+
+	const sf::VertexArray& vertices = renderer->GetVertices();
+
+	bool hasGradient = false;
+	for (std::size_t quad = 0u; quad < renderer->GetQuadsCount(); quad++)
+	{
+		std::size_t first = quad * 4u;
+		if (vertices[first].color != vertices[first + 1u].color)
+		{
+			hasGradient = true;
+			break;
+		}
+	}
+
+	EXPECT_TRUE(hasGradient) << "все углы одного цвета - градиента внутри тайла нет";
+}
+
+TEST_F(FogSceneTest, TheRendererPaintsEveryCornerOnItsOwn)
+{
+	GameObject* chunk = GameWorld::Instance()->CreateGameObject("Quad");
+	auto renderer = chunk->AddComponent<VertexArrayRendererComponent>();
+
+	renderer->AddQuad({0.f, 0.f}, {10.f, 10.f}, sf::Color::White);
+	renderer->SetQuadCorners(0u, sf::Color::Red, sf::Color::Green, sf::Color::Blue, sf::Color::Yellow);
+
+	const sf::VertexArray& vertices = renderer->GetVertices();
+
+	EXPECT_EQ(vertices[0].color, sf::Color::Red);
+	EXPECT_EQ(vertices[1].color, sf::Color::Green);
+	EXPECT_EQ(vertices[2].color, sf::Color::Blue);
+	EXPECT_EQ(vertices[3].color, sf::Color::Yellow);
+}

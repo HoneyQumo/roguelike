@@ -1,6 +1,9 @@
 ﻿#include "FogOfWar.h"
 #include "LevelGrid.h"
+#include "GameSettings.h"
 #include "SightRules.h"
+#include <algorithm>
+#include <cmath>
 
 namespace RoguelikeGame
 {
@@ -19,6 +22,7 @@ namespace RoguelikeGame
         current.version++;
 
         current.cells.assign(static_cast<std::size_t>(current.width) * current.height, FogState::Unseen);
+        current.light.assign(current.cells.size(), 0.f);
     }
 
     bool FogOfWar::IsEnabled() const
@@ -136,6 +140,7 @@ namespace RoguelikeGame
         }
 
         LightBlockers(grid, column, row);
+        FillLight(column, row);
 
         if (cells == before)
         {
@@ -145,6 +150,74 @@ namespace RoguelikeGame
         version++;
 
         return true;
+    }
+
+    float FogOfWar::GetLight(int column, int row) const
+    {
+        if (!IsEnabled())
+        {
+            return 1.f;
+        }
+
+        if (column < 0 || row < 0 || column >= width || row >= height)
+        {
+            return 0.f;
+        }
+
+        return light[static_cast<std::size_t>(row) * width + column];
+    }
+
+    float FogOfWar::GetCornerLight(int column, int row) const
+    {
+        if (!IsEnabled())
+        {
+            return 1.f;
+        }
+
+        // Угол с номером клетки - это её левый верхний: соседи лежат слева и сверху.
+        return 0.25f * (GetLight(column - 1, row - 1) + GetLight(column, row - 1)
+            + GetLight(column - 1, row) + GetLight(column, row));
+    }
+
+    /**
+    *	Ступенька в целый тайл читалась как рваный край из квадратов. Яркость идёт
+    *	непрерывно: в ядре полная, дальше падает к краю радиуса.
+    *
+    *	Край светлее памяти, поэтому память берётся полом: то, что видно сейчас,
+    *	не должно быть темнее того, что только запомнилось.
+    */
+    void FogOfWar::FillLight(int fromColumn, int fromRow)
+    {
+        float full = FOG_FULL_PART * radius;
+        float span = std::max(radius - full, 1.f);
+
+        for (int row = 0; row < height; row++)
+        {
+            for (int column = 0; column < width; column++)
+            {
+                std::size_t index = static_cast<std::size_t>(row) * width + column;
+                FogState state = cells[index];
+
+                if (state == FogState::Unseen)
+                {
+                    light[index] = 0.f;
+                    continue;
+                }
+
+                if (state == FogState::Known)
+                {
+                    light[index] = FOG_KNOWN_LIGHT;
+                    continue;
+                }
+
+                float alongColumns = static_cast<float>(column - fromColumn);
+                float alongRows = static_cast<float>(row - fromRow);
+                float distance = std::sqrt(alongColumns * alongColumns + alongRows * alongRows);
+
+                float part = std::clamp((distance - full) / span, 0.f, 1.f);
+                light[index] = std::max(FOG_KNOWN_LIGHT, 1.f - part * (1.f - FOG_EDGE_LIGHT));
+            }
+        }
     }
 
     /**

@@ -13,14 +13,9 @@ namespace RoguelikeGame
                 static_cast<sf::Uint8>(color.b * light), color.a};
         }
 
-        sf::Color ColorFor(const sf::Color& base, FogState state)
+        sf::Color ColorFor(const sf::Color& base, float light)
         {
-            if (state == FogState::Seen)
-            {
-                return base;
-            }
-
-            return state == FogState::Known ? Dim(base, FOG_KNOWN_LIGHT) : sf::Color::Transparent;
+            return light <= 0.f ? sf::Color::Transparent : Dim(base, light);
         }
     }
 
@@ -55,10 +50,15 @@ namespace RoguelikeGame
 
         for (const Cell& cell : cells)
         {
-            FogState state = fog.GetState(cell.column, cell.row);
-            hasAnything = hasAnything || state != FogState::Unseen;
+            hasAnything = hasAnything || fog.GetState(cell.column, cell.row) != FogState::Unseen;
 
-            renderer->SetQuadColor(cell.quad, ColorFor(cell.base, state));
+            // Углы порознь: градиент между ними видеокарта растягивает сама,
+            // поэтому мягкий край не стоит ни шейдера, ни второго слоя.
+            renderer->SetQuadCorners(cell.quad,
+                ColorFor(cell.base, fog.GetCornerLight(cell.column, cell.row + 1)),
+                ColorFor(cell.base, fog.GetCornerLight(cell.column + 1, cell.row + 1)),
+                ColorFor(cell.base, fog.GetCornerLight(cell.column + 1, cell.row)),
+                ColorFor(cell.base, fog.GetCornerLight(cell.column, cell.row)));
         }
 
         renderer->SetEnabled(hasAnything);

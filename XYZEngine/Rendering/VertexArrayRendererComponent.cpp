@@ -163,6 +163,21 @@ namespace XYZEngine
 		}
 	}
 
+	void VertexArrayRendererComponent::SetQuadCorners(std::size_t quad, const sf::Color& leftBottom,
+		const sf::Color& rightBottom, const sf::Color& rightTop, const sf::Color& leftTop)
+	{
+		std::size_t first = quad * 4u;
+		if (first + 3u >= vertices.getVertexCount())
+		{
+			return;
+		}
+
+		vertices[first].color = leftBottom;
+		vertices[first + 1u].color = rightBottom;
+		vertices[first + 2u].color = rightTop;
+		vertices[first + 3u].color = leftTop;
+	}
+
 	std::size_t VertexArrayRendererComponent::GetQuadsCount() const
 	{
 		return vertices.getVertexCount() / 4;

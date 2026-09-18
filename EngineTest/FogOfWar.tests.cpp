@@ -1,5 +1,6 @@
 ﻿#include "pch.h"
 #include "FogFormat.h"
+#include "GameSettings.h"
 #include "FogOfWar.h"
 #include "LevelGrid.h"
 #include "LevelLoader.h"
@@ -313,4 +314,100 @@ TEST(FogWallLightingTest, StepsLeadTowardTheViewerAndNowhereElse)
 	ASSERT_EQ(RoguelikeGame::StepsTowardViewer(-2, 5, steps), 2) << "по диагонали шагов два, по одному на ось";
 	EXPECT_EQ(steps[0].column, 1);
 	EXPECT_EQ(steps[1].row, -1);
+}
+
+
+// Ступенька в целый тайл читалась как рваный край из квадратов.
+TEST(FogLightTest, LightFallsFromThePlayerToTheEdge)
+{
+	LevelGrid grid = Open(PILLAR_ROOM, 12);
+
+	EXPECT_TRUE(Reveal(grid, 12, 10));
+
+	float atFeet = FogOfWar::Current().GetLight(12, 10);
+	float nearby = FogOfWar::Current().GetLight(15, 10);
+	float far = FogOfWar::Current().GetLight(22, 10);
+
+	EXPECT_FLOAT_EQ(atFeet, 1.f);
+	EXPECT_GT(nearby, far) << "дальняя клетка светит не слабее ближней";
+	EXPECT_LT(far, 1.f) << "затухания нет вовсе";
+}
+
+TEST(FogLightTest, TheDimmestVisibleCellIsStillBrighterThanMemory)
+{
+	LevelGrid grid = Open(PILLAR_ROOM, 12);
+
+	EXPECT_TRUE(Reveal(grid, 12, 10));
+
+	for (int column = 1; column < grid.GetWidth() - 1; column++)
+	{
+		if (FogOfWar::Current().GetState(column, 10) != FogState::Seen)
+		{
+			continue;
+		}
+
+		EXPECT_GE(FogOfWar::Current().GetLight(column, 10), RoguelikeGame::FOG_KNOWN_LIGHT)
+			<< "видимая клетка " << column << " темнее запомненной";
+	}
+}
+
+TEST(FogLightTest, MemoryIsDimmerThanWhatIsSeenNow)
+{
+	LevelGrid grid = Open(PILLAR_ROOM, 7);
+
+	EXPECT_TRUE(Reveal(grid, 4, 10));
+	EXPECT_TRUE(Reveal(grid, 20, 10));
+
+	ASSERT_EQ(FogOfWar::Current().GetState(4, 10), FogState::Known);
+
+	EXPECT_FLOAT_EQ(FogOfWar::Current().GetLight(4, 10), RoguelikeGame::FOG_KNOWN_LIGHT);
+	EXPECT_GT(FogOfWar::Current().GetLight(20, 10), RoguelikeGame::FOG_KNOWN_LIGHT);
+}
+
+TEST(FogLightTest, WhatWasNeverSeenHasNoLight)
+{
+	LevelGrid grid = Open(PILLAR_ROOM, 7);
+
+	EXPECT_TRUE(Reveal(grid, 12, 10));
+
+	ASSERT_EQ(FogOfWar::Current().GetState(1, 1), FogState::Unseen);
+	EXPECT_FLOAT_EQ(FogOfWar::Current().GetLight(1, 1), 0.f);
+}
+
+// Градиент внутри тайла живёт только тем, что углы знают про соседей.
+TEST(FogLightTest, ACornerIsTheAverageOfTheFourCellsThatShareIt)
+{
+	LevelGrid grid = Open(PILLAR_ROOM, 7);
+
+	EXPECT_TRUE(Reveal(grid, 12, 10));
+
+	float corner = FogOfWar::Current().GetCornerLight(12, 10);
+	float byHand = 0.25f * (FogOfWar::Current().GetLight(11, 9) + FogOfWar::Current().GetLight(12, 9)
+		+ FogOfWar::Current().GetLight(11, 10) + FogOfWar::Current().GetLight(12, 10));
+
+	EXPECT_FLOAT_EQ(corner, byHand);
+}
+
+TEST(FogLightTest, ACornerOnTheEdgeOfSightSitsBetweenLightAndDark)
+{
+	LevelGrid grid = Open(PILLAR_ROOM, 7);
+
+	EXPECT_TRUE(Reveal(grid, 12, 10));
+
+	int edge = 0;
+	for (int column = 12; column < grid.GetWidth(); column++)
+	{
+		if (FogOfWar::Current().GetState(column, 10) == FogState::Unseen)
+		{
+			edge = column;
+			break;
+		}
+	}
+
+	ASSERT_GT(edge, 12) << "обзор нигде не кончается";
+
+	float corner = FogOfWar::Current().GetCornerLight(edge, 10);
+
+	EXPECT_GT(corner, 0.f) << "край обрезан насухо, градиента нет";
+	EXPECT_LT(corner, 1.f);
 }

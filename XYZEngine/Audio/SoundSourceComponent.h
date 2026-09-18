@@ -1,15 +1,15 @@
 #pragma once
 
 #include <SFML/Audio.hpp>
-#include "Component.h"
+#include "SoundSource.h"
 
 namespace XYZEngine
 {
 	template <typename TSource>
-	class SoundSourceComponent : public Component
+	class SoundSourceComponent : public SoundSource
 	{
 	public:
-		SoundSourceComponent(GameObject* gameObject) : Component(gameObject) {}
+		SoundSourceComponent(GameObject* gameObject) : SoundSource(gameObject) {}
 
 		void Update(float deltaTime) override {}
 		void Render() override {}
@@ -38,7 +38,7 @@ namespace XYZEngine
 			}
 		}
 
-		void Pause()
+		void Pause() override
 		{
 			if (TSource* source = GetSource())
 			{
@@ -46,7 +46,7 @@ namespace XYZEngine
 			}
 		}
 
-		void Resume()
+		void Resume() override
 		{
 			TSource* source = GetSource();
 			if (source != nullptr && source->getStatus() == sf::SoundSource::Paused)
@@ -55,7 +55,7 @@ namespace XYZEngine
 			}
 		}
 
-		void Stop()
+		void Stop() override
 		{
 			if (TSource* source = GetSource())
 			{
@@ -63,7 +63,7 @@ namespace XYZEngine
 			}
 		}
 
-		bool IsPlaying() const
+		bool IsPlaying() const override
 		{
 			const TSource* source = GetSource();
 			return source != nullptr && source->getStatus() == sf::SoundSource::Playing;

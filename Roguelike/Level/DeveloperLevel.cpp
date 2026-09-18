@@ -1090,15 +1090,11 @@ namespace RoguelikeGame
 
     void DeveloperLevel::SetPaused(bool isPaused)
     {
+        // Звук глушит движок: музыка, выстрелы и зацикленный мотор - не дело сцены,
+        // и перечислять их поимённо она бы всё равно забывала.
         Engine::Instance()->SetPaused(isPaused);
         RenderSystem::Instance()->GetMainWindow().setMouseCursorVisible(isPaused);
         RenderSystem::Instance()->HoldMouse(!isPaused);
-
-        if (music != nullptr)
-        {
-            auto musicPlayer = music->GetComponent<MusicComponent>();
-            isPaused ? musicPlayer->Pause() : musicPlayer->Resume();
-        }
 
         UpdateOverlay();
 

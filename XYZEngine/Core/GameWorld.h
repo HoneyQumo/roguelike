@@ -48,6 +48,28 @@ namespace XYZEngine
 			return found;
 		}
 
+		/**
+		*	Все компоненты типа, а не по одному с объекта.
+		*
+		*	FindComponents берёт первый подошедший на объекте - для мозга врага
+		*	этого достаточно, а вот источников звука на игроке три, и обход
+		*	по одному молча пропускал два из них.
+		*/
+		template <typename T>
+		std::vector<T*> FindAllComponents() const
+		{
+			std::vector<T*> found;
+			for (GameObject* gameObject : gameObjects)
+			{
+				for (T* component : gameObject->GetComponents<T>())
+				{
+					found.push_back(component);
+				}
+			}
+
+			return found;
+		}
+
 		std::size_t GetObjectsCount() const;
 		void DestroyGameObject(GameObject* gameObject);
 		void DestroyGameObjects(const std::string& name);

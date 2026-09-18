@@ -24,6 +24,8 @@ namespace XYZEngine
 	private:
 		bool isPaused = false;
 
+		void SetSoundPaused(bool isSoundPaused);
+
 		Engine();
 		~Engine() = default;
 	};

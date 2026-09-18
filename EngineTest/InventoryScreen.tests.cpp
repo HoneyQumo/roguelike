@@ -174,7 +174,7 @@ TEST(InventoryHintTest, ConsumableOffersToUseIt)
 	EXPECT_EQ(RoguelikeGame::InventoryHint(&potion), std::string(RoguelikeGame::INVENTORY_USE_HINT));
 }
 
-TEST(InventoryHintTest, WeaponNamesTheSlotItGoesTo)
+TEST(InventoryHintTest, WeaponNamesTheKeysThatChooseTheSlot)
 {
 	ItemDefinition rifle = MakeItem("weapon_ak47", "AK");
 	rifle.effect.kind = RoguelikeGame::ItemEffectKind::EquipWeapon;
@@ -184,9 +184,12 @@ TEST(InventoryHintTest, WeaponNamesTheSlotItGoesTo)
 	pistol.effect.kind = RoguelikeGame::ItemEffectKind::EquipWeapon;
 	pistol.effect.target = "deagle";
 
-	EXPECT_EQ(RoguelikeGame::InventoryHint(&rifle),
-		std::string(RoguelikeGame::INVENTORY_EQUIP_HINT) + std::to_string(RoguelikeGame::PreferredWeaponSlot(RoguelikeGame::WeaponId::Ak47) + 1));
-	EXPECT_NE(RoguelikeGame::InventoryHint(&rifle), RoguelikeGame::InventoryHint(&pistol));
+	std::string hint = RoguelikeGame::InventoryHint(&rifle);
+
+	EXPECT_NE(hint.find(RoguelikeGame::INVENTORY_EQUIP_HINT), std::string::npos);
+	EXPECT_NE(hint.find(std::to_string(RoguelikeGame::PLAYER_WEAPON_SLOTS)), std::string::npos)
+		<< "подсказка не называет клавиши, которыми выбирают слот";
+	EXPECT_EQ(hint, RoguelikeGame::InventoryHint(&pistol)) << "слот выбирает игрок, а не ствол";
 }
 
 TEST(InventoryHintTest, UnknownWeaponSaysNothing)

@@ -39,7 +39,13 @@ namespace RoguelikeGame
                 return {};
             }
 
-            return std::string(INVENTORY_EQUIP_HINT) + std::to_string(PreferredWeaponSlot(id) + 1);
+            // Слот больше не предопределён оружием, поэтому подсказка называет клавиши,
+            // а не номер: за совпадением подсказки и управления следит правило проекта.
+            std::string keys = INVENTORY_SLOT_HINT;
+            std::size_t mark = keys.find("%d");
+
+            return std::string(INVENTORY_EQUIP_HINT)
+                + (mark == std::string::npos ? keys : keys.replace(mark, 2, std::to_string(PLAYER_WEAPON_SLOTS)));
         }
 
         if (item->effect.kind == ItemEffectKind::None)
@@ -299,10 +305,39 @@ namespace RoguelikeGame
             MoveSelection(0, 1);
         }
 
-        if (input->WasActionPressed(XYZEngine::InputAction::Confirm) && CanUseInventory(inventory))
+        if (!CanUseInventory(inventory))
         {
-            inventory->Use(selectedSlot);
+            return;
         }
+
+        for (int slot = 0; slot < PLAYER_WEAPON_SLOTS; slot++)
+        {
+            auto action = static_cast<XYZEngine::InputAction>(
+                static_cast<int>(XYZEngine::InputAction::WeaponSlot1) + slot);
+
+            if (input->WasActionPressed(action))
+            {
+                TryEquip(slot);
+            }
+        }
+
+        if (input->WasActionPressed(XYZEngine::InputAction::Confirm))
+        {
+            const InventorySlot& carried = inventory->GetSlot(selectedSlot);
+            carried.item.effect.kind == ItemEffectKind::EquipWeapon ? TryEquip(NO_WEAPON_SLOT)
+                : static_cast<void>(inventory->Use(selectedSlot));
+        }
+    }
+
+    void InventoryScreen::TryEquip(int targetSlot)
+    {
+        // Без обработчика экран ведёт себя как раньше: экипировка идёт эффектом предмета.
+        equipHandler ? equipHandler(selectedSlot, targetSlot) : inventory->Use(selectedSlot);
+    }
+
+    void InventoryScreen::SetEquipHandler(std::function<bool(int, int)> newEquipHandler)
+    {
+        equipHandler = std::move(newEquipHandler);
     }
 
     void InventoryScreen::MoveSelection(int columns, int rows)

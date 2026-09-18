@@ -1,7 +1,8 @@
-#include "ThreatWatchComponent.h"
+﻿#include "ThreatWatchComponent.h"
 #include "ChaseComponent.h"
 #include "FactionComponent.h"
 #include "GameSettings.h"
+#include "FogOfWar.h"
 #include "LevelGrid.h"
 #include <GameObject.h>
 #include <GameWorld.h>
@@ -74,13 +75,22 @@ namespace RoguelikeGame
                 continue;
             }
 
-            if (enemy->GetAwarenessState() != AwarenessState::Provoked)
+            AwarenessState state = enemy->GetAwarenessState();
+            if (state == AwarenessState::Calm)
             {
                 continue;
             }
 
-            sources.push_back({enemy->GetGameObject()->GetTransform()->GetWorldPosition() - place,
-                ThreatKind::Enemy, 1.f});
+            // Над видимым противником и так висит шкала осведомлённости,
+            // и второй указатель был бы лишним.
+            XYZEngine::Vector2Df at = enemy->GetGameObject()->GetTransform()->GetWorldPosition();
+            if (FogOfWar::Current().GetStateAt(at) == FogState::Seen)
+            {
+                continue;
+            }
+
+            ThreatKind kind = state == AwarenessState::Provoked ? ThreatKind::Provoked : ThreatKind::Alerted;
+            sources.push_back({at - place, kind, 1.f});
         }
     }
 

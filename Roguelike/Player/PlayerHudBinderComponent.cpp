@@ -1,4 +1,4 @@
-#include "PlayerHudBinderComponent.h"
+﻿#include "PlayerHudBinderComponent.h"
 #include "GameResources.h"
 #include <ResourceSystem.h>
 #include <InputSystem.h>
@@ -6,6 +6,7 @@
 #include "GameSettings.h"
 #include "WeaponCatalog.h"
 #include <GameWorld.h>
+#include <RenderSystem.h>
 
 namespace RoguelikeGame
 {
@@ -42,6 +43,11 @@ namespace RoguelikeGame
         }
     }
 
+    void PlayerHudBinderComponent::SetThreatMarks(ThreatMarkComponent* newThreatMarks)
+    {
+        threatMarks = newThreatMarks;
+    }
+
     void PlayerHudBinderComponent::SetInventoryScreen(InventoryScreen* newInventoryScreen)
     {
         inventoryScreen = newInventoryScreen;
@@ -69,9 +75,11 @@ namespace RoguelikeGame
             PushBeltSlots();
         }
 
-        if (threats != nullptr)
+        if (threats != nullptr && threatMarks != nullptr && threats->GetGameObject() != nullptr)
         {
-            screen->SetThreatMarks(BuildThreatMarks(threats->GetSources(), THREAT_MARK_SECTORS));
+            threatMarks->SetMarks(BuildThreatMarks(threats->GetSources(),
+                threats->GetGameObject()->GetTransform()->GetWorldPosition(),
+                XYZEngine::RenderSystem::Instance()->GetViewArea()));
         }
 
         if (health != nullptr || stamina != nullptr)

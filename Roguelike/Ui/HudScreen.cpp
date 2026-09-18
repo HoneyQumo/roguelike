@@ -12,7 +12,6 @@ namespace RoguelikeGame
         const sf::Font* font = XYZEngine::ResourceSystem::Instance()->GetFont(HUD_FONT);
 
         BuildWeaponRow(font);
-        BuildThreatMarks();
 
         auto vitals = GetRoot().AddChild<XYZEngine::UiWidget>();
         vitals->SetAnchor(XYZEngine::UiAnchor::TopLeft);
@@ -233,75 +232,9 @@ namespace RoguelikeGame
         FillCells(beltCells, slots);
     }
 
-    // Метка - прямоугольник, а не знак: в шрифте HUD нет геометрических символов,
-    // и вместо ромба рисовалась пустая рамка.
-    void HudScreen::BuildThreatMarks()
-    {
-        for (int sector = 0; sector < THREAT_MARK_SECTORS; sector++)
-        {
-            auto mark = GetRoot().AddChild<XYZEngine::UiPanel>();
-            mark->SetAnchor(XYZEngine::UiAnchor::Center);
-            mark->SetPivot(XYZEngine::UiAnchor::Center);
-            mark->SetOffset(ThreatMarkOffset(sector, THREAT_MARK_SECTORS,
-                SCREEN_WIDTH * 0.5f - THREAT_MARK_MARGIN_X, SCREEN_HEIGHT * 0.5f - THREAT_MARK_MARGIN_Y));
-            mark->SetSize({THREAT_MARK_SIZE, THREAT_MARK_SIZE});
-            mark->SetVisible(false);
 
-            threatMarks.push_back(mark);
-        }
-    }
 
-    /**
-    *	Метка живёт на своём секторе всегда и только гаснет: переставлять
-    *	виджеты по ходу значило бы дёргать раскладку каждый кадр.
-    */
-    void HudScreen::SetThreatMarks(const std::vector<ThreatMark>& marks)
-    {
-        for (int sector = 0; sector < static_cast<int>(threatMarks.size()); sector++)
-        {
-            auto found = std::find_if(marks.begin(), marks.end(),
-                [sector](const ThreatMark& mark) { return mark.sector == sector; });
 
-            if (found == marks.end())
-            {
-                threatMarks[sector]->SetVisible(false);
-                continue;
-            }
-
-            bool isEnemy = found->kind == ThreatKind::Enemy;
-
-            sf::Color color = isEnemy ? THREAT_ENEMY_COLOR : THREAT_NOISE_COLOR;
-            color.a = static_cast<sf::Uint8>(255.f * std::clamp(found->strength, 0.f, 1.f));
-
-            sf::Color outline = AMMO_HUD_OUTLINE_COLOR;
-            outline.a = color.a;
-
-            // Враг крупнее шума: цвет один различать их не должен.
-            float size = isEnemy ? THREAT_MARK_SIZE : THREAT_MARK_SIZE * 0.6f;
-
-            threatMarks[sector]->SetVisible(true);
-            threatMarks[sector]->SetSize({size, size});
-            threatMarks[sector]->SetFillColor(color);
-            threatMarks[sector]->SetOutline(2.f, outline);
-        }
-    }
-
-    int HudScreen::GetThreatMarksShown() const
-    {
-        int total = 0;
-
-        for (const XYZEngine::UiPanel* mark : threatMarks)
-        {
-            total += mark->IsVisible() ? 1 : 0;
-        }
-
-        return total;
-    }
-
-    const XYZEngine::UiPanel& HudScreen::GetThreatMark(int index) const
-    {
-        return *threatMarks[index];
-    }
 
     void HudScreen::FillCells(std::vector<WeaponCell>& cells, const std::vector<SlotHudState>& slots)
     {

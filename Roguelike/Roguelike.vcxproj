@@ -217,6 +217,7 @@
         <ClInclude Include="Items\InteractableComponent.h"/>
         <ClInclude Include="Items\ContainerComponent.h"/>
         <ClInclude Include="Level\PropVisualComponent.h"/>
+        <ClInclude Include="Items\InventoryAccess.h"/>
         <ClInclude Include="Items\InventoryComponent.h"/>
         <ClInclude Include="Items\ItemEffectComponent.h"/>
         <ClInclude Include="Items\InteractionComponent.h"/>

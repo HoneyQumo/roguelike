@@ -4,7 +4,6 @@
 #include "RenderSystem.h"
 #include <TextUtils.h>
 
-using RoguelikeGame::AmmoHudState;
 using RoguelikeGame::HudScreen;
 using RoguelikeGame::VitalsHudState;
 
@@ -89,26 +88,6 @@ TEST_F(HudScreenTest, BarsStayInTopLeftOnAnyResolution)
 	hud.Resize({800.f, 600.f});
 	EXPECT_FLOAT_EQ(hud.GetHealthBar().GetBounds().left, RoguelikeGame::VITALS_HUD_MARGIN_X);
 	EXPECT_FLOAT_EQ(hud.GetHealthBar().GetBounds().top, RoguelikeGame::VITALS_HUD_MARGIN_Y);
-}
-
-TEST_F(HudScreenTest, AmmoLineHidesWithoutMagazine)
-{
-	HudScreen hud;
-	hud.Resize({1280.f, 720.f});
-
-	AmmoHudState state;
-	state.weaponName = "Bat";
-	state.hasMagazine = false;
-	hud.SetAmmo(state);
-
-	EXPECT_FALSE(hud.GetAmmoLabel().IsVisible());
-
-	state.hasMagazine = true;
-	state.inMagazine = 5;
-	state.reserve = 30;
-	hud.SetAmmo(state);
-
-	EXPECT_TRUE(hud.GetAmmoLabel().IsVisible());
 }
 
 TEST_F(HudScreenTest, ArmorBarIsHiddenWithoutArmor)

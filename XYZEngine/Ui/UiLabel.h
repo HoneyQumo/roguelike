@@ -18,6 +18,7 @@ namespace XYZEngine
 		void SetAlign(UiAnchor newAlign);
 
 		const sf::String& GetText() const;
+		const sf::Color& GetColor() const;
 		bool IsReady() const;
 		sf::Vector2f GetTextPosition() const;
 

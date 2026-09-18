@@ -61,7 +61,6 @@ namespace RoguelikeGame
 
         if (loadout != nullptr)
         {
-            screen->SetAmmo(ReadAmmoState());
             PushWeaponSlots();
         }
 
@@ -73,6 +72,26 @@ namespace RoguelikeGame
 
     void PlayerHudBinderComponent::Render()
     {
+    }
+
+    /**
+    *	Патроны ячейки. У слота в руках берём живые - магазин лежит в самом оружии.
+    *	У отложенных берём тот, что помнит раскладка: туда он пишется при смене слота
+    *	и при обмене. Запас общий по виду патронов и лежит в подсумке.
+    */
+    void PlayerHudBinderComponent::FillAmmo(WeaponSlotHudState& shown, WeaponId id, bool isCurrent, int remembered) const
+    {
+        const WeaponDefinition& definition = GetWeapon(id);
+        if (definition.magazineSize <= 0)
+        {
+            return;
+        }
+
+        shown.hasCount = true;
+        shown.count = isCurrent && weapon != nullptr ? weapon->GetAmmoInMagazine() : remembered;
+        shown.isReloading = isCurrent && weapon != nullptr && weapon->IsReloading();
+        shown.isLow = shown.count <= static_cast<int>(definition.magazineSize * AMMO_HUD_LOW_PART);
+        shown.reserve = pouch != nullptr ? pouch->GetAmmo(AmmoKindKey(definition.ammo)) : NO_RESERVE;
     }
 
     /**
@@ -96,11 +115,14 @@ namespace RoguelikeGame
 
             if (shown.hasWeapon)
             {
-                const ItemDefinition* item = FindWeaponItem(GameResources::GetItems(), GetWeapon(state.slots[slot].id).id);
+                WeaponId id = state.slots[slot].id;
+                const ItemDefinition* item = FindWeaponItem(GameResources::GetItems(), GetWeapon(id).id);
                 if (item != nullptr)
                 {
                     shown.icon = XYZEngine::ResourceSystem::Instance()->GetTextureShared(ItemTextureName(item->id));
                 }
+
+                FillAmmo(shown, id, slot == state.currentSlot, state.slots[slot].magazine);
             }
 
             slots.push_back(shown);
@@ -147,6 +169,7 @@ namespace RoguelikeGame
             });
         }
 
+        pouch = target->GetComponent<AmmoPouchComponent>();
         inventory = target->GetComponent<InventoryComponent>();
         if (inventory != nullptr && inventoryScreen != nullptr)
         {
@@ -209,28 +232,4 @@ namespace RoguelikeGame
         return state;
     }
 
-    AmmoHudState PlayerHudBinderComponent::ReadAmmoState() const
-    {
-        AmmoHudState state;
-        if (!loadout->HasWeapon())
-        {
-            state.weaponName = EMPTY_SLOT_NAME;
-            return state;
-        }
-
-        state.weaponName = GetWeapon(loadout->GetCurrentWeapon()).name;
-
-        if (weapon == nullptr || !weapon->HasMagazine())
-        {
-            return state;
-        }
-
-        state.hasMagazine = true;
-        state.inMagazine = weapon->GetAmmoInMagazine();
-        state.reserve = weapon->GetReserveAmmo();
-        state.isReloading = weapon->IsReloading();
-        state.isLow = weapon->GetAmmoInMagazine() <= static_cast<int>(weapon->GetMagazineSize() * AMMO_HUD_LOW_PART);
-
-        return state;
-    }
 }

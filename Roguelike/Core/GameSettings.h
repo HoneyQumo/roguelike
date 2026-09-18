@@ -235,8 +235,7 @@ namespace RoguelikeGame
 
     constexpr int AMMO_HUD_FONT_SIZE = 30;
     constexpr int AMMO_HUD_NAME_FONT_SIZE = 18;
-    constexpr float AMMO_HUD_MARGIN_X = 26.f;
-    constexpr float AMMO_HUD_MARGIN_Y = 22.f;
+
     constexpr float AMMO_HUD_LINE_HEIGHT = 1.35f;
     constexpr float AMMO_HUD_OUTLINE = 2.f;
     constexpr float AMMO_HUD_NAME_HEIGHT = AMMO_HUD_NAME_FONT_SIZE * AMMO_HUD_LINE_HEIGHT;
@@ -260,10 +259,15 @@ namespace RoguelikeGame
     inline const sf::Color VITALS_HUD_ARMOR_COLOR = {170, 180, 200};
     constexpr float AMMO_HUD_HEIGHT = AMMO_HUD_NAME_HEIGHT + AMMO_HUD_AMMO_HEIGHT;
 
-    constexpr float WEAPON_ROW_SLOT_SIZE = 58.f;
+    constexpr float WEAPON_ROW_SLOT_SIZE = 64.f;
     constexpr float WEAPON_ROW_SLOT_GAP = 8.f;
     constexpr float WEAPON_ROW_MARGIN_Y = 24.f;
     constexpr int WEAPON_ROW_KEY_FONT_SIZE = 14;
+    constexpr int WEAPON_ROW_COUNT_FONT_SIZE = 12;
+
+    // Цифра клавиши и счётчик делят низ ячейки, а не лежат друг на друге.
+    constexpr float WEAPON_ROW_KEY_WIDTH = 18.f;
+    constexpr float WEAPON_ROW_COUNT_WIDTH = WEAPON_ROW_SLOT_SIZE - WEAPON_ROW_KEY_WIDTH - 2.f;
     constexpr float WEAPON_ROW_KEY_HEIGHT = 18.f;
 
     // Цифра берётся из привязки, а не пишется руками: подписи негде разойтись с управлением.

@@ -19,26 +19,26 @@ namespace RoguelikeGame
         bool isExhausted = false;
     };
 
-    struct AmmoHudState
-    {
-        const char* weaponName = nullptr;
-        int inMagazine = 0;
-        int reserve = 0;
-        bool hasMagazine = false;
-        bool isReloading = false;
-        bool isLow = false;
-    };
-
     /**
     *	Один слот оружия на экране. Иконку выбирает тот, кто знает про каталог,
     *	а цифру - тот, кто знает про привязки: экрану остаётся нарисовать.
     */
+    // Запас неизвестен: у объекта нет подсумка.
+    constexpr int NO_RESERVE = -1;
+
     struct WeaponSlotHudState
     {
         bool hasWeapon = false;
         bool isCurrent = false;
         int key = 0;
         const sf::Texture* icon = nullptr;
+
+        // Число ячейки: у ствола патроны, у расходника - стопка.
+        bool hasCount = false;
+        int count = 0;
+        int reserve = NO_RESERVE;
+        bool isReloading = false;
+        bool isLow = false;
     };
 
     struct WaveHudState
@@ -63,7 +63,6 @@ namespace RoguelikeGame
     public:
         HudScreen();
 
-        void SetAmmo(const AmmoHudState& state);
         void SetWeaponSlots(const std::vector<WeaponSlotHudState>& slots);
         void SetVitals(const VitalsHudState& state);
         void SetWaves(const WaveHudState& state);
@@ -75,12 +74,11 @@ namespace RoguelikeGame
         void Update(float deltaTime) override;
         bool IsNoticeShown() const;
 
-        const XYZEngine::UiLabel& GetNameLabel() const;
         int GetWeaponSlotsShown() const;
         const XYZEngine::UiPanel& GetWeaponSlotPanel(int index) const;
         const XYZEngine::UiIcon& GetWeaponSlotIcon(int index) const;
         const XYZEngine::UiLabel& GetWeaponSlotKey(int index) const;
-        const XYZEngine::UiLabel& GetAmmoLabel() const;
+        const XYZEngine::UiLabel& GetWeaponSlotCount(int index) const;
         const XYZEngine::UiProgressBar& GetHealthBar() const;
         const XYZEngine::UiProgressBar& GetStaminaBar() const;
         const XYZEngine::UiProgressBar& GetArmorBar() const;
@@ -100,11 +98,10 @@ namespace RoguelikeGame
             XYZEngine::UiPanel* panel = nullptr;
             XYZEngine::UiIcon* icon = nullptr;
             XYZEngine::UiLabel* key = nullptr;
+            XYZEngine::UiLabel* count = nullptr;
         };
 
         std::vector<WeaponCell> weaponCells;
-        XYZEngine::UiLabel* nameLabel = nullptr;
-        XYZEngine::UiLabel* ammoLabel = nullptr;
         XYZEngine::UiProgressBar* healthBar = nullptr;
         XYZEngine::UiProgressBar* staminaBar = nullptr;
         XYZEngine::UiProgressBar* armorBar = nullptr;
@@ -121,8 +118,7 @@ namespace RoguelikeGame
 
         void BuildWeaponRow(const sf::Font* font);
 
-        std::string shownName;
-        std::string shownAmmo;
+
         std::string shownWave;
         std::string shownWaveCount;
         std::string shownChase;

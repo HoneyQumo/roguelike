@@ -4,6 +4,7 @@
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Window/Keyboard.hpp>
 #include <CameraComponent.h>
+#include "ItemDefinition.h"
 #include "SpriteAtlas.h"
 #include "WeaponCatalog.h"
 
@@ -296,6 +297,21 @@ namespace RoguelikeGame
 
     constexpr auto INVENTORY_FULL_NOTICE = u8"Инвентарь полон";
     constexpr auto ITEM_REFUSED_NOTICE = u8"Сейчас это не пригодится";
+    constexpr auto ITEM_USELESS_NOTICE = u8"Это ни на что не годится";
+    constexpr auto ITEM_UNKNOWN_NOTICE = u8"Непонятная вещь";
+
+    constexpr const char* ItemRefuseText(ItemRefuseReason reason)
+    {
+        switch (reason)
+        {
+        case ItemRefuseReason::NoHandler:
+            return ITEM_USELESS_NOTICE;
+        case ItemRefuseReason::Unknown:
+            return ITEM_UNKNOWN_NOTICE;
+        default:
+            return ITEM_REFUSED_NOTICE;
+        }
+    }
     constexpr auto BOSS_GATE_NOTICE = u8"Выход закрыт: сначала победи босса";
     constexpr auto BOSS_DEFEATED_NOTICE = u8"Босс повержен, выход открыт";
     constexpr auto INTERACT_PROMPT_PREFIX = u8"[E] Подобрать: ";

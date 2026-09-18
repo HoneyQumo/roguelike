@@ -96,7 +96,7 @@ namespace RoguelikeGame
         auto effects = collector->GetComponent<ItemEffectComponent>();
         if (effects != nullptr && effects->AppliesOnPickup(item))
         {
-            return effects->Apply(item);
+            return effects->Apply(item).isApplied;
         }
 
         auto inventory = collector->GetComponent<InventoryComponent>();

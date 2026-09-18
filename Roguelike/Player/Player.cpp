@@ -171,34 +171,40 @@ namespace RoguelikeGame
         gameObject->AddComponent<InteractionComponent>();
 
         auto effects = gameObject->AddComponent<ItemEffectComponent>();
-        effects->SetHandler(ItemEffectKind::Heal, [health](const ItemEffect& effect)
+        effects->SetHandler(ItemEffectKind::Heal, [health](const ItemEffect& effect) -> ItemUseResult
         {
-            return health->Heal(effect.amount) > 0.f;
+            // Полное здоровье - не поломка, а «сейчас не пригодится»: аптечка остаётся в сумке.
+            return health->Heal(effect.amount) > 0.f
+                ? ItemUseResult(true) : ItemUseResult{false, 0, ItemRefuseReason::NotNeeded};
         });
-        effects->SetHandler(ItemEffectKind::AddAmmo, [ammoPouch](const ItemEffect& effect)
+        effects->SetHandler(ItemEffectKind::AddAmmo, [ammoPouch](const ItemEffect& effect) -> ItemUseResult
         {
             AmmoKind kind = AmmoKind::None;
             if (!TryGetAmmoKind(effect.target, kind) || effect.amount <= 0.f)
             {
-                return false;
+                return {false, 0, ItemRefuseReason::Unknown};
             }
 
             ammoPouch->AddAmmo(static_cast<int>(kind), static_cast<int>(effect.amount));
             return true;
         });
-        effects->SetHandler(ItemEffectKind::EquipWeapon, [loadout](const ItemEffect& effect)
+        effects->SetHandler(ItemEffectKind::EquipWeapon, [loadout](const ItemEffect& effect) -> ItemUseResult
         {
             WeaponId id = WeaponId::Knife;
+            if (!TryGetWeaponId(effect.target, id))
+            {
+                return {false, 0, ItemRefuseReason::Unknown};
+            }
 
-            return TryGetWeaponId(effect.target, id) && loadout->EquipWeapon(id);
+            return loadout->EquipWeapon(id);
         });
 
-        effects->SetHandler(ItemEffectKind::AddArmor, [health](const ItemEffect& effect)
+        effects->SetHandler(ItemEffectKind::AddArmor, [health](const ItemEffect& effect) -> ItemUseResult
         {
             float taken = ArmorAfterPlate(health->GetArmor(), effect.amount, health->GetMaxArmor());
             if (taken <= health->GetArmor())
             {
-                return false;
+                return {false, 0, ItemRefuseReason::NotNeeded};
             }
 
             health->SetArmor(taken);

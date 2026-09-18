@@ -163,6 +163,7 @@
     <ClCompile Include="InteractKeys.tests.cpp" />
     <ClCompile Include="Interaction.tests.cpp" />
     <ClCompile Include="EquipExchange.tests.cpp" />
+    <ClCompile Include="ItemUseResult.tests.cpp" />
     <ClCompile Include="InventoryGate.tests.cpp" />
     <ClCompile Include="LoadoutRules.tests.cpp" />
     <ClCompile Include="InventoryScreen.tests.cpp" />

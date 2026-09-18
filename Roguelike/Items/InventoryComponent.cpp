@@ -237,14 +237,17 @@ namespace RoguelikeGame
         }
 
         ItemDefinition used = slot.item;
-        if (useHandler != nullptr && !useHandler(used))
+
+        // Сколько тратить, решает эффект: сумка не знает, что бывают предметы на два глотка.
+        ItemUseResult result = useHandler != nullptr ? useHandler(used) : ItemUseResult(true);
+        if (!result.isApplied || result.consumed <= 0)
         {
             return false;
         }
 
         usedEvent.Invoke(used);
 
-        return Remove(slotIndex, 1);
+        return Remove(slotIndex, result.consumed);
     }
 
     bool InventoryComponent::UseSelected()
@@ -252,7 +255,7 @@ namespace RoguelikeGame
         return Use(selectedSlot);
     }
 
-    void InventoryComponent::SetUseHandler(std::function<bool(const ItemDefinition&)> newUseHandler)
+    void InventoryComponent::SetUseHandler(std::function<ItemUseResult(const ItemDefinition&)> newUseHandler)
     {
         useHandler = std::move(newUseHandler);
     }

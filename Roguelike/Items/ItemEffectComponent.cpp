@@ -102,24 +102,28 @@ namespace RoguelikeGame
         return false;
     }
 
-    bool ItemEffectComponent::Apply(const ItemDefinition& item)
+    ItemUseResult ItemEffectComponent::Apply(const ItemDefinition& item)
     {
         const ItemEffectHandler* handler = FindHandler(item.effect.kind);
         if (handler == nullptr)
         {
             LOG_INFO("Nothing applies " + item.id + " right now");
-            refusedEvent.Invoke(item);
-            return false;
+            refusedEvent.Invoke(item, ItemRefuseReason::NoHandler);
+
+            return {false, 0, ItemRefuseReason::NoHandler};
         }
 
-        if (!(*handler)(item.effect))
+        ItemUseResult result = (*handler)(item.effect);
+        if (!result.isApplied)
         {
-            refusedEvent.Invoke(item);
-            return false;
+            refusedEvent.Invoke(item, result.reason);
+
+            return result;
         }
 
         appliedEvent.Invoke(item);
-        return true;
+
+        return result;
     }
 
     XYZEngine::SubscriptionId ItemEffectComponent::SubscribeApplied(std::function<void(const ItemDefinition&)> onApplied)
@@ -127,7 +131,8 @@ namespace RoguelikeGame
         return appliedEvent.Subscribe(std::move(onApplied));
     }
 
-    XYZEngine::SubscriptionId ItemEffectComponent::SubscribeRefused(std::function<void(const ItemDefinition&)> onRefused)
+    XYZEngine::SubscriptionId ItemEffectComponent::SubscribeRefused(
+        std::function<void(const ItemDefinition&, ItemRefuseReason)> onRefused)
     {
         return refusedEvent.Subscribe(std::move(onRefused));
     }

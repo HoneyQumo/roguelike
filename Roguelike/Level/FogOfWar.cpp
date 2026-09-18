@@ -1,7 +1,7 @@
 ﻿#include "FogOfWar.h"
 #include "LevelGrid.h"
 #include "GameSettings.h"
-#include "SightRules.h"
+#include "Shadowcast.h"
 #include <algorithm>
 #include <cmath>
 
@@ -23,6 +23,8 @@ namespace RoguelikeGame
 
         current.cells.assign(static_cast<std::size_t>(current.width) * current.height, FogState::Unseen);
         current.light.assign(current.cells.size(), 0.f);
+        current.seen.clear();
+        current.seenBefore.clear();
     }
 
     bool FogOfWar::IsEnabled() const
@@ -102,47 +104,55 @@ namespace RoguelikeGame
         int row = 0;
         grid.ToCell(from, column, row);
 
-        std::vector<FogState> before = cells;
+        // Гаснет только то, что было видно в прошлый раз, а не вся карта:
+        // на мосту её в сотни тайлов, а видно за раз сотню клеток.
+        seenBefore = seen;
 
-        // Видимое сначала гаснет до памяти: обзор считается заново целиком,
-        // иначе клетка, которую заслонили, осталась бы видимой навсегда.
-        for (FogState& cell : cells)
+        for (std::size_t index : seenBefore)
         {
-            if (cell == FogState::Seen)
-            {
-                cell = FogState::Known;
-            }
+            cells[index] = FogState::Known;
+            light[index] = FOG_KNOWN_LIGHT;
         }
 
-        for (int cellRow = row - radius; cellRow <= row + radius; cellRow++)
-        {
-            for (int cellColumn = column - radius; cellColumn <= column + radius; cellColumn++)
+        seen.clear();
+
+        float full = FOG_FULL_PART * radius;
+        float span = std::max(radius - full, 1.f);
+
+        SightOrigin origin;
+        origin.column = column;
+        origin.row = row;
+        origin.radius = radius;
+
+        Shadowcast(origin,
+            [&grid](int cellColumn, int cellRow) { return grid.BlocksSight(cellColumn, cellRow); },
+            [&](int cellColumn, int cellRow)
             {
                 if (cellColumn < 0 || cellRow < 0 || cellColumn >= width || cellRow >= height)
                 {
-                    continue;
+                    return;
                 }
 
-                int alongColumns = cellColumn - column;
-                int alongRows = cellRow - row;
-                if (alongColumns * alongColumns + alongRows * alongRows > radius * radius)
+                std::size_t index = static_cast<std::size_t>(cellRow) * width + cellColumn;
+                if (cells[index] == FogState::Seen)
                 {
-                    continue;
+                    return;
                 }
 
-                if (grid.HasWallBetween(from, grid.ToWorld(cellColumn, cellRow)))
-                {
-                    continue;
-                }
+                cells[index] = FogState::Seen;
+                seen.push_back(index);
 
-                cells[static_cast<std::size_t>(cellRow) * width + cellColumn] = FogState::Seen;
-            }
-        }
+                float alongColumns = static_cast<float>(cellColumn - column);
+                float alongRows = static_cast<float>(cellRow - row);
+                float distance = std::sqrt(alongColumns * alongColumns + alongRows * alongRows);
+                float part = std::clamp((distance - full) / span, 0.f, 1.f);
 
-        LightBlockers(grid, column, row);
-        FillLight(column, row);
+                light[index] = std::max(FOG_KNOWN_LIGHT, 1.f - part * (1.f - FOG_EDGE_LIGHT));
+            });
 
-        if (cells == before)
+        std::sort(seen.begin(), seen.end());
+
+        if (seen == seenBefore)
         {
             return false;
         }
@@ -177,104 +187,5 @@ namespace RoguelikeGame
         // Угол с номером клетки - это её левый верхний: соседи лежат слева и сверху.
         return 0.25f * (GetLight(column - 1, row - 1) + GetLight(column, row - 1)
             + GetLight(column - 1, row) + GetLight(column, row));
-    }
-
-    /**
-    *	Ступенька в целый тайл читалась как рваный край из квадратов. Яркость идёт
-    *	непрерывно: в ядре полная, дальше падает к краю радиуса.
-    *
-    *	Край светлее памяти, поэтому память берётся полом: то, что видно сейчас,
-    *	не должно быть темнее того, что только запомнилось.
-    */
-    void FogOfWar::FillLight(int fromColumn, int fromRow)
-    {
-        float full = FOG_FULL_PART * radius;
-        float span = std::max(radius - full, 1.f);
-
-        for (int row = 0; row < height; row++)
-        {
-            for (int column = 0; column < width; column++)
-            {
-                std::size_t index = static_cast<std::size_t>(row) * width + column;
-                FogState state = cells[index];
-
-                if (state == FogState::Unseen)
-                {
-                    light[index] = 0.f;
-                    continue;
-                }
-
-                if (state == FogState::Known)
-                {
-                    light[index] = FOG_KNOWN_LIGHT;
-                    continue;
-                }
-
-                float alongColumns = static_cast<float>(column - fromColumn);
-                float alongRows = static_cast<float>(row - fromRow);
-                float distance = std::sqrt(alongColumns * alongColumns + alongRows * alongRows);
-
-                float part = std::clamp((distance - full) / span, 0.f, 1.f);
-                light[index] = std::max(FOG_KNOWN_LIGHT, 1.f - part * (1.f - FOG_EDGE_LIGHT));
-            }
-        }
-    }
-
-    /**
-    *	Луч до центра клетки-стены под косым углом задевает соседнюю стену и объявляет
-    *	цель закрытой - поэтому стены заслоняли друг друга и в радиусе светилась четверть.
-    *	Второй проход досвечивает их по уже посчитанному полу: стена видна, если виден
-    *	её сосед со стороны игрока.
-    */
-    void FogOfWar::LightBlockers(const LevelGrid& grid, int fromColumn, int fromRow)
-    {
-        std::vector<std::size_t> lit;
-
-        for (int cellRow = fromRow - radius; cellRow <= fromRow + radius; cellRow++)
-        {
-            for (int cellColumn = fromColumn - radius; cellColumn <= fromColumn + radius; cellColumn++)
-            {
-                if (cellColumn < 0 || cellRow < 0 || cellColumn >= width || cellRow >= height)
-                {
-                    continue;
-                }
-
-                int alongColumns = cellColumn - fromColumn;
-                int alongRows = cellRow - fromRow;
-                if (alongColumns * alongColumns + alongRows * alongRows > radius * radius)
-                {
-                    continue;
-                }
-
-                std::size_t index = static_cast<std::size_t>(cellRow) * width + cellColumn;
-                if (cells[index] == FogState::Seen || !grid.BlocksSight(cellColumn, cellRow))
-                {
-                    continue;
-                }
-
-                SightStep steps[2];
-                int count = StepsTowardViewer(alongColumns, alongRows, steps);
-
-                for (int step = 0; step < count; step++)
-                {
-                    int neighbourColumn = cellColumn + steps[step].column;
-                    int neighbourRow = cellRow + steps[step].row;
-
-                    if (grid.BlocksSight(neighbourColumn, neighbourRow)
-                        || GetState(neighbourColumn, neighbourRow) != FogState::Seen)
-                    {
-                        continue;
-                    }
-
-                    lit.push_back(index);
-                    break;
-                }
-            }
-        }
-
-        for (std::size_t index : lit)
-        {
-            cells[index] = FogState::Seen;
-        }
     }
 }

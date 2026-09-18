@@ -4,7 +4,6 @@
 #include "FogOfWar.h"
 #include "LevelGrid.h"
 #include "LevelLoader.h"
-#include "SightRules.h"
 #include <sstream>
 
 using RoguelikeGame::FogOfWar;
@@ -296,28 +295,6 @@ TEST(FogWallLightingTest, LightingWallsDoesNotOpenTheFloorBehindThem)
 	EXPECT_EQ(FogOfWar::Current().GetState(6, 4), FogState::Unseen);
 	EXPECT_EQ(FogOfWar::Current().GetState(7, 5), FogState::Unseen);
 }
-
-TEST(FogWallLightingTest, StepsLeadTowardTheViewerAndNowhereElse)
-{
-	RoguelikeGame::SightStep steps[2];
-
-	EXPECT_EQ(RoguelikeGame::StepsTowardViewer(0, 0, steps), 0) << "под ногами шагать некуда";
-
-	ASSERT_EQ(RoguelikeGame::StepsTowardViewer(3, 0, steps), 1);
-	EXPECT_EQ(steps[0].column, -1);
-	EXPECT_EQ(steps[0].row, 0);
-
-	ASSERT_EQ(RoguelikeGame::StepsTowardViewer(0, -4, steps), 1);
-	EXPECT_EQ(steps[0].column, 0);
-	EXPECT_EQ(steps[0].row, 1);
-
-	ASSERT_EQ(RoguelikeGame::StepsTowardViewer(-2, 5, steps), 2) << "по диагонали шагов два, по одному на ось";
-	EXPECT_EQ(steps[0].column, 1);
-	EXPECT_EQ(steps[1].row, -1);
-}
-
-
-// Ступенька в целый тайл читалась как рваный край из квадратов.
 TEST(FogLightTest, LightFallsFromThePlayerToTheEdge)
 {
 	LevelGrid grid = Open(PILLAR_ROOM, 12);
@@ -410,4 +387,146 @@ TEST(FogLightTest, ACornerOnTheEdgeOfSightSitsBetweenLightAndDark)
 
 	EXPECT_GT(corner, 0.f) << "край обрезан насухо, градиента нет";
 	EXPECT_LT(corner, 1.f);
+}
+
+
+// Луч до центра клетки шёл туда и обратно по разным клеткам: игрок мог видеть врага,
+// который его не видит. Для игры, где прячутся, это нечестно.
+TEST(FogSymmetryTest, IfThePlayerSeesACellThenThatCellSeesThePlayer)
+{
+	LevelGrid grid = GridOf(PILLAR_ROOM);
+	int radius = 7;
+
+	int checked = 0;
+
+	for (int row = 1; row < grid.GetHeight() - 1; row++)
+	{
+		for (int column = 1; column < grid.GetWidth() - 1; column++)
+		{
+			if (!grid.IsPassable(column, row))
+			{
+				continue;
+			}
+
+			FogOfWar::Reset(grid.GetWidth(), grid.GetHeight(), radius);
+			Reveal(grid, 12, 10);
+			bool seesIt = FogOfWar::Current().GetState(column, row) == FogState::Seen;
+
+			FogOfWar::Reset(grid.GetWidth(), grid.GetHeight(), radius);
+			Reveal(grid, column, row);
+			bool seesBack = FogOfWar::Current().GetState(12, 10) == FogState::Seen;
+
+			EXPECT_EQ(seesIt, seesBack)
+				<< "обзор несимметричен между (12,10) и (" << column << "," << row << ")";
+			checked++;
+		}
+	}
+
+	EXPECT_GT(checked, 100) << "проверено слишком мало клеток";
+}
+
+// На мосту карта в сотни тайлов, а видно за раз сотню клеток.
+TEST(FogSymmetryTest, OneRevealDoesNotDependOnTheSizeOfTheMap)
+{
+	const std::string SMALL =
+		"[map]\n"
+		"###############\n"
+		"#.............#\n"
+		"#.............#\n"
+		"#.............#\n"
+		"###############\n";
+
+	std::string wide = "[map]\n";
+	for (int row = 0; row < 5; row++)
+	{
+		std::string line(300, row == 0 || row == 4 ? '#' : '.');
+		line[0] = '#';
+		line[line.size() - 1] = '#';
+		wide += line + "\n";
+	}
+
+	LevelGrid small = Open(SMALL, 7);
+	Reveal(small, 7, 2);
+	int seenSmall = FogOfWar::Current().Count(FogState::Seen);
+
+	LevelGrid big = Open(wide, 7);
+	Reveal(big, 7, 2);
+	int seenBig = FogOfWar::Current().Count(FogState::Seen);
+
+	EXPECT_EQ(seenSmall, seenBig) << "обзор зависит от размера карты";
+}
+
+TEST(FogSymmetryTest, TheEdgeOfSightIsEvenOnOpenGround)
+{
+	std::string open = "[map]\n";
+	for (int row = 0; row < 21; row++)
+	{
+		std::string line(21, row == 0 || row == 20 ? '#' : '.');
+		line[0] = '#';
+		line[20] = '#';
+		open += line + "\n";
+	}
+
+	LevelGrid grid = Open(open, 7);
+	Reveal(grid, 10, 10);
+
+	// На чистом месте обзор обязан быть одинаков во все четыре стороны.
+	for (int step = 1; step <= 7; step++)
+	{
+		bool right = FogOfWar::Current().GetState(10 + step, 10) == FogState::Seen;
+		bool left = FogOfWar::Current().GetState(10 - step, 10) == FogState::Seen;
+		bool down = FogOfWar::Current().GetState(10, 10 + step) == FogState::Seen;
+		bool up = FogOfWar::Current().GetState(10, 10 - step) == FogState::Seen;
+
+		EXPECT_EQ(right, left) << "шаг " << step;
+		EXPECT_EQ(right, down) << "шаг " << step;
+		EXPECT_EQ(right, up) << "шаг " << step;
+	}
+}
+
+
+// Лучи оставляли четыре угла комнаты чёрными навсегда: диагональный луч до угла
+// всегда резал две стены, с какой бы проходимой клетки на него ни смотрели.
+TEST(FogSymmetryTest, WalkingTheWholeRoomOpensEveryCellOfIt)
+{
+	LevelGrid grid = GridOf(PILLAR_ROOM);
+
+	std::vector<bool> everSeen(static_cast<std::size_t>(grid.GetWidth()) * grid.GetHeight(), false);
+	int standings = 0;
+
+	for (int row = 0; row < grid.GetHeight(); row++)
+	{
+		for (int column = 0; column < grid.GetWidth(); column++)
+		{
+			if (!grid.IsPassable(column, row))
+			{
+				continue;
+			}
+
+			standings++;
+			FogOfWar::Reset(grid.GetWidth(), grid.GetHeight(), 7);
+			Reveal(grid, column, row);
+
+			for (int cellRow = 0; cellRow < grid.GetHeight(); cellRow++)
+			{
+				for (int cellColumn = 0; cellColumn < grid.GetWidth(); cellColumn++)
+				{
+					if (FogOfWar::Current().GetState(cellColumn, cellRow) == FogState::Seen)
+					{
+						everSeen[static_cast<std::size_t>(cellRow) * grid.GetWidth() + cellColumn] = true;
+					}
+				}
+			}
+		}
+	}
+
+	ASSERT_GT(standings, 100);
+
+	int blind = 0;
+	for (bool seen : everSeen)
+	{
+		blind += seen ? 0 : 1;
+	}
+
+	EXPECT_EQ(blind, 0) << blind << " клеток не открываются ни с одной проходимой клетки";
 }

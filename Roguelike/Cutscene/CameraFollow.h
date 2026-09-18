@@ -5,20 +5,7 @@
 
 namespace RoguelikeGame
 {
-    /**
-    *	Как камера догоняет героя и почему не выезжает за карту.
-    *
-    *	Оба правила чистые: в них нет ни объекта, ни сетки уровня, поэтому их
-    *	можно проверить числами, а не глазами.
-    */
-
-    /**
-    *	Мягкое доведение к точке.
-    *
-    *	Доля пути считается через экспоненту, а не берётся фиксированной: иначе
-    *	на разной частоте кадров камера ехала бы с разной скоростью. За smoothTime
-    *	проходится примерно две трети оставшегося пути.
-    */
+    // Доля пути считается от времени кадра, иначе на разной частоте камера едет по-разному.
     inline XYZEngine::Vector2Df ApproachPoint(const XYZEngine::Vector2Df& from, const XYZEngine::Vector2Df& to,
         float smoothTime, float deltaTime)
     {
@@ -27,19 +14,12 @@ namespace RoguelikeGame
             return to;
         }
 
-        float part = 1.f - std::exp(-deltaTime / smoothTime);
-
-        return from + (to - from) * part;
+        return from + (to - from) * (1.f - std::exp(-deltaTime / smoothTime));
     }
 
-    /**
-    *	Держит центр кадра так, чтобы за краем карты не было черноты.
-    *
-    *	Карта уже кадра - центрируем её: зажимать нечего, и без этого камера
-    *	билась бы между двумя границами, которые противоречат друг другу.
-    */
     inline float ClampAxis(float center, float halfView, float min, float max)
     {
+        // Карта уже кадра - зажимать нечем, обе границы тянут в разные стороны.
         if (max - min <= 2.f * halfView)
         {
             return 0.5f * (min + max);

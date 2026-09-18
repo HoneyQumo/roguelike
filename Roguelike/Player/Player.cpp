@@ -159,8 +159,7 @@ namespace RoguelikeGame
                 return;
             }
 
-            // Удар в спину должен чувствоваться в руках, а не только в чужом здоровье:
-            // отдача у него как у тяжёлого, даже если это был быстрый тычок.
+            // У крита отдача как у тяжёлого, даже если это был быстрый тычок.
             bool isHeavy = kind == MeleeAttackKind::Heavy || isCritical;
             Fx::ShakeCamera(isHeavy ? CAMERA_SHAKE_HEAVY : CAMERA_SHAKE_LIGHT);
             XYZEngine::FrameClock::Instance()->HitStop(isHeavy ? HIT_STOP_HEAVY : HIT_STOP_LIGHT);

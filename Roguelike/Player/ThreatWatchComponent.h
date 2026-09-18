@@ -18,8 +18,6 @@ namespace RoguelikeGame
     public:
         ThreatWatchComponent(XYZEngine::GameObject* gameObject);
 
-        // Список слушателей шума глобальный и переживает рестарт: без отписки
-        // следующий же выстрел позовёт лямбду с указателем на снесённый компонент.
         ~ThreatWatchComponent() override;
 
         void Start() override;

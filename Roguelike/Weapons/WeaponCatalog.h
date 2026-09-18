@@ -67,7 +67,7 @@ namespace RoguelikeGame
         float arcDegrees;
         float recovery;
 
-        // Во сколько раз больнее в спину. Единица - удар в спину ничем не отличается.
+        // Во сколько раз больнее в спину; единица - без разницы.
         float critScale;
     };
 

@@ -35,8 +35,6 @@ namespace RoguelikeGame
         }
         else
         {
-            // Камера не приклеена к герою: на резком развороте она чуть отстаёт
-            // и догоняет. Жёсткая привязка читается как дрожь, особенно с тряской.
             aim = ApproachPoint(aim, wanted, CAMERA_FOLLOW_TIME, deltaTime);
         }
 
@@ -57,13 +55,7 @@ namespace RoguelikeGame
         }
     }
 
-    /**
-    *	Зажимает центр кадра границами карты.
-    *
-    *	Границы берём у сетки уровня, половину кадра - у камеры на том же объекте.
-    *	Нет сетки или камеры - зажимать нечем и не от чего: так бывает на экранах
-    *	вне уровня, и там камера ходит свободно.
-    */
+    // Без сетки или камеры зажимать нечем - так бывает на экранах вне уровня.
     XYZEngine::Vector2Df CameraDirectorComponent::KeepInsideLevel(const XYZEngine::Vector2Df& point) const
     {
         const LevelGrid& grid = LevelGrid::Current();
@@ -81,7 +73,7 @@ namespace RoguelikeGame
         XYZEngine::Vector2Df size = camera->GetViewSize();
         XYZEngine::Vector2Df half = {0.5f * size.x, 0.5f * size.y};
 
-        // ToWorld даёт центр клетки, а рисуется она вокруг него - отсюда половина тайла по краям.
+        // ToWorld даёт центр клетки, отсюда половина тайла по краям.
         XYZEngine::Vector2Df corner = grid.ToWorld(grid.GetWidth() - 1, 0);
         XYZEngine::Vector2Df min = {-0.5f * TILE_SIZE, -0.5f * TILE_SIZE};
         XYZEngine::Vector2Df max = {corner.x + 0.5f * TILE_SIZE, corner.y + 0.5f * TILE_SIZE};

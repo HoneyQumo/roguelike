@@ -28,12 +28,6 @@ TEST(CameraFollowTest, TheCameraArrivesIfYouWaitLongEnough)
 	EXPECT_NEAR(at.y, 50.f, 0.5f);
 }
 
-/**
-*	Одинаково на любой частоте кадров.
-*
-*	Фиксированная доля за кадр дала бы разную скорость на 30 и 120 кадрах,
-*	и ощущение камеры зависело бы от машины.
-*/
 TEST(CameraFollowTest, TheSpeedDoesNotDependOnTheFrameRate)
 {
 	Vector2Df slow = {0.f, 0.f};
@@ -67,11 +61,6 @@ TEST(CameraClampTest, TheEdgeOfTheMapStopsTheCamera)
 	EXPECT_FLOAT_EQ(ClampAxis(500.f, 100.f, 0.f, 1000.f), 500.f) << "камеру зажало в середине карты";
 }
 
-/**
-*	Карта уже кадра - центрируем её.
-*
-*	Иначе две границы противоречат друг другу, и камера бьётся между ними.
-*/
 TEST(CameraClampTest, ASmallMapIsCentredInsteadOfClamped)
 {
 	EXPECT_FLOAT_EQ(ClampAxis(-500.f, 300.f, 0.f, 200.f), 100.f);

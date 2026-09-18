@@ -70,15 +70,11 @@ namespace RoguelikeGame
 
     void RaiseNoise(const Noise& noise, const XYZEngine::GameObject* except = nullptr);
 
-    // Шум разносится только врагам: игроку нужен отдельный вход,
-    // иначе он услышит то, что услышали только они.
-    //
-    // Слушатель живёт дольше подписки: список переживает и смену локации, и рестарт,
-    // поэтому подписавшийся обязан отписаться в своём деструкторе.
+    // Шум разносится только врагам: игроку нужен отдельный вход.
+    // Список переживает смену локации и рестарт, так что отписываться обязательно.
     XYZEngine::SubscriptionId SubscribeNoiseRaised(std::function<void(const Noise&)> onNoise);
     void UnsubscribeNoiseRaised(XYZEngine::SubscriptionId subscription);
     void ClearNoiseListeners();
 
-    // Сколько слушателей осталось: так забытая отписка видна тесту, а не только отладчику.
     std::size_t NoiseListenerCount();
 }

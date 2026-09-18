@@ -156,7 +156,6 @@ namespace RoguelikeGame
         signal(SIGSEGV, OnAbort);
         _set_abort_behavior(0, _WRITE_ABORT_MSG | _CALL_REPORTFAULT);
 
-        // Без этой строки нельзя отличить «не падало» от «сеть безопасности не включилась».
         LOG_INFO("Crash report is installed");
     }
 }

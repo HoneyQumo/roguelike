@@ -46,12 +46,7 @@ namespace XYZEngine
 		return difference;
 	}
 
-	/**
-	*	Доворот к нужному углу не дальше, чем на maxStep.
-	*
-	*	Шаг ноль или отрицательный означает «без ограничения» - объект встаёт
-	*	на угол сразу. Так ведут себя все, кому скорость поворота не задали.
-	*/
+	// Шаг ноль или меньше - без ограничения, объект встаёт на угол сразу.
 	inline float TurnTowardsDegrees(float fromDegrees, float toDegrees, float maxStepDegrees)
 	{
 		float difference = ShortestAngleDegrees(fromDegrees, toDegrees);

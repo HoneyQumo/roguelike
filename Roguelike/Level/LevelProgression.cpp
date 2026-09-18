@@ -15,8 +15,7 @@ namespace RoguelikeGame
             return {LevelStepKind::Next, index};
         }
 
-        // Шаг по умолчанию идёт по своей цепочке: иначе сюжет утекает в первую же
-        // отладочную карту, положенную рядом в реестре, и конца забега не наступает.
+        // Шаг идёт по своей цепочке, иначе сюжет утекает в отладочные карты.
         const LevelEntry* current = levels.GetAt(currentIndex);
         LevelMode mode = current != nullptr ? current->mode : LevelMode::Campaign;
 

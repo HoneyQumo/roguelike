@@ -24,13 +24,7 @@ namespace XYZEngine
 		void StopAiming();
 		void SetMaxDistance(float newMaxDistance);
 
-		/**
-		*	Сколько градусов в секунду объект успевает довернуть.
-		*
-		*	Ноль - мгновенно, как было: мышь игрока не должна ждать корпус.
-		*	Врагу скорость нужна, иначе спины у него нет - она появляется
-		*	и исчезает за один кадр, и зайти за неё невозможно.
-		*/
+		// Градусов в секунду; ноль - мгновенно, как у прицела игрока.
 		void SetTurnSpeed(float newTurnSpeed);
 
 		const Vector2Df& GetAimDirection() const;

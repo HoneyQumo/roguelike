@@ -301,7 +301,6 @@ namespace RoguelikeGame
                 }
             }
 
-            // Поворот есть у любой цели, поэтому ветки «а если это босс или ящик» не нужно.
             Vector2Df targetForward = target.gameObject != nullptr && target.gameObject->GetTransform() != nullptr
                 ? target.gameObject->GetTransform()->GetForward()
                 : Vector2Df{0.f, 0.f};

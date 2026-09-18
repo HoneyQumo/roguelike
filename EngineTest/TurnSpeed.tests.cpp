@@ -79,12 +79,6 @@ TEST_F(AimTurnTest, WithoutASpeedTheBodySnapsToTheAim)
 	EXPECT_NEAR(std::fabs(aim->GetGameObject()->GetTransform()->GetWorldRotation()), 180.f, 0.01f);
 }
 
-/**
-*	Главное, ради чего это делается.
-*
-*	Спина у врага должна существовать дольше одного кадра, иначе зайти за неё
-*	невозможно и удар в спину остаётся теорией.
-*/
 TEST_F(AimTurnTest, ABodyWithASpeedNeedsTimeToTurnAround)
 {
 	AimRotationComponent* aim = CreateAim(180.f);

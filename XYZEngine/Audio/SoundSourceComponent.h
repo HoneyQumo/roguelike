@@ -33,68 +33,37 @@ namespace XYZEngine
 
 		// Относительный источник всегда звучит на слушателе: расстояние и
 		// панорама к нему не применяются.
-		void SetRelativeToListener(bool isRelative)
+		void SetRelativeToListener(bool newIsRelativeToListener)
 		{
-			if (TSource* source = GetSource())
-			{
-				source->setRelativeToListener(isRelative);
-			}
+			isRelativeToListener = newIsRelativeToListener;
+			ApplySpace();
 		}
 
-		bool IsRelativeToListener() const
+		bool IsRelativeToListener() const { return isRelativeToListener; }
+
+		void SetWorldPosition(const Vector2Df& newWorldPosition)
 		{
-			const TSource* source = GetSource();
-			return source != nullptr && source->isRelativeToListener();
+			worldPosition = newWorldPosition;
+			ApplySpace();
 		}
 
-		void SetWorldPosition(const Vector2Df& world)
+		const Vector2Df& GetWorldPosition() const { return worldPosition; }
+
+		void SetMinDistance(float newMinDistance)
 		{
-			if (TSource* source = GetSource())
-			{
-				SoundPoint point = ToSoundPoint(world);
-				source->setPosition(point.x, point.y, point.z);
-			}
+			minDistance = newMinDistance;
+			ApplySpace();
 		}
 
-		Vector2Df GetWorldPosition() const
-		{
-			const TSource* source = GetSource();
-			if (source == nullptr)
-			{
-				return {0.f, 0.f};
-			}
+		float GetMinDistance() const { return minDistance; }
 
-			sf::Vector3f position = source->getPosition();
-			return {position.x, position.y};
+		void SetAttenuation(float newAttenuation)
+		{
+			attenuation = newAttenuation;
+			ApplySpace();
 		}
 
-		void SetMinDistance(float distance)
-		{
-			if (TSource* source = GetSource())
-			{
-				source->setMinDistance(distance);
-			}
-		}
-
-		float GetMinDistance() const
-		{
-			const TSource* source = GetSource();
-			return source != nullptr ? source->getMinDistance() : 0.f;
-		}
-
-		void SetAttenuation(float attenuation)
-		{
-			if (TSource* source = GetSource())
-			{
-				source->setAttenuation(attenuation);
-			}
-		}
-
-		float GetAttenuation() const
-		{
-			const TSource* source = GetSource();
-			return source != nullptr ? source->getAttenuation() : 0.f;
-		}
+		float GetAttenuation() const { return attenuation; }
 
 		virtual void Play()
 		{
@@ -138,5 +107,29 @@ namespace XYZEngine
 	protected:
 		virtual TSource* GetSource() = 0;
 		virtual const TSource* GetSource() const = 0;
+
+		// Источник может смениться под компонентом - музыка живёт в ресурсах и
+		// приходит указателем. Настройки при этом остаются компонентовы.
+		void ApplySpace()
+		{
+			TSource* source = GetSource();
+			if (source == nullptr)
+			{
+				return;
+			}
+
+			SoundPoint point = ToSoundPoint(worldPosition);
+
+			source->setRelativeToListener(isRelativeToListener);
+			source->setPosition(point.x, point.y, point.z);
+			source->setMinDistance(minDistance);
+			source->setAttenuation(attenuation);
+		}
+
+	private:
+		Vector2Df worldPosition = {0.f, 0.f};
+		bool isRelativeToListener = false;
+		float minDistance = 1.f;
+		float attenuation = 1.f;
 	};
 }

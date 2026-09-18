@@ -2,6 +2,7 @@
 #include "AudioComponent.h"
 #include "CameraComponent.h"
 #include "GameWorld.h"
+#include "MusicComponent.h"
 #include "SoundSpace.h"
 
 using XYZEngine::AudioComponent;
@@ -113,6 +114,30 @@ TEST_F(SoundSourcePlaceTest, TheFadingSettingsSurviveTheRoundTrip)
 
 	EXPECT_FLOAT_EQ(audio->GetMinDistance(), 320.f);
 	EXPECT_FLOAT_EQ(audio->GetAttenuation(), 1.5f);
+}
+
+// Дорожка лежит полем: компонент держит её указателем и трогает в деструкторе,
+// поэтому пережить очистку мира она обязана.
+class MusicPlaceTest : public ::testing::Test
+{
+protected:
+	void SetUp() override { GameWorld::Instance()->Clear(); }
+	void TearDown() override { GameWorld::Instance()->Clear(); }
+
+	sf::Music track;
+};
+
+// Музыку компонент не держит, а получает указателем из ресурсов. Настройки
+// при этом компонентовы, и новая дорожка обязана их подхватить - иначе трек
+// начнёт затухать от начала координат, как только слушатель уедет за камерой.
+TEST_F(MusicPlaceTest, ANewTrackPicksUpTheSettingsOfTheComponent)
+{
+	GameObject* owner = GameWorld::Instance()->CreateGameObject("Music");
+	XYZEngine::MusicComponent* player = owner->AddComponent<XYZEngine::MusicComponent>();
+
+	player->SetMusic(&track);
+
+	EXPECT_TRUE(player->IsRelativeToListener());
 }
 
 class ListenerPlaceTest : public ::testing::Test

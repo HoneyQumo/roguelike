@@ -1,4 +1,4 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "GameWorld.h"
 
 namespace XYZEngine
@@ -127,6 +127,16 @@ namespace XYZEngine
 		for (GameObject* gameObject : found->second)
 		{
 			DestroyGameObject(gameObject);
+		}
+	}
+	void GameWorld::DestroyTemporary()
+	{
+		for (GameObject* gameObject : gameObjects)
+		{
+			if (gameObject != nullptr && gameObject->IsTemporary())
+			{
+				DestroyGameObject(gameObject);
+			}
 		}
 	}
 	void GameWorld::InvalidateRenderOrder()

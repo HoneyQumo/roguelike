@@ -139,6 +139,16 @@ namespace XYZEngine
 		}
 	}
 
+	void GameObject::SetTemporary(bool newIsTemporary)
+	{
+		isTemporary = newIsTemporary;
+	}
+
+	bool GameObject::IsTemporary() const
+	{
+		return isTemporary;
+	}
+
 	bool GameObject::IsVisible() const
 	{
 		return isVisible;

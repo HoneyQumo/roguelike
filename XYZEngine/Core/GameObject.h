@@ -35,6 +35,11 @@ namespace XYZEngine
 		void SetVisible(bool newIsVisible);
 		bool IsVisible() const;
 
+		// Принадлежит текущей локации и уезжает вместе с ней: следы, эффекты, снаряды.
+		// Решение принимается там, где объект создают, а не в списке имён в чужом файле.
+		void SetTemporary(bool newIsTemporary);
+		bool IsTemporary() const;
+
 		void Update(float deltaTime);
 		void Render();
 
@@ -142,6 +147,7 @@ namespace XYZEngine
 		int renderLayer = 0;
 		bool isActive = true;
 		bool isVisible = true;
+		bool isTemporary = false;
 		TransformComponent* transform = nullptr;
 
 		std::vector<GameObject*> children = {};

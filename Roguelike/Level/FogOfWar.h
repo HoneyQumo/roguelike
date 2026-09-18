@@ -43,6 +43,8 @@ namespace RoguelikeGame
         bool Reveal(const LevelGrid& grid, const XYZEngine::Vector2Df& from);
 
     private:
+        void LightBlockers(const LevelGrid& grid, int fromColumn, int fromRow);
+
         static FogOfWar current;
 
         int width = 0;

@@ -262,7 +262,7 @@ namespace RoguelikeGame
 
     constexpr float WEAPON_ROW_SLOT_SIZE = 58.f;
     constexpr float WEAPON_ROW_SLOT_GAP = 8.f;
-    constexpr float WEAPON_ROW_GAP = 10.f;
+    constexpr float WEAPON_ROW_MARGIN_Y = 24.f;
     constexpr int WEAPON_ROW_KEY_FONT_SIZE = 14;
     constexpr float WEAPON_ROW_KEY_HEIGHT = 18.f;
 

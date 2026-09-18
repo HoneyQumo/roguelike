@@ -168,9 +168,9 @@ namespace RoguelikeGame
     void HudScreen::BuildWeaponRow(const sf::Font* font)
     {
         auto row = GetRoot().AddChild<XYZEngine::UiWidget>();
-        row->SetAnchor(XYZEngine::UiAnchor::BottomLeft);
-        row->SetPivot(XYZEngine::UiAnchor::BottomLeft);
-        row->SetOffset({AMMO_HUD_MARGIN_X, -(AMMO_HUD_MARGIN_Y + AMMO_HUD_HEIGHT + WEAPON_ROW_GAP)});
+        row->SetAnchor(XYZEngine::UiAnchor::Bottom);
+        row->SetPivot(XYZEngine::UiAnchor::Bottom);
+        row->SetOffset({0.f, -WEAPON_ROW_MARGIN_Y});
         row->SetSize({PLAYER_WEAPON_SLOTS * WEAPON_ROW_SLOT_SIZE + (PLAYER_WEAPON_SLOTS - 1) * WEAPON_ROW_SLOT_GAP,
             WEAPON_ROW_SLOT_SIZE});
 

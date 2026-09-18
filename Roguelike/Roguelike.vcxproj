@@ -118,6 +118,7 @@
         <ClCompile Include="Items\InteractableComponent.cpp"/>
         <ClCompile Include="Items\ContainerComponent.cpp"/>
         <ClCompile Include="Level\PropVisualComponent.cpp"/>
+        <ClCompile Include="Items\EquipExchange.cpp"/>
         <ClCompile Include="Items\InventoryComponent.cpp"/>
         <ClCompile Include="Items\ItemEffectComponent.cpp"/>
         <ClCompile Include="Items\InteractionComponent.cpp"/>
@@ -217,6 +218,7 @@
         <ClInclude Include="Items\InteractableComponent.h"/>
         <ClInclude Include="Items\ContainerComponent.h"/>
         <ClInclude Include="Level\PropVisualComponent.h"/>
+        <ClInclude Include="Items\EquipExchange.h"/>
         <ClInclude Include="Items\InventoryAccess.h"/>
         <ClInclude Include="Items\InventoryComponent.h"/>
         <ClInclude Include="Items\ItemEffectComponent.h"/>

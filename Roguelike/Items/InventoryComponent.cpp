@@ -73,7 +73,8 @@ namespace RoguelikeGame
 
         for (int index = 0; index < GetCapacity(); index++)
         {
-            if (slots[index].Holds(item.id) && slots[index].FreeSpace() > 0)
+            // В заряженной ячейке лежит конкретный ствол со своими патронами - он не стопка.
+            if (slots[index].Holds(item.id) && slots[index].charge == NO_CHARGE && slots[index].FreeSpace() > 0)
             {
                 return index;
             }
@@ -152,6 +153,7 @@ namespace RoguelikeGame
             {
                 slot.item = item;
                 slot.count = 0;
+                slot.charge = NO_CHARGE;
             }
 
             int taken = std::min(left, maxStack - slot.count);
@@ -185,9 +187,37 @@ namespace RoguelikeGame
         {
             slot.item = ItemDefinition();
             slot.count = 0;
+            slot.charge = NO_CHARGE;
         }
 
         removedEvent.Invoke(removed, count);
+        changedEvent.Invoke();
+
+        return true;
+    }
+
+    bool InventoryComponent::Replace(int slotIndex, const ItemDefinition& item, int charge)
+    {
+        if (!IsValidSlot(slotIndex))
+        {
+            return false;
+        }
+
+        InventorySlot& slot = slots[slotIndex];
+        bool wasTaken = !slot.IsEmpty();
+        ItemDefinition removed = slot.item;
+        int removedCount = slot.count;
+
+        slot.item = item;
+        slot.count = 1;
+        slot.charge = charge;
+
+        if (wasTaken)
+        {
+            removedEvent.Invoke(removed, removedCount);
+        }
+
+        addedEvent.Invoke(item, 1);
         changedEvent.Invoke();
 
         return true;

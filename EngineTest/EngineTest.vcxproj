@@ -162,6 +162,7 @@
     <ClCompile Include="InventoryComponent.tests.cpp" />
     <ClCompile Include="InteractKeys.tests.cpp" />
     <ClCompile Include="Interaction.tests.cpp" />
+    <ClCompile Include="EquipExchange.tests.cpp" />
     <ClCompile Include="InventoryGate.tests.cpp" />
     <ClCompile Include="LoadoutRules.tests.cpp" />
     <ClCompile Include="InventoryScreen.tests.cpp" />
@@ -336,6 +337,9 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\Roguelike\Items\ItemEffectComponent.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Roguelike\Items\EquipExchange.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\Roguelike\Items\InventoryComponent.cpp">

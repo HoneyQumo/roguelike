@@ -9,10 +9,16 @@
 
 namespace RoguelikeGame
 {
+    // Ствол без заряда ещё не был в руках - такому положен полный магазин.
+    constexpr int NO_CHARGE = -1;
+
     struct InventorySlot
     {
         ItemDefinition item;
         int count = 0;
+
+        // Патроны в магазине лежащего ствола: у остальных предметов заряда нет.
+        int charge = NO_CHARGE;
 
         bool IsEmpty() const;
         bool Holds(const std::string& itemId) const;
@@ -32,6 +38,9 @@ namespace RoguelikeGame
 
         bool TryAdd(const ItemDefinition& item, int count = 1);
         bool Remove(int slotIndex, int count = 1);
+
+        // Кладёт предмет вместо того, что лежало в ячейке: так идёт обмен оружием.
+        bool Replace(int slotIndex, const ItemDefinition& item, int charge = NO_CHARGE);
         bool Use(int slotIndex);
         void SetUseHandler(std::function<bool(const ItemDefinition&)> newUseHandler);
         bool UseSelected();

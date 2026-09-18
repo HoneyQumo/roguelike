@@ -125,6 +125,37 @@ namespace RoguelikeGame
         return true;
     }
 
+    EquipResult PlayerLoadoutComponent::EquipFromBag(InventoryComponent& bag, int bagSlot, int targetSlot,
+        const ItemCatalog& catalog)
+    {
+        // Живой магазин лежит в оружии, а не в раскладке: без этого обмен печатает патроны.
+        SaveCurrentMagazine();
+
+        EquipResult result = TryEquipFromBag(bag, bagSlot, state, targetSlot, catalog);
+        if (result.isDone && (result.slot == state.currentSlot || state.IsEmpty(state.currentSlot)))
+        {
+            ApplyWeapon(result.slot);
+        }
+
+        if (result.isDone)
+        {
+            LOG_INFO(std::string("Player equips ") + GetWeapon(state.slots[result.slot].id).id
+                + " in slot " + std::to_string(result.slot + 1));
+        }
+
+        return result;
+    }
+
+    void PlayerLoadoutComponent::SaveCurrentMagazine()
+    {
+        if (rangedWeapon == nullptr || IsMeleeEquipped() || state.IsEmpty(state.currentSlot))
+        {
+            return;
+        }
+
+        state.slots[state.currentSlot].magazine = rangedWeapon->GetAmmoInMagazine();
+    }
+
     bool PlayerLoadoutComponent::TrySelectSlot(int slot)
     {
         if (!state.CanSelect(slot) || isSwapping)
@@ -144,10 +175,7 @@ namespace RoguelikeGame
 
         CancelReload();
 
-        if (!IsMeleeEquipped())
-        {
-            state.slots[state.currentSlot].magazine = rangedWeapon->GetAmmoInMagazine();
-        }
+        SaveCurrentMagazine();
 
         if (stowedWeapon != nullptr)
         {

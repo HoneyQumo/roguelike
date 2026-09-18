@@ -19,6 +19,9 @@ namespace RoguelikeGame
 
         void SetInventory(InventoryComponent* newInventory);
 
+        // Экран не знает ни про раскладку, ни про каталог оружия - только про запрос.
+        void SetEquipHandler(std::function<bool(int bagSlot, int targetSlot)> newEquipHandler);
+
         void Open();
         void Close();
         void Toggle();
@@ -43,6 +46,7 @@ namespace RoguelikeGame
         };
 
         InventoryComponent* inventory = nullptr;
+        std::function<bool(int, int)> equipHandler;
         XYZEngine::UiPanel* dimmer = nullptr;
         XYZEngine::UiPanel* window = nullptr;
         XYZEngine::UiLabel* title = nullptr;
@@ -57,6 +61,7 @@ namespace RoguelikeGame
         void Refresh();
         void RefreshHint();
         void HandleKeyboard();
+        void TryEquip(int targetSlot);
         void MoveSelection(int columns, int rows);
         void SelectSlot(int index);
         void ApplyAnimation();

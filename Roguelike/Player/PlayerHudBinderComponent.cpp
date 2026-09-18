@@ -1,4 +1,5 @@
 #include "PlayerHudBinderComponent.h"
+#include "GameResources.h"
 #include "GameSettings.h"
 #include "WeaponCatalog.h"
 #include <GameWorld.h>
@@ -97,6 +98,12 @@ namespace RoguelikeGame
         if (inventory != nullptr && inventoryScreen != nullptr)
         {
             inventoryScreen->SetInventory(inventory);
+
+            inventoryScreen->SetEquipHandler([this](int bagSlot, int targetSlot)
+            {
+                return inventory != nullptr && loadout != nullptr
+                    && loadout->EquipFromBag(*inventory, bagSlot, targetSlot, GameResources::GetItems()).isDone;
+            });
         }
 
         if (inventory != nullptr)

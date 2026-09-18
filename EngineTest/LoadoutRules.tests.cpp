@@ -96,8 +96,8 @@ TEST(LoadoutRulesTest, AWeaponArrivesWithAFullMagazine)
 	EXPECT_EQ(state.slots[equipped.slot].magazine, RoguelikeGame::GetWeapon(WeaponId::Deagle).magazineSize);
 }
 
-// Сегодняшнее поведение, и оно неверное: F-GPL-66 меняет этот тест на обмен.
-TEST(LoadoutRulesTest, AnOccupiedSlotIsOverwrittenAndTheOldWeaponIsGone)
+// Вытеснить оружие умеет только обмен - он знает, куда деть вытесненное.
+TEST(LoadoutRulesTest, AnOccupiedSlotIsNotOverwritten)
 {
 	LoadoutState state = StartingLoadout();
 	state.Equip(WeaponId::Deagle);
@@ -105,17 +105,20 @@ TEST(LoadoutRulesTest, AnOccupiedSlotIsOverwrittenAndTheOldWeaponIsGone)
 
 	EquipOutcome equipped = state.Equip(WeaponId::Glock);
 
-	ASSERT_TRUE(equipped.isChanged);
-	EXPECT_EQ(equipped.slot, 1);
-	EXPECT_EQ(state.slots[1].id, WeaponId::Glock);
+	EXPECT_FALSE(equipped.isChanged) << "дигл пропал без следа";
+	EXPECT_EQ(state.slots[1].id, WeaponId::Deagle);
+}
 
-	bool isDeagleSomewhere = false;
-	for (int slot = 0; slot < state.slotsCount; slot++)
-	{
-		isDeagleSomewhere = isDeagleSomewhere || (!state.IsEmpty(slot) && state.slots[slot].id == WeaponId::Deagle);
-	}
+TEST(LoadoutRulesTest, MeleeBelongsToTheLastSlotAndFirearmsToTheRest)
+{
+	LoadoutState state = StartingLoadout();
 
-	EXPECT_FALSE(isDeagleSomewhere) << "дигл уцелел - значит обмен уже сделан, пора менять этот тест";
+	EXPECT_TRUE(state.Fits(MELEE_SLOT, WeaponId::Knife));
+	EXPECT_FALSE(state.Fits(MELEE_SLOT, WeaponId::Deagle)) << "огнестрел занял слот ближнего боя";
+	EXPECT_TRUE(state.Fits(0, WeaponId::Ak47));
+	EXPECT_FALSE(state.Fits(0, WeaponId::Bat)) << "бита уехала в оружейный слот";
+	EXPECT_FALSE(state.Fits(RoguelikeGame::NO_WEAPON_SLOT, WeaponId::Deagle));
+	EXPECT_FALSE(state.Fits(state.slotsCount, WeaponId::Deagle));
 }
 
 TEST(LoadoutRulesTest, AnEmptyLoadoutAnswersWithoutCountingSlots)

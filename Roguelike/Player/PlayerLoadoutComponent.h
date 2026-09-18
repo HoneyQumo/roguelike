@@ -12,6 +12,7 @@
 #include "Weapon.h"
 #include "StowedWeaponComponent.h"
 #include "LoadoutRules.h"
+#include "EquipExchange.h"
 
 namespace RoguelikeGame
 {
@@ -34,6 +35,7 @@ namespace RoguelikeGame
 
         bool TrySelectSlot(int slot);
         bool EquipWeapon(WeaponId id);
+        EquipResult EquipFromBag(InventoryComponent& bag, int bagSlot, int targetSlot, const ItemCatalog& catalog);
         bool IsSlotEmpty(int slot) const;
         bool CanTakeWeapon(WeaponId id) const;
         bool HasWeapon() const;
@@ -65,6 +67,7 @@ namespace RoguelikeGame
         bool isSwapping = false;
 
         int ReadSelectedSlot() const;
+        void SaveCurrentMagazine();
         void FindComponents();
         void ApplyWeapon(int slot);
         void ApplyRangedWeapon(WeaponId id, int ammoInMagazine);

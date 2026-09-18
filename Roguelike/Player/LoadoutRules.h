@@ -55,6 +55,13 @@ namespace RoguelikeGame
             return slot != NO_WEAPON_SLOT && IsEmpty(slot);
         }
 
+        // Ближний бой живёт в последнем слоте, огнестрел - в любом другом.
+        // Поэтому слот ножа не опустеет: туда просто нечего положить, кроме melee.
+        constexpr bool Fits(int slot, WeaponId id) const
+        {
+            return slot >= 0 && slot < slotsCount && IsMelee(id) == (slot == slotsCount - 1);
+        }
+
         constexpr bool CanSelect(int slot) const
         {
             return slot != currentSlot && !IsEmpty(slot);
@@ -96,11 +103,14 @@ namespace RoguelikeGame
             }
         }
 
-        // Занятый слот сейчас затирается вместе с тем, что в нём лежало - см. F-GPL-66.
+        /**
+        *	Кладёт ствол в свободный слот. Занятый слот не трогает: вытеснить оружие
+        *	можно только обменом, который знает, куда деть вытесненное.
+        */
         constexpr EquipOutcome Equip(WeaponId id)
         {
             int slot = ResolveSlot(id);
-            if (slot == NO_WEAPON_SLOT || (slots[slot].hasWeapon && slots[slot].id == id))
+            if (slot == NO_WEAPON_SLOT || !IsEmpty(slot))
             {
                 return {};
             }

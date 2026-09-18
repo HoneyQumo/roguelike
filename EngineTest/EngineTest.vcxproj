@@ -145,6 +145,7 @@
     <ClCompile Include="RunState.tests.cpp" />
     <ClCompile Include="TurnSpeed.tests.cpp" />
     <ClCompile Include="CameraFollow.tests.cpp" />
+    <ClCompile Include="Version.tests.cpp" />
     <ClCompile Include="MeleeWeapon.tests.cpp" />
     <ClCompile Include="Threat.tests.cpp" />
     <ClCompile Include="Tileset.tests.cpp" />

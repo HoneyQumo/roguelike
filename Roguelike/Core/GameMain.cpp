@@ -10,6 +10,7 @@
 #include "FileSink.h"
 #include "DebugOutputSink.h"
 #include "CrashReport.h"
+#include "Version.h"
 #include "DebugDraw.h"
 #include "ResourceSystem.h"
 
@@ -38,9 +39,9 @@ int main()
 {
     SetupLogger();
     InstallCrashReport();
-    LOG_INFO("Game started");
+    LOG_INFO("Game started: " + GameTitle());
 
-    sf::RenderWindow window(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "Roguelike by HoneyQumo");
+    sf::RenderWindow window(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), GameTitle());
     window.setMouseCursorVisible(false);
     window.setFramerateLimit(FRAME_RATE_LIMIT);
     RenderSystem::Instance()->SetMainWindow(&window);

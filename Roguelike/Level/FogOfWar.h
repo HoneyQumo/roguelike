@@ -50,8 +50,6 @@ namespace RoguelikeGame
         bool Reveal(const LevelGrid& grid, const XYZEngine::Vector2Df& from);
 
     private:
-        void LightBlockers(const LevelGrid& grid, int fromColumn, int fromRow);
-        void FillLight(int fromColumn, int fromRow);
 
         static FogOfWar current;
 
@@ -61,5 +59,9 @@ namespace RoguelikeGame
         unsigned int version = 0u;
         std::vector<FogState> cells;
         std::vector<float> light;
+
+        // Что было видно в прошлый раз: гасить надо только это, а не всю карту.
+        std::vector<std::size_t> seen;
+        std::vector<std::size_t> seenBefore;
     };
 }

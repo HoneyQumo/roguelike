@@ -307,11 +307,24 @@ namespace RoguelikeGame
     // Красная зона обоймы
     constexpr float AMMO_HUD_LOW_PART = 0.25f;
 
-    // Восемь секторов - компас: меньше грубо, больше не читается с одного взгляда.
-    constexpr int THREAT_MARK_SECTORS = 8;
-    constexpr float THREAT_MARK_MARGIN_X = 90.f;
-    constexpr float THREAT_MARK_MARGIN_Y = 70.f;
-    constexpr float THREAT_MARK_SIZE = 26.f;
+    // Знак стоит над головой, а не на ней.
+    constexpr float THREAT_MARK_LIFT = 54.f;
+
+    // Ушедший за край показан тусклее: он дальше, и его место названо приблизительно.
+    constexpr float THREAT_MARK_EDGE_MARGIN = 40.f;
+    constexpr float THREAT_MARK_EDGE_PART = 0.65f;
+
+    constexpr auto THREAT_MARK_OBJECT_NAME = "ThreatMarks";
+
+    // Выше игрока: знак не должен уходить под спрайты и под туман.
+    constexpr int THREAT_MARK_RENDER_LAYER = 58;
+
+    constexpr int THREAT_MARK_FONT_SIZE = 34;
+    constexpr float THREAT_MARK_OUTLINE = 2.f;
+
+    inline const sf::Color THREAT_ALERTED_COLOR = sf::Color(236, 168, 52);
+    inline const sf::Color THREAT_PROVOKED_COLOR = sf::Color(222, 62, 48);
+    inline const sf::Color THREAT_MARK_OUTLINE_COLOR = sf::Color(12, 10, 14, 220);
 
     // Шум тает сам: игрок его услышал, а не видит источник.
     constexpr float THREAT_NOISE_TIME = 1.6f;

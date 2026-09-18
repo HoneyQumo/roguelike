@@ -9,6 +9,7 @@
 #include "InventoryComponent.h"
 #include "QuickBeltComponent.h"
 #include "ItemDropComponent.h"
+#include "ThreatMarkComponent.h"
 #include "ThreatWatchComponent.h"
 #include "ItemEffectComponent.h"
 #include "InventoryScreen.h"
@@ -29,6 +30,7 @@ namespace RoguelikeGame
         void SetTargetName(const std::string& newTargetName);
         void SetScreen(HudScreen* newScreen);
         void SetInventoryScreen(InventoryScreen* newInventoryScreen);
+        void SetThreatMarks(ThreatMarkComponent* newThreatMarks);
 
     private:
         HudScreen* screen = nullptr;
@@ -37,6 +39,7 @@ namespace RoguelikeGame
         QuickBeltComponent* belt = nullptr;
         ItemDropComponent* drop = nullptr;
         ThreatWatchComponent* threats = nullptr;
+        ThreatMarkComponent* threatMarks = nullptr;
 
         void ShowRefusal(const std::string& text);
         void PushWeaponSlots();

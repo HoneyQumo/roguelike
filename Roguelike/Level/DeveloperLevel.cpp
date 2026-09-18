@@ -918,7 +918,9 @@ namespace RoguelikeGame
         auto input = InputSystem::Instance();
         bool isPaused = Engine::Instance()->IsPaused();
 
-        if (input->WasActionPressed(XYZEngine::InputAction::Pause))
+        // Escape при открытой сумке закрывает её, а не ставит игру на паузу.
+        if (!XYZEngine::UiManager::Instance()->IsInputCaptured()
+            && input->WasActionPressed(XYZEngine::InputAction::Pause))
         {
             SetPaused(!isPaused);
             return;

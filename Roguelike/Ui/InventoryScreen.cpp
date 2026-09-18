@@ -1,4 +1,5 @@
 #include "InventoryScreen.h"
+#include "InventoryAccess.h"
 #include "GameSettings.h"
 #include "Item.h"
 #include "WeaponCatalog.h"
@@ -194,8 +195,13 @@ namespace RoguelikeGame
     void InventoryScreen::Update(float deltaTime)
     {
         auto input = XYZEngine::InputSystem::Instance();
+        bool isReachable = CanUseInventory(inventory);
 
-        if (input->WasActionPressed(XYZEngine::InputAction::Inventory))
+        if (!isReachable)
+        {
+            Close();
+        }
+        else if (input->WasActionPressed(XYZEngine::InputAction::Inventory))
         {
             Toggle();
             XYZEngine::UiManager::Instance()->CaptureInput();
@@ -208,6 +214,9 @@ namespace RoguelikeGame
 
         if (isOpen)
         {
+            // Пока сумка открыта, игровой ввод принадлежит ей: иначе одно нажатие
+            // цифры и выбирает ячейку, и переключает ствол в руках.
+            XYZEngine::UiManager::Instance()->CaptureInput();
             HandleKeyboard();
         }
 
@@ -290,7 +299,7 @@ namespace RoguelikeGame
             MoveSelection(0, 1);
         }
 
-        if (input->WasActionPressed(XYZEngine::InputAction::Confirm) && inventory != nullptr)
+        if (input->WasActionPressed(XYZEngine::InputAction::Confirm) && CanUseInventory(inventory))
         {
             inventory->Use(selectedSlot);
         }

@@ -1,4 +1,5 @@
 ﻿#include "PlayerLoadoutComponent.h"
+#include <UiManager.h>
 #include <InputSystem.h>
 #include "WeaponSetup.h"
 #include "GameResources.h"
@@ -218,6 +219,12 @@ namespace RoguelikeGame
 
     int PlayerLoadoutComponent::ReadSelectedSlot() const
     {
+        // Те же цифры выбирают слот назначения в открытой сумке.
+        if (XYZEngine::UiManager::Instance()->IsInputCaptured())
+        {
+            return NO_WEAPON_SLOT;
+        }
+
         auto input = XYZEngine::InputSystem::Instance();
         for (int slot = 0; slot < slotsCount; slot++)
         {

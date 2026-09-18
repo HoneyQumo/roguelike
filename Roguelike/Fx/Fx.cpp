@@ -134,6 +134,7 @@ namespace RoguelikeGame
     void Fx::Spawn(const std::string& textureMapName, const FxStrip& strip, const XYZEngine::Vector2Df& position, float angle, float scale)
     {
         auto gameObject = XYZEngine::GameWorld::Instance()->CreateGameObject(FX_OBJECT_NAME);
+        gameObject->SetTemporary(true);
         gameObject->SetRenderLayer(EFFECT_RENDER_LAYER);
 
         if (AddSprite(gameObject, textureMapName, strip, 0, scale) == nullptr)

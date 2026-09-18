@@ -1,4 +1,4 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "GameWorld.h"
 #include "Level.h"
 #include <chrono>
@@ -219,4 +219,78 @@ TEST_F(GameWorldTest, ALevelSurvivesAnObjectThatLeftItEarly)
 	GameWorld::Instance()->LateUpdate();
 
 	EXPECT_EQ(GameWorld::Instance()->GetObjectsCount(), 0u);
+}
+
+
+namespace
+{
+	class TemporaryObjectsTest : public ::testing::Test
+	{
+	protected:
+		void SetUp() override { GameWorld::Instance()->Clear(); }
+		void TearDown() override { GameWorld::Instance()->Clear(); }
+
+		void Sweep()
+		{
+			GameWorld::Instance()->DestroyTemporary();
+			GameWorld::Instance()->LateUpdate();
+		}
+	};
+}
+
+// Список имён забывали пополнять, и огонь переезжал на следующую локацию.
+TEST_F(TemporaryObjectsTest, WhatBelongsToTheLevelGoesAwayWithIt)
+{
+	GameObject* passing = GameWorld::Instance()->CreateGameObject("Passing");
+	passing->SetTemporary(true);
+
+	GameObject* staying = GameWorld::Instance()->CreateGameObject("Staying");
+
+	ASSERT_TRUE(passing->IsTemporary());
+	ASSERT_FALSE(staying->IsTemporary());
+
+	Sweep();
+
+	EXPECT_EQ(GameWorld::Instance()->FindGameObject("Passing"), nullptr) << "временный объект пережил уборку";
+	EXPECT_EQ(GameWorld::Instance()->FindGameObject("Staying"), staying) << "уборка снесла лишнее";
+}
+
+TEST_F(TemporaryObjectsTest, ChildrenLeaveWithTheirParent)
+{
+	GameObject* parent = GameWorld::Instance()->CreateGameObject("Parent");
+	parent->SetTemporary(true);
+	GameWorld::Instance()->CreateGameObject("Child", parent);
+
+	Sweep();
+
+	EXPECT_EQ(GameWorld::Instance()->FindGameObject("Child"), nullptr) << "ребёнок остался без родителя";
+}
+
+TEST_F(TemporaryObjectsTest, NewObjectsSurviveAnEarlierSweep)
+{
+	GameObject* old = GameWorld::Instance()->CreateGameObject("Old");
+	old->SetTemporary(true);
+
+	Sweep();
+
+	GameObject* fresh = GameWorld::Instance()->CreateGameObject("Fresh");
+	fresh->SetTemporary(true);
+
+	EXPECT_EQ(GameWorld::Instance()->FindGameObject("Fresh"), fresh) << "уборка задела то, что родилось после неё";
+}
+
+TEST_F(TemporaryObjectsTest, SweepingTwiceIsHarmless)
+{
+	GameObject* passing = GameWorld::Instance()->CreateGameObject("Passing");
+	passing->SetTemporary(true);
+
+	Sweep();
+	Sweep();
+
+	EXPECT_EQ(GameWorld::Instance()->FindGameObject("Passing"), nullptr);
+}
+
+TEST_F(TemporaryObjectsTest, ObjectsAreNotTemporaryByDefault)
+{
+	EXPECT_FALSE(GameWorld::Instance()->CreateGameObject("Plain")->IsTemporary());
 }

@@ -175,3 +175,16 @@ TEST_F(CastMarkTest, MarkWithoutTargetDisappears)
 
 	EXPECT_EQ(FindMark(), nullptr);
 }
+
+// Метка принадлежит локации и обязана уехать с ней: решение принимается у фабрики.
+TEST(CastMarkLifetimeTest, ACastMarkBelongsToTheLevel)
+{
+	XYZEngine::GameWorld::Instance()->Clear();
+
+	XYZEngine::GameObject* mark = RoguelikeGame::CreateCastMark({0.f, 0.f}, 60.f, 1.f);
+	ASSERT_NE(mark, nullptr);
+
+	EXPECT_TRUE(mark->IsTemporary()) << "метка переживёт смену локации";
+
+	XYZEngine::GameWorld::Instance()->Clear();
+}

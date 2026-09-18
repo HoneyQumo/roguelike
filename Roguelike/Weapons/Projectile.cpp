@@ -30,6 +30,7 @@ namespace RoguelikeGame
         int frameIndex = isRocket ? 0 : static_cast<int>(definition.bullet);
 
         auto gameObject = XYZEngine::GameWorld::Instance()->CreateGameObject(isRocket ? ROCKET_OBJECT_NAME : PROJECTILE_OBJECT_NAME);
+        gameObject->SetTemporary(true);
         gameObject->SetRenderLayer(EFFECT_RENDER_LAYER);
 
         auto transform = gameObject->GetTransform();

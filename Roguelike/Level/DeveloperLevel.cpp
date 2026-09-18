@@ -480,6 +480,7 @@ namespace RoguelikeGame
         if (skidTrails[wheel] == nullptr)
         {
             auto gameObject = GameWorld::Instance()->CreateGameObject(TIRE_MARK_OBJECT_NAME);
+            gameObject->SetTemporary(true);
             gameObject->SetRenderLayer(TIRE_MARK_RENDER_LAYER);
 
             auto trail = gameObject->AddComponent<TrailComponent>();
@@ -581,6 +582,7 @@ namespace RoguelikeGame
         // Сцена принадлежит только себе: она сама себя убирает по окончании,
         // а уровень держал бы на неё уже мёртвый указатель до следующей локации.
         cutscene = XYZEngine::GameWorld::Instance()->CreateGameObject(CUTSCENE_OBJECT_NAME);
+        cutscene->SetTemporary(true);
 
         auto scene = cutscene->AddComponent<CutscenePlayerComponent>();
         scene->SetBeats(std::move(beats));
@@ -616,6 +618,7 @@ namespace RoguelikeGame
         }
 
         cutscene = XYZEngine::GameWorld::Instance()->CreateGameObject(CUTSCENE_OBJECT_NAME);
+        cutscene->SetTemporary(true);
 
         auto scene = cutscene->AddComponent<CutscenePlayerComponent>();
         scene->SetBeats({
@@ -870,12 +873,9 @@ namespace RoguelikeGame
 
         level.Clear();
 
-        for (const char* temporaryName : {BLOOD_POOL_OBJECT_NAME, FX_OBJECT_NAME, PROJECTILE_OBJECT_NAME,
-                                          ROCKET_OBJECT_NAME, CAST_MARK_OBJECT_NAME, TIRE_MARK_OBJECT_NAME,
-                                          CUTSCENE_OBJECT_NAME})
-        {
-            GameWorld::Instance()->DestroyGameObjects(temporaryName);
-        }
+        // Список имён забывали пополнять - так огонь и переезжал на следующую локацию.
+        // Теперь решение принимается там, где объект создают.
+        GameWorld::Instance()->DestroyTemporary();
 
         // Недоигравшая сцена осталась на прежней локации вместе со своим объектом.
         cutscene = nullptr;

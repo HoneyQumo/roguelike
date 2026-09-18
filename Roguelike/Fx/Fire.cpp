@@ -38,6 +38,10 @@ namespace RoguelikeGame
                 XYZEngine::GameWorld::Instance()->DestroyGameObject(gameObject);
             });
 
+            // Огонь принадлежит локации: иначе очаг переезжал с ней и жёг
+            // по старым координатам на новой карте.
+            gameObject->SetTemporary(true);
+
             return gameObject;
         }
     }

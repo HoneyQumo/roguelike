@@ -51,6 +51,9 @@ namespace XYZEngine
 		std::size_t GetObjectsCount() const;
 		void DestroyGameObject(GameObject* gameObject);
 		void DestroyGameObjects(const std::string& name);
+
+		// Сносит всё, что помечено как принадлежащее локации.
+		void DestroyTemporary();
 		void Clear();
 
 		void InvalidateRenderOrder();

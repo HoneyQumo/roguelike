@@ -9,6 +9,7 @@
 #include "ConsoleSink.h"
 #include "FileSink.h"
 #include "DebugOutputSink.h"
+#include "CrashReport.h"
 #include "DebugDraw.h"
 #include "ResourceSystem.h"
 
@@ -36,6 +37,7 @@ void SetupLogger()
 int main()
 {
     SetupLogger();
+    InstallCrashReport();
     LOG_INFO("Game started");
 
     sf::RenderWindow window(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "Roguelike by HoneyQumo");

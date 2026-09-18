@@ -68,7 +68,7 @@ namespace RoguelikeGame
         window->SetAnchor(XYZEngine::UiAnchor::Center);
         window->SetPivot(XYZEngine::UiAnchor::Center);
         window->SetSize({GridWidth() + 2.f * INVENTORY_WINDOW_PADDING,
-            GridHeight() + INVENTORY_TITLE_HEIGHT + INVENTORY_HINT_HEIGHT + 2.f * INVENTORY_WINDOW_PADDING});
+            GridHeight() + INVENTORY_TITLE_HEIGHT + 2.f * INVENTORY_HINT_HEIGHT + 2.f * INVENTORY_WINDOW_PADDING});
         window->SetFillColor(INVENTORY_WINDOW_COLOR);
         window->SetOutline(2.f, INVENTORY_SLOT_OUTLINE_COLOR);
 
@@ -96,6 +96,18 @@ namespace RoguelikeGame
         hint->SetColor(AMMO_HUD_COLOR);
         hint->SetOutline(AMMO_HUD_OUTLINE, AMMO_HUD_OUTLINE_COLOR);
         hint->SetFont(font);
+
+        notice = window->AddChild<XYZEngine::UiLabel>();
+        notice->SetAnchor(XYZEngine::UiAnchor::Bottom);
+        notice->SetPivot(XYZEngine::UiAnchor::Bottom);
+        notice->SetOffset({0.f, -INVENTORY_WINDOW_PADDING * 0.4f - INVENTORY_HINT_HEIGHT});
+        notice->SetSize({GridWidth(), INVENTORY_HINT_HEIGHT});
+        notice->SetAlign(XYZEngine::UiAnchor::Center);
+        notice->SetCharacterSize(INVENTORY_HINT_FONT_SIZE);
+        notice->SetColor(INVENTORY_NOTICE_COLOR);
+        notice->SetOutline(AMMO_HUD_OUTLINE, AMMO_HUD_OUTLINE_COLOR);
+        notice->SetFont(font);
+        notice->SetVisible(false);
 
         SetVisible(false);
     }
@@ -181,6 +193,24 @@ namespace RoguelikeGame
     void InventoryScreen::Close()
     {
         isOpen = false;
+        noticeTimeLeft = 0.f;
+
+        if (notice != nullptr)
+        {
+            notice->SetVisible(false);
+        }
+    }
+
+    void InventoryScreen::ShowNotice(const std::string& text)
+    {
+        if (notice == nullptr)
+        {
+            return;
+        }
+
+        notice->SetUtf8Text(text.c_str());
+        notice->SetVisible(true);
+        noticeTimeLeft = INVENTORY_NOTICE_TIME;
     }
 
     void InventoryScreen::Toggle()
@@ -224,6 +254,16 @@ namespace RoguelikeGame
             // цифры и выбирает ячейку, и переключает ствол в руках.
             XYZEngine::UiManager::Instance()->CaptureInput();
             HandleKeyboard();
+        }
+
+        if (noticeTimeLeft > 0.f)
+        {
+            noticeTimeLeft -= deltaTime;
+
+            if (noticeTimeLeft <= 0.f)
+            {
+                notice->SetVisible(false);
+            }
         }
 
         float target = isOpen ? 1.f : 0.f;
@@ -423,6 +463,11 @@ namespace RoguelikeGame
         }
 
         hint->SetUtf8Text(InventoryHint(item).c_str());
+    }
+
+    const XYZEngine::UiLabel& InventoryScreen::GetNotice() const
+    {
+        return *notice;
     }
 
     const XYZEngine::UiLabel& InventoryScreen::GetHint() const

@@ -165,6 +165,7 @@
     <ClCompile Include="EquipExchange.tests.cpp" />
     <ClCompile Include="ItemUseResult.tests.cpp" />
     <ClCompile Include="InventoryGate.tests.cpp" />
+    <ClCompile Include="InventoryNotice.tests.cpp" />
     <ClCompile Include="LoadoutRules.tests.cpp" />
     <ClCompile Include="InventoryScreen.tests.cpp" />
     <ClCompile Include="LevelCatalog.tests.cpp" />

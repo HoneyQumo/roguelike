@@ -29,6 +29,8 @@ namespace RoguelikeGame
     private:
         HudScreen* screen = nullptr;
         InventoryScreen* inventoryScreen = nullptr;
+
+        void ShowRefusal(const std::string& text);
         WeaponComponent* weapon = nullptr;
         PlayerLoadoutComponent* loadout = nullptr;
         HealthComponent* health = nullptr;

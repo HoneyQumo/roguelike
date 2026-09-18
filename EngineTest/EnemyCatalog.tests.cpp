@@ -223,3 +223,34 @@ TEST(EnemyCatalogTest, TheShieldCarriesTheMostArmorOfTheRankAndFile)
 		EXPECT_LT(enemy.config.armor, shield->armor) << enemy.config.objectName << " out-armors the shield";
 	}
 }
+
+
+// Игрок видел вчетверо дальше врага и снимал его с дистанции,
+// на которой тот физически не мог его заметить.
+TEST(EnemyCatalogTest, EveryEnemySeesComparablyToTheHero)
+{
+	for (const RoguelikeGame::EnemyDefinition& enemy : RoguelikeGame::ENEMIES)
+	{
+		float part = enemy.config.detectionRadius / RoguelikeGame::HERO_SIGHT_RANGE;
+
+		EXPECT_GT(part, 0.3f) << enemy.tileName << " видит слишком близко";
+		EXPECT_LE(part, 1.0f) << enemy.tileName << " видит дальше игрока";
+	}
+}
+
+// Сценарий учит заходить со спины именно на мародёре: он обязан остаться самым близоруким.
+TEST(EnemyCatalogTest, TheMarauderStaysTheBlindestOfAll)
+{
+	const RoguelikeGame::EnemyDefinition* marauder = RoguelikeGame::FindEnemy(RoguelikeGame::TileType::MarauderSpawn);
+	ASSERT_NE(marauder, nullptr);
+
+	for (const RoguelikeGame::EnemyDefinition& enemy : RoguelikeGame::ENEMIES)
+	{
+		if (enemy.tile == RoguelikeGame::TileType::MarauderSpawn)
+		{
+			continue;
+		}
+
+		EXPECT_LT(marauder->config.detectionRadius, enemy.config.detectionRadius) << enemy.tileName;
+	}
+}

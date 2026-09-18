@@ -156,6 +156,8 @@ TEST(FogOfWarTest, WhatIsLeftBehindStaysRemembered)
 	EXPECT_EQ(FogOfWar::Current().GetState(10, 1), FogState::Seen);
 }
 
+// Пока своя легенда затирала стандартную, эта карта была открытым полем с одной дверью,
+// и тест проверял дверь, а не стену.
 TEST(FogOfWarTest, AWallHidesWhatIsBehindIt)
 {
 	LevelGrid grid = Open(TWO_ROOMS, 6);
@@ -529,4 +531,38 @@ TEST(FogSymmetryTest, WalkingTheWholeRoomOpensEveryCellOfIt)
 	}
 
 	EXPECT_EQ(blind, 0) << blind << " клеток не открываются ни с одной проходимой клетки";
+}
+
+
+// Своя легенда объявляет только дверь, а стены и пол берёт из стандартной.
+TEST(FogOfWarTest, TheTwoRoomsMapReallyHasWalls)
+{
+	LevelGrid grid = GridOf(TWO_ROOMS);
+
+	EXPECT_TRUE(grid.BlocksSight(5, 1)) << "стена между комнатами обзор не закрывает";
+	EXPECT_TRUE(grid.BlocksSight(0, 0)) << "внешняя стена обзор не закрывает";
+	EXPECT_TRUE(grid.IsPassable(2, 2)) << "пол не проходим";
+	EXPECT_TRUE(grid.BlocksSight(5, 3)) << "закрытая дверь обзор не закрывает";
+}
+
+// Стена без двери: раньше такой проверки не было вовсе.
+TEST(FogOfWarTest, ASolidWallHidesTheRoomBehindIt)
+{
+	const std::string SPLIT =
+		"[legend]\n"
+		"+ Door:door_test\n"
+		"[map]\n"
+		"###########\n"
+		"#....#....#\n"
+		"#....#....#\n"
+		"#....#....#\n"
+		"###########\n";
+
+	LevelGrid grid = Open(SPLIT, 7);
+
+	EXPECT_TRUE(Reveal(grid, 2, 2));
+
+	EXPECT_EQ(FogOfWar::Current().GetState(2, 2), FogState::Seen);
+	EXPECT_EQ(FogOfWar::Current().GetState(5, 2), FogState::Seen) << "стена перед игроком тёмная";
+	EXPECT_EQ(FogOfWar::Current().GetState(7, 2), FogState::Unseen) << "видно сквозь сплошную стену";
 }

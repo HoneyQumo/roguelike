@@ -82,9 +82,11 @@ namespace RoguelikeGame
             }
             if (IsSection(line, LEGEND_SECTION))
             {
+                // Своя легенда дополняет стандартную, а не затирает: забытый символ
+                // проваливался в Gap, который даже обзор не закрывает.
+                // Объявленный символ по-прежнему перекрывает стандартный - запись идёт позже.
                 isLegendSection = true;
                 isLevelSection = false;
-                legend.clear();
                 continue;
             }
             if (IsSection(line, WAVES_SECTION))

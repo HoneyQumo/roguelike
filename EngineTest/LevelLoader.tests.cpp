@@ -1,4 +1,4 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "LevelLoader.h"
 #include <sstream>
 #include <stdexcept>
@@ -277,4 +277,32 @@ TEST(LevelLoaderTests, DoorWithoutAnIdIsRefused)
 		"#####\n");
 
 	EXPECT_THROW(RoguelikeGame::LevelLoader::Parse(input, "doors"), std::runtime_error);
+}
+
+
+// Забытый символ проваливался в Gap, который даже обзор не закрывает.
+TEST(LevelLegendTest, AnOwnLegendAddsToTheDefaultOne)
+{
+	LevelData level = ParseLevel(
+		"[legend]\n"
+		"+ Door:door_test\n"
+		"[map]\n"
+		"###\n"
+		"#+#\n"
+		"###\n");
+
+	EXPECT_EQ(CountTiles(level, TileType::Wall), 8) << "стандартный символ затёрт";
+	EXPECT_EQ(CountTiles(level, TileType::Door), 1) << "своя строка легенды не сработала";
+}
+
+TEST(LevelLegendTest, AnOwnLineOverridesTheDefaultMeaning)
+{
+	LevelData level = ParseLevel(
+		"[legend]\n"
+		"# Floor\n"
+		"[map]\n"
+		"##\n");
+
+	EXPECT_EQ(CountTiles(level, TileType::Floor), 2) << "объявленный символ не перекрыл стандартный";
+	EXPECT_EQ(CountTiles(level, TileType::Wall), 0);
 }

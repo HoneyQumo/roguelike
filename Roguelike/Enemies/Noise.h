@@ -1,5 +1,7 @@
 #pragma once
 
+#include <functional>
+#include <EventList.h>
 #include <Vector.h>
 #include "Faction.h"
 
@@ -67,4 +69,9 @@ namespace RoguelikeGame
     }
 
     void RaiseNoise(const Noise& noise, const XYZEngine::GameObject* except = nullptr);
+
+    // Шум разносится только врагам: игроку нужен отдельный вход,
+    // иначе он услышит то, что услышали только они.
+    XYZEngine::SubscriptionId SubscribeNoiseRaised(std::function<void(const Noise&)> onNoise);
+    void ClearNoiseListeners();
 }

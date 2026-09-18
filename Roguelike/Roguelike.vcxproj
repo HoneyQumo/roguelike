@@ -122,6 +122,7 @@
         <ClCompile Include="Items\InventoryComponent.cpp"/>
         <ClCompile Include="Items\QuickBeltComponent.cpp"/>
         <ClCompile Include="Items\ItemDropComponent.cpp"/>
+        <ClCompile Include="Player\ThreatWatchComponent.cpp"/>
         <ClCompile Include="Items\ItemEffectComponent.cpp"/>
         <ClCompile Include="Items\InteractionComponent.cpp"/>
         <ClCompile Include="Ui\InventoryScreen.cpp"/>
@@ -301,6 +302,8 @@
         <ClInclude Include="Level\LevelZones.h"/>
         <ClInclude Include="Level\FogFade.h"/>
         <ClInclude Include="Level\Shadowcast.h"/>
+        <ClInclude Include="Ui\ThreatMarks.h"/>
+        <ClInclude Include="Player\ThreatWatchComponent.h"/>
         <ClInclude Include="Level\Tileset.h"/>
         <ClInclude Include="Level\RoomWakeComponent.h"/>
         <ClInclude Include="Items\DoorRules.h"/>

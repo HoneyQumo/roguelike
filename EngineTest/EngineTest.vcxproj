@@ -141,6 +141,7 @@
     <ClCompile Include="LevelZones.tests.cpp" />
     <ClCompile Include="ViewCulling.tests.cpp" />
     <ClCompile Include="Settle.tests.cpp" />
+    <ClCompile Include="ThreatMarks.tests.cpp" />
     <ClCompile Include="Tileset.tests.cpp" />
     <ClCompile Include="Awareness.tests.cpp" />
     <ClCompile Include="EnemyVoice.tests.cpp" />
@@ -342,6 +343,9 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\Roguelike\Items\ItemDropComponent.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Roguelike\Player\ThreatWatchComponent.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\Roguelike\Items\ItemEffectComponent.cpp">

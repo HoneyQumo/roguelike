@@ -9,12 +9,29 @@
 
 namespace RoguelikeGame
 {
+    namespace
+    {
+        XYZEngine::EventList<const Noise&> noiseEvent;
+    }
+
+    XYZEngine::SubscriptionId SubscribeNoiseRaised(std::function<void(const Noise&)> onNoise)
+    {
+        return noiseEvent.Subscribe(std::move(onNoise));
+    }
+
+    void ClearNoiseListeners()
+    {
+        noiseEvent = XYZEngine::EventList<const Noise&>();
+    }
+
     void RaiseNoise(const Noise& noise, const XYZEngine::GameObject* except)
     {
         if (noise.radius <= 0.f)
         {
             return;
         }
+
+        noiseEvent.Invoke(noise);
 
         int heard = 0;
         for (ChaseComponent* listener : XYZEngine::GameWorld::Instance()->FindComponents<ChaseComponent>())

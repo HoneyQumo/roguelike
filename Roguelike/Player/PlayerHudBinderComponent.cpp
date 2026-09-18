@@ -69,6 +69,11 @@ namespace RoguelikeGame
             PushBeltSlots();
         }
 
+        if (threats != nullptr)
+        {
+            screen->SetThreatMarks(BuildThreatMarks(threats->GetSources(), THREAT_MARK_SECTORS));
+        }
+
         if (health != nullptr || stamina != nullptr)
         {
             screen->SetVitals(ReadVitalsState());
@@ -215,6 +220,7 @@ namespace RoguelikeGame
         pouch = target->GetComponent<AmmoPouchComponent>();
         belt = target->GetComponent<QuickBeltComponent>();
         drop = target->GetComponent<ItemDropComponent>();
+        threats = target->GetComponent<ThreatWatchComponent>();
         inventory = target->GetComponent<InventoryComponent>();
         if (inventory != nullptr && inventoryScreen != nullptr)
         {

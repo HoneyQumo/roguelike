@@ -1,5 +1,7 @@
 ﻿#include "pch.h"
 #include "FogOfWar.h"
+#include "CastMark.h"
+#include "EffectObject.h"
 #include "FogVisibilityComponent.h"
 #include "GameSettings.h"
 #include "LevelGrid.h"
@@ -335,4 +337,39 @@ TEST(FogFadeTest, NoTimeMeansNoMovement)
 {
 	EXPECT_FLOAT_EQ(RoguelikeGame::ApproachLight(0.3f, 1.f, 0.f), 0.3f);
 	EXPECT_FLOAT_EQ(RoguelikeGame::ApproachLight(0.3f, 0.3f, 1.f), 0.3f);
+}
+
+
+// Эффекты рождались мимо тумана: горящая за стеной бочка светила сквозь стену.
+TEST_F(FogSceneTest, AnEffectIsBornHiddenByFogAndBelongsToTheLevel)
+{
+	GameObject* effect = RoguelikeGame::CreateEffectObject("Spark", 60);
+
+	ASSERT_NE(effect, nullptr);
+	EXPECT_TRUE(effect->IsTemporary()) << "эффект переживёт смену локации";
+	EXPECT_NE(effect->GetComponent<FogVisibilityComponent>(), nullptr) << "эффект не прячется туманом";
+}
+
+// На локации без тумана лишней работы каждый кадр быть не должно.
+TEST_F(FogSceneTest, WithoutFogAnEffectCarriesNoExtraWork)
+{
+	FogOfWar::Reset(0, 0, 0);
+
+	GameObject* effect = RoguelikeGame::CreateEffectObject("Spark", 60);
+
+	EXPECT_TRUE(effect->IsTemporary());
+	EXPECT_EQ(effect->GetComponent<FogVisibilityComponent>(), nullptr) << "эффект носит лишний компонент";
+}
+
+// Метка приёма босса - единственная из фабрик эффектов, что собирается в тесты.
+TEST_F(FogSceneTest, ACastMarkBornInTheDarkDoesNotDraw)
+{
+	Reveal(2, 1);
+
+	GameObject* mark = RoguelikeGame::CreateCastMark(LevelGrid::Current().ToWorld(11, 1), 190.f, 0.5f);
+	ASSERT_NE(mark, nullptr);
+
+	GameWorld::Instance()->Update(0.f);
+
+	EXPECT_FALSE(mark->IsVisible()) << "метка видна сквозь неразведанный туман";
 }

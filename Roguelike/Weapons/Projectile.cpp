@@ -14,6 +14,7 @@
 #include "FactionComponent.h"
 #include <LoggerRegistry.h>
 #include <cmath>
+#include "EffectObject.h"
 
 namespace RoguelikeGame
 {
@@ -29,9 +30,7 @@ namespace RoguelikeGame
         const char* textureName = isRocket ? ROCKET_TEXTURE : BULLET_TEXTURE;
         int frameIndex = isRocket ? 0 : static_cast<int>(definition.bullet);
 
-        auto gameObject = XYZEngine::GameWorld::Instance()->CreateGameObject(isRocket ? ROCKET_OBJECT_NAME : PROJECTILE_OBJECT_NAME);
-        gameObject->SetTemporary(true);
-        gameObject->SetRenderLayer(EFFECT_RENDER_LAYER);
+        auto gameObject = CreateEffectObject(isRocket ? ROCKET_OBJECT_NAME : PROJECTILE_OBJECT_NAME, EFFECT_RENDER_LAYER);
 
         auto transform = gameObject->GetTransform();
         transform->SetWorldPosition(position);

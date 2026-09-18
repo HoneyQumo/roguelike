@@ -8,6 +8,7 @@
 #include <SpriteRendererComponent.h>
 #include <TransformComponent.h>
 #include <algorithm>
+#include "EffectObject.h"
 
 namespace RoguelikeGame
 {
@@ -184,9 +185,7 @@ namespace RoguelikeGame
 
     XYZEngine::GameObject* CreateCastMark(const XYZEngine::Vector2Df& position, float radius, float fuseTime)
     {
-        auto gameObject = XYZEngine::GameWorld::Instance()->CreateGameObject(CAST_MARK_OBJECT_NAME);
-        gameObject->SetTemporary(true);
-        gameObject->SetRenderLayer(GROUND_RENDER_LAYER);
+        auto gameObject = CreateEffectObject(CAST_MARK_OBJECT_NAME, GROUND_RENDER_LAYER);
         gameObject->GetTransform()->SetWorldPosition(position);
 
         auto renderer = gameObject->AddComponent<XYZEngine::SpriteRendererComponent>();

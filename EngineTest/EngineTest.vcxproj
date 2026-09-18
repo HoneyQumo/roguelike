@@ -67,6 +67,7 @@
     <ClCompile Include="WeaponCatalog.tests.cpp" />
     <ClCompile Include="WeaponWeight.tests.cpp" />
     <ClCompile Include="WeaponAmmo.tests.cpp" />
+    <ClCompile Include="WeaponItems.tests.cpp" />
     <ClCompile Include="Separation.tests.cpp" />
     <ClCompile Include="PropAlign.tests.cpp" />
     <ClCompile Include="PropAngle.tests.cpp" />

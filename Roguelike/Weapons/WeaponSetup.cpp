@@ -87,7 +87,7 @@ namespace RoguelikeGame
 
     void PlayEffectsOnMeleeHit(MeleeWeaponComponent* melee, XYZEngine::AudioComponent* meleeAudio)
     {
-        melee->SubscribeStrike([melee, meleeAudio](MeleeAttackKind kind, int hits)
+        melee->SubscribeStrike([melee, meleeAudio](MeleeAttackKind kind, int hits, bool isCritical)
         {
             const MeleeDefinition* definition = melee->GetDefinition();
             if (hits <= 0 || meleeAudio == nullptr || definition == nullptr)

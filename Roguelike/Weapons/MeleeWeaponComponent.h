@@ -29,6 +29,7 @@ namespace RoguelikeGame
         float recovery = 0.2f;
         float windup = 0.15f;
         int hitFrame = 0;
+        float critScale = 1.f;
     };
 
     class MeleeWeaponComponent : public XYZEngine::Component
@@ -49,7 +50,7 @@ namespace RoguelikeGame
         const MeleeDefinition* GetDefinition() const;
 
         XYZEngine::SubscriptionId SubscribeSwing(std::function<void(MeleeAttackKind)> onSwing);
-        XYZEngine::SubscriptionId SubscribeStrike(std::function<void(MeleeAttackKind, int)> onStrike);
+        XYZEngine::SubscriptionId SubscribeStrike(std::function<void(MeleeAttackKind, int, bool isCritical)> onStrike);
         XYZEngine::SubscriptionId SubscribeHit(std::function<void(MeleeAttackKind, const XYZEngine::Vector2Df&, const XYZEngine::Vector2Df&)> onHit);
 
         bool IsReady() const;
@@ -88,7 +89,7 @@ namespace RoguelikeGame
         const MeleeDefinition* definition = nullptr;
 
         XYZEngine::EventList<MeleeAttackKind> swingEvent;
-        XYZEngine::EventList<MeleeAttackKind, int> strikeEvent;
+        XYZEngine::EventList<MeleeAttackKind, int, bool> strikeEvent;
         XYZEngine::EventList<MeleeAttackKind, const XYZEngine::Vector2Df&, const XYZEngine::Vector2Df&> hitEvent;
 
         const MeleeAttack& GetAttack() const;

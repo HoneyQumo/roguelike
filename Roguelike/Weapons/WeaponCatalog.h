@@ -66,6 +66,9 @@ namespace RoguelikeGame
         float range;
         float arcDegrees;
         float recovery;
+
+        // Во сколько раз больнее в спину. Единица - удар в спину ничем не отличается.
+        float critScale;
     };
 
     struct MeleeDefinition
@@ -97,8 +100,8 @@ namespace RoguelikeGame
         float colliderSize;
     };
 
-    constexpr MeleeDefinition KNIFE_MELEE = {{1.00f, 1.00f, 52.f, 70.f, 0.12f}, {2.00f, 3.60f, 60.f, 110.f, 0.25f}, "knife_hit", 3};
-    constexpr MeleeDefinition BAT_MELEE = {{1.40f, 1.40f, 68.f, 80.f, 0.18f}, {2.80f, 5.20f, 78.f, 140.f, 0.35f}, "bat_hit", 5};
+    constexpr MeleeDefinition KNIFE_MELEE = {{1.00f, 1.00f, 52.f, 70.f, 0.12f, 2.00f}, {2.00f, 3.60f, 60.f, 110.f, 0.25f, 1.50f}, "knife_hit", 3};
+    constexpr MeleeDefinition BAT_MELEE = {{1.40f, 1.40f, 68.f, 80.f, 0.18f, 1.50f}, {2.80f, 5.20f, 78.f, 140.f, 0.35f, 1.25f}, "bat_hit", 5};
 
     constexpr SpreadDefinition SHOTGUN_DOUBLE_SPREAD = {6, 32.f, 1.08f, 0.85f, 1.20f};
     constexpr SpreadDefinition SHOTGUN_PUMP_SPREAD = {5, 22.f, 1.12f, 0.85f, 2.20f};

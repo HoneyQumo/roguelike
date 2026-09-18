@@ -340,6 +340,7 @@
         <ClInclude Include="Characters\SpriteAtlas.h"/>
         <ClInclude Include="Weapons\WeaponCatalog.h"/>
         <ClInclude Include="Weapons\WeaponLayerComponent.h"/>
+        <ClInclude Include="Weapons\CritRules.h"/>
         <ClInclude Include="Weapons\WeaponSetup.h"/>
         <ClInclude Include="Level\DeveloperLevel.h"/>
         <ClInclude Include="Characters\CharacterFactory.h"/>

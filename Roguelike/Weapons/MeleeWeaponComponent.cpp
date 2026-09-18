@@ -1,4 +1,5 @@
 #include "MeleeWeaponComponent.h"
+#include "CritRules.h"
 #include "AreaDamage.h"
 #include <MathUtils.h>
 #include <GameObject.h>
@@ -130,7 +131,7 @@ namespace RoguelikeGame
         return swingEvent.Subscribe(std::move(onSwing));
     }
 
-    XYZEngine::SubscriptionId MeleeWeaponComponent::SubscribeStrike(std::function<void(MeleeAttackKind, int)> onStrike)
+    XYZEngine::SubscriptionId MeleeWeaponComponent::SubscribeStrike(std::function<void(MeleeAttackKind, int, bool)> onStrike)
     {
         return strikeEvent.Subscribe(std::move(onStrike));
     }
@@ -281,6 +282,8 @@ namespace RoguelikeGame
         source.attackerFaction = faction == nullptr ? Faction::Neutral : faction->GetFaction();
 
         int hits = 0;
+        int criticals = 0;
+
         for (const AreaTarget& target : QueryDamageArea(origin, attack.range, gameObject).targets)
         {
             if (!CanDamage(faction == nullptr ? Faction::Neutral : faction->GetFaction(), target.faction))
@@ -298,16 +301,25 @@ namespace RoguelikeGame
                 }
             }
 
+            // Поворот есть у любой цели, поэтому ветки «а если это босс или ящик» не нужно.
+            Vector2Df targetForward = target.gameObject != nullptr && target.gameObject->GetTransform() != nullptr
+                ? target.gameObject->GetTransform()->GetForward()
+                : Vector2Df{0.f, 0.f};
+
+            bool isCritical = IsBackstab(targetForward, hitDirection);
+
             source.position = target.position;
             source.direction = hitDirection;
+            source.isCritical = isCritical;
 
-            target.health->TakeDamage(damage, source);
+            target.health->TakeDamage(BackstabDamage(damage, isCritical, attack.critScale), source);
             hits++;
+            criticals += isCritical ? 1 : 0;
 
             hitEvent.Invoke(currentKind, target.position, hitDirection);
         }
 
-        strikeEvent.Invoke(currentKind, hits);
+        strikeEvent.Invoke(currentKind, hits, criticals > 0);
 
         LOG_INFO(gameObject->GetName() + (currentKind == MeleeAttackKind::Quick ? " quick melee " : " heavy melee ")
                  + std::to_string(static_cast<int>(damage)) + " damage, targets hit: " + std::to_string(hits));

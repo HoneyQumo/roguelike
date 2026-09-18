@@ -36,7 +36,9 @@ namespace XYZEngine
         }
 
         aimDirection = (1.f / distance) * toAim;
-        transform->SetWorldRotation(DegreesFromDirection(aimDirection));
+
+        transform->SetWorldRotation(TurnTowardsDegrees(transform->GetWorldRotation(),
+            DegreesFromDirection(aimDirection), turnSpeed * deltaTime));
     }
 
     void AimRotationComponent::Render()
@@ -70,6 +72,11 @@ namespace XYZEngine
         isCursorAim = false;
         isPointAim = false;
         targetName.clear();
+    }
+
+    void AimRotationComponent::SetTurnSpeed(float newTurnSpeed)
+    {
+        turnSpeed = newTurnSpeed > 0.f ? newTurnSpeed : 0.f;
     }
 
     void AimRotationComponent::SetMaxDistance(float newMaxDistance)

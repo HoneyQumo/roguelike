@@ -96,6 +96,7 @@ namespace RoguelikeGame
         auto hitFlash = parts.hitFlash;
 
         aim->SetMaxDistance(0.f);
+        aim->SetTurnSpeed(config.turnSpeed);
 
         if (config.attackRange <= 0.f)
         {

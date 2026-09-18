@@ -7,6 +7,7 @@
 #include "UiManager.h"
 #include "FrameClock.h"
 #include "DebugDraw.h"
+#include "SoundSource.h"
 #include "LoggerRegistry.h"
 
 namespace XYZEngine
@@ -113,7 +114,34 @@ namespace XYZEngine
 
 	void Engine::SetPaused(bool newIsPaused)
 	{
+		if (isPaused == newIsPaused)
+		{
+			return;
+		}
+
 		isPaused = newIsPaused;
+		SetSoundPaused(isPaused);
+	}
+
+	/**
+	*	Мир замер - значит замолчал весь.
+	*
+	*	Звук живёт не в цикле обновления, а в звуковой карте, поэтому пропущенный
+	*	Update его не останавливает: зацикленный мотор машины продолжал реветь на
+	*	паузе. Возобновляем только то, что сами и поставили на паузу - Resume
+	*	трогает лишь приостановленные источники, а доигравшие остаются молчать.
+	*/
+	void Engine::SetSoundPaused(bool isSoundPaused)
+	{
+		for (SoundSource* source : GameWorld::Instance()->FindAllComponents<SoundSource>())
+		{
+			if (source == nullptr)
+			{
+				continue;
+			}
+
+			isSoundPaused ? source->Pause() : source->Resume();
+		}
 	}
 	bool Engine::IsPaused() const
 	{

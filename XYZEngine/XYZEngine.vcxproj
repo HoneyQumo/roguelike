@@ -136,6 +136,7 @@
     <ClInclude Include="Physics\SpatialHashGrid.h" />
     <ClInclude Include="Core\Scene.h" />
     <ClInclude Include="Input\AimRotationComponent.h" />
+    <ClInclude Include="Audio\SoundSource.h" />
     <ClInclude Include="Audio\SoundSourceComponent.h" />
     <ClInclude Include="Animation\SpriteAnimationComponent.h" />
     <ClInclude Include="Animation\SpriteDirectionComponent.h" />

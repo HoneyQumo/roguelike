@@ -44,6 +44,10 @@ namespace RoguelikeGame
 
     // Доля радиуса, внутри которой светит в полную силу, и яркость на самом краю.
     // Край светлее памяти: то, что видно сейчас, не должно быть темнее того, что запомнилось.
+    // Скорость хода яркости к цели, долей в секунду.
+    constexpr float FOG_FADE_IN_SPEED = 7.f;
+    constexpr float FOG_FADE_OUT_SPEED = 2.2f;
+
     constexpr float FOG_FULL_PART = 0.55f;
     constexpr float FOG_EDGE_LIGHT = 0.55f;
     constexpr float ENEMY_ALERT_ARRIVE_DISTANCE = 48.f;

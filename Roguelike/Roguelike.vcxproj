@@ -299,6 +299,7 @@
         <ClInclude Include="Level\DoorComponent.h"/>
         <ClInclude Include="Level\DoorHinge.h"/>
         <ClInclude Include="Level\LevelZones.h"/>
+        <ClInclude Include="Level\FogFade.h"/>
         <ClInclude Include="Level\SightRules.h"/>
         <ClInclude Include="Level\Tileset.h"/>
         <ClInclude Include="Level\RoomWakeComponent.h"/>

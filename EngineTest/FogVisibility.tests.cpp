@@ -4,6 +4,7 @@
 #include "GameSettings.h"
 #include "LevelGrid.h"
 #include "LevelLoader.h"
+#include "FogFade.h"
 #include "TileFogComponent.h"
 #include <GameWorld.h>
 #include <VertexArrayRendererComponent.h>
@@ -100,7 +101,7 @@ TEST_F(FogSceneTest, AnObjectOutOfSightIsHidden)
 	auto fog = object->AddComponent<FogVisibilityComponent>();
 
 	Reveal(1, 1);
-	fog->Update(0.f);
+	fog->Update(1.f);
 
 	EXPECT_TRUE(fog->IsHidden());
 	EXPECT_FALSE(object->IsVisible());
@@ -113,11 +114,11 @@ TEST_F(FogSceneTest, AnObjectComesBackWhenItIsSeenAgain)
 	auto fog = object->AddComponent<FogVisibilityComponent>();
 
 	Reveal(1, 1);
-	fog->Update(0.f);
+	fog->Update(1.f);
 	ASSERT_TRUE(fog->IsHidden());
 
 	Reveal(10, 1);
-	fog->Update(0.f);
+	fog->Update(1.f);
 
 	EXPECT_FALSE(fog->IsHidden());
 	EXPECT_TRUE(object->IsVisible());
@@ -130,11 +131,11 @@ TEST_F(FogSceneTest, RememberedGeometryIsNotEnoughToShowAnObject)
 	auto fog = object->AddComponent<FogVisibilityComponent>();
 
 	Reveal(1, 1);
-	fog->Update(0.f);
+	fog->Update(1.f);
 	ASSERT_FALSE(fog->IsHidden());
 
 	Reveal(10, 1);
-	fog->Update(0.f);
+	fog->Update(1.f);
 
 	ASSERT_EQ(FogOfWar::Current().GetState(1, 1), FogState::Known);
 	EXPECT_TRUE(fog->IsHidden()) << "ящик рисуется по памяти, хотя его там может уже не быть";
@@ -156,7 +157,7 @@ TEST_F(FogSceneTest, TheCanvasIsPaintedByWhatIsSeenAndRemembered)
 
 	Reveal(10, 1);
 	Reveal(5, 1);
-	fog->Update(0.f);
+	fog->Update(1.f);
 
 	const sf::VertexArray& vertices = renderer->GetVertices();
 
@@ -179,12 +180,12 @@ TEST_F(FogSceneTest, AChunkWithNothingKnownIsNotDrawnAtAll)
 		{RoguelikeGame::TILE_SIZE, RoguelikeGame::TILE_SIZE}, sf::Color::White);
 
 	Reveal(1, 1);
-	fog->Update(0.f);
+	fog->Update(1.f);
 
 	EXPECT_FALSE(renderer->IsEnabled()) << "кусок карты без единой разведанной клетки уходит в отрисовку";
 
 	Reveal(10, 1);
-	fog->Update(0.f);
+	fog->Update(1.f);
 
 	EXPECT_TRUE(renderer->IsEnabled());
 }
@@ -201,14 +202,14 @@ TEST_F(FogSceneTest, TheCanvasIsRepaintedOnlyWhenTheFogMoves)
 		{RoguelikeGame::TILE_SIZE, RoguelikeGame::TILE_SIZE}, sf::Color::White);
 
 	Reveal(1, 1);
-	fog->Update(0.f);
-	fog->Update(0.f);
-	fog->Update(0.f);
+	fog->Update(1.f);
+	fog->Update(1.f);
+	fog->Update(1.f);
 
 	EXPECT_EQ(fog->GetPaintCount(), 1) << "полотно перекрашивается каждый кадр";
 
 	Reveal(10, 1);
-	fog->Update(0.f);
+	fog->Update(1.f);
 
 	EXPECT_EQ(fog->GetPaintCount(), 2);
 }
@@ -230,7 +231,7 @@ TEST_F(FogSceneTest, TheQuadOnTheEdgeOfSightHasCornersOfItsOwn)
 	}
 
 	Reveal(1, 1);
-	fog->Update(0.f);
+	fog->Update(1.f);
 
 	const sf::VertexArray& vertices = renderer->GetVertices();
 
@@ -262,4 +263,76 @@ TEST_F(FogSceneTest, TheRendererPaintsEveryCornerOnItsOwn)
 	EXPECT_EQ(vertices[1].color, sf::Color::Green);
 	EXPECT_EQ(vertices[2].color, sf::Color::Blue);
 	EXPECT_EQ(vertices[3].color, sf::Color::Yellow);
+}
+
+
+// Обзор пересчитывается на смене клетки, и без плавности ходьба читалась щелчком раз в тайл.
+TEST_F(FogSceneTest, TheCanvasArrivesAtTheTargetInSteps)
+{
+	GameObject* chunk = GameWorld::Instance()->CreateGameObject("LevelTiles");
+	auto renderer = chunk->AddComponent<VertexArrayRendererComponent>();
+	auto fog = chunk->AddComponent<TileFogComponent>();
+	fog->SetRenderer(renderer);
+
+	const Vector2Df tileSize = {RoguelikeGame::TILE_SIZE, RoguelikeGame::TILE_SIZE};
+	fog->AddCell(renderer->GetQuadsCount(), 1, 1, sf::Color::White);
+	renderer->AddQuad(LevelGrid::Current().ToWorld(1, 1), tileSize, sf::Color::White);
+
+	Reveal(1, 1);
+
+	fog->Update(0.02f);
+	int afterOneStep = renderer->GetVertices()[0].color.r;
+
+	fog->Update(0.02f);
+	int afterTwoSteps = renderer->GetVertices()[0].color.r;
+
+	EXPECT_GT(afterOneStep, 0) << "после первого шага ничего не загорелось";
+	EXPECT_LT(afterOneStep, 255) << "загорелось разом, плавности нет";
+	EXPECT_GT(afterTwoSteps, afterOneStep) << "яркость не растёт";
+}
+
+TEST_F(FogSceneTest, AChunkThatStoppedMovingIsNotRepaintedAnyMore)
+{
+	GameObject* chunk = GameWorld::Instance()->CreateGameObject("LevelTiles");
+	auto renderer = chunk->AddComponent<VertexArrayRendererComponent>();
+	auto fog = chunk->AddComponent<TileFogComponent>();
+	fog->SetRenderer(renderer);
+
+	const Vector2Df tileSize = {RoguelikeGame::TILE_SIZE, RoguelikeGame::TILE_SIZE};
+	fog->AddCell(renderer->GetQuadsCount(), 1, 1, sf::Color::White);
+	renderer->AddQuad(LevelGrid::Current().ToWorld(1, 1), tileSize, sf::Color::White);
+
+	Reveal(1, 1);
+
+	for (int step = 0; step < 40; step++)
+	{
+		fog->Update(0.05f);
+	}
+
+	int settled = fog->GetPaintCount();
+
+	fog->Update(0.05f);
+	fog->Update(0.05f);
+
+	EXPECT_EQ(fog->GetPaintCount(), settled) << "кусок перекрашивается, хотя всё дошло до цели";
+}
+
+TEST(FogFadeTest, LightRisesFasterThanItFalls)
+{
+	float rising = RoguelikeGame::ApproachLight(0.f, 1.f, 0.05f);
+	float falling = RoguelikeGame::ApproachLight(1.f, 0.f, 0.05f);
+
+	EXPECT_GT(rising, 1.f - falling) << "вход в комнату не быстрее угасания памяти";
+}
+
+TEST(FogFadeTest, TheTargetIsNeverOvershot)
+{
+	EXPECT_FLOAT_EQ(RoguelikeGame::ApproachLight(0.9f, 1.f, 10.f), 1.f);
+	EXPECT_FLOAT_EQ(RoguelikeGame::ApproachLight(0.1f, 0.f, 10.f), 0.f);
+}
+
+TEST(FogFadeTest, NoTimeMeansNoMovement)
+{
+	EXPECT_FLOAT_EQ(RoguelikeGame::ApproachLight(0.3f, 1.f, 0.f), 0.3f);
+	EXPECT_FLOAT_EQ(RoguelikeGame::ApproachLight(0.3f, 0.3f, 1.f), 0.3f);
 }

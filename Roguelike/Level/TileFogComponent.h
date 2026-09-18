@@ -28,6 +28,9 @@ namespace RoguelikeGame
             int column = 0;
             int row = 0;
             sf::Color base;
+
+            // Показанная яркость углов в том же порядке, что у SetQuadCorners.
+            float shown[4] = {0.f, 0.f, 0.f, 0.f};
         };
 
         TileFogComponent(XYZEngine::GameObject* gameObject);
@@ -47,8 +50,10 @@ namespace RoguelikeGame
 
         unsigned int paintedVersion = 0u;
         bool isPainted = false;
+        bool isMoving = false;
         int paintCount = 0;
 
+        bool Approach(float deltaTime);
         void Paint();
     };
 }

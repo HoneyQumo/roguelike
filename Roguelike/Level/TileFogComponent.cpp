@@ -1,4 +1,5 @@
 ﻿#include "TileFogComponent.h"
+#include "FogFade.h"
 #include "FogOfWar.h"
 #include "GameSettings.h"
 #include <VertexArrayRendererComponent.h>
@@ -32,7 +33,7 @@ namespace RoguelikeGame
             return;
         }
 
-        if (isPainted && fog.GetVersion() == paintedVersion)
+        if (isPainted && fog.GetVersion() == paintedVersion && !isMoving)
         {
             return;
         }
@@ -40,7 +41,39 @@ namespace RoguelikeGame
         paintedVersion = fog.GetVersion();
         isPainted = true;
 
+        isMoving = Approach(deltaTime);
+
         Paint();
+    }
+
+    /**
+    *	Яркость ползёт к цели, а не прыгает: обзор пересчитывается на смене клетки,
+    *	и без этого ходьба читалась щелчком раз в тайл.
+    *
+    *	Возвращает, остался ли хоть один угол в движении: кусок, в котором всё дошло
+    *	до цели, больше не перекрашивается.
+    */
+    bool TileFogComponent::Approach(float deltaTime)
+    {
+        const FogOfWar& fog = FogOfWar::Current();
+        bool hasMoving = false;
+
+        for (Cell& cell : cells)
+        {
+            float targets[4] = {
+                fog.GetCornerLight(cell.column, cell.row + 1),
+                fog.GetCornerLight(cell.column + 1, cell.row + 1),
+                fog.GetCornerLight(cell.column + 1, cell.row),
+                fog.GetCornerLight(cell.column, cell.row)};
+
+            for (int corner = 0; corner < 4; corner++)
+            {
+                cell.shown[corner] = ApproachLight(cell.shown[corner], targets[corner], deltaTime);
+                hasMoving = hasMoving || cell.shown[corner] != targets[corner];
+            }
+        }
+
+        return hasMoving;
     }
 
     void TileFogComponent::Paint()
@@ -55,10 +88,8 @@ namespace RoguelikeGame
             // Углы порознь: градиент между ними видеокарта растягивает сама,
             // поэтому мягкий край не стоит ни шейдера, ни второго слоя.
             renderer->SetQuadCorners(cell.quad,
-                ColorFor(cell.base, fog.GetCornerLight(cell.column, cell.row + 1)),
-                ColorFor(cell.base, fog.GetCornerLight(cell.column + 1, cell.row + 1)),
-                ColorFor(cell.base, fog.GetCornerLight(cell.column + 1, cell.row)),
-                ColorFor(cell.base, fog.GetCornerLight(cell.column, cell.row)));
+                ColorFor(cell.base, cell.shown[0]), ColorFor(cell.base, cell.shown[1]),
+                ColorFor(cell.base, cell.shown[2]), ColorFor(cell.base, cell.shown[3]));
         }
 
         renderer->SetEnabled(hasAnything);

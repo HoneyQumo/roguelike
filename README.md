@@ -64,7 +64,7 @@ x64\Release\EngineTest.exe
 
 [GDD.md](GDD.md) - что за игра, какие механики уже работают и что делаем дальше.
 
-`Roguelike/Resources/Levels/README.md` - формат карт и легенда. `Docs/` - атласы спрайтов и тайлов, озвучка.
+`Roguelike/Resources/Levels/README.md` - формат карт и легенда. [Tools/README.md](Tools/README.md) - чем собираются текстуры, звуки и карта моста.
 
 ## Версии и релизы
 

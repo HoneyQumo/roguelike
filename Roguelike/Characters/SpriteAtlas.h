@@ -4,7 +4,7 @@
 
 namespace RoguelikeGame
 {
-    /**	Раскладка спрайтов из Docs/Sprites/character.json.
+    /**	Раскладка спрайтов из Tools/Sprites/character.json.
     *	Кадр 64x64 с пивотом (32, 32)
     *	Строка — анимация, столбец — кадр
     */

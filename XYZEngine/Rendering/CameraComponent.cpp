@@ -3,6 +3,7 @@
 #include "GameObject.h"
 #include "MathUtils.h"
 #include "RenderSystem.h"
+#include "SoundSpace.h"
 #include "TransformComponent.h"
 #include <algorithm>
 #include <cmath>
@@ -33,6 +34,7 @@ namespace XYZEngine
 		view.setRotation(isRotationEnabled ? transform->GetWorldRotation() : 0.f);
 
 		RenderSystem::Instance()->GetMainWindow().setView(view);
+		SetListenerPosition(position);
 	}
 	void CameraComponent::Render()
 	{

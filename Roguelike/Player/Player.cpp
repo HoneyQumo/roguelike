@@ -8,6 +8,7 @@
 #include "BloodPool.h"
 #include "InteractionComponent.h"
 #include "InventoryComponent.h"
+#include "ItemDropComponent.h"
 #include "QuickBeltComponent.h"
 #include "ItemEffectComponent.h"
 #include "StaminaComponent.h"
@@ -225,6 +226,8 @@ namespace RoguelikeGame
         auto belt = gameObject->AddComponent<QuickBeltComponent>();
         belt->SetInventory(bag);
         belt->SetEffects(effects);
+
+        gameObject->AddComponent<ItemDropComponent>()->SetInventory(bag);
 
         auto stamina = gameObject->AddComponent<StaminaComponent>();
         stamina->SetMaxStamina(PLAYER_MAX_STAMINA);

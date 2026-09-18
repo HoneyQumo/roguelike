@@ -36,7 +36,7 @@ namespace RoguelikeGame
         void SetCapacity(int newCapacity);
         int GetCapacity() const;
 
-        bool TryAdd(const ItemDefinition& item, int count = 1);
+        bool TryAdd(const ItemDefinition& item, int count = 1, int charge = NO_CHARGE);
         bool Remove(int slotIndex, int count = 1);
 
         // Кладёт предмет вместо того, что лежало в ячейке: так идёт обмен оружием.

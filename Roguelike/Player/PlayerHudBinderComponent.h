@@ -8,6 +8,7 @@
 #include "InteractionComponent.h"
 #include "InventoryComponent.h"
 #include "QuickBeltComponent.h"
+#include "ItemDropComponent.h"
 #include "ItemEffectComponent.h"
 #include "InventoryScreen.h"
 #include "PlayerLoadoutComponent.h"
@@ -33,6 +34,7 @@ namespace RoguelikeGame
         InventoryScreen* inventoryScreen = nullptr;
         AmmoPouchComponent* pouch = nullptr;
         QuickBeltComponent* belt = nullptr;
+        ItemDropComponent* drop = nullptr;
 
         void ShowRefusal(const std::string& text);
         void PushWeaponSlots();

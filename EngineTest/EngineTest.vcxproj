@@ -69,6 +69,7 @@
     <ClCompile Include="WeaponAmmo.tests.cpp" />
     <ClCompile Include="WeaponItems.tests.cpp" />
     <ClCompile Include="WeaponRow.tests.cpp" />
+    <ClCompile Include="ItemDrop.tests.cpp" />
     <ClCompile Include="QuickBelt.tests.cpp" />
     <ClCompile Include="Separation.tests.cpp" />
     <ClCompile Include="PropAlign.tests.cpp" />
@@ -338,6 +339,9 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\Roguelike\Items\ItemCatalogLoader.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Roguelike\Items\ItemDropComponent.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\Roguelike\Items\ItemEffectComponent.cpp">

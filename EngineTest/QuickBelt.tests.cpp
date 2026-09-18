@@ -206,7 +206,8 @@ TEST(QuickBeltInputTest, TheNewActionsSitAtTheTailAndKeepTheOldArithmetic)
 
 	EXPECT_GT(static_cast<int>(InputAction::QuickSlot1), static_cast<int>(InputAction::Confirm))
 		<< "новые действия вставлены в середину - привязки разъедутся молча";
-	EXPECT_EQ(static_cast<int>(InputAction::QuickSlot3) + 1, static_cast<int>(InputAction::Count));
+	EXPECT_EQ(static_cast<int>(InputAction::QuickSlot3) + 1, static_cast<int>(InputAction::Drop))
+		<< "\u043c\u0435\u0436\u0434\u0443 \u043a\u0440\u044e\u0447\u043a\u0430\u043c\u0438 \u0438 \u0445\u0432\u043e\u0441\u0442\u043e\u043c \u0447\u0442\u043e-\u0442\u043e \u0432\u0441\u0442\u0430\u0432\u043b\u0435\u043d\u043e";
 }
 
 TEST(QuickBeltInputTest, EveryHookHasAKeyOfItsOwn)

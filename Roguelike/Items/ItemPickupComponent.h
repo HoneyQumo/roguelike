@@ -3,6 +3,7 @@
 #include <functional>
 #include <EventList.h>
 #include "InteractableComponent.h"
+#include "InventoryComponent.h"
 #include "ItemDefinition.h"
 
 namespace XYZEngine
@@ -25,6 +26,11 @@ namespace RoguelikeGame
         void SetDefinition(const ItemDefinition* newDefinition);
         const ItemDefinition* GetDefinition() const;
 
+        // Стопка лежит одним предметом: иначе пять аптечек - это пять подсказок в одной точке.
+        void SetStack(int newCount, int newCharge = NO_CHARGE);
+        int GetCount() const;
+        int GetCharge() const;
+
         bool IsPickedUp() const;
         bool TryPickUp(XYZEngine::GameObject* collector);
 
@@ -37,6 +43,8 @@ namespace RoguelikeGame
     private:
         ItemDefinition definition;
         bool hasDefinition = false;
+        int count = 1;
+        int charge = NO_CHARGE;
         XYZEngine::ColliderComponent* collider = nullptr;
         XYZEngine::SpriteRendererComponent* renderer = nullptr;
         bool isPickedUp = false;

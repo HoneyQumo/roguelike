@@ -121,6 +121,7 @@
         <ClCompile Include="Items\EquipExchange.cpp"/>
         <ClCompile Include="Items\InventoryComponent.cpp"/>
         <ClCompile Include="Items\QuickBeltComponent.cpp"/>
+        <ClCompile Include="Items\ItemDropComponent.cpp"/>
         <ClCompile Include="Items\ItemEffectComponent.cpp"/>
         <ClCompile Include="Items\InteractionComponent.cpp"/>
         <ClCompile Include="Ui\InventoryScreen.cpp"/>
@@ -223,6 +224,7 @@
         <ClInclude Include="Items\InventoryAccess.h"/>
         <ClInclude Include="Items\InventoryComponent.h"/>
         <ClInclude Include="Items\QuickBeltComponent.h"/>
+        <ClInclude Include="Items\ItemDropComponent.h"/>
         <ClInclude Include="Items\ItemEffectComponent.h"/>
         <ClInclude Include="Items\InteractionComponent.h"/>
         <ClInclude Include="Ui\InventoryScreen.h"/>

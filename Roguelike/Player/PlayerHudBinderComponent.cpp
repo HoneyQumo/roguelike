@@ -214,6 +214,7 @@ namespace RoguelikeGame
 
         pouch = target->GetComponent<AmmoPouchComponent>();
         belt = target->GetComponent<QuickBeltComponent>();
+        drop = target->GetComponent<ItemDropComponent>();
         inventory = target->GetComponent<InventoryComponent>();
         if (inventory != nullptr && inventoryScreen != nullptr)
         {
@@ -250,6 +251,11 @@ namespace RoguelikeGame
                 }
 
                 return true;
+            });
+
+            inventoryScreen->SetDropHandler([this](int bagSlot)
+            {
+                return drop != nullptr && drop->Drop(bagSlot);
             });
         }
 

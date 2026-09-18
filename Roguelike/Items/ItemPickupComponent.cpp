@@ -6,6 +6,7 @@
 #include <GameObject.h>
 #include <LoggerRegistry.h>
 #include <SpriteRendererComponent.h>
+#include <algorithm>
 
 namespace RoguelikeGame
 {
@@ -43,6 +44,22 @@ namespace RoguelikeGame
     const ItemDefinition* ItemPickupComponent::GetDefinition() const
     {
         return hasDefinition ? &definition : nullptr;
+    }
+
+    void ItemPickupComponent::SetStack(int newCount, int newCharge)
+    {
+        count = std::max(newCount, 1);
+        charge = newCharge;
+    }
+
+    int ItemPickupComponent::GetCount() const
+    {
+        return count;
+    }
+
+    int ItemPickupComponent::GetCharge() const
+    {
+        return charge;
     }
 
     bool ItemPickupComponent::IsPickedUp() const
@@ -101,7 +118,7 @@ namespace RoguelikeGame
 
         auto inventory = collector->GetComponent<InventoryComponent>();
 
-        return inventory == nullptr || inventory->TryAdd(item);
+        return inventory == nullptr || inventory->TryAdd(item, count, charge);
     }
 
     void ItemPickupComponent::Hide()

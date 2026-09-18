@@ -1,0 +1,104 @@
+name: Release
+
+# Выпуск делает тег, а не кнопка: что лежит в Releases, то и собрано из этого коммита.
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write # Нужно, чтобы создать релиз и приложить к нему архив
+
+jobs:
+  release:
+    runs-on: windows-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Проверяем до сборки: расходится тег с кодом - падать надо сразу,
+      # а не через десять минут. Иначе в Releases окажется сборка,
+      # которая называет себя иначе, чем тег.
+      - name: Check the tag matches the code
+        shell: pwsh
+        run: |
+          $header = Get-Content Roguelike/Core/Version.h -Raw
+          $major = [regex]::Match($header, 'VERSION_MAJOR\s*=\s*(\d+)').Groups[1].Value
+          $minor = [regex]::Match($header, 'VERSION_MINOR\s*=\s*(\d+)').Groups[1].Value
+          $patch = [regex]::Match($header, 'VERSION_PATCH\s*=\s*(\d+)').Groups[1].Value
+          $stage = [regex]::Match($header, 'VERSION_STAGE\s*=\s*"([^"]*)"').Groups[1].Value
+
+          $version = "$major.$minor.$patch"
+          if ($stage) { $version = "$version-$stage" }
+
+          $tag = "${{ github.ref_name }}".TrimStart('v')
+          Write-Output "версия в коде: $version, тег: $tag"
+
+          if ($version -ne $tag) {
+            throw "Тег $tag не совпадает с версией в Version.h ($version)"
+          }
+
+          "VERSION=$version" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+          if ($stage) {
+            "PRERELEASE=true" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+          } else {
+            "PRERELEASE=false" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+          }
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Restore NuGet packages
+        run: msbuild Roguelike.sln -t:restore -p:RestorePackagesConfig=true
+
+      - name: Build solution
+        run: msbuild Roguelike.sln /p:Configuration=Release /p:Platform=x64
+
+      # Выпускать непроверенное нельзя, даже если тег уже поставлен.
+      - name: Run tests
+        run: .\x64\Release\EngineTest.exe
+
+      # .pdb едет вместе с игрой: без него трассировка падения даёт голые адреса,
+      # а альфу и выпускают ради того, чтобы ловить падения.
+      - name: Pack the game
+        shell: pwsh
+        run: |
+          $out = "publish/Roguelike-$env:VERSION-win64"
+          New-Item -ItemType Directory -Force -Path $out | Out-Null
+
+          Copy-Item Roguelike/x64/Release/Roguelike.exe $out
+          Copy-Item Roguelike/x64/Release/openal32.dll $out
+          Copy-Item Roguelike/x64/Release/Roguelike.pdb $out
+          Copy-Item Roguelike/x64/Release/Resources $out -Recurse
+          Copy-Item README.md $out
+          Copy-Item GDD.md $out
+
+          Compress-Archive -Path "$out/*" -DestinationPath "publish/Roguelike-$env:VERSION-win64.zip"
+
+      - name: Publish the release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $notes = @"
+          Сборка из тега ${{ github.ref_name }}.
+
+          Как запустить: распаковать архив целиком и запустить ``Roguelike.exe``. Папка ``Resources`` и ``openal32.dll`` должны лежать рядом.
+
+          В архиве есть ``Roguelike.pdb`` - он нужен, чтобы падение писало в ``log.txt`` стек с именами функций и номерами строк. Если игра упала, приложите ``log.txt`` к issue.
+
+          Что это за игра и что в ней уже работает - в ``GDD.md``.
+          "@
+
+          $cliArgs = @(
+            'release', 'create', '${{ github.ref_name }}',
+            "publish/Roguelike-$env:VERSION-win64.zip",
+            '--title', "Roguelike $env:VERSION",
+            '--notes', $notes
+          )
+
+          if ($env:PRERELEASE -eq 'true') { $cliArgs += '--prerelease' }
+
+          gh @cliArgs

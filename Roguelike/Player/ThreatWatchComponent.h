@@ -18,6 +18,10 @@ namespace RoguelikeGame
     public:
         ThreatWatchComponent(XYZEngine::GameObject* gameObject);
 
+        // Список слушателей шума глобальный и переживает рестарт: без отписки
+        // следующий же выстрел позовёт лямбду с указателем на снесённый компонент.
+        ~ThreatWatchComponent() override;
+
         void Start() override;
         void Update(float deltaTime) override;
         void Render() override {}
@@ -36,7 +40,7 @@ namespace RoguelikeGame
 
         std::vector<ThreatSource> sources;
         std::vector<Ping> pings;
-        XYZEngine::SubscriptionId noiseSubscription = 0;
+        XYZEngine::SubscriptionId noiseSubscription = XYZEngine::NO_SUBSCRIPTION;
 
         void CollectEnemies(const XYZEngine::Vector2Df& place);
         void FadePings(float deltaTime);

@@ -19,9 +19,19 @@ namespace RoguelikeGame
         return noiseEvent.Subscribe(std::move(onNoise));
     }
 
+    void UnsubscribeNoiseRaised(XYZEngine::SubscriptionId subscription)
+    {
+        noiseEvent.Unsubscribe(subscription);
+    }
+
     void ClearNoiseListeners()
     {
         noiseEvent = XYZEngine::EventList<const Noise&>();
+    }
+
+    std::size_t NoiseListenerCount()
+    {
+        return noiseEvent.GetCount();
     }
 
     void RaiseNoise(const Noise& noise, const XYZEngine::GameObject* except)

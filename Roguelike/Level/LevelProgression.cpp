@@ -15,8 +15,13 @@ namespace RoguelikeGame
             return {LevelStepKind::Next, index};
         }
 
-        int index = currentIndex + 1;
-        if (levels.GetAt(index) == nullptr)
+        // Шаг по умолчанию идёт по своей цепочке: иначе сюжет утекает в первую же
+        // отладочную карту, положенную рядом в реестре, и конца забега не наступает.
+        const LevelEntry* current = levels.GetAt(currentIndex);
+        LevelMode mode = current != nullptr ? current->mode : LevelMode::Campaign;
+
+        int index = levels.NextIndex(mode, currentIndex);
+        if (index < 0)
         {
             return {LevelStepKind::Finished, -1};
         }

@@ -56,5 +56,9 @@ namespace RoguelikeGame
 
         XYZEngine::Vector2Df Destination() const;
         void StartMove(float seconds);
+
+        // Кадр не должен выезжать за карту: за её краем нарисована чернота.
+        XYZEngine::Vector2Df KeepInsideLevel(const XYZEngine::Vector2Df& point) const;
+        void Place(const XYZEngine::Vector2Df& point);
     };
 }

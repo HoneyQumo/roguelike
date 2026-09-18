@@ -26,6 +26,9 @@ namespace XYZEngine
         void ZoomBy(float newZoom);
 
         void SetViewHeight(float newViewHeight);
+
+        // Ширина и высота кадра в мире: по ним решают, где кончается видимое.
+        Vector2Df GetViewSize() const;
         void SetRotationEnabled(bool newIsRotationEnabled);
 
         void Shake(const CameraShake& newShake);

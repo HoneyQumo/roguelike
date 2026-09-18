@@ -49,6 +49,12 @@ namespace XYZEngine
 		viewHeight = newViewHeight;
 		ApplyViewSize();
 	}
+	Vector2Df CameraComponent::GetViewSize() const
+	{
+		sf::Vector2f size = view.getSize();
+
+		return {std::fabs(size.x), std::fabs(size.y)};
+	}
 	void CameraComponent::ApplyViewSize()
 	{
 		sf::Vector2u windowSize = RenderSystem::Instance()->GetWindowSize();

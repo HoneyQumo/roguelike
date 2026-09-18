@@ -278,6 +278,7 @@
         <ClInclude Include="Level\FogVisibilityComponent.h"/>
         <ClInclude Include="Level\EscapeCarComponent.h"/>
         <ClInclude Include="Cutscene\CameraDirectorComponent.h"/>
+        <ClInclude Include="Cutscene\CameraFollow.h"/>
         <ClInclude Include="Cutscene\CutscenePlayerComponent.h"/>
         <ClInclude Include="Cutscene\CutsceneTimeline.h"/>
         <ClInclude Include="Level\LevelGrid.h"/>

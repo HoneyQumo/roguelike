@@ -52,13 +52,18 @@ namespace
 	};
 }
 
-TEST_F(CameraTest, TheCameraKeepsUpWithTheHero)
+// Камера больше не приклеена к герою: она отстаёт и догоняет. Проверяем оба конца.
+TEST_F(CameraTest, TheCameraLagsBehindTheHeroAndThenCatchesUp)
 {
 	hero->GetTransform()->SetWorldPosition({250.f, 120.f});
-	Run(0.2f);
 
-	EXPECT_FLOAT_EQ(camera->GetAim().x, 250.f);
-	EXPECT_FLOAT_EQ(camera->GetAim().y, 120.f);
+	Run(0.05f);
+	EXPECT_LT(camera->GetAim().x, 250.f) << "камера приклеена к герою";
+	EXPECT_GT(camera->GetAim().x, 0.f) << "камера вообще не тронулась";
+
+	Run(2.f);
+	EXPECT_NEAR(camera->GetAim().x, 250.f, 1.f) << "камера так и не догнала";
+	EXPECT_NEAR(camera->GetAim().y, 120.f, 1.f);
 	EXPECT_FALSE(camera->IsAway());
 }
 

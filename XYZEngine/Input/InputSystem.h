@@ -32,6 +32,9 @@ namespace XYZEngine
 		NavigateUp,
 		NavigateDown,
 		Confirm,
+		QuickSlot1,
+		QuickSlot2,
+		QuickSlot3,
 		Count
 	};
 

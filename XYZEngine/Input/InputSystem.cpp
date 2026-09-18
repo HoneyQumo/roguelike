@@ -29,6 +29,9 @@ namespace XYZEngine
 		bindings[static_cast<int>(InputAction::NavigateUp)].key = sf::Keyboard::Up;
 		bindings[static_cast<int>(InputAction::NavigateDown)].key = sf::Keyboard::Down;
 		bindings[static_cast<int>(InputAction::Confirm)].key = sf::Keyboard::Enter;
+		bindings[static_cast<int>(InputAction::QuickSlot1)].key = sf::Keyboard::Num4;
+		bindings[static_cast<int>(InputAction::QuickSlot2)].key = sf::Keyboard::Num5;
+		bindings[static_cast<int>(InputAction::QuickSlot3)].key = sf::Keyboard::Num6;
 
 		return bindings;
 	}

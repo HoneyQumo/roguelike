@@ -8,6 +8,7 @@
 #include "BloodPool.h"
 #include "InteractionComponent.h"
 #include "InventoryComponent.h"
+#include "QuickBeltComponent.h"
 #include "ItemEffectComponent.h"
 #include "StaminaComponent.h"
 #include "Fx.h"
@@ -167,7 +168,8 @@ namespace RoguelikeGame
         loadout->SetAudio(shotAudio, reloadAudio);
         loadout->SetSlots(PLAYER_LOADOUT, PLAYER_WEAPON_SLOTS, PLAYER_START_WEAPON_SLOT);
 
-        gameObject->AddComponent<InventoryComponent>()->SetCapacity(INVENTORY_CAPACITY);
+        auto bag = gameObject->AddComponent<InventoryComponent>();
+        bag->SetCapacity(INVENTORY_CAPACITY);
         gameObject->AddComponent<InteractionComponent>();
 
         auto effects = gameObject->AddComponent<ItemEffectComponent>();
@@ -219,6 +221,10 @@ namespace RoguelikeGame
 
             return TryGetWeaponId(effect.target, id) && loadout->CanTakeWeapon(id);
         });
+
+        auto belt = gameObject->AddComponent<QuickBeltComponent>();
+        belt->SetInventory(bag);
+        belt->SetEffects(effects);
 
         auto stamina = gameObject->AddComponent<StaminaComponent>();
         stamina->SetMaxStamina(PLAYER_MAX_STAMINA);

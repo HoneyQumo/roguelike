@@ -262,6 +262,11 @@ namespace RoguelikeGame
     constexpr float WEAPON_ROW_SLOT_SIZE = 64.f;
     constexpr float WEAPON_ROW_SLOT_GAP = 8.f;
     constexpr float WEAPON_ROW_MARGIN_Y = 24.f;
+
+    constexpr int QUICK_BELT_HOOKS = 3;
+
+    // Без задержки одно нажатие успевает выпить две аптечки за соседние кадры.
+    constexpr float QUICK_BELT_COOLDOWN = 0.35f;
     constexpr int WEAPON_ROW_KEY_FONT_SIZE = 14;
     constexpr int WEAPON_ROW_COUNT_FONT_SIZE = 12;
 

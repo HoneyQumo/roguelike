@@ -307,6 +307,18 @@ namespace RoguelikeGame
     // Красная зона обоймы
     constexpr float AMMO_HUD_LOW_PART = 0.25f;
 
+    // Восемь секторов - компас: меньше грубо, больше не читается с одного взгляда.
+    constexpr int THREAT_MARK_SECTORS = 8;
+    constexpr float THREAT_MARK_MARGIN_X = 90.f;
+    constexpr float THREAT_MARK_MARGIN_Y = 70.f;
+    constexpr float THREAT_MARK_SIZE = 26.f;
+
+    // Шум тает сам: игрок его услышал, а не видит источник.
+    constexpr float THREAT_NOISE_TIME = 1.6f;
+
+    inline const sf::Color THREAT_ENEMY_COLOR = sf::Color(214, 74, 58);
+    inline const sf::Color THREAT_NOISE_COLOR = sf::Color(214, 188, 96);
+
     constexpr int OVERLAY_TITLE_FONT_SIZE = 56;
     constexpr int OVERLAY_HINT_FONT_SIZE = 24;
     constexpr float OVERLAY_LINE_GAP = 36.f;

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <string>
 #include <vector>
@@ -8,6 +8,7 @@
 #include <UiProgressBar.h>
 #include <UiScreen.h>
 #include <UiWidget.h>
+#include "ThreatMarks.h"
 
 namespace RoguelikeGame
 {
@@ -65,6 +66,11 @@ namespace RoguelikeGame
 
         void SetWeaponSlots(const std::vector<SlotHudState>& slots);
         void SetBeltSlots(const std::vector<SlotHudState>& slots);
+
+        // Метки направления: только куда, без расстояния и без счёта.
+        void SetThreatMarks(const std::vector<ThreatMark>& marks);
+        int GetThreatMarksShown() const;
+        const XYZEngine::UiPanel& GetThreatMark(int index) const;
         void SetVitals(const VitalsHudState& state);
         void SetWaves(const WaveHudState& state);
         void SetChase(const ChaseHudState& state);
@@ -108,6 +114,7 @@ namespace RoguelikeGame
             XYZEngine::UiLabel* count = nullptr;
         };
 
+        std::vector<XYZEngine::UiPanel*> threatMarks;
         std::vector<WeaponCell> weaponCells;
         std::vector<WeaponCell> beltCells;
         XYZEngine::UiProgressBar* healthBar = nullptr;
@@ -125,6 +132,7 @@ namespace RoguelikeGame
         float noticeTimeLeft = 0.f;
 
         void BuildWeaponRow(const sf::Font* font);
+        void BuildThreatMarks();
         WeaponCell BuildCell(XYZEngine::UiWidget* row, const sf::Font* font, float left);
         void FillCells(std::vector<WeaponCell>& cells, const std::vector<SlotHudState>& slots);
 

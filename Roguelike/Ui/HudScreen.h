@@ -1,7 +1,10 @@
 #pragma once
 
 #include <string>
+#include <vector>
+#include <UiIcon.h>
 #include <UiLabel.h>
+#include <UiPanel.h>
 #include <UiProgressBar.h>
 #include <UiScreen.h>
 #include <UiWidget.h>
@@ -24,6 +27,18 @@ namespace RoguelikeGame
         bool hasMagazine = false;
         bool isReloading = false;
         bool isLow = false;
+    };
+
+    /**
+    *	Один слот оружия на экране. Иконку выбирает тот, кто знает про каталог,
+    *	а цифру - тот, кто знает про привязки: экрану остаётся нарисовать.
+    */
+    struct WeaponSlotHudState
+    {
+        bool hasWeapon = false;
+        bool isCurrent = false;
+        int key = 0;
+        const sf::Texture* icon = nullptr;
     };
 
     struct WaveHudState
@@ -49,6 +64,7 @@ namespace RoguelikeGame
         HudScreen();
 
         void SetAmmo(const AmmoHudState& state);
+        void SetWeaponSlots(const std::vector<WeaponSlotHudState>& slots);
         void SetVitals(const VitalsHudState& state);
         void SetWaves(const WaveHudState& state);
         void SetChase(const ChaseHudState& state);
@@ -60,6 +76,10 @@ namespace RoguelikeGame
         bool IsNoticeShown() const;
 
         const XYZEngine::UiLabel& GetNameLabel() const;
+        int GetWeaponSlotsShown() const;
+        const XYZEngine::UiPanel& GetWeaponSlotPanel(int index) const;
+        const XYZEngine::UiIcon& GetWeaponSlotIcon(int index) const;
+        const XYZEngine::UiLabel& GetWeaponSlotKey(int index) const;
         const XYZEngine::UiLabel& GetAmmoLabel() const;
         const XYZEngine::UiProgressBar& GetHealthBar() const;
         const XYZEngine::UiProgressBar& GetStaminaBar() const;
@@ -75,6 +95,14 @@ namespace RoguelikeGame
         bool IsChasePanelShown() const;
 
     private:
+        struct WeaponCell
+        {
+            XYZEngine::UiPanel* panel = nullptr;
+            XYZEngine::UiIcon* icon = nullptr;
+            XYZEngine::UiLabel* key = nullptr;
+        };
+
+        std::vector<WeaponCell> weaponCells;
         XYZEngine::UiLabel* nameLabel = nullptr;
         XYZEngine::UiLabel* ammoLabel = nullptr;
         XYZEngine::UiProgressBar* healthBar = nullptr;
@@ -90,6 +118,8 @@ namespace RoguelikeGame
         XYZEngine::UiLabel* waveCountLabel = nullptr;
         XYZEngine::UiProgressBar* waveBar = nullptr;
         float noticeTimeLeft = 0.f;
+
+        void BuildWeaponRow(const sf::Font* font);
 
         std::string shownName;
         std::string shownAmmo;

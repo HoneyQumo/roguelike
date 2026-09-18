@@ -38,6 +38,8 @@ namespace RoguelikeGame
         ammoLabel->SetFont(font);
         ammoLabel->SetVisible(false);
 
+        BuildWeaponRow(font);
+
         auto vitals = GetRoot().AddChild<XYZEngine::UiWidget>();
         vitals->SetAnchor(XYZEngine::UiAnchor::TopLeft);
         vitals->SetPivot(XYZEngine::UiAnchor::TopLeft);
@@ -161,6 +163,101 @@ namespace RoguelikeGame
     const XYZEngine::UiLabel& HudScreen::GetPromptLabel() const
     {
         return *promptLabel;
+    }
+
+    void HudScreen::BuildWeaponRow(const sf::Font* font)
+    {
+        auto row = GetRoot().AddChild<XYZEngine::UiWidget>();
+        row->SetAnchor(XYZEngine::UiAnchor::Bottom);
+        row->SetPivot(XYZEngine::UiAnchor::Bottom);
+        row->SetOffset({0.f, -WEAPON_ROW_MARGIN_Y});
+        row->SetSize({PLAYER_WEAPON_SLOTS * WEAPON_ROW_SLOT_SIZE + (PLAYER_WEAPON_SLOTS - 1) * WEAPON_ROW_SLOT_GAP,
+            WEAPON_ROW_SLOT_SIZE});
+
+        for (int slot = 0; slot < PLAYER_WEAPON_SLOTS; slot++)
+        {
+            WeaponCell cell;
+
+            cell.panel = row->AddChild<XYZEngine::UiPanel>();
+            cell.panel->SetAnchor(XYZEngine::UiAnchor::TopLeft);
+            cell.panel->SetPivot(XYZEngine::UiAnchor::TopLeft);
+            cell.panel->SetOffset({slot * (WEAPON_ROW_SLOT_SIZE + WEAPON_ROW_SLOT_GAP), 0.f});
+            cell.panel->SetSize({WEAPON_ROW_SLOT_SIZE, WEAPON_ROW_SLOT_SIZE});
+            cell.panel->SetFillColor(INVENTORY_SLOT_EMPTY_COLOR);
+            cell.panel->SetOutline(2.f, INVENTORY_SLOT_OUTLINE_COLOR);
+
+            cell.icon = cell.panel->AddChild<XYZEngine::UiIcon>();
+            cell.icon->SetAnchor(XYZEngine::UiAnchor::Center);
+            cell.icon->SetPivot(XYZEngine::UiAnchor::Center);
+            cell.icon->SetSize({WEAPON_ROW_SLOT_SIZE - WEAPON_ROW_SLOT_GAP, WEAPON_ROW_SLOT_SIZE - WEAPON_ROW_SLOT_GAP});
+            cell.icon->SetKeepAspect(true);
+            cell.icon->SetVisible(false);
+
+            cell.key = cell.panel->AddChild<XYZEngine::UiLabel>();
+            cell.key->SetAnchor(XYZEngine::UiAnchor::BottomLeft);
+            cell.key->SetPivot(XYZEngine::UiAnchor::BottomLeft);
+            cell.key->SetSize({WEAPON_ROW_SLOT_SIZE, WEAPON_ROW_KEY_HEIGHT});
+            cell.key->SetAlign(XYZEngine::UiAnchor::Left);
+            cell.key->SetCharacterSize(WEAPON_ROW_KEY_FONT_SIZE);
+            cell.key->SetColor(AMMO_HUD_COLOR);
+            cell.key->SetOutline(AMMO_HUD_OUTLINE, AMMO_HUD_OUTLINE_COLOR);
+            cell.key->SetFont(font);
+
+            weaponCells.push_back(cell);
+        }
+    }
+
+    void HudScreen::SetWeaponSlots(const std::vector<WeaponSlotHudState>& slots)
+    {
+        for (std::size_t index = 0; index < weaponCells.size(); index++)
+        {
+            const WeaponCell& cell = weaponCells[index];
+            bool isShown = index < slots.size();
+
+            cell.panel->SetVisible(isShown);
+            if (!isShown)
+            {
+                continue;
+            }
+
+            const WeaponSlotHudState& state = slots[index];
+
+            // Пустой слот всё равно показывает свою цифру: игрок должен видеть, куда класть.
+            cell.panel->SetFillColor(state.isCurrent ? INVENTORY_SLOT_SELECTED_COLOR
+                : state.hasWeapon ? INVENTORY_SLOT_FILLED_COLOR : INVENTORY_SLOT_EMPTY_COLOR);
+
+            cell.icon->SetTexture(state.icon);
+            cell.icon->SetVisible(state.hasWeapon && state.icon != nullptr);
+
+            cell.key->SetUtf8Text(std::to_string(state.key).c_str());
+        }
+    }
+
+    int HudScreen::GetWeaponSlotsShown() const
+    {
+        int total = 0;
+
+        for (const WeaponCell& cell : weaponCells)
+        {
+            total += cell.panel->IsVisible() ? 1 : 0;
+        }
+
+        return total;
+    }
+
+    const XYZEngine::UiPanel& HudScreen::GetWeaponSlotPanel(int index) const
+    {
+        return *weaponCells[index].panel;
+    }
+
+    const XYZEngine::UiIcon& HudScreen::GetWeaponSlotIcon(int index) const
+    {
+        return *weaponCells[index].icon;
+    }
+
+    const XYZEngine::UiLabel& HudScreen::GetWeaponSlotKey(int index) const
+    {
+        return *weaponCells[index].key;
     }
 
     void HudScreen::ShowNotice(const std::string& text)

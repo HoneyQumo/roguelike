@@ -1,5 +1,6 @@
 #include "Fire.h"
 #include "FireComponent.h"
+#include "EffectObject.h"
 #include "Fx.h"
 #include "GameSettings.h"
 #include "SpriteAtlas.h"
@@ -16,8 +17,7 @@ namespace RoguelikeGame
         XYZEngine::GameObject* Make(const std::string& name, const std::string& texture, const FxStrip& strip,
             float seconds, float radius, float damage)
         {
-            auto gameObject = XYZEngine::GameWorld::Instance()->CreateGameObject(name);
-            gameObject->SetRenderLayer(FIRE_RENDER_LAYER);
+            auto gameObject = CreateEffectObject(name, FIRE_RENDER_LAYER);
 
             // Без картинки огонь всё равно горит: механика не должна зависеть от текстуры.
             if (Fx::AddSprite(gameObject, texture, strip, 0, FlameScale(radius, strip.width)) != nullptr)

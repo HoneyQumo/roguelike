@@ -42,6 +42,10 @@ namespace RoguelikeGame
 
         if (XYZEngine::UiManager::Instance()->IsPointerCaptured())
         {
+            // Отпускание зажатого удара живёт в UpdateMelee, до которого мы отсюда
+            // не дойдём, а замах держит движение выключенным - игрок встанет
+            // вкопанным. Так же поступают перекат и смена оружия.
+            meleeWeapon->CancelAttack();
             return;
         }
 

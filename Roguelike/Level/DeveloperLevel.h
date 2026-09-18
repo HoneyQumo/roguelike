@@ -2,6 +2,7 @@
 
 #include "Scene.h"
 #include "Level.h"
+#include "RunState.h"
 #include "CarArrival.h"
 #include "Freeze.h"
 #include "TrailComponent.h"
@@ -28,14 +29,6 @@ namespace RoguelikeGame
         void Stop() override;
 
     private:
-        enum class State
-        {
-            Playing,
-            PlayerDied,
-            GameOver,
-            Victory
-        };
-
         Level level;
         XYZEngine::GameObject* player = nullptr;
         XYZEngine::GameObject* cutscene = nullptr;
@@ -59,7 +52,7 @@ namespace RoguelikeGame
         XYZEngine::GameObject* music = nullptr;
         XYZEngine::GameObject* crosshair = nullptr;
 
-        State state = State::Playing;
+        RunState state = RunState::Playing;
         XYZEngine::Cooldown gameOverDelay;
         int currentLevelIndex = 0;
         int pendingLevelIndex = -1;

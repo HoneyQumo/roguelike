@@ -1,11 +1,13 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "ActAssembler.h"
 #include "ItemCatalogLoader.h"
 #include "PropCatalog.h"
 #include "LevelCatalog.h"
 #include "LevelIntegrity.h"
 #include "LevelLoader.h"
+#include "LevelProgression.h"
 #include "ProjectFiles.h"
+#include <set>
 #include <sstream>
 
 using RoguelikeGame::CheckLevel;
@@ -14,6 +16,7 @@ using RoguelikeGame::ItemCatalogLoader;
 using RoguelikeGame::LevelCatalog;
 using RoguelikeGame::LevelData;
 using RoguelikeGame::LevelEntry;
+using RoguelikeGame::LevelMode;
 using RoguelikeGame::LevelFault;
 using RoguelikeGame::LevelLoader;
 using RoguelikeGame::LevelReport;
@@ -263,6 +266,48 @@ namespace
 	class ShippedLevelsTest : public ProjectFiles::Test
 	{
 	};
+}
+
+// \u041a\u043e\u043b\u044c\u0446\u043e \u0432 \u0440\u0435\u0435\u0441\u0442\u0440\u0435 \u0434\u0435\u043b\u0430\u043b\u043e \u044d\u043a\u0440\u0430\u043d \u043f\u043e\u0431\u0435\u0434\u044b \u043d\u0435\u0434\u043e\u0441\u0442\u0438\u0436\u0438\u043c\u044b\u043c, \u0438 \u043d\u0438 \u043e\u0434\u0438\u043d \u0442\u0435\u0441\u0442 \u044d\u0442\u043e\u0433\u043e \u043d\u0435 \u0432\u0438\u0434\u0435\u043b:
+// \u043f\u0440\u043e\u0432\u0435\u0440\u044f\u043b\u0438 \u043a\u0430\u0436\u0434\u0443\u044e \u043a\u0430\u0440\u0442\u0443 \u043f\u043e \u043e\u0442\u0434\u0435\u043b\u044c\u043d\u043e\u0441\u0442\u0438, \u0430 \u043d\u0435 \u043f\u0443\u0442\u044c \u0446\u0435\u043b\u0438\u043a\u043e\u043c.
+TEST_F(ShippedLevelsTest, TheCampaignChainEndsAndNeverLoops)
+{
+	ASSERT_TRUE(isFound) << "Resources/Levels/levels.config not found from " << previous.string();
+
+	LevelCatalog catalog = LevelCatalog::Load("Resources/Levels/levels.config");
+	ASSERT_FALSE(catalog.IsEmpty());
+
+	int index = catalog.FirstIndex(LevelMode::Campaign);
+	ASSERT_GE(index, 0) << "\u0432 \u0440\u0435\u0435\u0441\u0442\u0440\u0435 \u043d\u0435\u0442 \u043d\u0438 \u043e\u0434\u043d\u043e\u0439 \u0441\u044e\u0436\u0435\u0442\u043d\u043e\u0439 \u043b\u043e\u043a\u0430\u0446\u0438\u0438";
+
+	std::set<int> visited;
+	int walked = 0;
+
+	while (true)
+	{
+		const LevelEntry* entry = catalog.GetAt(index);
+		ASSERT_NE(entry, nullptr);
+		ASSERT_TRUE(visited.insert(index).second) << "\u0446\u0435\u043f\u043e\u0447\u043a\u0430 \u0432\u0435\u0440\u043d\u0443\u043b\u0430\u0441\u044c \u0432 " << entry->id;
+		ASSERT_EQ(entry->mode, LevelMode::Campaign)
+			<< entry->id << " \u043d\u0435 \u0441\u044e\u0436\u0435\u0442\u043d\u0430\u044f, \u0430 \u0441\u0442\u043e\u0438\u0442 \u0432 \u0446\u0435\u043f\u043e\u0447\u043a\u0435 \u043f\u0440\u043e\u0445\u043e\u0436\u0434\u0435\u043d\u0438\u044f";
+
+		walked++;
+
+		LevelData level = entry->isAct ? LoadAct(entry->filePath) : LevelLoader::Load(entry->filePath);
+		RoguelikeGame::LevelStep step = RoguelikeGame::ResolveNextLevel(catalog, index, level.info.nextLevelId);
+
+		ASSERT_NE(step.kind, RoguelikeGame::LevelStepKind::Unknown)
+			<< entry->id << " \u0432\u0435\u0434\u0451\u0442 \u0432 \u043d\u0435\u0438\u0437\u0432\u0435\u0441\u0442\u043d\u0443\u044e \u043b\u043e\u043a\u0430\u0446\u0438\u044e " << level.info.nextLevelId;
+
+		if (step.kind == RoguelikeGame::LevelStepKind::Finished)
+		{
+			break;
+		}
+
+		index = step.index;
+	}
+
+	EXPECT_GE(walked, 3) << "\u0432 \u043a\u0430\u043c\u043f\u0430\u043d\u0438\u0438 \u043c\u0435\u043d\u044c\u0448\u0435 \u0442\u0440\u0451\u0445 \u043b\u043e\u043a\u0430\u0446\u0438\u0439";
 }
 
 TEST_F(ShippedLevelsTest, EveryLevelInTheCatalogIsSound)

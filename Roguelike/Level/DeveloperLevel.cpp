@@ -54,7 +54,10 @@ namespace RoguelikeGame
         state = State::Playing;
         gameOverDelay.Stop();
 
-        currentLevelIndex = 0;
+        // Забег начинается с первой сюжетной локации, а не с первой строки реестра:
+        // отладочная карта, положенная сверху, не должна становиться началом игры.
+        int firstLevel = GameResources::GetLevels().FirstIndex(LevelMode::Campaign);
+        currentLevelIndex = firstLevel < 0 ? 0 : firstLevel;
         pendingLevelIndex = -1;
 
         LoadLevel(currentLevelIndex);

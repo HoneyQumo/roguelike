@@ -12,6 +12,33 @@ namespace RoguelikeGame
         const std::string LEVEL_WHITESPACE = " \t";
         const std::string LEVEL_UTF8_BOM = "\xEF\xBB\xBF";
         const std::string LEVEL_BLOCK_PREFIX = "[level ";
+
+        const std::string LEVEL_MODE_CAMPAIGN = "campaign";
+        const std::string LEVEL_MODE_ARENA = "arena";
+        const std::string LEVEL_MODE_TEST = "test";
+    }
+
+    LevelMode ParseLevelMode(const std::string& word, bool& isKnown)
+    {
+        isKnown = true;
+
+        if (word == LEVEL_MODE_CAMPAIGN)
+        {
+            return LevelMode::Campaign;
+        }
+
+        if (word == LEVEL_MODE_ARENA)
+        {
+            return LevelMode::Arena;
+        }
+
+        if (word == LEVEL_MODE_TEST)
+        {
+            return LevelMode::Test;
+        }
+
+        isKnown = false;
+        return LevelMode::Campaign;
     }
 
     LevelCatalog LevelCatalog::Load(const std::string& filePath)
@@ -119,6 +146,22 @@ namespace RoguelikeGame
                 continue;
             }
 
+            if (key == "mode")
+            {
+                std::string word;
+                stream >> word;
+
+                bool isKnown = false;
+                current.mode = ParseLevelMode(word, isKnown);
+
+                if (!isKnown)
+                {
+                    LOG_WARN("Unknown level mode at line " + std::to_string(lineNumber) + ": " + word);
+                }
+
+                continue;
+            }
+
             LOG_WARN("Unknown level catalog field at line " + std::to_string(lineNumber) + ": " + key);
         }
 
@@ -164,6 +207,27 @@ namespace RoguelikeGame
         for (int index = 0; index < static_cast<int>(levels.size()); index++)
         {
             if (levels[index].id == id)
+            {
+                return index;
+            }
+        }
+
+        return -1;
+    }
+
+    int LevelCatalog::FirstIndex(LevelMode mode) const
+    {
+        return NextIndex(mode, -1);
+    }
+
+    int LevelCatalog::NextIndex(LevelMode mode, int afterIndex) const
+    {
+        // Индекс приходит снаружи и может быть каким угодно: отрицательный старт увёл бы обход за начало вектора.
+        int start = afterIndex < 0 ? 0 : afterIndex + 1;
+
+        for (int index = start; index < static_cast<int>(levels.size()); index++)
+        {
+            if (levels[index].mode == mode)
             {
                 return index;
             }

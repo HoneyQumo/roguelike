@@ -654,13 +654,13 @@ namespace RoguelikeGame
     constexpr auto DOOR_OPEN_TEXTURE = "door_open";
     constexpr auto HIT_FLASH_SHADER = "hit_flash";
     constexpr auto HUD_FONT = "hud";
-    constexpr auto SHOT_SOUND = "shot";
     constexpr auto HURT_SOUND = "hurt";
     constexpr auto MAIN_THEME_MUSIC = "main_theme";
 
     constexpr auto TEXTURES_PATH = "Resources/Textures/";
     constexpr auto AUDIO_PATH = "Resources/Audio/";
     constexpr auto WEAPONS_AUDIO_PATH = "Resources/Audio/Weapons/";
+    constexpr auto FONTS_PATH = "Resources/Fonts/";
 
     constexpr auto CROSSHAIR_FILE = "Resources/Textures/crosshair.png";
     constexpr auto WEAPONS_ATLAS_FILE = "Resources/Textures/weapons.png";
@@ -668,7 +668,6 @@ namespace RoguelikeGame
     constexpr auto FX_ATLAS_FILE = "Resources/Textures/fx.png";
     constexpr auto DOORS_ATLAS_FILE = "Resources/Textures/doors.png";
     constexpr auto HIT_FLASH_SHADER_FILE = "Resources/Shaders/hit_flash.frag";
-    constexpr auto SHOT_SOUND_FILE = "Resources/Audio/shot.wav";
     constexpr auto DOOR_OPEN_SOUND_FILE = "Resources/Audio/door_open.wav";
     constexpr auto LEVER_SOUND_FILE = "Resources/Audio/lever.wav";
     constexpr auto HATCH_SOUND_FILE = "Resources/Audio/hatch_open.wav";

@@ -22,6 +22,7 @@ namespace RoguelikeGame
         attack.recovery = recovery;
         attack.hitFrame = MELEE_HIT_FRAME;
         attack.windup = MELEE_HIT_FRAME * MELEE_ANIMATION.secondsPerFrame;
+        attack.critScale = profile.critScale;
         return attack;
     }
 
@@ -35,6 +36,7 @@ namespace RoguelikeGame
         attack.recovery = profile.recovery;
         attack.hitFrame = HEAVY_HIT_FIRST_FRAME;
         attack.windup = HEAVY_FRAME_SECONDS[HEAVY_RELEASE_FRAME];
+        attack.critScale = profile.critScale;
         return attack;
     }
 

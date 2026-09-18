@@ -152,14 +152,16 @@ namespace RoguelikeGame
 
         auto meleeWeapon = gameObject->AddComponent<MeleeWeaponComponent>();
         PlayEffectsOnMeleeHit(meleeWeapon, meleeAudio);
-        meleeWeapon->SubscribeStrike([](MeleeAttackKind kind, int hits)
+        meleeWeapon->SubscribeStrike([](MeleeAttackKind kind, int hits, bool isCritical)
         {
             if (hits <= 0)
             {
                 return;
             }
 
-            bool isHeavy = kind == MeleeAttackKind::Heavy;
+            // Удар в спину должен чувствоваться в руках, а не только в чужом здоровье:
+            // отдача у него как у тяжёлого, даже если это был быстрый тычок.
+            bool isHeavy = kind == MeleeAttackKind::Heavy || isCritical;
             Fx::ShakeCamera(isHeavy ? CAMERA_SHAKE_HEAVY : CAMERA_SHAKE_LIGHT);
             XYZEngine::FrameClock::Instance()->HitStop(isHeavy ? HIT_STOP_HEAVY : HIT_STOP_LIGHT);
         });

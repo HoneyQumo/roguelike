@@ -1,4 +1,7 @@
 #include "pch.h"
+#include "BoxColliderComponent.h"
+#include "CritRules.h"
+#include "HealthComponent.h"
 #include "MeleeWeaponComponent.h"
 #include "WeaponSetup.h"
 #include <GameWorld.h>
@@ -34,6 +37,16 @@ namespace
 
 			melee->SetHeavyAttack(heavy);
 			melee->SetChargeTime(0.5f);
+
+			MeleeAttack quick;
+			quick.damage = 10.f;
+			quick.chargedDamage = 10.f;
+			quick.range = 60.f;
+			quick.arcDegrees = 90.f;
+			quick.recovery = 0.1f;
+			quick.critScale = 2.f;
+
+			melee->SetQuickAttack(quick);
 
 			GameWorld::Instance()->Update(0.f);
 		}
@@ -98,4 +111,98 @@ TEST_F(MeleeWeaponTest, TheChargeGrowsWhileTheSwingIsHeld)
 	melee->Update(0.5f);
 	EXPECT_FLOAT_EQ(melee->GetChargeProgress(), 1.f);
 	EXPECT_TRUE(melee->IsCharged());
+}
+
+
+// Чистая геометрия: куда смотрит цель и с какой стороны пришёл удар.
+TEST(BackstabTest, AHitFromBehindIsACrit)
+{
+	// Цель смотрит вправо, удар пришёл слева и летит вправо - бьют в спину.
+	EXPECT_TRUE(RoguelikeGame::IsBackstab({1.f, 0.f}, {1.f, 0.f}));
+}
+
+TEST(BackstabTest, AHitInTheFaceIsNotACrit)
+{
+	EXPECT_FALSE(RoguelikeGame::IsBackstab({1.f, 0.f}, {-1.f, 0.f}));
+}
+
+TEST(BackstabTest, AHitFromTheSideIsNotACrit)
+{
+	EXPECT_FALSE(RoguelikeGame::IsBackstab({1.f, 0.f}, {0.f, 1.f}));
+	EXPECT_FALSE(RoguelikeGame::IsBackstab({1.f, 0.f}, {0.f, -1.f}));
+}
+
+// Задняя полусфера шириной 120 градусов: по шестьдесят в каждую сторону от спины.
+TEST(BackstabTest, TheBackIsAHemisphereAndNotAPoint)
+{
+	XYZEngine::Vector2Df forward = {1.f, 0.f};
+
+	EXPECT_TRUE(RoguelikeGame::IsBackstab(forward, {0.9f, 0.4f})) << "чуть сбоку уже не спина";
+	EXPECT_FALSE(RoguelikeGame::IsBackstab(forward, {0.4f, 0.9f})) << "почти сбоку считается спиной";
+}
+
+// У босса и разрушаемого ящика мозга нет, а поворот есть - отдельной ветки не нужно.
+TEST(BackstabTest, AThingWithoutAFacingIsNeverHitInTheBack)
+{
+	EXPECT_FALSE(RoguelikeGame::IsBackstab({0.f, 0.f}, {1.f, 0.f}));
+	EXPECT_FALSE(RoguelikeGame::IsBackstab({1.f, 0.f}, {0.f, 0.f}));
+}
+
+TEST(BackstabTest, OnlyAMultiplierAboveOneIsACrit)
+{
+	EXPECT_FLOAT_EQ(RoguelikeGame::BackstabDamage(10.f, true, 2.f), 20.f);
+	EXPECT_FLOAT_EQ(RoguelikeGame::BackstabDamage(10.f, false, 2.f), 10.f);
+	EXPECT_FLOAT_EQ(RoguelikeGame::BackstabDamage(10.f, true, 1.f), 10.f) << "множитель один даёт прибавку";
+	EXPECT_FLOAT_EQ(RoguelikeGame::BackstabDamage(10.f, true, 0.5f), 10.f) << "множитель ниже единицы ослабил удар";
+}
+
+namespace
+{
+	class BackstabStrikeTest : public MeleeWeaponTest
+	{
+	protected:
+		// Боец стоит слева от цели и смотрит вправо, на неё.
+		float StrikeAndMeasure(float victimFacingDegrees)
+		{
+			owner->GetTransform()->SetWorldPosition({0.f, 0.f});
+			owner->GetTransform()->SetWorldRotation(0.f);
+
+			GameObject* victim = GameWorld::Instance()->CreateGameObject("Victim");
+			victim->GetTransform()->SetWorldPosition({40.f, 0.f});
+			victim->GetTransform()->SetWorldRotation(victimFacingDegrees);
+			victim->AddComponent<XYZEngine::BoxColliderComponent>()->SetSize(30.f, 30.f);
+
+			auto health = victim->AddComponent<RoguelikeGame::HealthComponent>();
+			health->SetMaxHealth(1000.f);
+
+			GameWorld::Instance()->Update(0.016f);
+			GameWorld::Instance()->UpdatePhysics();
+
+			EXPECT_TRUE(melee->TryQuickAttack()) << "удар не начался";
+
+			for (int frame = 0; frame < 30 && health->GetHealth() >= 1000.f; frame++)
+			{
+				GameWorld::Instance()->Update(0.02f);
+			}
+
+			return 1000.f - health->GetHealth();
+		}
+	};
+}
+
+// Главный смысл всей затеи: зайти за спину выгодно.
+TEST_F(BackstabStrikeTest, AHitInTheBackIsDoubled)
+{
+	EXPECT_FLOAT_EQ(StrikeAndMeasure(0.f), 20.f) << "удар в спину не получил множителя";
+}
+
+TEST_F(BackstabStrikeTest, AHitInTheFaceIsPlain)
+{
+	EXPECT_FLOAT_EQ(StrikeAndMeasure(180.f), 10.f) << "удар в лицо считается критом";
+}
+
+// Сбоку множителя быть не должно, иначе крит получается сам собой.
+TEST_F(BackstabStrikeTest, AHitFromTheSideIsPlain)
+{
+	EXPECT_FLOAT_EQ(StrikeAndMeasure(90.f), 10.f);
 }

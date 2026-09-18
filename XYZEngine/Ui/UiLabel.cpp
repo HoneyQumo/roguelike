@@ -64,6 +64,11 @@ namespace XYZEngine
 		return text.getString();
 	}
 
+	const sf::Color& UiLabel::GetColor() const
+	{
+		return text.getFillColor();
+	}
+
 	bool UiLabel::IsReady() const
 	{
 		return isFontReady;

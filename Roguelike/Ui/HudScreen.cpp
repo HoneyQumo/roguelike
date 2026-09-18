@@ -11,33 +11,6 @@ namespace RoguelikeGame
     {
         const sf::Font* font = XYZEngine::ResourceSystem::Instance()->GetFont(HUD_FONT);
 
-        auto block = GetRoot().AddChild<XYZEngine::UiWidget>();
-        block->SetAnchor(XYZEngine::UiAnchor::BottomLeft);
-        block->SetPivot(XYZEngine::UiAnchor::BottomLeft);
-        block->SetOffset({AMMO_HUD_MARGIN_X, -AMMO_HUD_MARGIN_Y});
-        block->SetSize({AMMO_HUD_WIDTH, AMMO_HUD_HEIGHT});
-
-        nameLabel = block->AddChild<XYZEngine::UiLabel>();
-        nameLabel->SetAnchor(XYZEngine::UiAnchor::TopLeft);
-        nameLabel->SetPivot(XYZEngine::UiAnchor::TopLeft);
-        nameLabel->SetSize({AMMO_HUD_WIDTH, AMMO_HUD_NAME_HEIGHT});
-        nameLabel->SetAlign(XYZEngine::UiAnchor::Left);
-        nameLabel->SetCharacterSize(AMMO_HUD_NAME_FONT_SIZE);
-        nameLabel->SetColor(AMMO_HUD_COLOR);
-        nameLabel->SetOutline(AMMO_HUD_OUTLINE, AMMO_HUD_OUTLINE_COLOR);
-        nameLabel->SetFont(font);
-
-        ammoLabel = block->AddChild<XYZEngine::UiLabel>();
-        ammoLabel->SetAnchor(XYZEngine::UiAnchor::BottomLeft);
-        ammoLabel->SetPivot(XYZEngine::UiAnchor::BottomLeft);
-        ammoLabel->SetSize({AMMO_HUD_WIDTH, AMMO_HUD_AMMO_HEIGHT});
-        ammoLabel->SetAlign(XYZEngine::UiAnchor::Left);
-        ammoLabel->SetCharacterSize(AMMO_HUD_FONT_SIZE);
-        ammoLabel->SetColor(AMMO_HUD_COLOR);
-        ammoLabel->SetOutline(AMMO_HUD_OUTLINE, AMMO_HUD_OUTLINE_COLOR);
-        ammoLabel->SetFont(font);
-        ammoLabel->SetVisible(false);
-
         BuildWeaponRow(font);
 
         auto vitals = GetRoot().AddChild<XYZEngine::UiWidget>();
@@ -165,6 +138,20 @@ namespace RoguelikeGame
         return *promptLabel;
     }
 
+    namespace
+    {
+        // У ствола две цифры, у расходника одна: запас отсутствует.
+        std::string CountLine(const WeaponSlotHudState& state)
+        {
+            if (state.reserve == NO_RESERVE)
+            {
+                return std::to_string(state.count);
+            }
+
+            return std::to_string(state.count) + "/" + std::to_string(state.reserve);
+        }
+    }
+
     void HudScreen::BuildWeaponRow(const sf::Font* font)
     {
         auto row = GetRoot().AddChild<XYZEngine::UiWidget>();
@@ -196,12 +183,23 @@ namespace RoguelikeGame
             cell.key = cell.panel->AddChild<XYZEngine::UiLabel>();
             cell.key->SetAnchor(XYZEngine::UiAnchor::BottomLeft);
             cell.key->SetPivot(XYZEngine::UiAnchor::BottomLeft);
-            cell.key->SetSize({WEAPON_ROW_SLOT_SIZE, WEAPON_ROW_KEY_HEIGHT});
+            cell.key->SetSize({WEAPON_ROW_KEY_WIDTH, WEAPON_ROW_KEY_HEIGHT});
             cell.key->SetAlign(XYZEngine::UiAnchor::Left);
             cell.key->SetCharacterSize(WEAPON_ROW_KEY_FONT_SIZE);
             cell.key->SetColor(AMMO_HUD_COLOR);
             cell.key->SetOutline(AMMO_HUD_OUTLINE, AMMO_HUD_OUTLINE_COLOR);
             cell.key->SetFont(font);
+
+            cell.count = cell.panel->AddChild<XYZEngine::UiLabel>();
+            cell.count->SetAnchor(XYZEngine::UiAnchor::BottomRight);
+            cell.count->SetPivot(XYZEngine::UiAnchor::BottomRight);
+            cell.count->SetSize({WEAPON_ROW_COUNT_WIDTH, WEAPON_ROW_KEY_HEIGHT});
+            cell.count->SetAlign(XYZEngine::UiAnchor::Right);
+            cell.count->SetCharacterSize(WEAPON_ROW_COUNT_FONT_SIZE);
+            cell.count->SetColor(AMMO_HUD_COLOR);
+            cell.count->SetOutline(AMMO_HUD_OUTLINE, AMMO_HUD_OUTLINE_COLOR);
+            cell.count->SetFont(font);
+            cell.count->SetVisible(false);
 
             weaponCells.push_back(cell);
         }
@@ -230,6 +228,16 @@ namespace RoguelikeGame
             cell.icon->SetVisible(state.hasWeapon && state.icon != nullptr);
 
             cell.key->SetUtf8Text(std::to_string(state.key).c_str());
+
+            cell.count->SetVisible(state.hasCount);
+            if (!state.hasCount)
+            {
+                continue;
+            }
+
+            cell.count->SetText(sf::String(CountLine(state)));
+            cell.count->SetColor(state.isReloading ? AMMO_HUD_RELOADING_COLOR
+                : state.isLow ? AMMO_HUD_LOW_COLOR : AMMO_HUD_COLOR);
         }
     }
 
@@ -258,6 +266,11 @@ namespace RoguelikeGame
     const XYZEngine::UiLabel& HudScreen::GetWeaponSlotKey(int index) const
     {
         return *weaponCells[index].key;
+    }
+
+    const XYZEngine::UiLabel& HudScreen::GetWeaponSlotCount(int index) const
+    {
+        return *weaponCells[index].count;
     }
 
     void HudScreen::ShowNotice(const std::string& text)
@@ -403,38 +416,6 @@ namespace RoguelikeGame
         return chasePanel->IsVisible();
     }
 
-    void HudScreen::SetAmmo(const AmmoHudState& state)
-    {
-        if (state.weaponName != nullptr && shownName != state.weaponName)
-        {
-            shownName = state.weaponName;
-            nameLabel->SetUtf8Text(state.weaponName);
-        }
-
-        ammoLabel->SetVisible(state.hasMagazine);
-        if (!state.hasMagazine)
-        {
-            return;
-        }
-
-        std::string reserveText = state.reserve == INFINITE_AMMO ? "--" : std::to_string(state.reserve);
-        std::string ammoLine = std::to_string(state.inMagazine) + " / " + reserveText;
-
-        if (shownAmmo != ammoLine)
-        {
-            shownAmmo = ammoLine;
-            ammoLabel->SetText(sf::String(ammoLine));
-        }
-
-        if (state.isReloading)
-        {
-            ammoLabel->SetColor(AMMO_HUD_RELOADING_COLOR);
-            return;
-        }
-
-        ammoLabel->SetColor(state.isLow ? AMMO_HUD_LOW_COLOR : AMMO_HUD_COLOR);
-    }
-
     const XYZEngine::UiProgressBar& HudScreen::GetHealthBar() const
     {
         return *healthBar;
@@ -450,13 +431,4 @@ namespace RoguelikeGame
         return *staminaBar;
     }
 
-    const XYZEngine::UiLabel& HudScreen::GetNameLabel() const
-    {
-        return *nameLabel;
-    }
-
-    const XYZEngine::UiLabel& HudScreen::GetAmmoLabel() const
-    {
-        return *ammoLabel;
-    }
 }

@@ -83,21 +83,79 @@ TEST_F(WeaponRowTest, TheKeyComesFromTheStateAndNotFromTheCellNumber)
 	EXPECT_EQ(screen.GetWeaponSlotKey(1).GetText(), XYZEngine::FromUtf8("7")) << "подпись написана руками, а не взята из привязки";
 }
 
-TEST_F(WeaponRowTest, TheRowKeepsClearOfTheAmmoBlockAndTheVitals)
+TEST_F(WeaponRowTest, TheRowKeepsClearOfTheVitalsAndThePrompt)
 {
 	screen.SetWeaponSlots(Loadout(RoguelikeGame::PLAYER_WEAPON_SLOTS, 0));
-	screen.SetAmmo({"AK", 30, 90, true, false, false});
 	screen.SetVitals({1.f, 1.f, 0.f, false});
 
 	for (int slot = 0; slot < RoguelikeGame::PLAYER_WEAPON_SLOTS; slot++)
 	{
 		sf::FloatRect cell = screen.GetWeaponSlotPanel(slot).GetBounds();
 
-		EXPECT_FALSE(cell.intersects(screen.GetNameLabel().GetBounds())) << "ряд наехал на имя оружия, слот " << slot;
-		EXPECT_FALSE(cell.intersects(screen.GetAmmoLabel().GetBounds())) << "ряд наехал на патроны, слот " << slot;
 		EXPECT_FALSE(cell.intersects(screen.GetHealthBar().GetBounds())) << "ряд наехал на полосу жизни, слот " << slot;
 		EXPECT_FALSE(cell.intersects(screen.GetPromptLabel().GetBounds())) << "ряд наехал на подсказку, слот " << slot;
 	}
+}
+
+TEST_F(WeaponRowTest, AWeaponShowsItsMagazineAndReserveInTheCell)
+{
+	std::vector<WeaponSlotHudState> slots = Loadout(2, 0);
+	slots[0].hasCount = true;
+	slots[0].count = 30;
+	slots[0].reserve = 90;
+
+	screen.SetWeaponSlots(slots);
+
+	EXPECT_TRUE(screen.GetWeaponSlotCount(0).IsVisible());
+	EXPECT_EQ(screen.GetWeaponSlotCount(0).GetText(), XYZEngine::FromUtf8("30/90"));
+	EXPECT_FALSE(screen.GetWeaponSlotCount(1).IsVisible()) << "у ствола без магазина взялся счётчик";
+}
+
+TEST_F(WeaponRowTest, AStackShowsOneNumberWithoutAReserve)
+{
+	std::vector<WeaponSlotHudState> slots = Loadout(1, 0);
+	slots[0].hasCount = true;
+	slots[0].count = 3;
+	slots[0].reserve = RoguelikeGame::NO_RESERVE;
+
+	screen.SetWeaponSlots(slots);
+
+	EXPECT_EQ(screen.GetWeaponSlotCount(0).GetText(), XYZEngine::FromUtf8("3")) << "стопке пририсовали запас";
+}
+
+TEST_F(WeaponRowTest, TheCountTellsReloadingAndLowApart)
+{
+	std::vector<WeaponSlotHudState> slots = Loadout(1, 0);
+	slots[0].hasCount = true;
+	slots[0].count = 2;
+	slots[0].reserve = 90;
+
+	screen.SetWeaponSlots(slots);
+	sf::Color plain = screen.GetWeaponSlotCount(0).GetColor();
+
+	slots[0].isLow = true;
+	screen.SetWeaponSlots(slots);
+	sf::Color low = screen.GetWeaponSlotCount(0).GetColor();
+
+	slots[0].isReloading = true;
+	screen.SetWeaponSlots(slots);
+	sf::Color reloading = screen.GetWeaponSlotCount(0).GetColor();
+
+	EXPECT_NE(plain, low) << "малый магазин не отличить";
+	EXPECT_NE(low, reloading) << "перезарядку не отличить от малого магазина";
+}
+
+TEST_F(WeaponRowTest, TheCountDoesNotCoverTheKey)
+{
+	std::vector<WeaponSlotHudState> slots = Loadout(1, 0);
+	slots[0].hasCount = true;
+	slots[0].count = 30;
+	slots[0].reserve = 90;
+
+	screen.SetWeaponSlots(slots);
+
+	EXPECT_FALSE(screen.GetWeaponSlotKey(0).GetBounds().intersects(screen.GetWeaponSlotCount(0).GetBounds()))
+		<< "цифра клавиши и счётчик толкаются";
 }
 
 TEST_F(WeaponRowTest, TheRowStaysOnScreenOnAnyResolution)

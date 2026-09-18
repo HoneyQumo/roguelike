@@ -3,6 +3,7 @@
 #include <string>
 #include <Component.h>
 #include "HudScreen.h"
+#include "AmmoPouchComponent.h"
 #include "HealthComponent.h"
 #include "InteractionComponent.h"
 #include "InventoryComponent.h"
@@ -29,9 +30,11 @@ namespace RoguelikeGame
     private:
         HudScreen* screen = nullptr;
         InventoryScreen* inventoryScreen = nullptr;
+        AmmoPouchComponent* pouch = nullptr;
 
         void ShowRefusal(const std::string& text);
         void PushWeaponSlots();
+        void FillAmmo(WeaponSlotHudState& shown, WeaponId id, bool isCurrent, int remembered) const;
         WeaponComponent* weapon = nullptr;
         PlayerLoadoutComponent* loadout = nullptr;
         HealthComponent* health = nullptr;
@@ -42,7 +45,7 @@ namespace RoguelikeGame
         std::string targetName;
 
         void FindTarget();
-        AmmoHudState ReadAmmoState() const;
+
         VitalsHudState ReadVitalsState() const;
     };
 }

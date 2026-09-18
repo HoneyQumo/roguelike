@@ -82,30 +82,12 @@ namespace RoguelikeGame
 
     void PlayerLoadoutComponent::SetSlots(const StartingSlot* newSlots, int newSlotsCount, int startSlot)
     {
-        slotsCount = std::min(newSlotsCount, PLAYER_WEAPON_SLOTS);
-        for (int slot = 0; slot < slotsCount; slot++)
-        {
-            slots[slot].id = newSlots[slot].id;
-            slots[slot].hasWeapon = newSlots[slot].hasWeapon;
-            slots[slot].magazine = newSlots[slot].hasWeapon ? GetWeapon(newSlots[slot].id).magazineSize : 0;
-        }
+        state.Fill(newSlots, newSlotsCount);
 
         FindComponents();
 
-        int firstArmed = std::clamp(startSlot, 0, slotsCount - 1);
-        if (IsSlotEmpty(firstArmed))
-        {
-            for (int slot = 0; slot < slotsCount; slot++)
-            {
-                if (!IsSlotEmpty(slot))
-                {
-                    firstArmed = slot;
-                    break;
-                }
-            }
-        }
-
-        if (!IsSlotEmpty(firstArmed))
+        int firstArmed = state.FirstArmed(startSlot);
+        if (firstArmed != NO_WEAPON_SLOT)
         {
             ApplyWeapon(firstArmed);
         }
@@ -113,48 +95,39 @@ namespace RoguelikeGame
 
     bool PlayerLoadoutComponent::IsSlotEmpty(int slot) const
     {
-        return slot < 0 || slot >= slotsCount || !slots[slot].hasWeapon;
+        return state.IsEmpty(slot);
     }
 
     bool PlayerLoadoutComponent::CanTakeWeapon(WeaponId id) const
     {
-        return slotsCount > 0 && IsSlotEmpty(std::clamp(PreferredWeaponSlot(id), 0, slotsCount - 1));
+        return state.CanTake(id);
     }
 
     bool PlayerLoadoutComponent::HasWeapon() const
     {
-        return !IsSlotEmpty(currentSlot);
+        return !state.IsEmpty(state.currentSlot);
     }
 
     bool PlayerLoadoutComponent::EquipWeapon(WeaponId id)
     {
-        int slot = std::clamp(PreferredWeaponSlot(id), 0, slotsCount - 1);
-        if (slotsCount <= 0 || (slots[slot].hasWeapon && slots[slot].id == id))
+        EquipOutcome equipped = state.Equip(id);
+        if (!equipped.isChanged)
         {
             return false;
         }
 
-        slots[slot].id = id;
-        slots[slot].hasWeapon = true;
-        slots[slot].magazine = GetWeapon(id).magazineSize;
-
-        if (slot == currentSlot || IsSlotEmpty(currentSlot))
+        if (equipped.slot == state.currentSlot || state.IsEmpty(state.currentSlot))
         {
-            ApplyWeapon(slot);
+            ApplyWeapon(equipped.slot);
         }
 
-        LOG_INFO(std::string("Player equips ") + GetWeapon(id).id + " in slot " + std::to_string(slot + 1));
+        LOG_INFO(std::string("Player equips ") + GetWeapon(id).id + " in slot " + std::to_string(equipped.slot + 1));
         return true;
     }
 
     bool PlayerLoadoutComponent::TrySelectSlot(int slot)
     {
-        if (slot == NO_WEAPON_SLOT || slot < 0 || slot >= slotsCount || slot == currentSlot || isSwapping)
-        {
-            return false;
-        }
-
-        if (IsSlotEmpty(slot))
+        if (!state.CanSelect(slot) || isSwapping)
         {
             return false;
         }
@@ -173,19 +146,19 @@ namespace RoguelikeGame
 
         if (!IsMeleeEquipped())
         {
-            slots[currentSlot].magazine = rangedWeapon->GetAmmoInMagazine();
+            state.slots[state.currentSlot].magazine = rangedWeapon->GetAmmoInMagazine();
         }
 
         if (stowedWeapon != nullptr)
         {
-            stowedWeapon->SetWeaponId(slots[currentSlot].id);
+            stowedWeapon->SetWeaponId(state.Current());
         }
 
         pendingSlot = slot;
         isSwapping = true;
         animation->PlaySwap();
 
-        LOG_INFO(std::string("Player swaps to ") + GetWeapon(slots[slot].id).id);
+        LOG_INFO(std::string("Player swaps to ") + GetWeapon(state.slots[slot].id).id);
         return true;
     }
 
@@ -214,7 +187,12 @@ namespace RoguelikeGame
 
     WeaponId PlayerLoadoutComponent::GetCurrentWeapon() const
     {
-        return slots[currentSlot].id;
+        return state.Current();
+    }
+
+    const LoadoutState& PlayerLoadoutComponent::GetState() const
+    {
+        return state;
     }
 
     int PlayerLoadoutComponent::ReadSelectedSlot() const
@@ -226,7 +204,7 @@ namespace RoguelikeGame
         }
 
         auto input = XYZEngine::InputSystem::Instance();
-        for (int slot = 0; slot < slotsCount; slot++)
+        for (int slot = 0; slot < state.slotsCount; slot++)
         {
             auto action = static_cast<XYZEngine::InputAction>(static_cast<int>(XYZEngine::InputAction::WeaponSlot1) + slot);
             if (input->WasActionPressed(action))
@@ -250,9 +228,9 @@ namespace RoguelikeGame
 
     void PlayerLoadoutComponent::ApplyWeapon(int slot)
     {
-        currentSlot = slot;
+        state.currentSlot = slot;
 
-        WeaponId id = slots[slot].id;
+        WeaponId id = state.slots[slot].id;
         const WeaponDefinition& definition = GetWeapon(id);
 
         if (weapon != nullptr)
@@ -260,7 +238,7 @@ namespace RoguelikeGame
             weapon->SetWeaponId(id);
         }
 
-        ApplyRangedWeapon(id, slots[slot].magazine);
+        ApplyRangedWeapon(id, state.slots[slot].magazine);
         ApplyMeleeWeapon(FindMelee(id));
 
         if (movement != nullptr)

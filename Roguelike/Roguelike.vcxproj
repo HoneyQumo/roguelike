@@ -333,6 +333,7 @@
         <ClInclude Include="Enemies\EnemyCatalog.h"/>
         <ClInclude Include="Enemies\EnemyConfig.h"/>
         <ClInclude Include="Player\PlayerAttackComponent.h"/>
+        <ClInclude Include="Player\LoadoutRules.h"/>
         <ClInclude Include="Player\PlayerLoadoutComponent.h"/>
         <ClInclude Include="Player\PlayerRollComponent.h"/>
         <ClInclude Include="Weapons\StowedWeaponComponent.h"/>

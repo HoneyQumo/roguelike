@@ -11,6 +11,7 @@
 #include "GameSettings.h"
 #include "Weapon.h"
 #include "StowedWeaponComponent.h"
+#include "LoadoutRules.h"
 
 namespace RoguelikeGame
 {
@@ -41,6 +42,9 @@ namespace RoguelikeGame
         bool IsMeleeEquipped() const;
         WeaponId GetCurrentWeapon() const;
 
+        // Раскладку читают снаружи: HUD должен показывать все слоты, а не только текущий.
+        const LoadoutState& GetState() const;
+
     private:
         WeaponLayerComponent* weapon = nullptr;
         StowedWeaponComponent* stowedWeapon = nullptr;
@@ -55,16 +59,7 @@ namespace RoguelikeGame
         XYZEngine::AudioComponent* shotAudio = nullptr;
         XYZEngine::AudioComponent* reloadAudio = nullptr;
 
-        struct Slot
-        {
-            WeaponId id = WeaponId::Knife;
-            int magazine = 0;
-            bool hasWeapon = false;
-        };
-
-        Slot slots[PLAYER_WEAPON_SLOTS] = {};
-        int slotsCount = 0;
-        int currentSlot = 0;
+        LoadoutState state;
         int pendingSlot = NO_WEAPON_SLOT;
         int requestedSlot = NO_WEAPON_SLOT;
         bool isSwapping = false;

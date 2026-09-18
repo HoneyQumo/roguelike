@@ -1,5 +1,6 @@
 ﻿#include "FogOfWar.h"
 #include "LevelGrid.h"
+#include "SightRules.h"
 
 namespace RoguelikeGame
 {
@@ -134,6 +135,8 @@ namespace RoguelikeGame
             }
         }
 
+        LightBlockers(grid, column, row);
+
         if (cells == before)
         {
             return false;
@@ -142,5 +145,63 @@ namespace RoguelikeGame
         version++;
 
         return true;
+    }
+
+    /**
+    *	Луч до центра клетки-стены под косым углом задевает соседнюю стену и объявляет
+    *	цель закрытой - поэтому стены заслоняли друг друга и в радиусе светилась четверть.
+    *	Второй проход досвечивает их по уже посчитанному полу: стена видна, если виден
+    *	её сосед со стороны игрока.
+    */
+    void FogOfWar::LightBlockers(const LevelGrid& grid, int fromColumn, int fromRow)
+    {
+        std::vector<std::size_t> lit;
+
+        for (int cellRow = fromRow - radius; cellRow <= fromRow + radius; cellRow++)
+        {
+            for (int cellColumn = fromColumn - radius; cellColumn <= fromColumn + radius; cellColumn++)
+            {
+                if (cellColumn < 0 || cellRow < 0 || cellColumn >= width || cellRow >= height)
+                {
+                    continue;
+                }
+
+                int alongColumns = cellColumn - fromColumn;
+                int alongRows = cellRow - fromRow;
+                if (alongColumns * alongColumns + alongRows * alongRows > radius * radius)
+                {
+                    continue;
+                }
+
+                std::size_t index = static_cast<std::size_t>(cellRow) * width + cellColumn;
+                if (cells[index] == FogState::Seen || !grid.BlocksSight(cellColumn, cellRow))
+                {
+                    continue;
+                }
+
+                SightStep steps[2];
+                int count = StepsTowardViewer(alongColumns, alongRows, steps);
+
+                for (int step = 0; step < count; step++)
+                {
+                    int neighbourColumn = cellColumn + steps[step].column;
+                    int neighbourRow = cellRow + steps[step].row;
+
+                    if (grid.BlocksSight(neighbourColumn, neighbourRow)
+                        || GetState(neighbourColumn, neighbourRow) != FogState::Seen)
+                    {
+                        continue;
+                    }
+
+                    lit.push_back(index);
+                    break;
+                }
+            }
+        }
+
+        for (std::size_t index : lit)
+        {
+            cells[index] = FogState::Seen;
+        }
     }
 }

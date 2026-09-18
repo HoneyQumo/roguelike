@@ -8,7 +8,7 @@
 namespace RoguelikeGame
 {
     /**	
-    *	Раскладка оружия из Docs/Sprites/weapons.json.
+    *	Раскладка оружия из Tools/Sprites/weapons.json.
     *	Строка — ствол, столбец — вариант хвата.
     */
     constexpr int WEAPON_FRAME_WIDTH = 160;
@@ -32,7 +32,7 @@ namespace RoguelikeGame
     };
 
     /**	
-    *	Тип боеприпаса из поля reload_item в Docs/Sprites/weapons.json.
+    *	Тип боеприпаса из поля reload_item в Tools/Sprites/weapons.json.
     */
     enum class AmmoKind
     {

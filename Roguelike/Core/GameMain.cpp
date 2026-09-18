@@ -17,10 +17,6 @@
 using namespace RoguelikeGame;
 using namespace XYZEngine;
 
-/**
- *	Спецификация по спрайтам лежит в: Docs/Sprites/SPRITE_SPEC.md.
-*/
-
 void SetupLogger()
 {
     auto logger = std::make_shared<Logger>();

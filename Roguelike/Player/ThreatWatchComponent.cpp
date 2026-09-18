@@ -11,8 +11,17 @@ namespace RoguelikeGame
 {
     ThreatWatchComponent::ThreatWatchComponent(XYZEngine::GameObject* gameObject) : Component(gameObject) {}
 
+    ThreatWatchComponent::~ThreatWatchComponent()
+    {
+        UnsubscribeNoiseRaised(noiseSubscription);
+        noiseSubscription = XYZEngine::NO_SUBSCRIPTION;
+    }
+
     void ThreatWatchComponent::Start()
     {
+        // Start зовут и после смены локации: без снятия старой подписки их накопится по одной на уровень.
+        UnsubscribeNoiseRaised(noiseSubscription);
+
         noiseSubscription = SubscribeNoiseRaised([this](const Noise& noise)
         {
             if (gameObject == nullptr || !IsEnabled())

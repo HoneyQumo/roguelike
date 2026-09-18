@@ -2,6 +2,7 @@
 #include "InventoryAccess.h"
 #include "InventoryComponent.h"
 #include "InventoryScreen.h"
+#include <Engine.h>
 #include <GameWorld.h>
 #include <RenderSystem.h>
 #include <UiManager.h>
@@ -9,6 +10,7 @@
 using RoguelikeGame::CanUseInventory;
 using RoguelikeGame::InventoryComponent;
 using RoguelikeGame::InventoryScreen;
+using XYZEngine::Engine;
 using XYZEngine::GameObject;
 using XYZEngine::GameWorld;
 using XYZEngine::UiManager;
@@ -126,4 +128,58 @@ TEST_F(InventoryGateTest, ABagIsReachableOnlyWhileItsOwnerIsInTheGame)
 	EXPECT_FALSE(CanUseInventory(inventory)) << "выключенный хозяин сумку не останавливает";
 
 	EXPECT_FALSE(CanUseInventory(nullptr));
+}
+
+
+namespace
+{
+	// Пауза глобальная: её надо снимать за собой, иначе упадут соседние тесты.
+	class PausedInventoryTest : public InventoryGateTest
+	{
+	protected:
+		void TearDown() override
+		{
+			Engine::Instance()->SetPaused(false);
+			InventoryGateTest::TearDown();
+		}
+	};
+}
+
+// На паузе аптечка лечила, патроны списывались, ствол экипировался в замерший мир.
+TEST_F(PausedInventoryTest, APausedGameClosesTheBagForBusiness)
+{
+	InventoryComponent* inventory = CreateInventory();
+
+	ASSERT_TRUE(CanUseInventory(inventory));
+
+	Engine::Instance()->SetPaused(true);
+
+	EXPECT_FALSE(CanUseInventory(inventory)) << "сумка работает на остановленной игре";
+}
+
+TEST_F(PausedInventoryTest, TheBagComesBackWhenTheGameDoes)
+{
+	InventoryComponent* inventory = CreateInventory();
+
+	Engine::Instance()->SetPaused(true);
+	Engine::Instance()->SetPaused(false);
+
+	EXPECT_TRUE(CanUseInventory(inventory)) << "сумка не ожила вместе с игрой";
+}
+
+// Главный путь: Esc при закрытой сумке ставит паузу, а потом игрок жмёт Tab.
+TEST_F(PausedInventoryTest, AnOpenBagShutsWhenTheGameStops)
+{
+	InventoryComponent* inventory = CreateInventory();
+
+	InventoryScreen screen;
+	screen.SetInventory(inventory);
+	screen.Open();
+	screen.Update(0.016f);
+	ASSERT_TRUE(screen.IsOpen());
+
+	Engine::Instance()->SetPaused(true);
+	screen.Update(0.016f);
+
+	EXPECT_FALSE(screen.IsOpen()) << "сумка осталась открытой на паузе";
 }

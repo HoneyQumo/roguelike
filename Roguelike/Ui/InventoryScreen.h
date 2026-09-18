@@ -10,7 +10,7 @@
 
 namespace RoguelikeGame
 {
-    std::string InventoryHint(const ItemDefinition* item);
+    std::string InventoryHint(const ItemDefinition* item, bool canUse = true);
 
     class InventoryScreen : public XYZEngine::UiScreen
     {
@@ -26,6 +26,9 @@ namespace RoguelikeGame
         void SetBeltHandler(std::function<bool(int bagSlot, int hook)> newBeltHandler);
 
         void SetDropHandler(std::function<bool(int bagSlot)> newDropHandler);
+
+        // Подсказка называет только то, что работает, а про обработчики знает не экран.
+        void SetUsableRule(std::function<bool(const ItemDefinition&)> newUsableRule);
 
         void Open();
         void Close();
@@ -58,6 +61,7 @@ namespace RoguelikeGame
         std::function<bool(int, int)> equipHandler;
         std::function<bool(int, int)> beltHandler;
         std::function<bool(int)> dropHandler;
+        std::function<bool(const ItemDefinition&)> usableRule;
         XYZEngine::UiPanel* dimmer = nullptr;
         XYZEngine::UiPanel* window = nullptr;
         XYZEngine::UiLabel* title = nullptr;
@@ -73,6 +77,7 @@ namespace RoguelikeGame
         void BuildSlots(const sf::Font* font);
         void Refresh();
         void RefreshHint();
+        bool IsUsable(const ItemDefinition& item) const;
         void HandleKeyboard();
         void TryEquip(int targetSlot);
         void MoveSelection(int columns, int rows);

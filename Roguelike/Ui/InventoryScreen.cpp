@@ -1,4 +1,4 @@
-#include "InventoryScreen.h"
+﻿#include "InventoryScreen.h"
 #include "InventoryAccess.h"
 #include "GameSettings.h"
 #include "Item.h"
@@ -56,7 +56,7 @@ namespace RoguelikeGame
             return text;
         }
 
-        std::string ActionHint(const ItemDefinition& item)
+        std::string ActionHint(const ItemDefinition& item, bool canUse)
         {
             if (item.effect.kind == ItemEffectKind::EquipWeapon)
             {
@@ -71,7 +71,9 @@ namespace RoguelikeGame
                 return std::string(INVENTORY_EQUIP_HINT) + Fill(INVENTORY_SLOT_HINT, PLAYER_WEAPON_SLOTS, 0);
             }
 
-            if (item.effect.kind == ItemEffectKind::None)
+            // У ключа есть эффект, но нет обработчика: предлагать его «использовать»
+            // значило бы звать на мёртвую кнопку. Ключи тратят дверь и ящик, а не сумка.
+            if (item.effect.kind == ItemEffectKind::None || !canUse)
             {
                 return {};
             }
@@ -91,15 +93,15 @@ namespace RoguelikeGame
         }
     }
 
-    // Сбросить можно что угодно, поэтому ключ впервые получает подсказку - раньше ему было нечего сказать.
-    std::string InventoryHint(const ItemDefinition* item)
+    // Сбросить можно что угодно, поэтому ключ всё равно получает подсказку - только про сброс.
+    std::string InventoryHint(const ItemDefinition* item, bool canUse)
     {
         if (item == nullptr)
         {
             return {};
         }
 
-        std::string action = ActionHint(*item);
+        std::string action = ActionHint(*item, canUse);
         std::string drop = FillLetter(INVENTORY_DROP_HINT,
             LetterOfKey(XYZEngine::InputSystem::Instance()->GetBinding(XYZEngine::InputAction::Drop).key));
 
@@ -452,6 +454,20 @@ namespace RoguelikeGame
         beltHandler = std::move(newBeltHandler);
     }
 
+    void InventoryScreen::SetUsableRule(std::function<bool(const ItemDefinition&)> newUsableRule)
+    {
+        usableRule = std::move(newUsableRule);
+
+        // Правило меняет то, что написано на экране прямо сейчас.
+        RefreshHint();
+    }
+
+    // Без правила экран ведёт себя как раньше: считает применимым всё, у чего есть эффект.
+    bool InventoryScreen::IsUsable(const ItemDefinition& item) const
+    {
+        return usableRule ? usableRule(item) : true;
+    }
+
     void InventoryScreen::SetDropHandler(std::function<bool(int)> newDropHandler)
     {
         dropHandler = std::move(newDropHandler);
@@ -539,7 +555,7 @@ namespace RoguelikeGame
             item = slot.IsEmpty() ? nullptr : &slot.item;
         }
 
-        hint->SetUtf8Text(InventoryHint(item).c_str());
+        hint->SetUtf8Text(InventoryHint(item, item != nullptr && IsUsable(*item)).c_str());
     }
 
     const XYZEngine::UiLabel& InventoryScreen::GetNotice() const

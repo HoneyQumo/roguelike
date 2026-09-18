@@ -32,6 +32,7 @@ namespace XYZEngine
 		bindings[static_cast<int>(InputAction::QuickSlot1)].key = sf::Keyboard::Num4;
 		bindings[static_cast<int>(InputAction::QuickSlot2)].key = sf::Keyboard::Num5;
 		bindings[static_cast<int>(InputAction::QuickSlot3)].key = sf::Keyboard::Num6;
+		bindings[static_cast<int>(InputAction::Drop)].key = sf::Keyboard::G;
 
 		return bindings;
 	}

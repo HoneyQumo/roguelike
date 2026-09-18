@@ -147,6 +147,8 @@ namespace RoguelikeGame
     constexpr auto INVENTORY_EQUIP_HINT = u8"[Enter] Экипировать";
     constexpr auto INVENTORY_SLOT_HINT = u8" · [1-%d] в слот";
     constexpr auto INVENTORY_BELT_HINT = u8" · [%d-%d] на пояс";
+    constexpr auto INVENTORY_DROP_HINT = u8"[%c] Выбросить";
+    constexpr auto INVENTORY_HINT_SEPARATOR = u8" · ";
 
     constexpr int PLAYER_WEAPON_SLOTS = 3;
     constexpr int PLAYER_START_WEAPON_SLOT = 2;
@@ -286,6 +288,13 @@ namespace RoguelikeGame
             ? static_cast<int>(key) - static_cast<int>(sf::Keyboard::Num0) : 0;
     }
 
+    // Буква берётся из привязки по той же причине, что и цифра.
+    constexpr char LetterOfKey(sf::Keyboard::Key key)
+    {
+        return key >= sf::Keyboard::A && key <= sf::Keyboard::Z
+            ? static_cast<char>('A' + static_cast<int>(key) - static_cast<int>(sf::Keyboard::A)) : '?';
+    }
+
     // Красная зона обоймы
     constexpr float AMMO_HUD_LOW_PART = 0.25f;
 
@@ -331,6 +340,10 @@ namespace RoguelikeGame
     constexpr auto EQUIP_ALREADY_NOTICE = u8"Уже в руках";
     constexpr auto EQUIP_NO_WAY_BACK_NOTICE = u8"Некуда деть то, что снимаешь";
     constexpr auto BELT_REFUSED_NOTICE = u8"На пояс это не вешается";
+    constexpr auto DROP_REFUSED_NOTICE = u8"Здесь не выложить";
+
+    // Слой предмета ниже слоя игрока: брошенное точно под ноги пропадёт под спрайтом.
+    constexpr float DROP_STEP = 34.f;
 
     constexpr float INVENTORY_NOTICE_TIME = 2.5f;
 

@@ -7,6 +7,7 @@
 #include "WeaponCatalog.h"
 #include "TextUtils.h"
 #include "UiManager.h"
+#include "InputSystem.h"
 
 using RoguelikeGame::InventoryComponent;
 using RoguelikeGame::InventoryScreen;
@@ -153,16 +154,48 @@ TEST_F(InventoryScreenTest, ClosedScreenIgnoresPointer)
 	EXPECT_EQ(screen.GetSelectedSlot(), 0);
 }
 
+namespace
+{
+	std::string DropPart()
+	{
+		std::string line = RoguelikeGame::INVENTORY_DROP_HINT;
+		std::size_t mark = line.find("%c");
+
+		line.replace(mark, 2, 1, RoguelikeGame::LetterOfKey(
+			XYZEngine::InputSystem::Instance()->GetBinding(XYZEngine::InputAction::Drop).key));
+
+		return line;
+	}
+}
+
 TEST(InventoryHintTest, EmptySlotSaysNothing)
 {
 	EXPECT_TRUE(RoguelikeGame::InventoryHint(nullptr).empty());
 }
 
-TEST(InventoryHintTest, ItemWithoutAnEffectSaysNothing)
+// \u0420\u0430\u043d\u044c\u0448\u0435 \u043a\u043b\u044e\u0447\u0443 \u0431\u044b\u043b\u043e \u043d\u0435\u0447\u0435\u0433\u043e \u0441\u043a\u0430\u0437\u0430\u0442\u044c: \u0441 \u043d\u0438\u043c \u043d\u0435\u043b\u044c\u0437\u044f \u0431\u044b\u043b\u043e \u0441\u0434\u0435\u043b\u0430\u0442\u044c \u0440\u043e\u0432\u043d\u043e \u043d\u0438\u0447\u0435\u0433\u043e.
+TEST(InventoryHintTest, ItemWithoutAnEffectOffersOnlyToDropIt)
 {
 	ItemDefinition item = MakeItem("junk", "Hlam");
 
-	EXPECT_TRUE(RoguelikeGame::InventoryHint(&item).empty());
+	EXPECT_EQ(RoguelikeGame::InventoryHint(&item), DropPart());
+}
+
+TEST(InventoryHintTest, EveryItemOffersToDropIt)
+{
+	ItemDefinition potion = MakeItem("potion", "Aptechka");
+	potion.effect.kind = RoguelikeGame::ItemEffectKind::Heal;
+
+	ItemDefinition rifle = MakeItem("weapon_ak47", "AK");
+	rifle.effect.kind = RoguelikeGame::ItemEffectKind::EquipWeapon;
+	rifle.effect.target = "ak47";
+
+	for (const ItemDefinition* item : {&potion, &rifle})
+	{
+		std::string hint = RoguelikeGame::InventoryHint(item);
+
+		EXPECT_NE(hint.find(DropPart()), std::string::npos) << item->id << ": \u043d\u0435\u0447\u0435\u043c \u0432\u044b\u0431\u0440\u043e\u0441\u0438\u0442\u044c";
+	}
 }
 
 TEST(InventoryHintTest, ConsumableOffersToUseItAndToHangItOnTheBelt)
@@ -184,7 +217,10 @@ TEST(InventoryHintTest, WhatIsNotAConsumableIsNotOfferedToTheBelt)
 	key.type = RoguelikeGame::ItemType::Key;
 	key.effect.kind = RoguelikeGame::ItemEffectKind::Unlock;
 
-	EXPECT_EQ(RoguelikeGame::InventoryHint(&key), std::string(RoguelikeGame::INVENTORY_USE_HINT));
+	std::string hint = RoguelikeGame::InventoryHint(&key);
+
+	EXPECT_EQ(hint.rfind(RoguelikeGame::INVENTORY_USE_HINT, 0), 0u);
+	EXPECT_EQ(hint.find("4"), std::string::npos) << "\u043f\u043e\u044f\u0441 \u043f\u0440\u0435\u0434\u043b\u043e\u0436\u0435\u043d \u0442\u043e\u043c\u0443, \u0447\u0442\u043e \u043d\u0430 \u043d\u0451\u043c \u043d\u0435 \u0432\u0438\u0441\u0438\u0442";
 }
 
 TEST(InventoryHintTest, WeaponNamesTheKeysThatChooseTheSlot)
@@ -205,13 +241,13 @@ TEST(InventoryHintTest, WeaponNamesTheKeysThatChooseTheSlot)
 	EXPECT_EQ(hint, RoguelikeGame::InventoryHint(&pistol)) << "слот выбирает игрок, а не ствол";
 }
 
-TEST(InventoryHintTest, UnknownWeaponSaysNothing)
+TEST(InventoryHintTest, UnknownWeaponOffersOnlyToDropIt)
 {
 	ItemDefinition broken = MakeItem("weapon_ghost", "Prizrak");
 	broken.effect.kind = RoguelikeGame::ItemEffectKind::EquipWeapon;
 	broken.effect.target = "no_such_gun";
 
-	EXPECT_TRUE(RoguelikeGame::InventoryHint(&broken).empty());
+	EXPECT_EQ(RoguelikeGame::InventoryHint(&broken), DropPart());
 }
 
 TEST_F(InventoryScreenTest, HintShowsWhatEnterWillDoToTheSelectedSlot)

@@ -35,6 +35,7 @@ namespace XYZEngine
 		QuickSlot1,
 		QuickSlot2,
 		QuickSlot3,
+		Drop,
 		Count
 	};
 

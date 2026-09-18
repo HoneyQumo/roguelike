@@ -18,6 +18,9 @@
 #include "TrailComponent.h"
 #include "SwitchComponent.h"
 #include "CutscenePlayerComponent.h"
+#include "Item.h"
+#include "ItemDropComponent.h"
+#include "ItemPickupComponent.h"
 #include "PlayerHudBinderComponent.h"
 #include "EscapeCarComponent.h"
 #include "PursuitComponent.h"
@@ -63,6 +66,25 @@ namespace RoguelikeGame
             {
                 player = CreatePlayer(level.GetStartPosition());
                 camera = CreateCamera(player);
+
+                auto drop = player->GetComponent<ItemDropComponent>();
+                if (drop != nullptr)
+                {
+                    // Объект без уровня переживёт очистку и всплывёт на следующей локации сиротой.
+                    drop->SetSpawner([this](const ItemDefinition& item, int count, int charge,
+                        const XYZEngine::Vector2Df& place)
+                    {
+                        XYZEngine::GameObject* dropped = CreateItem(item, place);
+                        if (dropped == nullptr)
+                        {
+                            return false;
+                        }
+
+                        dropped->GetComponent<ItemPickupComponent>()->SetStack(count, charge);
+
+                        return level.Add(dropped);
+                    });
+                }
 
                 auto health = player->GetComponent<HealthComponent>();
                 if (health != nullptr)

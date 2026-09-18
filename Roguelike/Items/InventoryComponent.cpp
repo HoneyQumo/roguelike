@@ -123,7 +123,7 @@ namespace RoguelikeGame
         return index >= 0 && index < GetCapacity();
     }
 
-    bool InventoryComponent::TryAdd(const ItemDefinition& item, int count)
+    bool InventoryComponent::TryAdd(const ItemDefinition& item, int count, int charge)
     {
         if (count <= 0)
         {
@@ -153,7 +153,9 @@ namespace RoguelikeGame
             {
                 slot.item = item;
                 slot.count = 0;
-                slot.charge = NO_CHARGE;
+
+                // Заряд есть только у ствола, а ствол не стопкуется: в стопке ему негде лежать.
+                slot.charge = item.stackable ? NO_CHARGE : charge;
             }
 
             int taken = std::min(left, maxStack - slot.count);

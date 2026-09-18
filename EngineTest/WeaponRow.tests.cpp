@@ -5,18 +5,18 @@
 #include <TextUtils.h>
 
 using RoguelikeGame::HudScreen;
-using RoguelikeGame::WeaponSlotHudState;
+using RoguelikeGame::SlotHudState;
 
 namespace
 {
-	std::vector<WeaponSlotHudState> Loadout(int count, int current, bool isArmed = true)
+	std::vector<SlotHudState> Loadout(int count, int current, bool isArmed = true)
 	{
-		std::vector<WeaponSlotHudState> slots;
+		std::vector<SlotHudState> slots;
 
 		for (int slot = 0; slot < count; slot++)
 		{
-			WeaponSlotHudState shown;
-			shown.hasWeapon = isArmed || slot == current;
+			SlotHudState shown;
+			shown.isFilled = isArmed || slot == current;
 			shown.isCurrent = slot == current;
 			shown.key = slot + 1;
 
@@ -65,7 +65,7 @@ TEST_F(WeaponRowTest, ExactlyOneSlotIsLit)
 
 TEST_F(WeaponRowTest, AnEmptySlotKeepsItsKeyAndHidesItsIcon)
 {
-	std::vector<WeaponSlotHudState> slots = Loadout(RoguelikeGame::PLAYER_WEAPON_SLOTS, 2, false);
+	std::vector<SlotHudState> slots = Loadout(RoguelikeGame::PLAYER_WEAPON_SLOTS, 2, false);
 	screen.SetWeaponSlots(slots);
 
 	EXPECT_FALSE(screen.GetWeaponSlotIcon(0).IsVisible()) << "в пустом слоте рисуется оружие";
@@ -75,7 +75,7 @@ TEST_F(WeaponRowTest, AnEmptySlotKeepsItsKeyAndHidesItsIcon)
 
 TEST_F(WeaponRowTest, TheKeyComesFromTheStateAndNotFromTheCellNumber)
 {
-	std::vector<WeaponSlotHudState> slots = Loadout(2, 0);
+	std::vector<SlotHudState> slots = Loadout(2, 0);
 	slots[1].key = 7;
 
 	screen.SetWeaponSlots(slots);
@@ -99,7 +99,7 @@ TEST_F(WeaponRowTest, TheRowKeepsClearOfTheVitalsAndThePrompt)
 
 TEST_F(WeaponRowTest, AWeaponShowsItsMagazineAndReserveInTheCell)
 {
-	std::vector<WeaponSlotHudState> slots = Loadout(2, 0);
+	std::vector<SlotHudState> slots = Loadout(2, 0);
 	slots[0].hasCount = true;
 	slots[0].count = 30;
 	slots[0].reserve = 90;
@@ -113,7 +113,7 @@ TEST_F(WeaponRowTest, AWeaponShowsItsMagazineAndReserveInTheCell)
 
 TEST_F(WeaponRowTest, AStackShowsOneNumberWithoutAReserve)
 {
-	std::vector<WeaponSlotHudState> slots = Loadout(1, 0);
+	std::vector<SlotHudState> slots = Loadout(1, 0);
 	slots[0].hasCount = true;
 	slots[0].count = 3;
 	slots[0].reserve = RoguelikeGame::NO_RESERVE;
@@ -125,7 +125,7 @@ TEST_F(WeaponRowTest, AStackShowsOneNumberWithoutAReserve)
 
 TEST_F(WeaponRowTest, TheCountTellsReloadingAndLowApart)
 {
-	std::vector<WeaponSlotHudState> slots = Loadout(1, 0);
+	std::vector<SlotHudState> slots = Loadout(1, 0);
 	slots[0].hasCount = true;
 	slots[0].count = 2;
 	slots[0].reserve = 90;
@@ -147,7 +147,7 @@ TEST_F(WeaponRowTest, TheCountTellsReloadingAndLowApart)
 
 TEST_F(WeaponRowTest, TheCountDoesNotCoverTheKey)
 {
-	std::vector<WeaponSlotHudState> slots = Loadout(1, 0);
+	std::vector<SlotHudState> slots = Loadout(1, 0);
 	slots[0].hasCount = true;
 	slots[0].count = 30;
 	slots[0].reserve = 90;
@@ -156,6 +156,58 @@ TEST_F(WeaponRowTest, TheCountDoesNotCoverTheKey)
 
 	EXPECT_FALSE(screen.GetWeaponSlotKey(0).GetBounds().intersects(screen.GetWeaponSlotCount(0).GetBounds()))
 		<< "цифра клавиши и счётчик толкаются";
+}
+
+TEST_F(WeaponRowTest, TheBeltIsItsOwnGroupBesideTheWeapons)
+{
+	screen.SetWeaponSlots(Loadout(RoguelikeGame::PLAYER_WEAPON_SLOTS, 0));
+	screen.SetBeltSlots(Loadout(RoguelikeGame::QUICK_BELT_HOOKS, 0));
+
+	EXPECT_EQ(screen.GetBeltSlotsShown(), RoguelikeGame::QUICK_BELT_HOOKS);
+
+	sf::FloatRect lastWeapon = screen.GetWeaponSlotPanel(RoguelikeGame::PLAYER_WEAPON_SLOTS - 1).GetBounds();
+	sf::FloatRect firstHook = screen.GetBeltSlotPanel(0).GetBounds();
+
+	EXPECT_GT(firstHook.left, lastWeapon.left + lastWeapon.width) << "пояс налез на оружие";
+
+	float insideGap = screen.GetWeaponSlotPanel(1).GetBounds().left
+		- (screen.GetWeaponSlotPanel(0).GetBounds().left + lastWeapon.width);
+
+	EXPECT_GT(firstHook.left - (lastWeapon.left + lastWeapon.width), insideGap)
+		<< "между тройками зазора нет - читается как шесть одинаковых ячеек";
+}
+
+TEST_F(WeaponRowTest, AnEmptyHookKeepsItsKeyAndShowsNoCount)
+{
+	std::vector<SlotHudState> hooks(RoguelikeGame::QUICK_BELT_HOOKS);
+	hooks[0].key = 4;
+	hooks[1].key = 5;
+	hooks[2].key = 6;
+
+	screen.SetBeltSlots(hooks);
+
+	EXPECT_EQ(screen.GetBeltSlotKey(0).GetText(), XYZEngine::FromUtf8("4"));
+	EXPECT_FALSE(screen.GetBeltSlotCount(0).IsVisible()) << "у пустого крючка взялся счётчик";
+	EXPECT_FALSE(screen.GetBeltSlotIcon(0).IsVisible());
+}
+
+TEST_F(WeaponRowTest, AHookWithZeroKeepsItsIconAndGoesDim)
+{
+	std::vector<SlotHudState> hooks(RoguelikeGame::QUICK_BELT_HOOKS);
+	hooks[0].key = 4;
+	hooks[0].isFilled = true;
+	hooks[0].hasCount = true;
+	hooks[0].count = 2;
+
+	screen.SetBeltSlots(hooks);
+	sf::Color plenty = screen.GetBeltSlotCount(0).GetColor();
+
+	hooks[0].count = 0;
+	hooks[0].isLow = true;
+	screen.SetBeltSlots(hooks);
+
+	EXPECT_EQ(screen.GetBeltSlotCount(0).GetText(), XYZEngine::FromUtf8("0")) << "крючок с нулём замолчал";
+	EXPECT_NE(screen.GetBeltSlotCount(0).GetColor(), plenty) << "пустой крючок не отличить от полного";
 }
 
 TEST_F(WeaponRowTest, TheRowStaysOnScreenOnAnyResolution)

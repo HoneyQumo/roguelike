@@ -141,7 +141,7 @@ namespace RoguelikeGame
     namespace
     {
         // У ствола две цифры, у расходника одна: запас отсутствует.
-        std::string CountLine(const WeaponSlotHudState& state)
+        std::string CountLine(const SlotHudState& state)
         {
             if (state.reserve == NO_RESERVE)
             {
@@ -152,64 +152,91 @@ namespace RoguelikeGame
         }
     }
 
+    HudScreen::WeaponCell HudScreen::BuildCell(XYZEngine::UiWidget* row, const sf::Font* font, float left)
+    {
+        WeaponCell cell;
+
+        cell.panel = row->AddChild<XYZEngine::UiPanel>();
+        cell.panel->SetAnchor(XYZEngine::UiAnchor::TopLeft);
+        cell.panel->SetPivot(XYZEngine::UiAnchor::TopLeft);
+        cell.panel->SetOffset({left, 0.f});
+        cell.panel->SetSize({WEAPON_ROW_SLOT_SIZE, WEAPON_ROW_SLOT_SIZE});
+        cell.panel->SetFillColor(INVENTORY_SLOT_EMPTY_COLOR);
+        cell.panel->SetOutline(2.f, INVENTORY_SLOT_OUTLINE_COLOR);
+
+        cell.icon = cell.panel->AddChild<XYZEngine::UiIcon>();
+        cell.icon->SetAnchor(XYZEngine::UiAnchor::Center);
+        cell.icon->SetPivot(XYZEngine::UiAnchor::Center);
+        cell.icon->SetSize({WEAPON_ROW_SLOT_SIZE - WEAPON_ROW_SLOT_GAP, WEAPON_ROW_SLOT_SIZE - WEAPON_ROW_SLOT_GAP});
+        cell.icon->SetKeepAspect(true);
+        cell.icon->SetVisible(false);
+
+        cell.key = cell.panel->AddChild<XYZEngine::UiLabel>();
+        cell.key->SetAnchor(XYZEngine::UiAnchor::BottomLeft);
+        cell.key->SetPivot(XYZEngine::UiAnchor::BottomLeft);
+        cell.key->SetSize({WEAPON_ROW_KEY_WIDTH, WEAPON_ROW_KEY_HEIGHT});
+        cell.key->SetAlign(XYZEngine::UiAnchor::Left);
+        cell.key->SetCharacterSize(WEAPON_ROW_KEY_FONT_SIZE);
+        cell.key->SetColor(AMMO_HUD_COLOR);
+        cell.key->SetOutline(AMMO_HUD_OUTLINE, AMMO_HUD_OUTLINE_COLOR);
+        cell.key->SetFont(font);
+
+        cell.count = cell.panel->AddChild<XYZEngine::UiLabel>();
+        cell.count->SetAnchor(XYZEngine::UiAnchor::BottomRight);
+        cell.count->SetPivot(XYZEngine::UiAnchor::BottomRight);
+        cell.count->SetSize({WEAPON_ROW_COUNT_WIDTH, WEAPON_ROW_KEY_HEIGHT});
+        cell.count->SetAlign(XYZEngine::UiAnchor::Right);
+        cell.count->SetCharacterSize(WEAPON_ROW_COUNT_FONT_SIZE);
+        cell.count->SetColor(AMMO_HUD_COLOR);
+        cell.count->SetOutline(AMMO_HUD_OUTLINE, AMMO_HUD_OUTLINE_COLOR);
+        cell.count->SetFont(font);
+        cell.count->SetVisible(false);
+
+        return cell;
+    }
+
+    /**
+    *	Руки и пояс - одна линия внизу экрана, но две группы: между тройками зазор,
+    *	чтобы глаз читал их порознь, а не как шесть одинаковых ячеек.
+    */
     void HudScreen::BuildWeaponRow(const sf::Font* font)
     {
+        float step = WEAPON_ROW_SLOT_SIZE + WEAPON_ROW_SLOT_GAP;
+        float weaponsWidth = PLAYER_WEAPON_SLOTS * WEAPON_ROW_SLOT_SIZE + (PLAYER_WEAPON_SLOTS - 1) * WEAPON_ROW_SLOT_GAP;
+        float beltWidth = QUICK_BELT_HOOKS * WEAPON_ROW_SLOT_SIZE + (QUICK_BELT_HOOKS - 1) * WEAPON_ROW_SLOT_GAP;
+
         auto row = GetRoot().AddChild<XYZEngine::UiWidget>();
         row->SetAnchor(XYZEngine::UiAnchor::Bottom);
         row->SetPivot(XYZEngine::UiAnchor::Bottom);
         row->SetOffset({0.f, -WEAPON_ROW_MARGIN_Y});
-        row->SetSize({PLAYER_WEAPON_SLOTS * WEAPON_ROW_SLOT_SIZE + (PLAYER_WEAPON_SLOTS - 1) * WEAPON_ROW_SLOT_GAP,
-            WEAPON_ROW_SLOT_SIZE});
+        row->SetSize({weaponsWidth + BELT_ROW_GAP + beltWidth, WEAPON_ROW_SLOT_SIZE});
 
         for (int slot = 0; slot < PLAYER_WEAPON_SLOTS; slot++)
         {
-            WeaponCell cell;
+            weaponCells.push_back(BuildCell(row, font, slot * step));
+        }
 
-            cell.panel = row->AddChild<XYZEngine::UiPanel>();
-            cell.panel->SetAnchor(XYZEngine::UiAnchor::TopLeft);
-            cell.panel->SetPivot(XYZEngine::UiAnchor::TopLeft);
-            cell.panel->SetOffset({slot * (WEAPON_ROW_SLOT_SIZE + WEAPON_ROW_SLOT_GAP), 0.f});
-            cell.panel->SetSize({WEAPON_ROW_SLOT_SIZE, WEAPON_ROW_SLOT_SIZE});
-            cell.panel->SetFillColor(INVENTORY_SLOT_EMPTY_COLOR);
-            cell.panel->SetOutline(2.f, INVENTORY_SLOT_OUTLINE_COLOR);
-
-            cell.icon = cell.panel->AddChild<XYZEngine::UiIcon>();
-            cell.icon->SetAnchor(XYZEngine::UiAnchor::Center);
-            cell.icon->SetPivot(XYZEngine::UiAnchor::Center);
-            cell.icon->SetSize({WEAPON_ROW_SLOT_SIZE - WEAPON_ROW_SLOT_GAP, WEAPON_ROW_SLOT_SIZE - WEAPON_ROW_SLOT_GAP});
-            cell.icon->SetKeepAspect(true);
-            cell.icon->SetVisible(false);
-
-            cell.key = cell.panel->AddChild<XYZEngine::UiLabel>();
-            cell.key->SetAnchor(XYZEngine::UiAnchor::BottomLeft);
-            cell.key->SetPivot(XYZEngine::UiAnchor::BottomLeft);
-            cell.key->SetSize({WEAPON_ROW_KEY_WIDTH, WEAPON_ROW_KEY_HEIGHT});
-            cell.key->SetAlign(XYZEngine::UiAnchor::Left);
-            cell.key->SetCharacterSize(WEAPON_ROW_KEY_FONT_SIZE);
-            cell.key->SetColor(AMMO_HUD_COLOR);
-            cell.key->SetOutline(AMMO_HUD_OUTLINE, AMMO_HUD_OUTLINE_COLOR);
-            cell.key->SetFont(font);
-
-            cell.count = cell.panel->AddChild<XYZEngine::UiLabel>();
-            cell.count->SetAnchor(XYZEngine::UiAnchor::BottomRight);
-            cell.count->SetPivot(XYZEngine::UiAnchor::BottomRight);
-            cell.count->SetSize({WEAPON_ROW_COUNT_WIDTH, WEAPON_ROW_KEY_HEIGHT});
-            cell.count->SetAlign(XYZEngine::UiAnchor::Right);
-            cell.count->SetCharacterSize(WEAPON_ROW_COUNT_FONT_SIZE);
-            cell.count->SetColor(AMMO_HUD_COLOR);
-            cell.count->SetOutline(AMMO_HUD_OUTLINE, AMMO_HUD_OUTLINE_COLOR);
-            cell.count->SetFont(font);
-            cell.count->SetVisible(false);
-
-            weaponCells.push_back(cell);
+        for (int hook = 0; hook < QUICK_BELT_HOOKS; hook++)
+        {
+            beltCells.push_back(BuildCell(row, font, weaponsWidth + BELT_ROW_GAP + hook * step));
         }
     }
 
-    void HudScreen::SetWeaponSlots(const std::vector<WeaponSlotHudState>& slots)
+    void HudScreen::SetWeaponSlots(const std::vector<SlotHudState>& slots)
     {
-        for (std::size_t index = 0; index < weaponCells.size(); index++)
+        FillCells(weaponCells, slots);
+    }
+
+    void HudScreen::SetBeltSlots(const std::vector<SlotHudState>& slots)
+    {
+        FillCells(beltCells, slots);
+    }
+
+    void HudScreen::FillCells(std::vector<WeaponCell>& cells, const std::vector<SlotHudState>& slots)
+    {
+        for (std::size_t index = 0; index < cells.size(); index++)
         {
-            const WeaponCell& cell = weaponCells[index];
+            const WeaponCell& cell = cells[index];
             bool isShown = index < slots.size();
 
             cell.panel->SetVisible(isShown);
@@ -218,14 +245,14 @@ namespace RoguelikeGame
                 continue;
             }
 
-            const WeaponSlotHudState& state = slots[index];
+            const SlotHudState& state = slots[index];
 
             // Пустой слот всё равно показывает свою цифру: игрок должен видеть, куда класть.
             cell.panel->SetFillColor(state.isCurrent ? INVENTORY_SLOT_SELECTED_COLOR
-                : state.hasWeapon ? INVENTORY_SLOT_FILLED_COLOR : INVENTORY_SLOT_EMPTY_COLOR);
+                : state.isFilled ? INVENTORY_SLOT_FILLED_COLOR : INVENTORY_SLOT_EMPTY_COLOR);
 
             cell.icon->SetTexture(state.icon);
-            cell.icon->SetVisible(state.hasWeapon && state.icon != nullptr);
+            cell.icon->SetVisible(state.isFilled && state.icon != nullptr);
 
             cell.key->SetUtf8Text(std::to_string(state.key).c_str());
 
@@ -251,6 +278,38 @@ namespace RoguelikeGame
         }
 
         return total;
+    }
+
+    int HudScreen::GetBeltSlotsShown() const
+    {
+        int total = 0;
+
+        for (const WeaponCell& cell : beltCells)
+        {
+            total += cell.panel->IsVisible() ? 1 : 0;
+        }
+
+        return total;
+    }
+
+    const XYZEngine::UiPanel& HudScreen::GetBeltSlotPanel(int index) const
+    {
+        return *beltCells[index].panel;
+    }
+
+    const XYZEngine::UiIcon& HudScreen::GetBeltSlotIcon(int index) const
+    {
+        return *beltCells[index].icon;
+    }
+
+    const XYZEngine::UiLabel& HudScreen::GetBeltSlotKey(int index) const
+    {
+        return *beltCells[index].key;
+    }
+
+    const XYZEngine::UiLabel& HudScreen::GetBeltSlotCount(int index) const
+    {
+        return *beltCells[index].count;
     }
 
     const XYZEngine::UiPanel& HudScreen::GetWeaponSlotPanel(int index) const

@@ -146,6 +146,7 @@ namespace RoguelikeGame
     constexpr auto INVENTORY_USE_HINT = u8"[Enter] Использовать";
     constexpr auto INVENTORY_EQUIP_HINT = u8"[Enter] Экипировать";
     constexpr auto INVENTORY_SLOT_HINT = u8" · [1-%d] в слот";
+    constexpr auto INVENTORY_BELT_HINT = u8" · [%d-%d] на пояс";
 
     constexpr int PLAYER_WEAPON_SLOTS = 3;
     constexpr int PLAYER_START_WEAPON_SLOT = 2;
@@ -265,6 +266,9 @@ namespace RoguelikeGame
 
     constexpr int QUICK_BELT_HOOKS = 3;
 
+    // Зазор между тройками: глаз читает «руки» и «пояс» как две группы, а не шесть ячеек.
+    constexpr float BELT_ROW_GAP = 28.f;
+
     // Без задержки одно нажатие успевает выпить две аптечки за соседние кадры.
     constexpr float QUICK_BELT_COOLDOWN = 0.35f;
     constexpr int WEAPON_ROW_KEY_FONT_SIZE = 14;
@@ -326,6 +330,7 @@ namespace RoguelikeGame
     constexpr auto EQUIP_WRONG_KIND_NOTICE = u8"Сюда это не встаёт";
     constexpr auto EQUIP_ALREADY_NOTICE = u8"Уже в руках";
     constexpr auto EQUIP_NO_WAY_BACK_NOTICE = u8"Некуда деть то, что снимаешь";
+    constexpr auto BELT_REFUSED_NOTICE = u8"На пояс это не вешается";
 
     constexpr float INVENTORY_NOTICE_TIME = 2.5f;
 

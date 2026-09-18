@@ -27,7 +27,7 @@ namespace RoguelikeGame
         void SetInventory(InventoryComponent* newInventory);
         void SetEffects(ItemEffectComponent* newEffects);
 
-        bool Bind(int hook, const std::string& itemId);
+        bool Bind(int hook, const ItemDefinition& item);
         const std::string& GetBinding(int hook) const;
         int GetCountOn(int hook) const;
         int GetHooksCount() const;
@@ -42,7 +42,10 @@ namespace RoguelikeGame
         float sinceUse = 0.f;
 
         bool IsValidHook(int hook) const;
+    public:
         bool CanHang(const ItemDefinition& item) const;
+
+    private:
         void HangOnFreeHook(const ItemDefinition& item);
         void ReadKeys();
     };

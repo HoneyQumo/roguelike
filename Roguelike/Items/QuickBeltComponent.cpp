@@ -82,14 +82,23 @@ namespace RoguelikeGame
         return inventory->Use(slot);
     }
 
-    bool QuickBeltComponent::Bind(int hook, const std::string& itemId)
+    bool QuickBeltComponent::Bind(int hook, const ItemDefinition& item)
     {
-        if (!IsValidHook(hook))
+        if (!IsValidHook(hook) || !CanHang(item))
         {
             return false;
         }
 
-        hooks[hook] = itemId;
+        // Один предмет не висит на двух крючках: иначе счётчики показывают одно и то же.
+        for (std::string& taken : hooks)
+        {
+            if (taken == item.id)
+            {
+                taken.clear();
+            }
+        }
+
+        hooks[hook] = item.id;
 
         return true;
     }

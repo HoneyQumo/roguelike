@@ -7,6 +7,7 @@
 #include "HealthComponent.h"
 #include "InteractionComponent.h"
 #include "InventoryComponent.h"
+#include "QuickBeltComponent.h"
 #include "ItemEffectComponent.h"
 #include "InventoryScreen.h"
 #include "PlayerLoadoutComponent.h"
@@ -31,10 +32,12 @@ namespace RoguelikeGame
         HudScreen* screen = nullptr;
         InventoryScreen* inventoryScreen = nullptr;
         AmmoPouchComponent* pouch = nullptr;
+        QuickBeltComponent* belt = nullptr;
 
         void ShowRefusal(const std::string& text);
         void PushWeaponSlots();
-        void FillAmmo(WeaponSlotHudState& shown, WeaponId id, bool isCurrent, int remembered) const;
+        void PushBeltSlots();
+        void FillAmmo(SlotHudState& shown, WeaponId id, bool isCurrent, int remembered) const;
         WeaponComponent* weapon = nullptr;
         PlayerLoadoutComponent* loadout = nullptr;
         HealthComponent* health = nullptr;

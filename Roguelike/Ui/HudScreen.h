@@ -26,9 +26,9 @@ namespace RoguelikeGame
     // Запас неизвестен: у объекта нет подсумка.
     constexpr int NO_RESERVE = -1;
 
-    struct WeaponSlotHudState
+    struct SlotHudState
     {
-        bool hasWeapon = false;
+        bool isFilled = false;
         bool isCurrent = false;
         int key = 0;
         const sf::Texture* icon = nullptr;
@@ -63,7 +63,8 @@ namespace RoguelikeGame
     public:
         HudScreen();
 
-        void SetWeaponSlots(const std::vector<WeaponSlotHudState>& slots);
+        void SetWeaponSlots(const std::vector<SlotHudState>& slots);
+        void SetBeltSlots(const std::vector<SlotHudState>& slots);
         void SetVitals(const VitalsHudState& state);
         void SetWaves(const WaveHudState& state);
         void SetChase(const ChaseHudState& state);
@@ -79,6 +80,12 @@ namespace RoguelikeGame
         const XYZEngine::UiIcon& GetWeaponSlotIcon(int index) const;
         const XYZEngine::UiLabel& GetWeaponSlotKey(int index) const;
         const XYZEngine::UiLabel& GetWeaponSlotCount(int index) const;
+
+        int GetBeltSlotsShown() const;
+        const XYZEngine::UiPanel& GetBeltSlotPanel(int index) const;
+        const XYZEngine::UiIcon& GetBeltSlotIcon(int index) const;
+        const XYZEngine::UiLabel& GetBeltSlotKey(int index) const;
+        const XYZEngine::UiLabel& GetBeltSlotCount(int index) const;
         const XYZEngine::UiProgressBar& GetHealthBar() const;
         const XYZEngine::UiProgressBar& GetStaminaBar() const;
         const XYZEngine::UiProgressBar& GetArmorBar() const;
@@ -102,6 +109,7 @@ namespace RoguelikeGame
         };
 
         std::vector<WeaponCell> weaponCells;
+        std::vector<WeaponCell> beltCells;
         XYZEngine::UiProgressBar* healthBar = nullptr;
         XYZEngine::UiProgressBar* staminaBar = nullptr;
         XYZEngine::UiProgressBar* armorBar = nullptr;
@@ -117,6 +125,8 @@ namespace RoguelikeGame
         float noticeTimeLeft = 0.f;
 
         void BuildWeaponRow(const sf::Font* font);
+        WeaponCell BuildCell(XYZEngine::UiWidget* row, const sf::Font* font, float left);
+        void FillCells(std::vector<WeaponCell>& cells, const std::vector<SlotHudState>& slots);
 
 
         std::string shownWave;

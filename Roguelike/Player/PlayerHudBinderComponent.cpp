@@ -64,6 +64,11 @@ namespace RoguelikeGame
             PushWeaponSlots();
         }
 
+        if (belt != nullptr)
+        {
+            PushBeltSlots();
+        }
+
         if (health != nullptr || stamina != nullptr)
         {
             screen->SetVitals(ReadVitalsState());
@@ -79,7 +84,7 @@ namespace RoguelikeGame
     *	У отложенных берём тот, что помнит раскладка: туда он пишется при смене слота
     *	и при обмене. Запас общий по виду патронов и лежит в подсумке.
     */
-    void PlayerHudBinderComponent::FillAmmo(WeaponSlotHudState& shown, WeaponId id, bool isCurrent, int remembered) const
+    void PlayerHudBinderComponent::FillAmmo(SlotHudState& shown, WeaponId id, bool isCurrent, int remembered) const
     {
         const WeaponDefinition& definition = GetWeapon(id);
         if (definition.magazineSize <= 0)
@@ -101,19 +106,19 @@ namespace RoguelikeGame
     void PlayerHudBinderComponent::PushWeaponSlots()
     {
         const LoadoutState& state = loadout->GetState();
-        std::vector<WeaponSlotHudState> slots;
+        std::vector<SlotHudState> slots;
 
         for (int slot = 0; slot < state.slotsCount; slot++)
         {
-            WeaponSlotHudState shown;
-            shown.hasWeapon = !state.IsEmpty(slot);
+            SlotHudState shown;
+            shown.isFilled = !state.IsEmpty(slot);
             shown.isCurrent = slot == state.currentSlot;
 
             auto action = static_cast<XYZEngine::InputAction>(
                 static_cast<int>(XYZEngine::InputAction::WeaponSlot1) + slot);
             shown.key = DigitOfKey(XYZEngine::InputSystem::Instance()->GetBinding(action).key);
 
-            if (shown.hasWeapon)
+            if (shown.isFilled)
             {
                 WeaponId id = state.slots[slot].id;
                 const ItemDefinition* item = FindWeaponItem(GameResources::GetItems(), GetWeapon(id).id);
@@ -129,6 +134,44 @@ namespace RoguelikeGame
         }
 
         screen->SetWeaponSlots(slots);
+    }
+
+    /**
+    *	Пояс на экране: иконка и количество берутся у сумки по id, который помнит крючок.
+    *	Своего числа у пояса нет, поэтому показанное не может разойтись с содержимым.
+    */
+    void PlayerHudBinderComponent::PushBeltSlots()
+    {
+        std::vector<SlotHudState> slots;
+
+        for (int hook = 0; hook < belt->GetHooksCount(); hook++)
+        {
+            SlotHudState shown;
+
+            auto action = static_cast<XYZEngine::InputAction>(
+                static_cast<int>(XYZEngine::InputAction::QuickSlot1) + hook);
+            shown.key = DigitOfKey(XYZEngine::InputSystem::Instance()->GetBinding(action).key);
+
+            const std::string& carried = belt->GetBinding(hook);
+            if (!carried.empty())
+            {
+                const ItemDefinition* item = GameResources::GetItems().Find(carried);
+
+                shown.isFilled = true;
+                shown.hasCount = true;
+                shown.count = belt->GetCountOn(hook);
+                shown.isLow = shown.count == 0;
+
+                if (item != nullptr)
+                {
+                    shown.icon = XYZEngine::ResourceSystem::Instance()->GetTextureShared(ItemTextureName(item->id));
+                }
+            }
+
+            slots.push_back(shown);
+        }
+
+        screen->SetBeltSlots(slots);
     }
 
     void PlayerHudBinderComponent::FindTarget()
@@ -170,6 +213,7 @@ namespace RoguelikeGame
         }
 
         pouch = target->GetComponent<AmmoPouchComponent>();
+        belt = target->GetComponent<QuickBeltComponent>();
         inventory = target->GetComponent<InventoryComponent>();
         if (inventory != nullptr && inventoryScreen != nullptr)
         {
@@ -189,6 +233,23 @@ namespace RoguelikeGame
                 }
 
                 return result.isDone;
+            });
+
+            inventoryScreen->SetBeltHandler([this](int bagSlot, int hook)
+            {
+                if (inventory == nullptr || belt == nullptr)
+                {
+                    return false;
+                }
+
+                const InventorySlot& carried = inventory->GetSlot(bagSlot);
+                if (carried.IsEmpty() || !belt->Bind(hook, carried.item))
+                {
+                    ShowRefusal(BELT_REFUSED_NOTICE);
+                    return false;
+                }
+
+                return true;
             });
         }
 

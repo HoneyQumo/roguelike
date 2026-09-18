@@ -24,6 +24,26 @@ namespace RoguelikeGame
         }
     }
 
+    namespace
+    {
+        // Числа в подсказку подставляются, а не пишутся руками: клавиши читаются из привязок.
+        std::string Fill(const char* line, int first, int second)
+        {
+            std::string text = line;
+
+            for (int number : {first, second})
+            {
+                std::size_t mark = text.find("%d");
+                if (mark != std::string::npos)
+                {
+                    text.replace(mark, 2, std::to_string(number));
+                }
+            }
+
+            return text;
+        }
+    }
+
     std::string InventoryHint(const ItemDefinition* item)
     {
         if (item == nullptr)
@@ -41,11 +61,7 @@ namespace RoguelikeGame
 
             // Слот больше не предопределён оружием, поэтому подсказка называет клавиши,
             // а не номер: за совпадением подсказки и управления следит правило проекта.
-            std::string keys = INVENTORY_SLOT_HINT;
-            std::size_t mark = keys.find("%d");
-
-            return std::string(INVENTORY_EQUIP_HINT)
-                + (mark == std::string::npos ? keys : keys.replace(mark, 2, std::to_string(PLAYER_WEAPON_SLOTS)));
+            return std::string(INVENTORY_EQUIP_HINT) + Fill(INVENTORY_SLOT_HINT, PLAYER_WEAPON_SLOTS, 0);
         }
 
         if (item->effect.kind == ItemEffectKind::None)
@@ -53,7 +69,18 @@ namespace RoguelikeGame
             return {};
         }
 
-        return INVENTORY_USE_HINT;
+        // Подсказка перечисляет ровно то, что работает: у расходника есть ещё и пояс.
+        if (item->type != ItemType::Consumable)
+        {
+            return INVENTORY_USE_HINT;
+        }
+
+        int first = DigitOfKey(XYZEngine::InputSystem::Instance()->GetBinding(XYZEngine::InputAction::QuickSlot1).key);
+        auto last = static_cast<XYZEngine::InputAction>(
+            static_cast<int>(XYZEngine::InputAction::QuickSlot1) + QUICK_BELT_HOOKS - 1);
+
+        return std::string(INVENTORY_USE_HINT) + Fill(INVENTORY_BELT_HINT, first,
+            DigitOfKey(XYZEngine::InputSystem::Instance()->GetBinding(last).key));
     }
 
     InventoryScreen::InventoryScreen()
@@ -361,6 +388,17 @@ namespace RoguelikeGame
             }
         }
 
+        for (int hook = 0; hook < QUICK_BELT_HOOKS; hook++)
+        {
+            auto action = static_cast<XYZEngine::InputAction>(
+                static_cast<int>(XYZEngine::InputAction::QuickSlot1) + hook);
+
+            if (input->WasActionPressed(action) && beltHandler)
+            {
+                beltHandler(selectedSlot, hook);
+            }
+        }
+
         if (input->WasActionPressed(XYZEngine::InputAction::Confirm))
         {
             const InventorySlot& carried = inventory->GetSlot(selectedSlot);
@@ -378,6 +416,11 @@ namespace RoguelikeGame
     void InventoryScreen::SetEquipHandler(std::function<bool(int, int)> newEquipHandler)
     {
         equipHandler = std::move(newEquipHandler);
+    }
+
+    void InventoryScreen::SetBeltHandler(std::function<bool(int, int)> newBeltHandler)
+    {
+        beltHandler = std::move(newBeltHandler);
     }
 
     void InventoryScreen::MoveSelection(int columns, int rows)

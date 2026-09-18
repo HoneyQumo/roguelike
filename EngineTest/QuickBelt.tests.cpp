@@ -173,6 +173,29 @@ TEST_F(QuickBeltTest, AFrozenPlayerDrinksNothing)
 	EXPECT_TRUE(belt->UseHook(0)) << "пояс не ожил после разморозки";
 }
 
+TEST_F(QuickBeltTest, OnlyWhatCanBeUsedGoesOnAHook)
+{
+	EXPECT_TRUE(belt->Bind(0, Potion()));
+	EXPECT_EQ(belt->GetBinding(0), "potion");
+
+	EXPECT_FALSE(belt->Bind(1, Key())) << "ключ повесили руками";
+	EXPECT_TRUE(belt->GetBinding(1).empty());
+
+	ItemDefinition gun = MakeItem("weapon_deagle", ItemType::Weapon, ItemEffectKind::EquipWeapon);
+
+	EXPECT_FALSE(belt->Bind(1, gun)) << "оружие повесили на пояс";
+	EXPECT_TRUE(belt->GetBinding(1).empty());
+}
+
+TEST_F(QuickBeltTest, MovingAnItemLeavesItsOldHookEmpty)
+{
+	ASSERT_TRUE(belt->Bind(0, Potion()));
+	ASSERT_TRUE(belt->Bind(2, Potion()));
+
+	EXPECT_TRUE(belt->GetBinding(0).empty()) << "одна аптечка висит на двух крючках";
+	EXPECT_EQ(belt->GetBinding(2), "potion");
+}
+
 TEST(QuickBeltInputTest, TheNewActionsSitAtTheTailAndKeepTheOldArithmetic)
 {
 	EXPECT_EQ(static_cast<int>(InputAction::WeaponSlot1) + 1, static_cast<int>(InputAction::WeaponSlot2));

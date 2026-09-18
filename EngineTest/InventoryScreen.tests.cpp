@@ -1,4 +1,4 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "GameWorld.h"
 #include "InventoryComponent.h"
 #include "InventoryScreen.h"
@@ -165,13 +165,26 @@ TEST(InventoryHintTest, ItemWithoutAnEffectSaysNothing)
 	EXPECT_TRUE(RoguelikeGame::InventoryHint(&item).empty());
 }
 
-TEST(InventoryHintTest, ConsumableOffersToUseIt)
+TEST(InventoryHintTest, ConsumableOffersToUseItAndToHangItOnTheBelt)
 {
 	ItemDefinition potion = MakeItem("potion", "Aptechka");
 	potion.effect.kind = RoguelikeGame::ItemEffectKind::Heal;
 	potion.effect.amount = 35.f;
 
-	EXPECT_EQ(RoguelikeGame::InventoryHint(&potion), std::string(RoguelikeGame::INVENTORY_USE_HINT));
+	std::string hint = RoguelikeGame::InventoryHint(&potion);
+
+	EXPECT_EQ(hint.rfind(RoguelikeGame::INVENTORY_USE_HINT, 0), 0u);
+	EXPECT_NE(hint, std::string(RoguelikeGame::INVENTORY_USE_HINT)) << "про пояс подсказка молчит";
+	EXPECT_NE(hint.find("4"), std::string::npos) << "подсказка не называет клавиши пояса";
+}
+
+TEST(InventoryHintTest, WhatIsNotAConsumableIsNotOfferedToTheBelt)
+{
+	ItemDefinition key = MakeItem("key", "Klyuch");
+	key.type = RoguelikeGame::ItemType::Key;
+	key.effect.kind = RoguelikeGame::ItemEffectKind::Unlock;
+
+	EXPECT_EQ(RoguelikeGame::InventoryHint(&key), std::string(RoguelikeGame::INVENTORY_USE_HINT));
 }
 
 TEST(InventoryHintTest, WeaponNamesTheKeysThatChooseTheSlot)
@@ -247,5 +260,5 @@ TEST_F(InventoryScreenTest, HintPicksUpTheSlotTheInventoryHasSelected)
 	screen.Open();
 
 	ASSERT_EQ(screen.GetSelectedSlot(), 1);
-	EXPECT_EQ(screen.GetHint().GetText(), XYZEngine::FromUtf8(RoguelikeGame::INVENTORY_USE_HINT));
+	EXPECT_EQ(screen.GetHint().GetText(), XYZEngine::FromUtf8(RoguelikeGame::InventoryHint(&potion).c_str()));
 }

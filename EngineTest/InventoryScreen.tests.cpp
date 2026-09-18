@@ -298,3 +298,72 @@ TEST_F(InventoryScreenTest, HintPicksUpTheSlotTheInventoryHasSelected)
 	ASSERT_EQ(screen.GetSelectedSlot(), 1);
 	EXPECT_EQ(screen.GetHint().GetText(), XYZEngine::FromUtf8(RoguelikeGame::InventoryHint(&potion).c_str()));
 }
+
+
+// У ключа есть эффект, но нет обработчика: подсказка звала на мёртвую кнопку.
+TEST(InventoryHintTest, WhatHasNoHandlerIsNotOfferedToUse)
+{
+	ItemDefinition key = MakeItem("key", "Klyuch");
+	key.type = RoguelikeGame::ItemType::Key;
+	key.effect.kind = RoguelikeGame::ItemEffectKind::Unlock;
+
+	EXPECT_EQ(RoguelikeGame::InventoryHint(&key, false), DropPart()) << "ключ всё ещё предлагают использовать";
+}
+
+TEST(InventoryHintTest, WhatHasAHandlerIsStillOfferedToUse)
+{
+	ItemDefinition potion = MakeItem("potion", "Aptechka");
+	potion.effect.kind = RoguelikeGame::ItemEffectKind::Heal;
+
+	std::string hint = RoguelikeGame::InventoryHint(&potion, true);
+
+	EXPECT_EQ(hint.rfind(RoguelikeGame::INVENTORY_USE_HINT, 0), 0u);
+}
+
+TEST(InventoryHintTest, WithoutARuleTheHintBehavesAsBefore)
+{
+	ItemDefinition key = MakeItem("key", "Klyuch");
+	key.type = RoguelikeGame::ItemType::Key;
+	key.effect.kind = RoguelikeGame::ItemEffectKind::Unlock;
+
+	EXPECT_NE(RoguelikeGame::InventoryHint(&key), DropPart()) << "без правила поведение изменилось";
+}
+
+// Экипировка идёт не через обработчик эффекта, поэтому её правило не касается.
+TEST(InventoryHintTest, AWeaponIsStillOfferedToEquipWithoutAHandler)
+{
+	ItemDefinition rifle = MakeItem("weapon_ak47", "AK");
+	rifle.effect.kind = RoguelikeGame::ItemEffectKind::EquipWeapon;
+	rifle.effect.target = "ak47";
+
+	std::string hint = RoguelikeGame::InventoryHint(&rifle, false);
+
+	EXPECT_NE(hint.find(RoguelikeGame::INVENTORY_EQUIP_HINT), std::string::npos);
+}
+
+TEST_F(InventoryScreenTest, TheScreenAsksTheRuleBeforeOfferingToUse)
+{
+	InventoryComponent* inventory = CreateInventory();
+
+	ItemDefinition key = MakeItem("key", "Klyuch");
+	key.type = RoguelikeGame::ItemType::Key;
+	key.effect.kind = RoguelikeGame::ItemEffectKind::Unlock;
+	inventory->TryAdd(key);
+
+	InventoryScreen screen;
+	screen.Resize({1280.f, 720.f});
+	screen.SetInventory(inventory);
+	screen.Open();
+
+	ASSERT_EQ(screen.GetHint().GetText(), XYZEngine::FromUtf8(RoguelikeGame::InventoryHint(&key).c_str()))
+		<< "без правила подсказка должна быть прежней";
+
+	screen.SetUsableRule([](const ItemDefinition&) { return false; });
+
+	// Сравнивать с той же функцией нельзя: обе стороны сломаются разом и тест промолчит.
+	sf::String shown = screen.GetHint().GetText();
+
+	EXPECT_EQ(shown.find(XYZEngine::FromUtf8(RoguelikeGame::INVENTORY_USE_HINT)), sf::String::InvalidPos)
+		<< "экран не спросил правило";
+	EXPECT_FALSE(shown.isEmpty()) << "подсказка пропала совсем, а сброс остаётся";
+}

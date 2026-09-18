@@ -267,6 +267,12 @@ namespace RoguelikeGame
                 return true;
             });
 
+            auto effects = target->GetComponent<ItemEffectComponent>();
+            inventoryScreen->SetUsableRule([effects](const ItemDefinition& item)
+            {
+                return effects != nullptr && effects->HasHandler(item.effect.kind);
+            });
+
             inventoryScreen->SetDropHandler([this](int bagSlot)
             {
                 return drop != nullptr && drop->Drop(bagSlot);

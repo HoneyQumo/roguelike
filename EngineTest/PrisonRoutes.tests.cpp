@@ -4,6 +4,8 @@
 #include "LevelIntegrity.h"
 #include "LevelLoader.h"
 #include "ProjectFiles.h"
+#include "EnemyCatalog.h"
+#include "LevelZones.h"
 #include "PropCatalog.h"
 #include <algorithm>
 #include <set>
@@ -251,6 +253,45 @@ TEST_F(PrisonRoutesTest, WithAllThreeShutTheWayOutIsGone)
 	LevelReport report = CheckLevel(prison, items, props);
 
 	EXPECT_FALSE(report.IsClean()) << "закладки ничего не закрывают, значит три теста выше ничего не доказывают";
+}
+
+TEST_F(PrisonRoutesTest, EveryRouteHasItsOwnTrouble)
+{
+	ASSERT_TRUE(isFound) << previous.string();
+
+	int traps = 0;
+	for (const auto& prop : prison.props)
+	{
+		const RoguelikeGame::PropDefinition* definition = props.Find(prop.propId);
+		traps += definition != nullptr && definition->IsTrap() ? 1 : 0;
+	}
+
+	EXPECT_GE(traps, 3) << "по ловушке на путь - минимум";
+	EXPECT_GE(prison.ambushes.size(), 3u) << "по засаде на путь - минимум";
+}
+
+// Враг вне зоны не спит вовсе и идёт по своим делам с первой секунды. Комната
+// без зон становится одной зоной сама, а вот узкая зона легко оставляет кого-то снаружи.
+TEST_F(PrisonRoutesTest, EveryGuardBelongsToSomeRoom)
+{
+	ASSERT_TRUE(isFound) << previous.string();
+
+	std::vector<RoguelikeGame::LevelZone> zones = RoguelikeGame::BuildZones(prison);
+	ASSERT_FALSE(zones.empty());
+
+	for (int row = 0; row < static_cast<int>(prison.tiles.size()); row++)
+	{
+		for (int column = 0; column < static_cast<int>(prison.tiles[row].size()); column++)
+		{
+			if (RoguelikeGame::FindEnemyConfig(prison.tiles[row][column]) == nullptr)
+			{
+				continue;
+			}
+
+			EXPECT_NE(RoguelikeGame::FindZoneAt(zones, column, row), nullptr)
+				<< "охранник в " << column << ";" << row << " ни в какой зоне и потому не спит";
+		}
+	}
 }
 
 TEST_F(PrisonRoutesTest, ThePrisonIsSoundAsItShips)

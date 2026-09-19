@@ -258,3 +258,78 @@ TEST(ActAssemblerTest, TurnedRoomCarriesItsZone)
 	EXPECT_EQ(zones[0].maxColumn, 3);
 	EXPECT_EQ(zones[0].maxRow, 2);
 }
+
+namespace
+{
+	// Комната со всеми видами размещений сразу. Если сборщик забудет новый
+	// вид - а плитки он однажды уже забыл, - здесь это видно сразу.
+	const std::string LOADED =
+		"[legend]\n"
+		"# Wall\n"
+		". Floor\n"
+		"p Item:potion_small\n"
+		"b Prop:bunk\n"
+		"D Door:cell\n"
+		"/ Switch:vault\n"
+		"_ Plate:vault\n"
+		"h Hatch:drain\n"
+		"e Escape:city_car\n"
+		"1 Patrol:guard\n"
+		"z Zone:inner\n"
+		"[map]\n"
+		"#######\n"
+		"#pbD/_#\n"
+		"#he1z.#\n"
+		"#######\n";
+}
+
+TEST(ActAssemblerTest, EveryKindOfPlacementSurvivesAssembly)
+{
+	Library library;
+	library.Add("loaded", RoomOf(LOADED));
+
+	LevelData room = RoomOf(LOADED);
+	LevelData act = AssembleAct(PlanOf({{"loaded", 3, 2, 0, false}}), library.Source());
+
+	EXPECT_EQ(act.items.size(), room.items.size());
+	EXPECT_EQ(act.props.size(), room.props.size());
+	EXPECT_EQ(act.doors.size(), room.doors.size());
+	EXPECT_EQ(act.levers.size(), room.levers.size());
+	EXPECT_EQ(act.plates.size(), room.plates.size());
+	EXPECT_EQ(act.hatches.size(), room.hatches.size());
+	EXPECT_EQ(act.escapes.size(), room.escapes.size());
+	EXPECT_EQ(act.patrols.size(), room.patrols.size());
+	EXPECT_EQ(act.zones.size(), room.zones.size());
+}
+
+TEST(ActAssemblerTest, APlateMovesWithItsRoom)
+{
+	Library library;
+	library.Add("loaded", RoomOf(LOADED));
+
+	LevelData act = AssembleAct(PlanOf({{"loaded", 3, 2, 0, false}}), library.Source());
+
+	ASSERT_EQ(act.plates.size(), 1u);
+	EXPECT_EQ(act.plates[0].column, 3 + 5);
+	EXPECT_EQ(act.plates[0].row, 2 + 1);
+	EXPECT_EQ(act.plates[0].id, "vault");
+}
+
+TEST(ActAssemblerTest, TurnedRoomCarriesEveryKindOfPlacement)
+{
+	Library library;
+	library.Add("loaded", RoomOf(LOADED));
+
+	LevelData room = RoomOf(LOADED);
+	LevelData act = AssembleAct(PlanOf({{"loaded", 0, 0, 90, true}}), library.Source());
+
+	EXPECT_EQ(act.items.size(), room.items.size());
+	EXPECT_EQ(act.props.size(), room.props.size());
+	EXPECT_EQ(act.doors.size(), room.doors.size());
+	EXPECT_EQ(act.levers.size(), room.levers.size());
+	EXPECT_EQ(act.plates.size(), room.plates.size());
+	EXPECT_EQ(act.hatches.size(), room.hatches.size());
+	EXPECT_EQ(act.escapes.size(), room.escapes.size());
+	EXPECT_EQ(act.patrols.size(), room.patrols.size());
+	EXPECT_EQ(act.zones.size(), room.zones.size());
+}

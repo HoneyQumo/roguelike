@@ -177,19 +177,12 @@ namespace RoguelikeGame
                 act.doors.push_back({room.column + door.column, room.row + door.row, door.doorId});
             }
 
-            for (const FixturePlacement& lever : room.layout.levers)
+            for (auto list : FIXTURE_LISTS)
             {
-                act.levers.push_back({room.column + lever.column, room.row + lever.row, lever.id});
-            }
-
-            for (const FixturePlacement& hatch : room.layout.hatches)
-            {
-                act.hatches.push_back({room.column + hatch.column, room.row + hatch.row, hatch.id});
-            }
-
-            for (const FixturePlacement& escape : room.layout.escapes)
-            {
-                act.escapes.push_back({room.column + escape.column, room.row + escape.row, escape.id});
+                for (const FixturePlacement& fixture : room.layout.*list)
+                {
+                    (act.*list).push_back({room.column + fixture.column, room.row + fixture.row, fixture.id});
+                }
             }
 
             for (const PatrolPoint& point : room.layout.patrols)

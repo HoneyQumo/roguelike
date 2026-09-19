@@ -75,6 +75,23 @@ def Write(name, samples, loudness):
         name, len(frames) / float(RATE), np.sqrt((ready ** 2).mean()), np.abs(ready).max()))
 
 
+def Fold(name, source):
+    """Стерео в моно. Громкость и частоту не трогаем: звук обязан остаться тем же,
+    меняется только то, из-за чего SFML отказывается его пространствить."""
+    data, rate = sf.read(os.path.join(SOURCE, source), dtype='int16', always_2d=True)
+    mono = data.mean(axis=1).round().astype(np.int16)
+
+    path = os.path.join(AUDIO, name)
+    with wave.open(path, 'wb') as out:
+        out.setnchannels(1)
+        out.setsampwidth(2)
+        out.setframerate(rate)
+        out.writeframes(mono.tobytes())
+
+    print('folded %s  %d ch -> 1  %d Hz  %.2f sec  peak %d' % (
+        name, data.shape[1], rate, len(mono) / float(rate), int(np.abs(mono.astype(np.int32)).max())))
+
+
 def Seam(samples, seconds=0.03):
     """Стык петли: хвост подмешивается в начало, иначе на повторе слышен щелчок."""
     blend = min(int(RATE * seconds), len(samples) // 4)
@@ -169,3 +186,4 @@ if __name__ == '__main__':
     Write('hatch_open.wav', Hatch(), 0.095)
     Write('car_engine.wav', Engine(), 0.075)
     Write('car_skid.wav', Skid(), 0.085)
+    Fold('hurt.wav', 'hurt_stereo.wav')

@@ -7,6 +7,7 @@ x86
 *.user
 **/log.txt
 **/logger_benchmark.txt
+*.stackdump
 
 # NuGet packages restored on build
 packages/

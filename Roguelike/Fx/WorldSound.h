@@ -38,6 +38,24 @@ namespace RoguelikeGame
 		audio->SetAttenuation(SOUND_ATTENUATION);
 	}
 
+	struct SoundReach
+	{
+		float fullDistance = SOUND_FULL_DISTANCE;
+		float attenuation = SOUND_ATTENUATION;
+	};
+
+	// Каждый вид разносится по-своему: выстрел через полкарты, шаг - на пару
+	// шагов. Новый звук объявляет дальность сам, а не наследует чужую молча.
+	inline SoundReach ReachOf(SoundKind kind)
+	{
+		if (kind == SoundKind::Step)
+		{
+			return {STEP_FULL_DISTANCE, STEP_ATTENUATION};
+		}
+
+		return {};
+	}
+
 	// Одноразовый звук: его не останавливают и не зацикливают, поэтому ему
 	// хватает места в общем пуле, а не своего источника.
 	inline void PlayOneShot(const sf::SoundBuffer* buffer, float volume, SoundKind kind, SoundPlace place,
@@ -49,7 +67,9 @@ namespace RoguelikeGame
 			return;
 		}
 
+		SoundReach reach = ReachOf(kind);
+
 		XYZEngine::SoundPool::Instance()->PlayAt(buffer, source->GetTransform()->GetWorldPosition(), volume,
-			static_cast<int>(kind), SOUND_FULL_DISTANCE, SOUND_ATTENUATION);
+			static_cast<int>(kind), reach.fullDistance, reach.attenuation);
 	}
 }

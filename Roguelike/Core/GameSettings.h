@@ -467,12 +467,19 @@ namespace RoguelikeGame
     constexpr float SOUND_FULL_DISTANCE = 0.5f * SCREEN_WIDTH;
     constexpr float SOUND_ATTENUATION = 1.f;
 
+    // Шаг - местная примета, «кто-то рядом», а не фон всей карты. Под общую
+    // дальность он не подходит: та держит полную громкость на весь экран.
+    constexpr float STEP_FULL_DISTANCE = 1.5f * TILE_SIZE;
+    constexpr float STEP_ATTENUATION = 2.f * SOUND_ATTENUATION;
+
     constexpr float MUSIC_VOLUME = 15.f;
     constexpr float SHOT_VOLUME = 20.f;
     constexpr float RELOAD_VOLUME = 45.f;
     constexpr float HURT_VOLUME = 35.f;
     constexpr float VOICE_VOLUME = 70.f;
-    constexpr float STEP_VOLUME = 60.f;
+    // Файл шага короткий и плотный: по средней громкости он на слух тяжелее
+    // выстрела, хотя по пику втрое тише. Отсюда и число ниже соседних.
+    constexpr float STEP_VOLUME = 45.f;
     // Враг волны не появляется ближе полутора клеток к игроку.
     // Вода перебирает кадры медленно: рябь, а не мельтешение.
     constexpr float WATER_FRAME_TIME = 0.28f;

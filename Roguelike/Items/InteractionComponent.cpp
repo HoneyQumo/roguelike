@@ -3,6 +3,7 @@
 #include "InteractableComponent.h"
 #include <GameObject.h>
 #include <InputComponent.h>
+#include <UiManager.h>
 #include <LoggerRegistry.h>
 #include <TextUtils.h>
 #include <TransformComponent.h>
@@ -10,9 +11,25 @@
 
 namespace RoguelikeGame
 {
+    namespace
+    {
+        std::vector<InteractionComponent*> living;
+    }
+
     InteractionComponent::InteractionComponent(XYZEngine::GameObject* gameObject) : Component(gameObject)
     {
         transform = gameObject->GetTransform();
+        living.push_back(this);
+    }
+
+    const std::vector<InteractionComponent*>& InteractionComponent::GetLiving()
+    {
+        return living;
+    }
+
+    InteractionComponent::~InteractionComponent()
+    {
+        living.erase(std::remove(living.begin(), living.end(), this), living.end());
     }
 
     void InteractionComponent::Start()
@@ -47,6 +64,14 @@ namespace RoguelikeGame
 
     void InteractionComponent::Update(float deltaTime)
     {
+        // Сумка забирает ввод себе, и мир при этом не стоит: без этой проверки
+        // рубильник продолжал бы греметь, пока игрок перекладывает предметы.
+        if (XYZEngine::UiManager::Instance()->IsInputCaptured())
+        {
+            BreakHold();
+            return;
+        }
+
         UpdateTarget();
 
         if (held != nullptr)

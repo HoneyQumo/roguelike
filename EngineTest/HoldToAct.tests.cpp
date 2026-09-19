@@ -65,6 +65,7 @@ namespace
 			InputSystem::Instance()->BeginFrame();
 			InputSystem::Instance()->HandleEvent(KeyEvent(sf::Event::KeyPressed, interactKey));
 			GameWorld::Instance()->Update(0.05f);
+			GameWorld::Instance()->LateUpdate();
 		}
 
 		void Release()
@@ -72,6 +73,7 @@ namespace
 			InputSystem::Instance()->BeginFrame();
 			InputSystem::Instance()->HandleEvent(KeyEvent(sf::Event::KeyReleased, interactKey));
 			GameWorld::Instance()->Update(0.05f);
+			GameWorld::Instance()->LateUpdate();
 		}
 
 		void KeepHolding(float seconds)
@@ -80,6 +82,7 @@ namespace
 			{
 				InputSystem::Instance()->BeginFrame();
 				GameWorld::Instance()->Update(0.05f);
+				GameWorld::Instance()->LateUpdate();
 			}
 		}
 
@@ -87,6 +90,7 @@ namespace
 		{
 			InputSystem::Instance()->BeginFrame();
 			GameWorld::Instance()->Update(0.05f);
+			GameWorld::Instance()->LateUpdate();
 		}
 
 		void MovePlayer(float dx)
@@ -99,6 +103,22 @@ namespace
 		InteractionComponent* interaction = nullptr;
 		GameObject* player = nullptr;
 	};
+}
+
+// Удалённый рычаг обязан сказать об этом: выход из триггера при удалении
+// не приходит, и без этого взаимодействие бьёт по освобождённой памяти.
+TEST_F(HoldToActTest, ALeverDestroyedMidHoldTakesItselfOutOfTheList)
+{
+	PressHold();
+	KeepHolding(0.3f);
+	ASSERT_TRUE(interaction->IsHolding());
+
+	GameWorld::Instance()->DestroyGameObject(lever->GetGameObject());
+	lever = nullptr;
+	KeepHolding(0.5f);
+
+	EXPECT_FALSE(interaction->IsHolding());
+	EXPECT_EQ(interaction->GetTarget(), nullptr);
 }
 
 // Пока держат - гремит толчками, а не сплошным потоком: сплошной

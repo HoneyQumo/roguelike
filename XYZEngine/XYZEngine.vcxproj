@@ -137,6 +137,7 @@
     <ClInclude Include="Core\Scene.h" />
     <ClInclude Include="Input\AimRotationComponent.h" />
     <ClInclude Include="Audio\SoundSource.h" />
+    <ClInclude Include="Ui\TextWrap.h" />
     <ClInclude Include="Audio\SoundPool.h" />
     <ClInclude Include="Audio\SoundSpace.h" />
     <ClInclude Include="Audio\SoundSourceComponent.h" />
@@ -186,6 +187,7 @@
     <ClCompile Include="Math\Matrix2D.cpp" />
     <ClCompile Include="Physics\MovementComponent.cpp" />
     <ClCompile Include="Audio\MusicComponent.cpp" />
+    <ClCompile Include="Ui\TextWrap.cpp" />
     <ClCompile Include="Audio\SoundPool.cpp" />
     <ClCompile Include="Audio\SoundSpace.cpp" />
     <ClCompile Include="pch.cpp">

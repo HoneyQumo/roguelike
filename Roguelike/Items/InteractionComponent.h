@@ -21,6 +21,17 @@ namespace RoguelikeGame
     {
     public:
         InteractionComponent(XYZEngine::GameObject* gameObject);
+        ~InteractionComponent() override;
+
+        /**
+        *	Кто сейчас слушает взаимодействия. Список нужен уходящему объекту:
+        *	выход из триггера при удалении не приходит, физика вычёркивает пару
+        *	молча, и без этого в candidates остаётся указатель на мёртвого.
+        *
+        *	Слушателей всегда один-два - это игрок, - поэтому перебор дешевле
+        *	обратного указателя, который пришлось бы гасить в трёх местах.
+        */
+        static const std::vector<InteractionComponent*>& GetLiving();
 
         void Start() override;
         void Update(float deltaTime) override;

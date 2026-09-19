@@ -14,6 +14,14 @@ namespace RoguelikeGame
 
     InteractableComponent::InteractableComponent(XYZEngine::GameObject* gameObject) : Component(gameObject) {}
 
+    InteractableComponent::~InteractableComponent()
+    {
+        for (InteractionComponent* interaction : InteractionComponent::GetLiving())
+        {
+            interaction->RemoveCandidate(this);
+        }
+    }
+
     std::string InteractableComponent::GetRefusal(XYZEngine::GameObject* actor) const
     {
         return {};

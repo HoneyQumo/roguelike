@@ -8,7 +8,7 @@
 
 | файл | откуда | размер |
 |---|---|---|
-| `v4_ru.pt` | https://models.silero.ai/models/tts/ru/v4_ru.pt | 40 МБ |
+| `v5_cis_base.pt` | https://models.silero.ai/models/tts/ru/v5_cis_base.pt | 92 МБ |
 
 ```bash
 pip install torch omegaconf
@@ -17,14 +17,13 @@ python Tools/Audio/make_voices.py
 
 ## Голоса
 
-В модели их шесть: `aidar`, `baya`, `kseniya`, `xenia`, `eugene` и `random`.
-Врагам розданы три разных, а не один, растянутый просодией, - иначе на слух
-они одинаковы.
+В модели их шестьдесят. Среди охраны женских голосов нет, поэтому взяты три
+мужских с разнесённым основным тоном - иначе враги на слух одинаковы.
 
-| набор | кто говорит | голос |
-|---|---|---|
-| `heavy_spotted` | грунт, щитовик, тяжёлый | `eugene` |
-| `guard_spotted` | мародёр, штурмовик | `aidar` |
-| `radio_spotted` | радист, босс | `baya` |
+| набор | кто говорит | голос | тон |
+|---|---|---|---|
+| `heavy_spotted` | грунт, щитовик, тяжёлый | `ru_alexandr` | 130 Гц |
+| `guard_spotted` | мародёр, штурмовик | `ru_marat` | 161 Гц |
+| `radio_spotted` | радист, босс | `ru_igor` | 188 Гц |
 
 Какой голос кому - в `make_voices.py`, таблицей.

@@ -3,6 +3,7 @@
 #include "SpeechCatalogLoader.h"
 #include <filesystem>
 #include <sstream>
+#include <vector>
 
 using RoguelikeGame::SpeechCatalog;
 using RoguelikeGame::SpeechCatalogLoader;
@@ -138,29 +139,38 @@ TEST_F(ShippedSpeechTest, TheCatalogOnDiskIsReadable)
 }
 
 // Реплика без файла - это тишина на месте голоса, и заметить её можно
-// только на слух. Поэтому сверяем с диском.
+// только на слух. Поэтому сверяем с диском - все, а не заранее известное число.
 TEST_F(ShippedSpeechTest, EverySoundNamedInTheCatalogLiesOnDisk)
 {
 	ASSERT_TRUE(isFound) << previous.string();
 
 	SpeechCatalog catalog = SpeechCatalogLoader::Load(SPEECH_FILE);
+	std::vector<std::string> sounds = catalog.GetSounds();
 
-	int checked = 0;
+	ASSERT_FALSE(sounds.empty());
+	for (const std::string& sound : sounds)
+	{
+		EXPECT_TRUE(std::filesystem::exists(VOICE_PATH + sound + ".wav")) << sound;
+	}
+}
+
+// Каждый набор обязан ссылаться на живые реплики: набор с пустой ссылкой
+// разбор не пропустит, а вот набор без реплик вовсе - молчащий враг.
+TEST_F(ShippedSpeechTest, EverySetHasSomethingToSay)
+{
+	ASSERT_TRUE(isFound) << previous.string();
+
+	SpeechCatalog catalog = SpeechCatalogLoader::Load(SPEECH_FILE);
+
 	for (const char* voice : {"guard", "heavy", "radio"})
 	{
-		const std::vector<std::string>* set = catalog.FindSet(std::string(voice) + "_spotted");
-		ASSERT_NE(set, nullptr) << voice;
-
-		for (const std::string& id : *set)
+		for (const char* cue : {"_spotted", "_notice"})
 		{
-			const SpeechLine* line = catalog.FindLine(id);
-			ASSERT_NE(line, nullptr) << id;
-			ASSERT_FALSE(line->sound.empty()) << id;
+			std::string id = std::string(voice) + cue;
+			const std::vector<std::string>* set = catalog.FindSet(id);
 
-			EXPECT_TRUE(std::filesystem::exists(VOICE_PATH + line->sound + ".wav")) << line->sound;
-			checked++;
+			ASSERT_NE(set, nullptr) << id;
+			EXPECT_GT(set->size(), 1u) << id << " - одна реплика читается повтором";
 		}
 	}
-
-	EXPECT_EQ(checked, 9);
 }

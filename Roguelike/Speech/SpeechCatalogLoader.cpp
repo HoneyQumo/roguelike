@@ -61,6 +61,11 @@ namespace RoguelikeGame
 			{
 				line.sound = value;
 			}
+			else if (key == "say")
+			{
+				// Как произносить - дело генератора голосов. Игре это не нужно:
+				// на экране должен быть текст, а не разметка.
+			}
 			else
 			{
 				throw std::runtime_error("Speech line " + std::to_string(lineNumber) + " has unknown field: " + key);

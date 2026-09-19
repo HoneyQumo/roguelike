@@ -15,6 +15,7 @@ namespace XYZEngine
 
 namespace RoguelikeGame
 {
+    class DoorComponent;
     class RoomWakeComponent;
     class TileFogComponent;
 
@@ -32,8 +33,8 @@ namespace RoguelikeGame
             XYZEngine::VertexArrayRendererComponent* renderer);
         static RoomWakeComponent* CreateRoomWake(const std::vector<LevelZone>& zones, Level& level);
         static void PutToSleep(RoomWakeComponent* rooms, const std::vector<LevelZone>& zones, int column, int row, XYZEngine::GameObject* enemy);
-        static int BuildDoors(const LevelData& levelData, const ItemCatalog& items, Level& level);
-        static int BuildFixtures(const LevelData& levelData, Level& level);
+        static std::vector<DoorComponent*> BuildDoors(const LevelData& levelData, const ItemCatalog& items, Level& level);
+        static int BuildFixtures(const LevelData& levelData, Level& level, const std::vector<DoorComponent*>& doors);
         static int BuildWaves(const LevelData& levelData, Level& level);
         static int BuildPursuit(const LevelData& levelData, Level& level);
 

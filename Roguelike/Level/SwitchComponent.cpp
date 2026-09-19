@@ -1,7 +1,6 @@
 #include "SwitchComponent.h"
 #include "Fixtures.h"
 #include "GameSettings.h"
-#include "HatchComponent.h"
 #include <AudioComponent.h>
 #include <GameObject.h>
 #include <LoggerRegistry.h>
@@ -122,7 +121,7 @@ namespace RoguelikeGame
         }
     }
 
-    void LinkSwitches(const std::vector<SwitchComponent*>& switches, const std::vector<HatchComponent*>& hatches)
+    void LinkSwitches(const std::vector<SwitchComponent*>& switches, const std::vector<Openable>& targets)
     {
         for (SwitchComponent* lever : switches)
         {
@@ -131,12 +130,12 @@ namespace RoguelikeGame
                 continue;
             }
 
-            std::vector<HatchComponent*> wanted;
-            for (HatchComponent* hatch : hatches)
+            std::vector<Openable> wanted;
+            for (const Openable& target : targets)
             {
-                if (hatch != nullptr && hatch->GetHatchId() == lever->GetSwitchId())
+                if (target.open != nullptr && target.id == lever->GetSwitchId())
                 {
-                    wanted.push_back(hatch);
+                    wanted.push_back(target);
                 }
             }
 
@@ -148,9 +147,9 @@ namespace RoguelikeGame
 
             lever->SubscribePulled([wanted]()
             {
-                for (HatchComponent* hatch : wanted)
+                for (const Openable& target : wanted)
                 {
-                    hatch->Open();
+                    target.open();
                 }
             });
         }

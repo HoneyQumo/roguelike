@@ -5,6 +5,7 @@
 #include <vector>
 #include <EventList.h>
 #include "InteractableComponent.h"
+#include "Openable.h"
 
 namespace XYZEngine
 {
@@ -15,8 +16,6 @@ namespace XYZEngine
 
 namespace RoguelikeGame
 {
-    class HatchComponent;
-
     class SwitchComponent : public InteractableComponent
     {
     public:
@@ -53,5 +52,5 @@ namespace RoguelikeGame
         void ShowFrame();
     };
 
-    void LinkSwitches(const std::vector<SwitchComponent*>& switches, const std::vector<HatchComponent*>& hatches);
+    void LinkSwitches(const std::vector<SwitchComponent*>& switches, const std::vector<Openable>& targets);
 }

@@ -1,10 +1,13 @@
 #include "pch.h"
+#include "DoorComponent.h"
 #include "Fixtures.h"
 #include "HatchComponent.h"
+#include "Openable.h"
 #include "SwitchComponent.h"
 #include <GameWorld.h>
 #include <InputSystem.h>
 
+using RoguelikeGame::DoorComponent;
 using RoguelikeGame::HATCH_FRAMES;
 using RoguelikeGame::HATCH_OPEN_TIME;
 using RoguelikeGame::HatchComponent;
@@ -12,6 +15,7 @@ using RoguelikeGame::HatchFrame;
 using RoguelikeGame::HatchState;
 using RoguelikeGame::LeverFrame;
 using RoguelikeGame::LinkSwitches;
+using RoguelikeGame::OpenableOf;
 using RoguelikeGame::NextHatchState;
 using RoguelikeGame::SwitchComponent;
 
@@ -46,6 +50,15 @@ namespace
 			hatch->SetHatchId(id);
 
 			return hatch;
+		}
+
+		DoorComponent* CreateDoor(const std::string& id)
+		{
+			XYZEngine::GameObject* object = XYZEngine::GameWorld::Instance()->CreateGameObject("Door");
+			auto door = object->AddComponent<DoorComponent>();
+			door->SetDoorId(id);
+
+			return door;
 		}
 
 		void Run(float seconds)
@@ -111,7 +124,7 @@ TEST_F(FixtureTest, TheLeverOpensTheHatchWithTheSameName)
 {
 	SwitchComponent* lever = CreateLever("hatch_exit");
 	HatchComponent* hatch = CreateHatch("hatch_exit");
-	LinkSwitches({lever}, {hatch});
+	LinkSwitches({lever}, {OpenableOf(hatch)});
 
 	EXPECT_TRUE(lever->IsAvailable());
 	lever->Interact(nullptr);
@@ -125,11 +138,48 @@ TEST_F(FixtureTest, TheLeverOpensTheHatchWithTheSameName)
 	EXPECT_TRUE(hatch->IsAvailable());
 }
 
+// Потайная дверь - обычная дверь без ключа: её отпирает рычаг с тем же именем.
+TEST_F(FixtureTest, TheLeverOpensTheDoorWithTheSameName)
+{
+	SwitchComponent* lever = CreateLever("vault");
+	DoorComponent* door = CreateDoor("vault");
+	LinkSwitches({lever}, {OpenableOf(door)});
+
+	lever->Interact(nullptr);
+
+	EXPECT_TRUE(door->IsOpen());
+}
+
+// Рычагу всё равно, что он дёргает: люк и дверь с одним именем откроются оба.
+TEST_F(FixtureTest, OneLeverOpensEveryTargetWithItsName)
+{
+	SwitchComponent* lever = CreateLever("vault");
+	HatchComponent* hatch = CreateHatch("vault");
+	DoorComponent* door = CreateDoor("vault");
+	LinkSwitches({lever}, {OpenableOf(hatch), OpenableOf(door)});
+
+	lever->Interact(nullptr);
+
+	EXPECT_EQ(hatch->GetState(), HatchState::Opening);
+	EXPECT_TRUE(door->IsOpen());
+}
+
+TEST_F(FixtureTest, TheLeverLeavesOtherDoorsAlone)
+{
+	SwitchComponent* lever = CreateLever("vault");
+	DoorComponent* other = CreateDoor("cell");
+	LinkSwitches({lever}, {OpenableOf(other)});
+
+	lever->Interact(nullptr);
+
+	EXPECT_FALSE(other->IsOpen());
+}
+
 TEST_F(FixtureTest, TheLeverLeavesOtherHatchesAlone)
 {
 	SwitchComponent* lever = CreateLever("hatch_exit");
 	HatchComponent* other = CreateHatch("hatch_vault");
-	LinkSwitches({lever}, {other});
+	LinkSwitches({lever}, {OpenableOf(other)});
 
 	lever->Interact(nullptr);
 
@@ -149,7 +199,7 @@ TEST_F(FixtureTest, TheOpenHatchIsUsedOnceAndAsksForItsOwnKey)
 {
 	SwitchComponent* lever = CreateLever("hatch_exit");
 	HatchComponent* hatch = CreateHatch("hatch_exit");
-	LinkSwitches({lever}, {hatch});
+	LinkSwitches({lever}, {OpenableOf(hatch)});
 
 	int fled = 0;
 	hatch->SubscribeFled([&fled]() { fled++; });

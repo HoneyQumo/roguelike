@@ -40,6 +40,7 @@ namespace RoguelikeGame
 		}
 
 		saidCount++;
+		LOG_INFO("Said " + lineId + ": " + line->text);
 
 		if (queue != nullptr)
 		{

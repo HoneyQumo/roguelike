@@ -3,7 +3,7 @@
 #include "EnemyVoice.h"
 #include "GameResources.h"
 #include "GameSettings.h"
-#include "WorldSound.h"
+#include "SpeechDirector.h"
 #include <GameObject.h>
 #include <randomizer.h>
 
@@ -36,10 +36,9 @@ namespace RoguelikeGame
     {
     }
 
-    void EnemyVoiceComponent::SetVoice(const char* newVoice, int newLines)
+    void EnemyVoiceComponent::SetSpeech(const char* newSpeech)
     {
-        voice = newVoice;
-        lines = newLines;
+        speech = newSpeech;
     }
 
     int EnemyVoiceComponent::GetSpokenCount() const
@@ -51,17 +50,12 @@ namespace RoguelikeGame
     {
         spokenCount++;
 
-        if (voice == nullptr || lines <= 0)
+        if (speech == nullptr)
         {
             return;
         }
 
-        const sf::SoundBuffer* line = GameResources::GetVoiceLine(voice, random<int>(1, lines));
-        if (line == nullptr)
-        {
-            return;
-        }
-
-        PlayOneShot(line, VOICE_VOLUME, SoundKind::Voice, SoundPlace::InWorld, gameObject);
+        // Реплика идёт из точки врага: по голосу слышно, откуда тревога.
+        SpeechDirector::Current().SayFromSet(speech, gameObject, SoundPlace::InWorld);
     }
 }

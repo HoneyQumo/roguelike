@@ -16,7 +16,7 @@ namespace RoguelikeGame
         void Update(float deltaTime) override;
         void Render() override;
 
-        void SetVoice(const char* newVoice, int newLines);
+        void SetSpeech(const char* newSpeech);
 
         int GetSpokenCount() const;
         void Speak();
@@ -24,8 +24,7 @@ namespace RoguelikeGame
     private:
         ChaseComponent* chase = nullptr;
 
-        const char* voice = nullptr;
-        int lines = 0;
+        const char* speech = nullptr;
         int spokenCount = 0;
         AwarenessState seenBefore = AwarenessState::Calm;
     };

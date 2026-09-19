@@ -1,6 +1,7 @@
 ﻿#include "DeveloperLevel.h"
 #include "GameSettings.h"
 #include "GameResources.h"
+#include "SpeechDirector.h"
 #include "LevelBuilder.h"
 #include "ActAssembler.h"
 #include "LevelLoader.h"
@@ -127,7 +128,13 @@ namespace RoguelikeGame
         inventoryScreen = std::make_unique<InventoryScreen>();
         messageScreen = std::make_unique<MessageScreen>();
         fadeScreen = std::make_unique<FadeScreen>();
-        uiRoot = CreateUiRoot(*hudScreen, *inventoryScreen, *messageScreen, *fadeScreen);
+
+        subtitleScreen = std::make_unique<SubtitleScreen>();
+        subtitleScreen->SetQueue(&subtitles);
+        SpeechDirector::Current().SetCatalog(&GameResources::GetSpeech());
+        SpeechDirector::Current().SetQueue(&subtitles);
+
+        uiRoot = CreateUiRoot(*hudScreen, *subtitleScreen, *inventoryScreen, *messageScreen, *fadeScreen);
 
         fadeScreen->Blackout();
         fadeScreen->FadeIn(LEVEL_FADE_IN_TIME);

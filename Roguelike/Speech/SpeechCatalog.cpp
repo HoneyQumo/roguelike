@@ -1,4 +1,5 @@
 #include "SpeechCatalog.h"
+#include <algorithm>
 
 namespace RoguelikeGame
 {
@@ -24,6 +25,26 @@ namespace RoguelikeGame
 		auto found = sets.find(id);
 
 		return found == sets.end() ? nullptr : &found->second;
+	}
+
+	std::vector<std::string> SpeechCatalog::GetSounds() const
+	{
+		std::vector<std::string> sounds;
+
+		for (const auto& line : lines)
+		{
+			if (line.second.sound.empty())
+			{
+				continue;
+			}
+
+			if (std::find(sounds.begin(), sounds.end(), line.second.sound) == sounds.end())
+			{
+				sounds.push_back(line.second.sound);
+			}
+		}
+
+		return sounds;
 	}
 
 	std::size_t SpeechCatalog::GetLineCount() const

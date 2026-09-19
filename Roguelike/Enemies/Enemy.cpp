@@ -70,7 +70,7 @@ namespace RoguelikeGame
             object->AddComponent<AwarenessGaugeComponent>();
 
             auto voice = object->AddComponent<EnemyVoiceComponent>();
-            voice->SetVoice(config.voice, config.voiceLines);
+            voice->SetSpeech(config.spottedSpeech);
 
             if (definition != nullptr)
             {

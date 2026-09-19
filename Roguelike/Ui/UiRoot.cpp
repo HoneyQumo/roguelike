@@ -8,12 +8,16 @@
 
 namespace RoguelikeGame
 {
-    XYZEngine::GameObject* CreateUiRoot(HudScreen& hud, InventoryScreen& inventory, MessageScreen& message, FadeScreen& fade)
+    XYZEngine::GameObject* CreateUiRoot(HudScreen& hud, SubtitleScreen& subtitles, InventoryScreen& inventory,
+                                        MessageScreen& message, FadeScreen& fade)
     {
         auto gameObject = XYZEngine::GameWorld::Instance()->CreateGameObject(UI_ROOT_OBJECT_NAME);
         gameObject->SetRenderLayer(UI_RENDER_LAYER);
 
         XYZEngine::UiManager::Instance()->Push(&hud);
+        // Субтитры ниже сумки: проброса событий вниз нет, и они не должны
+        // перехватывать то, что предназначено открытому окну.
+        XYZEngine::UiManager::Instance()->Push(&subtitles);
         XYZEngine::UiManager::Instance()->Push(&inventory);
         XYZEngine::UiManager::Instance()->Push(&message);
         XYZEngine::UiManager::Instance()->Push(&fade);

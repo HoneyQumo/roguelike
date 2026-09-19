@@ -4,12 +4,13 @@
 
 namespace XYZEngine
 {
-    class ColliderComponent;
-    struct Trigger;
+    class GameObject;
 }
 
 namespace RoguelikeGame
 {
+    class TreadComponent;
+
     /**
     *	Нажимная плитка - тот же выключатель, что и рычаг: то же имя, то же
     *	событие, та же связь через Openable. Разница одна - её давит нога,
@@ -20,15 +21,13 @@ namespace RoguelikeGame
     public:
         PlateComponent(XYZEngine::GameObject* gameObject);
 
-        void SetPad(XYZEngine::ColliderComponent* newPad);
+        void SetTread(TreadComponent* tread);
 
         std::string GetPrompt(XYZEngine::GameObject* actor) const override;
         bool IsAvailable() const override;
         bool Interact(XYZEngine::GameObject* actor) override;
 
     private:
-        XYZEngine::ColliderComponent* pad = nullptr;
-
-        void OnStep(const XYZEngine::Trigger& trigger);
+        void OnStep(XYZEngine::GameObject* walker);
     };
 }

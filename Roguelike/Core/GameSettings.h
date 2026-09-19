@@ -414,8 +414,11 @@ namespace RoguelikeGame
     constexpr auto DOOR_OPEN_SOUND = "door_open";
     constexpr auto LEVER_SOUND = "lever";
     constexpr auto HATCH_SOUND = "hatch_open";
+    constexpr auto TRAP_HURT_SOUND = "trap_spikes";
+    constexpr auto TRAP_ALARM_SOUND = "trap_wire";
     constexpr float DOOR_VOLUME = 45.f;
     constexpr float LEVER_VOLUME = 55.f;
+    constexpr float TRAP_VOLUME = 70.f;
     constexpr float HATCH_VOLUME = 70.f;
     constexpr auto DOOR_LOCKED_PREFIX = u8"Дверь заперта: нужен ";
     constexpr auto DOOR_UNKNOWN_KEY_NAME = u8"ключ";
@@ -632,6 +635,8 @@ namespace RoguelikeGame
     constexpr float HEAVY_BLAST_RADIUS = 4.f * TILE_SIZE;
     constexpr float PROP_BLAST_NOISE_SCALE = 3.5f;
     constexpr float PROP_NOISE_RADIUS = 320.f;
+    // Лязг шипов и крик наступившего слышно дальше самой ловушки, но не на весь этаж.
+    constexpr float TRAP_HURT_NOISE_RADIUS = 420.f;
     constexpr float MELEE_HIT_VOLUME = 55.f;
 
     constexpr float HEAVY_CHARGED_GLOW = 0.22f;
@@ -690,6 +695,8 @@ namespace RoguelikeGame
     constexpr auto DOOR_OPEN_SOUND_FILE = "Resources/Audio/door_open.wav";
     constexpr auto LEVER_SOUND_FILE = "Resources/Audio/lever.wav";
     constexpr auto HATCH_SOUND_FILE = "Resources/Audio/hatch_open.wav";
+    constexpr auto TRAP_HURT_SOUND_FILE = "Resources/Audio/trap_spikes.wav";
+    constexpr auto TRAP_ALARM_SOUND_FILE = "Resources/Audio/trap_wire.wav";
     constexpr auto FIXTURES_TEXTURE_FILE = "Resources/Textures/fixtures.png";
     constexpr auto HATCH_TEXTURE_PREFIX = "hatch_";
     constexpr auto LEVER_TEXTURE_PREFIX = "lever_";

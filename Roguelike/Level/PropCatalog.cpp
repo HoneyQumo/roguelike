@@ -51,6 +51,11 @@ namespace RoguelikeGame
         return health > 0.f;
     }
 
+    bool PropDefinition::IsTrap() const
+    {
+        return trapKind != TrapKind::None;
+    }
+
     bool PropDefinition::IsOpenable() const
     {
         return openable;
@@ -248,6 +253,19 @@ namespace RoguelikeGame
                 std::string value;
                 stream >> value;
                 (key == "solid" ? current.isSolid : current.isCover) = value == "true";
+                continue;
+            }
+
+            if (key == "trap")
+            {
+                std::string kind;
+                stream >> kind >> current.trapAmount;
+                current.trapKind = TrapKindFrom(kind);
+                if (current.trapKind == TrapKind::None)
+                {
+                    LOG_WARN("Unknown trap kind at line " + std::to_string(lineNumber) + ": " + kind);
+                }
+
                 continue;
             }
 

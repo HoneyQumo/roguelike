@@ -170,6 +170,8 @@
         <ClCompile Include="Level\HatchComponent.cpp"/>
         <ClCompile Include="Level\Openable.cpp"/>
         <ClCompile Include="Level\PlateComponent.cpp"/>
+        <ClCompile Include="Level\TrapComponent.cpp"/>
+        <ClCompile Include="Level\TreadComponent.cpp"/>
         <ClCompile Include="Level\SwitchComponent.cpp"/>
         <ClCompile Include="Level\PursuitComponent.cpp"/>
         <ClCompile Include="Level\WaveDirectorComponent.cpp"/>
@@ -273,6 +275,9 @@
         <ClInclude Include="Level\HatchComponent.h"/>
         <ClInclude Include="Level\Openable.h"/>
         <ClInclude Include="Level\PlateComponent.h"/>
+        <ClInclude Include="Level\TrapComponent.h"/>
+        <ClInclude Include="Level\Traps.h"/>
+        <ClInclude Include="Level\TreadComponent.h"/>
         <ClInclude Include="Level\SwitchComponent.h"/>
         <ClInclude Include="Level\CarArrival.h"/>
         <ClInclude Include="Level\GuardFacing.h"/>

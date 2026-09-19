@@ -1,9 +1,8 @@
 #include "PlateComponent.h"
 #include "FactionComponent.h"
 #include "GameSettings.h"
-#include <ColliderComponent.h>
+#include "TreadComponent.h"
 #include <GameObject.h>
-#include <Trigger.h>
 
 namespace RoguelikeGame
 {
@@ -12,13 +11,14 @@ namespace RoguelikeGame
         texturePrefix = PLATE_TEXTURE_PREFIX;
     }
 
-    void PlateComponent::SetPad(XYZEngine::ColliderComponent* newPad)
+    void PlateComponent::SetTread(TreadComponent* tread)
     {
-        pad = newPad;
-        if (pad != nullptr)
+        if (tread == nullptr)
         {
-            pad->SubscribeTriggerEnter([this](const XYZEngine::Trigger& trigger) { OnStep(trigger); });
+            return;
         }
+
+        tread->SubscribeStepped([this](XYZEngine::GameObject* walker) { OnStep(walker); });
     }
 
     std::string PlateComponent::GetPrompt(XYZEngine::GameObject* actor) const
@@ -36,10 +36,10 @@ namespace RoguelikeGame
         return false;
     }
 
-    void PlateComponent::OnStep(const XYZEngine::Trigger& trigger)
+    void PlateComponent::OnStep(XYZEngine::GameObject* walker)
     {
-        XYZEngine::ColliderComponent* other = trigger.GetFirst() == pad ? trigger.GetSecond() : trigger.GetFirst();
-        if (other == nullptr || GetFactionOf(other->GetGameObject()) != Faction::Player)
+        // Плитка ждёт беглеца: иначе первый же патруль вскрыл бы тайник.
+        if (GetFactionOf(walker) != Faction::Player)
         {
             return;
         }

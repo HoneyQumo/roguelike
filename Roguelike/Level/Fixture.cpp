@@ -5,6 +5,7 @@
 #include "EscapeCarComponent.h"
 #include "HatchComponent.h"
 #include "PlateComponent.h"
+#include "TreadComponent.h"
 #include "SwitchComponent.h"
 #include "WorldSound.h"
 #include <AudioComponent.h>
@@ -79,11 +80,14 @@ namespace RoguelikeGame
         pad->SetTrigger(true);
         pad->SetCollisionLayer(ITEM_COLLISION_LAYER);
 
+        auto tread = gameObject->AddComponent<TreadComponent>();
+        tread->SetPad(pad);
+
         auto plate = gameObject->AddComponent<PlateComponent>();
         plate->SetSwitchId(plateId);
         plate->SetSprite(sprite);
         plate->SetAudio(audio);
-        plate->SetPad(pad);
+        plate->SetTread(tread);
         HideInFog(gameObject);
 
         return gameObject;

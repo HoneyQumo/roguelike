@@ -19,6 +19,8 @@ namespace
 		HURT_SOUND_FILE,
 		LEVER_SOUND_FILE,
 		MAIN_THEME_FILE,
+		TRAP_ALARM_SOUND_FILE,
+		TRAP_HURT_SOUND_FILE,
 	};
 
 	std::string PathInFolder(const std::filesystem::directory_entry& entry, const std::string& folder)

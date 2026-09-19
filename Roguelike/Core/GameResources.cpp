@@ -134,6 +134,8 @@ namespace RoguelikeGame
         XYZEngine::ResourceSystem::Instance()->LoadSound(DOOR_OPEN_SOUND, DOOR_OPEN_SOUND_FILE);
         XYZEngine::ResourceSystem::Instance()->LoadSound(LEVER_SOUND, LEVER_SOUND_FILE);
         XYZEngine::ResourceSystem::Instance()->LoadSound(HATCH_SOUND, HATCH_SOUND_FILE);
+        XYZEngine::ResourceSystem::Instance()->LoadSound(TRAP_HURT_SOUND, TRAP_HURT_SOUND_FILE);
+        XYZEngine::ResourceSystem::Instance()->LoadSound(TRAP_ALARM_SOUND, TRAP_ALARM_SOUND_FILE);
         XYZEngine::ResourceSystem::Instance()->LoadSound(CAR_ENGINE_SOUND, CAR_ENGINE_SOUND_FILE);
         XYZEngine::ResourceSystem::Instance()->LoadSound(CAR_SKID_SOUND, CAR_SKID_SOUND_FILE);
         LoadFixtures();

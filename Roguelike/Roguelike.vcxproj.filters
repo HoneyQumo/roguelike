@@ -10,6 +10,9 @@
     <Filter Include="Core">
       <UniqueIdentifier>{a0003dde-1111-2222-3333-444455550002}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Cutscene">
+      <UniqueIdentifier>{b69477b7-a671-548f-90c8-afc8cac537fc}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Enemies">
       <UniqueIdentifier>{a0005ccd-1111-2222-3333-444455550003}</UniqueIdentifier>
     </Filter>
@@ -25,6 +28,9 @@
     <Filter Include="Player">
       <UniqueIdentifier>{a000d889-1111-2222-3333-444455550007}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Speech">
+      <UniqueIdentifier>{e910067d-bbb3-5e16-aaf5-6c5510c999c8}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Ui">
       <UniqueIdentifier>{a000f778-1111-2222-3333-444455550008}</UniqueIdentifier>
     </Filter>
@@ -33,92 +39,65 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Characters\AmmoPouchComponent.cpp">
-      <Filter>Characters</Filter>
-    </ClCompile>
-    <ClInclude Include="Characters\AmmoPouchComponent.h">
-      <Filter>Characters</Filter>
-    </ClInclude>
-    <ClCompile Include="Weapons\AreaDamage.cpp">
-      <Filter>Weapons</Filter>
-    </ClCompile>
-    <ClInclude Include="Weapons\AreaDamage.h">
-      <Filter>Weapons</Filter>
-    </ClInclude>
-    <ClCompile Include="Fx\BloodPool.cpp">
-      <Filter>Fx</Filter>
-    </ClCompile>
-    <ClInclude Include="Fx\BloodPool.h">
-      <Filter>Fx</Filter>
-    </ClInclude>
     <ClCompile Include="Boss\BossAnimationComponent.cpp">
       <Filter>Boss</Filter>
     </ClCompile>
-    <ClInclude Include="Boss\BossAnimationComponent.h">
-      <Filter>Boss</Filter>
-    </ClInclude>
     <ClCompile Include="Boss\BossBrainComponent.cpp">
       <Filter>Boss</Filter>
     </ClCompile>
-    <ClInclude Include="Boss\BossBrainComponent.h">
-      <Filter>Boss</Filter>
-    </ClInclude>
-    <ClInclude Include="Boss\BossCatalog.h">
-      <Filter>Boss</Filter>
-    </ClInclude>
     <ClCompile Include="Boss\BossEffects.cpp">
       <Filter>Boss</Filter>
     </ClCompile>
-    <ClInclude Include="Boss\BossEffects.h">
-      <Filter>Boss</Filter>
-    </ClInclude>
-    <ClInclude Include="Boss\BossSpriteAtlas.h">
-      <Filter>Boss</Filter>
-    </ClInclude>
     <ClCompile Include="Boss\CastMark.cpp">
       <Filter>Boss</Filter>
     </ClCompile>
-    <ClInclude Include="Boss\CastMark.h">
-      <Filter>Boss</Filter>
-    </ClInclude>
+    <ClCompile Include="Characters\AmmoPouchComponent.cpp">
+      <Filter>Characters</Filter>
+    </ClCompile>
     <ClCompile Include="Characters\CharacterFactory.cpp">
       <Filter>Characters</Filter>
     </ClCompile>
-    <ClInclude Include="Characters\CharacterFactory.h">
+    <ClCompile Include="Characters\DodgeRollComponent.cpp">
       <Filter>Characters</Filter>
-    </ClInclude>
-    <ClInclude Include="Characters\SettleComponent.h">
+    </ClCompile>
+    <ClCompile Include="Characters\FootstepComponent.cpp">
       <Filter>Characters</Filter>
-    </ClInclude>
+    </ClCompile>
+    <ClCompile Include="Characters\HealthBarComponent.cpp">
+      <Filter>Characters</Filter>
+    </ClCompile>
+    <ClCompile Include="Characters\HealthComponent.cpp">
+      <Filter>Characters</Filter>
+    </ClCompile>
+    <ClCompile Include="Characters\HitFlashComponent.cpp">
+      <Filter>Characters</Filter>
+    </ClCompile>
     <ClCompile Include="Characters\SettleComponent.cpp">
       <Filter>Characters</Filter>
     </ClCompile>
-    <ClCompile Include="Enemies\ChaseComponent.cpp">
-      <Filter>Enemies</Filter>
+    <ClCompile Include="Characters\StaminaComponent.cpp">
+      <Filter>Characters</Filter>
     </ClCompile>
-    <ClInclude Include="Enemies\Awareness.h">
-      <Filter>Enemies</Filter>
-    </ClInclude>
-    <ClInclude Include="Enemies\AwarenessGauge.h">
-      <Filter>Enemies</Filter>
-    </ClInclude>
-    <ClInclude Include="Enemies\Noise.h">
-      <Filter>Enemies</Filter>
-    </ClInclude>
-    <ClCompile Include="Enemies\Noise.cpp">
-      <Filter>Enemies</Filter>
+    <ClCompile Include="Core\CrashReport.cpp">
+      <Filter>Core</Filter>
     </ClCompile>
-    <ClInclude Include="Enemies\AwarenessGaugeComponent.h">
-      <Filter>Enemies</Filter>
-    </ClInclude>
-    <ClInclude Include="Enemies\EnemyVoice.h">
-      <Filter>Enemies</Filter>
-    </ClInclude>
-    <ClInclude Include="Enemies\EnemyVoiceComponent.h">
-      <Filter>Enemies</Filter>
-    </ClInclude>
-    <ClCompile Include="Enemies\EnemyVoiceComponent.cpp">
-      <Filter>Enemies</Filter>
+    <ClCompile Include="Core\FactionComponent.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\GameMain.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\GameResources.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Cutscene\CameraDirectorComponent.cpp">
+      <Filter>Cutscene</Filter>
+    </ClCompile>
+    <ClCompile Include="Cutscene\CutscenePlayerComponent.cpp">
+      <Filter>Cutscene</Filter>
+    </ClCompile>
+    <ClCompile Include="Cutscene\CutsceneTimeline.cpp">
+      <Filter>Cutscene</Filter>
     </ClCompile>
     <ClCompile Include="Enemies\AwarenessGauge.cpp">
       <Filter>Enemies</Filter>
@@ -126,168 +105,440 @@
     <ClCompile Include="Enemies\AwarenessGaugeComponent.cpp">
       <Filter>Enemies</Filter>
     </ClCompile>
-    <ClInclude Include="Enemies\Vision.h">
+    <ClCompile Include="Enemies\BackOffSpot.cpp">
       <Filter>Enemies</Filter>
-    </ClInclude>
-    <ClInclude Include="Level\LevelGrid.h">
-      <Filter>Level</Filter>
-    </ClInclude>
-    <ClInclude Include="Level\PathField.h">
-      <Filter>Level</Filter>
-    </ClInclude>
-    <ClInclude Include="Level\PathService.h">
-      <Filter>Level</Filter>
-    </ClInclude>
-    <ClInclude Include="Enemies\RouteFollower.h">
+    </ClCompile>
+    <ClCompile Include="Enemies\ChaseComponent.cpp">
       <Filter>Enemies</Filter>
-    </ClInclude>
-    <ClInclude Include="Enemies\SightMemory.h">
+    </ClCompile>
+    <ClCompile Include="Enemies\CoverSpot.cpp">
       <Filter>Enemies</Filter>
-    </ClInclude>
-    <ClInclude Include="Enemies\PatrolRules.h">
+    </ClCompile>
+    <ClCompile Include="Enemies\Enemy.cpp">
       <Filter>Enemies</Filter>
-    </ClInclude>
-    <ClInclude Include="Enemies\ProgressWatch.h">
+    </ClCompile>
+    <ClCompile Include="Enemies\EnemyAttackComponent.cpp">
       <Filter>Enemies</Filter>
-    </ClInclude>
-    <ClInclude Include="Enemies\LookAround.h">
+    </ClCompile>
+    <ClCompile Include="Enemies\EnemyVoiceComponent.cpp">
       <Filter>Enemies</Filter>
-    </ClInclude>
-    <ClInclude Include="Enemies\LookTurn.h">
-      <Filter>Enemies</Filter>
-    </ClInclude>
-    <ClInclude Include="Enemies\AttackRules.h">
-      <Filter>Enemies</Filter>
-    </ClInclude>
-    <ClInclude Include="Enemies\HidingSpots.h">
-      <Filter>Enemies</Filter>
-    </ClInclude>
+    </ClCompile>
     <ClCompile Include="Enemies\HidingSpots.cpp">
       <Filter>Enemies</Filter>
     </ClCompile>
-    <ClInclude Include="Enemies\Navigator.h">
-      <Filter>Enemies</Filter>
-    </ClInclude>
     <ClCompile Include="Enemies\Navigator.cpp">
       <Filter>Enemies</Filter>
     </ClCompile>
-    <ClInclude Include="Enemies\PatrolComponent.h">
+    <ClCompile Include="Enemies\Noise.cpp">
       <Filter>Enemies</Filter>
-    </ClInclude>
+    </ClCompile>
     <ClCompile Include="Enemies\PatrolComponent.cpp">
       <Filter>Enemies</Filter>
     </ClCompile>
-    <ClInclude Include="Level\PatrolRoutes.h">
-      <Filter>Level</Filter>
-    </ClInclude>
-    <ClInclude Include="Level\RoomTransform.h">
-      <Filter>Level</Filter>
-    </ClInclude>
-    <ClInclude Include="Level\ActPlan.h">
-      <Filter>Level</Filter>
-    </ClInclude>
-    <ClInclude Include="Level\Door.h">
-      <Filter>Level</Filter>
-    </ClInclude>
-    <ClCompile Include="Level\Door.cpp">
-      <Filter>Level</Filter>
+    <ClCompile Include="Fx\BloodPool.cpp">
+      <Filter>Fx</Filter>
     </ClCompile>
-    <ClInclude Include="Level\DoorComponent.h">
-      <Filter>Level</Filter>
-    </ClInclude>
-    <ClCompile Include="Level\DoorComponent.cpp">
-      <Filter>Level</Filter>
+    <ClCompile Include="Fx\Fire.cpp">
+      <Filter>Fx</Filter>
     </ClCompile>
-    <ClInclude Include="Level\DoorHinge.h">
-      <Filter>Level</Filter>
-    </ClInclude>
-    <ClCompile Include="Level\DoorHinge.cpp">
-      <Filter>Level</Filter>
+    <ClCompile Include="Fx\FireComponent.cpp">
+      <Filter>Fx</Filter>
     </ClCompile>
-    <ClInclude Include="Level\LevelZones.h">
-      <Filter>Level</Filter>
-    </ClInclude>
-    <ClCompile Include="Level\LevelZones.cpp">
-      <Filter>Level</Filter>
+    <ClCompile Include="Fx\Fx.cpp">
+      <Filter>Fx</Filter>
     </ClCompile>
-    <ClInclude Include="Level\Tileset.h">
-      <Filter>Level</Filter>
-    </ClInclude>
-    <ClCompile Include="Level\Tileset.cpp">
-      <Filter>Level</Filter>
+    <ClCompile Include="Fx\Music.cpp">
+      <Filter>Fx</Filter>
     </ClCompile>
-    <ClInclude Include="Level\RoomWakeComponent.h">
-      <Filter>Level</Filter>
-    </ClInclude>
-    <ClCompile Include="Level\RoomWakeComponent.cpp">
-      <Filter>Level</Filter>
+    <ClCompile Include="Fx\Particles.cpp">
+      <Filter>Fx</Filter>
     </ClCompile>
-    <ClInclude Include="Items\DoorRules.h">
+    <ClCompile Include="Fx\Trail.cpp">
+      <Filter>Fx</Filter>
+    </ClCompile>
+    <ClCompile Include="Fx\TrailComponent.cpp">
+      <Filter>Fx</Filter>
+    </ClCompile>
+    <ClCompile Include="Items\ContainerComponent.cpp">
       <Filter>Items</Filter>
-    </ClInclude>
-    <ClCompile Include="Level\ActPlan.cpp">
-      <Filter>Level</Filter>
     </ClCompile>
-    <ClInclude Include="Level\ActAssembler.h">
-      <Filter>Level</Filter>
-    </ClInclude>
+    <ClCompile Include="Items\EquipExchange.cpp">
+      <Filter>Items</Filter>
+    </ClCompile>
+    <ClCompile Include="Items\InteractableComponent.cpp">
+      <Filter>Items</Filter>
+    </ClCompile>
+    <ClCompile Include="Items\InteractionComponent.cpp">
+      <Filter>Items</Filter>
+    </ClCompile>
+    <ClCompile Include="Items\InventoryComponent.cpp">
+      <Filter>Items</Filter>
+    </ClCompile>
+    <ClCompile Include="Items\Item.cpp">
+      <Filter>Items</Filter>
+    </ClCompile>
+    <ClCompile Include="Items\ItemCatalog.cpp">
+      <Filter>Items</Filter>
+    </ClCompile>
+    <ClCompile Include="Items\ItemCatalogLoader.cpp">
+      <Filter>Items</Filter>
+    </ClCompile>
+    <ClCompile Include="Items\ItemDropComponent.cpp">
+      <Filter>Items</Filter>
+    </ClCompile>
+    <ClCompile Include="Items\ItemEffectComponent.cpp">
+      <Filter>Items</Filter>
+    </ClCompile>
+    <ClCompile Include="Items\ItemIconLayout.cpp">
+      <Filter>Items</Filter>
+    </ClCompile>
+    <ClCompile Include="Items\ItemPickupComponent.cpp">
+      <Filter>Items</Filter>
+    </ClCompile>
+    <ClCompile Include="Items\LootCatalog.cpp">
+      <Filter>Items</Filter>
+    </ClCompile>
+    <ClCompile Include="Items\LootDrop.cpp">
+      <Filter>Items</Filter>
+    </ClCompile>
+    <ClCompile Include="Items\QuickBeltComponent.cpp">
+      <Filter>Items</Filter>
+    </ClCompile>
     <ClCompile Include="Level\ActAssembler.cpp">
       <Filter>Level</Filter>
     </ClCompile>
-    <ClCompile Include="Level\RoomTransform.cpp">
+    <ClCompile Include="Level\ActPlan.cpp">
+      <Filter>Level</Filter>
+    </ClCompile>
+    <ClCompile Include="Level\AmbushComponent.cpp">
+      <Filter>Level</Filter>
+    </ClCompile>
+    <ClCompile Include="Level\Chasm.cpp">
+      <Filter>Level</Filter>
+    </ClCompile>
+    <ClCompile Include="Level\DestructibleComponent.cpp">
+      <Filter>Level</Filter>
+    </ClCompile>
+    <ClCompile Include="Level\DeveloperLevel.cpp">
+      <Filter>Level</Filter>
+    </ClCompile>
+    <ClCompile Include="Level\Door.cpp">
+      <Filter>Level</Filter>
+    </ClCompile>
+    <ClCompile Include="Level\DoorComponent.cpp">
+      <Filter>Level</Filter>
+    </ClCompile>
+    <ClCompile Include="Level\DoorHinge.cpp">
+      <Filter>Level</Filter>
+    </ClCompile>
+    <ClCompile Include="Level\EscapeCarComponent.cpp">
+      <Filter>Level</Filter>
+    </ClCompile>
+    <ClCompile Include="Level\Fixture.cpp">
+      <Filter>Level</Filter>
+    </ClCompile>
+    <ClCompile Include="Level\FogOfWar.cpp">
+      <Filter>Level</Filter>
+    </ClCompile>
+    <ClCompile Include="Level\FogRevealComponent.cpp">
+      <Filter>Level</Filter>
+    </ClCompile>
+    <ClCompile Include="Level\FogVisibilityComponent.cpp">
+      <Filter>Level</Filter>
+    </ClCompile>
+    <ClCompile Include="Level\HatchComponent.cpp">
+      <Filter>Level</Filter>
+    </ClCompile>
+    <ClCompile Include="Level\Level.cpp">
+      <Filter>Level</Filter>
+    </ClCompile>
+    <ClCompile Include="Level\LevelBuilder.cpp">
+      <Filter>Level</Filter>
+    </ClCompile>
+    <ClCompile Include="Level\LevelCatalog.cpp">
+      <Filter>Level</Filter>
+    </ClCompile>
+    <ClCompile Include="Level\LevelExit.cpp">
+      <Filter>Level</Filter>
+    </ClCompile>
+    <ClCompile Include="Level\LevelExitComponent.cpp">
+      <Filter>Level</Filter>
+    </ClCompile>
+    <ClCompile Include="Level\LevelGrid.cpp">
+      <Filter>Level</Filter>
+    </ClCompile>
+    <ClCompile Include="Level\LevelIntegrity.cpp">
+      <Filter>Level</Filter>
+    </ClCompile>
+    <ClCompile Include="Level\LevelLoader.cpp">
+      <Filter>Level</Filter>
+    </ClCompile>
+    <ClCompile Include="Level\LevelProgression.cpp">
+      <Filter>Level</Filter>
+    </ClCompile>
+    <ClCompile Include="Level\LevelZones.cpp">
+      <Filter>Level</Filter>
+    </ClCompile>
+    <ClCompile Include="Level\Openable.cpp">
+      <Filter>Level</Filter>
+    </ClCompile>
+    <ClCompile Include="Level\PathField.cpp">
+      <Filter>Level</Filter>
+    </ClCompile>
+    <ClCompile Include="Level\PathService.cpp">
       <Filter>Level</Filter>
     </ClCompile>
     <ClCompile Include="Level\PatrolRoutes.cpp">
       <Filter>Level</Filter>
     </ClCompile>
-    <ClInclude Include="Enemies\ChaseRules.h">
+    <ClCompile Include="Level\PlateComponent.cpp">
+      <Filter>Level</Filter>
+    </ClCompile>
+    <ClCompile Include="Level\Prop.cpp">
+      <Filter>Level</Filter>
+    </ClCompile>
+    <ClCompile Include="Level\PropCatalog.cpp">
+      <Filter>Level</Filter>
+    </ClCompile>
+    <ClCompile Include="Level\PropVisualComponent.cpp">
+      <Filter>Level</Filter>
+    </ClCompile>
+    <ClCompile Include="Level\PursuitComponent.cpp">
+      <Filter>Level</Filter>
+    </ClCompile>
+    <ClCompile Include="Level\RoomTransform.cpp">
+      <Filter>Level</Filter>
+    </ClCompile>
+    <ClCompile Include="Level\RoomWakeComponent.cpp">
+      <Filter>Level</Filter>
+    </ClCompile>
+    <ClCompile Include="Level\SwitchComponent.cpp">
+      <Filter>Level</Filter>
+    </ClCompile>
+    <ClCompile Include="Level\TileAnimationComponent.cpp">
+      <Filter>Level</Filter>
+    </ClCompile>
+    <ClCompile Include="Level\TileFogComponent.cpp">
+      <Filter>Level</Filter>
+    </ClCompile>
+    <ClCompile Include="Level\Tileset.cpp">
+      <Filter>Level</Filter>
+    </ClCompile>
+    <ClCompile Include="Level\TrapComponent.cpp">
+      <Filter>Level</Filter>
+    </ClCompile>
+    <ClCompile Include="Level\TreadComponent.cpp">
+      <Filter>Level</Filter>
+    </ClCompile>
+    <ClCompile Include="Level\Wall.cpp">
+      <Filter>Level</Filter>
+    </ClCompile>
+    <ClCompile Include="Level\WaveDirectorComponent.cpp">
+      <Filter>Level</Filter>
+    </ClCompile>
+    <ClCompile Include="Player\Player.cpp">
+      <Filter>Player</Filter>
+    </ClCompile>
+    <ClCompile Include="Player\PlayerAttackComponent.cpp">
+      <Filter>Player</Filter>
+    </ClCompile>
+    <ClCompile Include="Player\PlayerHudBinderComponent.cpp">
+      <Filter>Player</Filter>
+    </ClCompile>
+    <ClCompile Include="Player\PlayerLoadoutComponent.cpp">
+      <Filter>Player</Filter>
+    </ClCompile>
+    <ClCompile Include="Player\PlayerRollComponent.cpp">
+      <Filter>Player</Filter>
+    </ClCompile>
+    <ClCompile Include="Speech\SpeechCatalog.cpp">
+      <Filter>Speech</Filter>
+    </ClCompile>
+    <ClCompile Include="Speech\SpeechCatalogLoader.cpp">
+      <Filter>Speech</Filter>
+    </ClCompile>
+    <ClCompile Include="Speech\SpeechDirector.cpp">
+      <Filter>Speech</Filter>
+    </ClCompile>
+    <ClCompile Include="Speech\SubtitleQueue.cpp">
+      <Filter>Speech</Filter>
+    </ClCompile>
+    <ClCompile Include="Ui\Crosshair.cpp">
+      <Filter>Ui</Filter>
+    </ClCompile>
+    <ClCompile Include="Ui\FadeScreen.cpp">
+      <Filter>Ui</Filter>
+    </ClCompile>
+    <ClCompile Include="Ui\HudScreen.cpp">
+      <Filter>Ui</Filter>
+    </ClCompile>
+    <ClCompile Include="Ui\InventoryScreen.cpp">
+      <Filter>Ui</Filter>
+    </ClCompile>
+    <ClCompile Include="Ui\MessageScreen.cpp">
+      <Filter>Ui</Filter>
+    </ClCompile>
+    <ClCompile Include="Ui\SubtitleScreen.cpp">
+      <Filter>Ui</Filter>
+    </ClCompile>
+    <ClCompile Include="Ui\UiRoot.cpp">
+      <Filter>Ui</Filter>
+    </ClCompile>
+    <ClCompile Include="Weapons\AreaDamage.cpp">
+      <Filter>Weapons</Filter>
+    </ClCompile>
+    <ClCompile Include="Weapons\ExplosiveComponent.cpp">
+      <Filter>Weapons</Filter>
+    </ClCompile>
+    <ClCompile Include="Weapons\FuseComponent.cpp">
+      <Filter>Weapons</Filter>
+    </ClCompile>
+    <ClCompile Include="Weapons\MeleeWeaponComponent.cpp">
+      <Filter>Weapons</Filter>
+    </ClCompile>
+    <ClCompile Include="Weapons\Projectile.cpp">
+      <Filter>Weapons</Filter>
+    </ClCompile>
+    <ClCompile Include="Weapons\ProjectileComponent.cpp">
+      <Filter>Weapons</Filter>
+    </ClCompile>
+    <ClCompile Include="Weapons\ReloadIndicatorComponent.cpp">
+      <Filter>Weapons</Filter>
+    </ClCompile>
+    <ClCompile Include="Weapons\StowedWeaponComponent.cpp">
+      <Filter>Weapons</Filter>
+    </ClCompile>
+    <ClCompile Include="Weapons\Weapon.cpp">
+      <Filter>Weapons</Filter>
+    </ClCompile>
+    <ClCompile Include="Weapons\WeaponComponent.cpp">
+      <Filter>Weapons</Filter>
+    </ClCompile>
+    <ClCompile Include="Weapons\WeaponLayerComponent.cpp">
+      <Filter>Weapons</Filter>
+    </ClCompile>
+    <ClCompile Include="Weapons\WeaponSetup.cpp">
+      <Filter>Weapons</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Boss\BossAnimationComponent.h">
+      <Filter>Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="Boss\BossBrainComponent.h">
+      <Filter>Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="Boss\BossCatalog.h">
+      <Filter>Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="Boss\BossEffects.h">
+      <Filter>Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="Boss\BossSpriteAtlas.h">
+      <Filter>Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="Boss\CastMark.h">
+      <Filter>Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="Characters\AmmoPouchComponent.h">
+      <Filter>Characters</Filter>
+    </ClInclude>
+    <ClInclude Include="Characters\ArmorRules.h">
+      <Filter>Characters</Filter>
+    </ClInclude>
+    <ClInclude Include="Characters\CharacterFactory.h">
+      <Filter>Characters</Filter>
+    </ClInclude>
+    <ClInclude Include="Characters\DodgeRollComponent.h">
+      <Filter>Characters</Filter>
+    </ClInclude>
+    <ClInclude Include="Characters\FootstepComponent.h">
+      <Filter>Characters</Filter>
+    </ClInclude>
+    <ClInclude Include="Characters\Footsteps.h">
+      <Filter>Characters</Filter>
+    </ClInclude>
+    <ClInclude Include="Characters\HealthBarComponent.h">
+      <Filter>Characters</Filter>
+    </ClInclude>
+    <ClInclude Include="Characters\HealthComponent.h">
+      <Filter>Characters</Filter>
+    </ClInclude>
+    <ClInclude Include="Characters\HitFlashComponent.h">
+      <Filter>Characters</Filter>
+    </ClInclude>
+    <ClInclude Include="Characters\SettleComponent.h">
+      <Filter>Characters</Filter>
+    </ClInclude>
+    <ClInclude Include="Characters\SpriteAtlas.h">
+      <Filter>Characters</Filter>
+    </ClInclude>
+    <ClInclude Include="Characters\StaminaComponent.h">
+      <Filter>Characters</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\CrashReport.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\DamageInfo.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Faction.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\FactionComponent.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Freeze.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\GameResources.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\GameSettings.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Version.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Cutscene\CameraDirectorComponent.h">
+      <Filter>Cutscene</Filter>
+    </ClInclude>
+    <ClInclude Include="Cutscene\CameraFollow.h">
+      <Filter>Cutscene</Filter>
+    </ClInclude>
+    <ClInclude Include="Cutscene\CutscenePlayerComponent.h">
+      <Filter>Cutscene</Filter>
+    </ClInclude>
+    <ClInclude Include="Cutscene\CutsceneTimeline.h">
+      <Filter>Cutscene</Filter>
+    </ClInclude>
+    <ClInclude Include="Enemies\AttackRules.h">
+      <Filter>Enemies</Filter>
+    </ClInclude>
+    <ClInclude Include="Enemies\Awareness.h">
+      <Filter>Enemies</Filter>
+    </ClInclude>
+    <ClInclude Include="Enemies\AwarenessGauge.h">
+      <Filter>Enemies</Filter>
+    </ClInclude>
+    <ClInclude Include="Enemies\AwarenessGaugeComponent.h">
+      <Filter>Enemies</Filter>
+    </ClInclude>
+    <ClInclude Include="Enemies\BackOffSpot.h">
       <Filter>Enemies</Filter>
     </ClInclude>
     <ClInclude Include="Enemies\ChaseComponent.h">
       <Filter>Enemies</Filter>
     </ClInclude>
-    <ClCompile Include="Items\ContainerComponent.cpp">
-      <Filter>Items</Filter>
-    </ClCompile>
-    <ClInclude Include="Items\ContainerComponent.h">
-      <Filter>Items</Filter>
-    </ClInclude>
-    <ClCompile Include="Ui\Crosshair.cpp">
-      <Filter>Ui</Filter>
-    </ClCompile>
-    <ClInclude Include="Ui\Crosshair.h">
-      <Filter>Ui</Filter>
-    </ClInclude>
-    <ClInclude Include="Core\DamageInfo.h">
-      <Filter>Core</Filter>
-    </ClInclude>
-    <ClCompile Include="Level\DestructibleComponent.cpp">
-      <Filter>Level</Filter>
-    </ClCompile>
-    <ClInclude Include="Level\DestructibleComponent.h">
-      <Filter>Level</Filter>
-    </ClInclude>
-    <ClCompile Include="Level\DeveloperLevel.cpp">
-      <Filter>Level</Filter>
-    </ClCompile>
-    <ClInclude Include="Level\DeveloperLevel.h">
-      <Filter>Level</Filter>
-    </ClInclude>
-    <ClCompile Include="Characters\DodgeRollComponent.cpp">
-      <Filter>Characters</Filter>
-    </ClCompile>
-    <ClInclude Include="Characters\DodgeRollComponent.h">
-      <Filter>Characters</Filter>
-    </ClInclude>
-    <ClCompile Include="Enemies\Enemy.cpp">
+    <ClInclude Include="Enemies\ChaseRules.h">
       <Filter>Enemies</Filter>
-    </ClCompile>
+    </ClInclude>
+    <ClInclude Include="Enemies\CoverSpot.h">
+      <Filter>Enemies</Filter>
+    </ClInclude>
     <ClInclude Include="Enemies\Enemy.h">
       <Filter>Enemies</Filter>
     </ClInclude>
-    <ClCompile Include="Enemies\EnemyAttackComponent.cpp">
-      <Filter>Enemies</Filter>
-    </ClCompile>
     <ClInclude Include="Enemies\EnemyAttackComponent.h">
       <Filter>Enemies</Filter>
     </ClInclude>
@@ -297,345 +548,396 @@
     <ClInclude Include="Enemies\EnemyConfig.h">
       <Filter>Enemies</Filter>
     </ClInclude>
-    <ClCompile Include="Weapons\ExplosiveComponent.cpp">
-      <Filter>Weapons</Filter>
-    </ClCompile>
-    <ClInclude Include="Weapons\ExplosiveComponent.h">
-      <Filter>Weapons</Filter>
+    <ClInclude Include="Enemies\EnemyVoice.h">
+      <Filter>Enemies</Filter>
     </ClInclude>
-    <ClInclude Include="Core\Faction.h">
-      <Filter>Core</Filter>
+    <ClInclude Include="Enemies\EnemyVoiceComponent.h">
+      <Filter>Enemies</Filter>
     </ClInclude>
-    <ClCompile Include="Core\FactionComponent.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
-    <ClInclude Include="Core\FactionComponent.h">
-      <Filter>Core</Filter>
+    <ClInclude Include="Enemies\HidingSpots.h">
+      <Filter>Enemies</Filter>
     </ClInclude>
-    <ClCompile Include="Ui\FadeScreen.cpp">
-      <Filter>Ui</Filter>
-    </ClCompile>
-    <ClInclude Include="Ui\FadeScreen.h">
-      <Filter>Ui</Filter>
+    <ClInclude Include="Enemies\LookAhead.h">
+      <Filter>Enemies</Filter>
     </ClInclude>
-    <ClCompile Include="Fx\Fx.cpp">
+    <ClInclude Include="Enemies\LookAround.h">
+      <Filter>Enemies</Filter>
+    </ClInclude>
+    <ClInclude Include="Enemies\LookTurn.h">
+      <Filter>Enemies</Filter>
+    </ClInclude>
+    <ClInclude Include="Enemies\Navigator.h">
+      <Filter>Enemies</Filter>
+    </ClInclude>
+    <ClInclude Include="Enemies\Noise.h">
+      <Filter>Enemies</Filter>
+    </ClInclude>
+    <ClInclude Include="Enemies\PatrolComponent.h">
+      <Filter>Enemies</Filter>
+    </ClInclude>
+    <ClInclude Include="Enemies\PatrolRules.h">
+      <Filter>Enemies</Filter>
+    </ClInclude>
+    <ClInclude Include="Enemies\ProgressWatch.h">
+      <Filter>Enemies</Filter>
+    </ClInclude>
+    <ClInclude Include="Enemies\RouteFollower.h">
+      <Filter>Enemies</Filter>
+    </ClInclude>
+    <ClInclude Include="Enemies\SightMemory.h">
+      <Filter>Enemies</Filter>
+    </ClInclude>
+    <ClInclude Include="Enemies\Vision.h">
+      <Filter>Enemies</Filter>
+    </ClInclude>
+    <ClInclude Include="Fx\BloodPool.h">
       <Filter>Fx</Filter>
-    </ClCompile>
+    </ClInclude>
+    <ClInclude Include="Fx\EffectObject.h">
+      <Filter>Fx</Filter>
+    </ClInclude>
+    <ClInclude Include="Fx\Fire.h">
+      <Filter>Fx</Filter>
+    </ClInclude>
+    <ClInclude Include="Fx\FireComponent.h">
+      <Filter>Fx</Filter>
+    </ClInclude>
     <ClInclude Include="Fx\Fx.h">
       <Filter>Fx</Filter>
     </ClInclude>
-    <ClCompile Include="Core\GameMain.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
-    <ClCompile Include="Core\GameResources.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
-    <ClInclude Include="Core\GameResources.h">
-      <Filter>Core</Filter>
-    </ClInclude>
-    <ClInclude Include="Core\GameSettings.h">
-      <Filter>Core</Filter>
-    </ClInclude>
-    <ClCompile Include="Characters\HealthBarComponent.cpp">
-      <Filter>Characters</Filter>
-    </ClCompile>
-    <ClInclude Include="Characters\HealthBarComponent.h">
-      <Filter>Characters</Filter>
-    </ClInclude>
-    <ClCompile Include="Characters\HealthComponent.cpp">
-      <Filter>Characters</Filter>
-    </ClCompile>
-    <ClInclude Include="Characters\HealthComponent.h">
-      <Filter>Characters</Filter>
-    </ClInclude>
-    <ClCompile Include="Characters\HitFlashComponent.cpp">
-      <Filter>Characters</Filter>
-    </ClCompile>
-    <ClInclude Include="Characters\HitFlashComponent.h">
-      <Filter>Characters</Filter>
-    </ClInclude>
-    <ClCompile Include="Ui\HudScreen.cpp">
-      <Filter>Ui</Filter>
-    </ClCompile>
-    <ClInclude Include="Ui\HudScreen.h">
-      <Filter>Ui</Filter>
-    </ClInclude>
-    <ClCompile Include="Items\InteractableComponent.cpp">
-      <Filter>Items</Filter>
-    </ClCompile>
-    <ClInclude Include="Items\InteractableComponent.h">
-      <Filter>Items</Filter>
-    </ClInclude>
-    <ClCompile Include="Items\InteractionComponent.cpp">
-      <Filter>Items</Filter>
-    </ClCompile>
-    <ClInclude Include="Items\InteractionComponent.h">
-      <Filter>Items</Filter>
-    </ClInclude>
-    <ClCompile Include="Items\InventoryComponent.cpp">
-      <Filter>Items</Filter>
-    </ClCompile>
-    <ClInclude Include="Items\InventoryComponent.h">
-      <Filter>Items</Filter>
-    </ClInclude>
-    <ClCompile Include="Ui\InventoryScreen.cpp">
-      <Filter>Ui</Filter>
-    </ClCompile>
-    <ClInclude Include="Ui\InventoryScreen.h">
-      <Filter>Ui</Filter>
-    </ClInclude>
-    <ClCompile Include="Items\Item.cpp">
-      <Filter>Items</Filter>
-    </ClCompile>
-    <ClInclude Include="Items\Item.h">
-      <Filter>Items</Filter>
-    </ClInclude>
-    <ClCompile Include="Items\ItemCatalog.cpp">
-      <Filter>Items</Filter>
-    </ClCompile>
-    <ClInclude Include="Items\ItemCatalog.h">
-      <Filter>Items</Filter>
-    </ClInclude>
-    <ClCompile Include="Items\ItemCatalogLoader.cpp">
-      <Filter>Items</Filter>
-    </ClCompile>
-    <ClInclude Include="Items\ItemCatalogLoader.h">
-      <Filter>Items</Filter>
-    </ClInclude>
-    <ClInclude Include="Items\ItemDefinition.h">
-      <Filter>Items</Filter>
-    </ClInclude>
-    <ClCompile Include="Items\ItemEffectComponent.cpp">
-      <Filter>Items</Filter>
-    </ClCompile>
-    <ClInclude Include="Items\ItemEffectComponent.h">
-      <Filter>Items</Filter>
-    </ClInclude>
-    <ClCompile Include="Items\ItemIconLayout.cpp">
-      <Filter>Items</Filter>
-    </ClCompile>
-    <ClInclude Include="Items\ItemIconLayout.h">
-      <Filter>Items</Filter>
-    </ClInclude>
-    <ClCompile Include="Items\ItemPickupComponent.cpp">
-      <Filter>Items</Filter>
-    </ClCompile>
-    <ClInclude Include="Items\ItemPickupComponent.h">
-      <Filter>Items</Filter>
-    </ClInclude>
-    <ClCompile Include="Level\LevelGrid.cpp">
-      <Filter>Level</Filter>
-    </ClCompile>
-    <ClCompile Include="Level\PathField.cpp">
-      <Filter>Level</Filter>
-    </ClCompile>
-    <ClCompile Include="Level\PathService.cpp">
-      <Filter>Level</Filter>
-    </ClCompile>
-    <ClCompile Include="Level\Level.cpp">
-      <Filter>Level</Filter>
-    </ClCompile>
-    <ClInclude Include="Level\Level.h">
-      <Filter>Level</Filter>
-    </ClInclude>
-    <ClCompile Include="Level\LevelBuilder.cpp">
-      <Filter>Level</Filter>
-    </ClCompile>
-    <ClInclude Include="Level\LevelBuilder.h">
-      <Filter>Level</Filter>
-    </ClInclude>
-    <ClCompile Include="Level\LevelCatalog.cpp">
-      <Filter>Level</Filter>
-    </ClCompile>
-    <ClInclude Include="Level\LevelCatalog.h">
-      <Filter>Level</Filter>
-    </ClInclude>
-    <ClInclude Include="Level\LevelData.h">
-      <Filter>Level</Filter>
-    </ClInclude>
-    <ClCompile Include="Level\LevelExit.cpp">
-      <Filter>Level</Filter>
-    </ClCompile>
-    <ClInclude Include="Level\LevelExit.h">
-      <Filter>Level</Filter>
-    </ClInclude>
-    <ClCompile Include="Level\LevelExitComponent.cpp">
-      <Filter>Level</Filter>
-    </ClCompile>
-    <ClInclude Include="Level\LevelExitComponent.h">
-      <Filter>Level</Filter>
-    </ClInclude>
-    <ClCompile Include="Level\LevelLoader.cpp">
-      <Filter>Level</Filter>
-    </ClCompile>
-    <ClInclude Include="Level\LevelLoader.h">
-      <Filter>Level</Filter>
-    </ClInclude>
-    <ClCompile Include="Level\LevelProgression.cpp">
-      <Filter>Level</Filter>
-    </ClCompile>
-    <ClInclude Include="Level\LevelProgression.h">
-      <Filter>Level</Filter>
-    </ClInclude>
-    <ClCompile Include="Items\LootCatalog.cpp">
-      <Filter>Items</Filter>
-    </ClCompile>
-    <ClInclude Include="Items\LootCatalog.h">
-      <Filter>Items</Filter>
-    </ClInclude>
-    <ClCompile Include="Items\LootDrop.cpp">
-      <Filter>Items</Filter>
-    </ClCompile>
-    <ClInclude Include="Items\LootDrop.h">
-      <Filter>Items</Filter>
-    </ClInclude>
-    <ClCompile Include="Weapons\MeleeWeaponComponent.cpp">
-      <Filter>Weapons</Filter>
-    </ClCompile>
-    <ClInclude Include="Weapons\MeleeWeaponComponent.h">
-      <Filter>Weapons</Filter>
-    </ClInclude>
-    <ClCompile Include="Ui\MessageScreen.cpp">
-      <Filter>Ui</Filter>
-    </ClCompile>
-    <ClInclude Include="Ui\MessageScreen.h">
-      <Filter>Ui</Filter>
-    </ClInclude>
-    <ClCompile Include="Fx\Music.cpp">
-      <Filter>Fx</Filter>
-    </ClCompile>
     <ClInclude Include="Fx\Music.h">
       <Filter>Fx</Filter>
     </ClInclude>
     <ClInclude Include="Fx\ParticleCatalog.h">
       <Filter>Fx</Filter>
     </ClInclude>
-    <ClCompile Include="Fx\Particles.cpp">
-      <Filter>Fx</Filter>
-    </ClCompile>
     <ClInclude Include="Fx\Particles.h">
       <Filter>Fx</Filter>
     </ClInclude>
-    <ClCompile Include="Player\Player.cpp">
-      <Filter>Player</Filter>
-    </ClCompile>
-    <ClInclude Include="Player\Player.h">
-      <Filter>Player</Filter>
+    <ClInclude Include="Fx\Shake.h">
+      <Filter>Fx</Filter>
     </ClInclude>
-    <ClCompile Include="Player\PlayerAttackComponent.cpp">
-      <Filter>Player</Filter>
-    </ClCompile>
-    <ClInclude Include="Player\PlayerAttackComponent.h">
-      <Filter>Player</Filter>
+    <ClInclude Include="Fx\Trail.h">
+      <Filter>Fx</Filter>
     </ClInclude>
-    <ClCompile Include="Player\PlayerHudBinderComponent.cpp">
-      <Filter>Player</Filter>
-    </ClCompile>
-    <ClInclude Include="Player\PlayerHudBinderComponent.h">
-      <Filter>Player</Filter>
+    <ClInclude Include="Fx\TrailComponent.h">
+      <Filter>Fx</Filter>
     </ClInclude>
-    <ClCompile Include="Player\PlayerLoadoutComponent.cpp">
-      <Filter>Player</Filter>
-    </ClCompile>
-    <ClInclude Include="Player\PlayerLoadoutComponent.h">
-      <Filter>Player</Filter>
+    <ClInclude Include="Fx\WorldSound.h">
+      <Filter>Fx</Filter>
     </ClInclude>
-    <ClCompile Include="Player\PlayerRollComponent.cpp">
-      <Filter>Player</Filter>
-    </ClCompile>
-    <ClInclude Include="Player\PlayerRollComponent.h">
-      <Filter>Player</Filter>
+    <ClInclude Include="Items\ContainerComponent.h">
+      <Filter>Items</Filter>
     </ClInclude>
-    <ClCompile Include="Weapons\Projectile.cpp">
-      <Filter>Weapons</Filter>
-    </ClCompile>
-    <ClInclude Include="Weapons\Projectile.h">
-      <Filter>Weapons</Filter>
+    <ClInclude Include="Items\DoorRules.h">
+      <Filter>Items</Filter>
     </ClInclude>
-    <ClCompile Include="Weapons\ProjectileComponent.cpp">
-      <Filter>Weapons</Filter>
-    </ClCompile>
-    <ClInclude Include="Weapons\ProjectileComponent.h">
-      <Filter>Weapons</Filter>
+    <ClInclude Include="Items\EquipExchange.h">
+      <Filter>Items</Filter>
     </ClInclude>
-    <ClCompile Include="Level\Prop.cpp">
+    <ClInclude Include="Items\InteractableComponent.h">
+      <Filter>Items</Filter>
+    </ClInclude>
+    <ClInclude Include="Items\InteractionComponent.h">
+      <Filter>Items</Filter>
+    </ClInclude>
+    <ClInclude Include="Items\InventoryAccess.h">
+      <Filter>Items</Filter>
+    </ClInclude>
+    <ClInclude Include="Items\InventoryComponent.h">
+      <Filter>Items</Filter>
+    </ClInclude>
+    <ClInclude Include="Items\Item.h">
+      <Filter>Items</Filter>
+    </ClInclude>
+    <ClInclude Include="Items\ItemCatalog.h">
+      <Filter>Items</Filter>
+    </ClInclude>
+    <ClInclude Include="Items\ItemCatalogLoader.h">
+      <Filter>Items</Filter>
+    </ClInclude>
+    <ClInclude Include="Items\ItemDefinition.h">
+      <Filter>Items</Filter>
+    </ClInclude>
+    <ClInclude Include="Items\ItemDropComponent.h">
+      <Filter>Items</Filter>
+    </ClInclude>
+    <ClInclude Include="Items\ItemEffectComponent.h">
+      <Filter>Items</Filter>
+    </ClInclude>
+    <ClInclude Include="Items\ItemIconLayout.h">
+      <Filter>Items</Filter>
+    </ClInclude>
+    <ClInclude Include="Items\ItemPickupComponent.h">
+      <Filter>Items</Filter>
+    </ClInclude>
+    <ClInclude Include="Items\LootCatalog.h">
+      <Filter>Items</Filter>
+    </ClInclude>
+    <ClInclude Include="Items\LootDrop.h">
+      <Filter>Items</Filter>
+    </ClInclude>
+    <ClInclude Include="Items\QuickBeltComponent.h">
+      <Filter>Items</Filter>
+    </ClInclude>
+    <ClInclude Include="Level\ActAssembler.h">
       <Filter>Level</Filter>
-    </ClCompile>
+    </ClInclude>
+    <ClInclude Include="Level\ActPlan.h">
+      <Filter>Level</Filter>
+    </ClInclude>
+    <ClInclude Include="Level\AmbushComponent.h">
+      <Filter>Level</Filter>
+    </ClInclude>
+    <ClInclude Include="Level\CarArrival.h">
+      <Filter>Level</Filter>
+    </ClInclude>
+    <ClInclude Include="Level\Chasm.h">
+      <Filter>Level</Filter>
+    </ClInclude>
+    <ClInclude Include="Level\DestructibleComponent.h">
+      <Filter>Level</Filter>
+    </ClInclude>
+    <ClInclude Include="Level\DeveloperLevel.h">
+      <Filter>Level</Filter>
+    </ClInclude>
+    <ClInclude Include="Level\Door.h">
+      <Filter>Level</Filter>
+    </ClInclude>
+    <ClInclude Include="Level\DoorComponent.h">
+      <Filter>Level</Filter>
+    </ClInclude>
+    <ClInclude Include="Level\DoorHinge.h">
+      <Filter>Level</Filter>
+    </ClInclude>
+    <ClInclude Include="Level\EscapeCarComponent.h">
+      <Filter>Level</Filter>
+    </ClInclude>
+    <ClInclude Include="Level\Fixture.h">
+      <Filter>Level</Filter>
+    </ClInclude>
+    <ClInclude Include="Level\Fixtures.h">
+      <Filter>Level</Filter>
+    </ClInclude>
+    <ClInclude Include="Level\FogFade.h">
+      <Filter>Level</Filter>
+    </ClInclude>
+    <ClInclude Include="Level\FogFormat.h">
+      <Filter>Level</Filter>
+    </ClInclude>
+    <ClInclude Include="Level\FogOfWar.h">
+      <Filter>Level</Filter>
+    </ClInclude>
+    <ClInclude Include="Level\FogRevealComponent.h">
+      <Filter>Level</Filter>
+    </ClInclude>
+    <ClInclude Include="Level\FogVisibilityComponent.h">
+      <Filter>Level</Filter>
+    </ClInclude>
+    <ClInclude Include="Level\GuardFacing.h">
+      <Filter>Level</Filter>
+    </ClInclude>
+    <ClInclude Include="Level\HatchComponent.h">
+      <Filter>Level</Filter>
+    </ClInclude>
+    <ClInclude Include="Level\Level.h">
+      <Filter>Level</Filter>
+    </ClInclude>
+    <ClInclude Include="Level\LevelBuilder.h">
+      <Filter>Level</Filter>
+    </ClInclude>
+    <ClInclude Include="Level\LevelCatalog.h">
+      <Filter>Level</Filter>
+    </ClInclude>
+    <ClInclude Include="Level\LevelData.h">
+      <Filter>Level</Filter>
+    </ClInclude>
+    <ClInclude Include="Level\LevelExit.h">
+      <Filter>Level</Filter>
+    </ClInclude>
+    <ClInclude Include="Level\LevelExitComponent.h">
+      <Filter>Level</Filter>
+    </ClInclude>
+    <ClInclude Include="Level\LevelGrid.h">
+      <Filter>Level</Filter>
+    </ClInclude>
+    <ClInclude Include="Level\LevelIntegrity.h">
+      <Filter>Level</Filter>
+    </ClInclude>
+    <ClInclude Include="Level\LevelLoader.h">
+      <Filter>Level</Filter>
+    </ClInclude>
+    <ClInclude Include="Level\LevelProgression.h">
+      <Filter>Level</Filter>
+    </ClInclude>
+    <ClInclude Include="Level\LevelZones.h">
+      <Filter>Level</Filter>
+    </ClInclude>
+    <ClInclude Include="Level\Openable.h">
+      <Filter>Level</Filter>
+    </ClInclude>
+    <ClInclude Include="Level\PathField.h">
+      <Filter>Level</Filter>
+    </ClInclude>
+    <ClInclude Include="Level\PathService.h">
+      <Filter>Level</Filter>
+    </ClInclude>
+    <ClInclude Include="Level\PatrolRoutes.h">
+      <Filter>Level</Filter>
+    </ClInclude>
+    <ClInclude Include="Level\PlateComponent.h">
+      <Filter>Level</Filter>
+    </ClInclude>
     <ClInclude Include="Level\Prop.h">
       <Filter>Level</Filter>
     </ClInclude>
-    <ClCompile Include="Level\PropCatalog.cpp">
+    <ClInclude Include="Level\PropAlign.h">
       <Filter>Level</Filter>
-    </ClCompile>
+    </ClInclude>
     <ClInclude Include="Level\PropCatalog.h">
       <Filter>Level</Filter>
     </ClInclude>
-    <ClCompile Include="Level\PropVisualComponent.cpp">
-      <Filter>Level</Filter>
-    </ClCompile>
     <ClInclude Include="Level\PropVisualComponent.h">
       <Filter>Level</Filter>
     </ClInclude>
-    <ClCompile Include="Weapons\ReloadIndicatorComponent.cpp">
-      <Filter>Weapons</Filter>
-    </ClCompile>
-    <ClInclude Include="Weapons\ReloadIndicatorComponent.h">
-      <Filter>Weapons</Filter>
+    <ClInclude Include="Level\PursuitComponent.h">
+      <Filter>Level</Filter>
     </ClInclude>
-    <ClInclude Include="Characters\SpriteAtlas.h">
-      <Filter>Characters</Filter>
+    <ClInclude Include="Level\PursuitFormat.h">
+      <Filter>Level</Filter>
     </ClInclude>
-    <ClCompile Include="Characters\StaminaComponent.cpp">
-      <Filter>Characters</Filter>
-    </ClCompile>
-    <ClInclude Include="Characters\StaminaComponent.h">
-      <Filter>Characters</Filter>
+    <ClInclude Include="Level\RoomTransform.h">
+      <Filter>Level</Filter>
     </ClInclude>
-    <ClCompile Include="Weapons\StowedWeaponComponent.cpp">
-      <Filter>Weapons</Filter>
-    </ClCompile>
-    <ClInclude Include="Weapons\StowedWeaponComponent.h">
-      <Filter>Weapons</Filter>
+    <ClInclude Include="Level\RoomWakeComponent.h">
+      <Filter>Level</Filter>
+    </ClInclude>
+    <ClInclude Include="Level\RunState.h">
+      <Filter>Level</Filter>
+    </ClInclude>
+    <ClInclude Include="Level\Shadowcast.h">
+      <Filter>Level</Filter>
+    </ClInclude>
+    <ClInclude Include="Level\SwitchComponent.h">
+      <Filter>Level</Filter>
+    </ClInclude>
+    <ClInclude Include="Level\TileAnimationComponent.h">
+      <Filter>Level</Filter>
     </ClInclude>
     <ClInclude Include="Level\TileAtlas.h">
       <Filter>Level</Filter>
     </ClInclude>
-    <ClCompile Include="Ui\UiRoot.cpp">
-      <Filter>Ui</Filter>
-    </ClCompile>
-    <ClInclude Include="Ui\UiRoot.h">
-      <Filter>Ui</Filter>
-    </ClInclude>
-    <ClCompile Include="Level\Wall.cpp">
+    <ClInclude Include="Level\TileFogComponent.h">
       <Filter>Level</Filter>
-    </ClCompile>
+    </ClInclude>
+    <ClInclude Include="Level\Tileset.h">
+      <Filter>Level</Filter>
+    </ClInclude>
+    <ClInclude Include="Level\TrapComponent.h">
+      <Filter>Level</Filter>
+    </ClInclude>
+    <ClInclude Include="Level\Traps.h">
+      <Filter>Level</Filter>
+    </ClInclude>
+    <ClInclude Include="Level\TreadComponent.h">
+      <Filter>Level</Filter>
+    </ClInclude>
     <ClInclude Include="Level\Wall.h">
       <Filter>Level</Filter>
     </ClInclude>
-    <ClCompile Include="Weapons\Weapon.cpp">
+    <ClInclude Include="Level\WaveDirectorComponent.h">
+      <Filter>Level</Filter>
+    </ClInclude>
+    <ClInclude Include="Player\LoadoutRules.h">
+      <Filter>Player</Filter>
+    </ClInclude>
+    <ClInclude Include="Player\Player.h">
+      <Filter>Player</Filter>
+    </ClInclude>
+    <ClInclude Include="Player\PlayerAttackComponent.h">
+      <Filter>Player</Filter>
+    </ClInclude>
+    <ClInclude Include="Player\PlayerHudBinderComponent.h">
+      <Filter>Player</Filter>
+    </ClInclude>
+    <ClInclude Include="Player\PlayerLoadoutComponent.h">
+      <Filter>Player</Filter>
+    </ClInclude>
+    <ClInclude Include="Player\PlayerRollComponent.h">
+      <Filter>Player</Filter>
+    </ClInclude>
+    <ClInclude Include="Speech\SpeechCatalog.h">
+      <Filter>Speech</Filter>
+    </ClInclude>
+    <ClInclude Include="Speech\SpeechCatalogLoader.h">
+      <Filter>Speech</Filter>
+    </ClInclude>
+    <ClInclude Include="Speech\SpeechDirector.h">
+      <Filter>Speech</Filter>
+    </ClInclude>
+    <ClInclude Include="Speech\SubtitleQueue.h">
+      <Filter>Speech</Filter>
+    </ClInclude>
+    <ClInclude Include="Ui\Crosshair.h">
+      <Filter>Ui</Filter>
+    </ClInclude>
+    <ClInclude Include="Ui\FadeScreen.h">
+      <Filter>Ui</Filter>
+    </ClInclude>
+    <ClInclude Include="Ui\HudScreen.h">
+      <Filter>Ui</Filter>
+    </ClInclude>
+    <ClInclude Include="Ui\InventoryScreen.h">
+      <Filter>Ui</Filter>
+    </ClInclude>
+    <ClInclude Include="Ui\MessageScreen.h">
+      <Filter>Ui</Filter>
+    </ClInclude>
+    <ClInclude Include="Ui\SubtitleScreen.h">
+      <Filter>Ui</Filter>
+    </ClInclude>
+    <ClInclude Include="Ui\UiRoot.h">
+      <Filter>Ui</Filter>
+    </ClInclude>
+    <ClInclude Include="Weapons\AreaDamage.h">
       <Filter>Weapons</Filter>
-    </ClCompile>
+    </ClInclude>
+    <ClInclude Include="Weapons\CritRules.h">
+      <Filter>Weapons</Filter>
+    </ClInclude>
+    <ClInclude Include="Weapons\ExplosiveComponent.h">
+      <Filter>Weapons</Filter>
+    </ClInclude>
+    <ClInclude Include="Weapons\FuseComponent.h">
+      <Filter>Weapons</Filter>
+    </ClInclude>
+    <ClInclude Include="Weapons\MeleeWeaponComponent.h">
+      <Filter>Weapons</Filter>
+    </ClInclude>
+    <ClInclude Include="Weapons\Projectile.h">
+      <Filter>Weapons</Filter>
+    </ClInclude>
+    <ClInclude Include="Weapons\ProjectileComponent.h">
+      <Filter>Weapons</Filter>
+    </ClInclude>
+    <ClInclude Include="Weapons\ReloadIndicatorComponent.h">
+      <Filter>Weapons</Filter>
+    </ClInclude>
+    <ClInclude Include="Weapons\StowedWeaponComponent.h">
+      <Filter>Weapons</Filter>
+    </ClInclude>
     <ClInclude Include="Weapons\Weapon.h">
       <Filter>Weapons</Filter>
     </ClInclude>
     <ClInclude Include="Weapons\WeaponCatalog.h">
       <Filter>Weapons</Filter>
     </ClInclude>
-    <ClCompile Include="Weapons\WeaponComponent.cpp">
-      <Filter>Weapons</Filter>
-    </ClCompile>
     <ClInclude Include="Weapons\WeaponComponent.h">
       <Filter>Weapons</Filter>
     </ClInclude>
-    <ClCompile Include="Weapons\WeaponLayerComponent.cpp">
-      <Filter>Weapons</Filter>
-    </ClCompile>
     <ClInclude Include="Weapons\WeaponLayerComponent.h">
       <Filter>Weapons</Filter>
     </ClInclude>
-    <ClCompile Include="Weapons\WeaponSetup.cpp">
-      <Filter>Weapons</Filter>
-    </ClCompile>
     <ClInclude Include="Weapons\WeaponSetup.h">
       <Filter>Weapons</Filter>
     </ClInclude>

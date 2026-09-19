@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include <array>
 #include <string>
 #include <vector>
 #include "FightStyle.h"
@@ -216,6 +217,18 @@ namespace RoguelikeGame
         std::vector<FixturePlacement> hatches;
         std::vector<FixturePlacement> escapes;
         LevelInfo info;
+    };
+
+    /**
+    *	Фикстуры отличаются только своим списком: переносятся, поворачиваются
+    *	и собираются они одинаково. Список списков - чтобы новый вид попадал
+    *	во все три места разом, а не терялся по дороге, как однажды плитки.
+    */
+    inline constexpr std::array<std::vector<FixturePlacement> LevelData::*, 4> FIXTURE_LISTS = {
+        &LevelData::levers,
+        &LevelData::plates,
+        &LevelData::hatches,
+        &LevelData::escapes,
     };
 
     inline TileType TileAt(const LevelData& levelData, int column, int row)

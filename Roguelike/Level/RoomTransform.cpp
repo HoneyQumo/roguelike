@@ -104,22 +104,13 @@ namespace RoguelikeGame
             moved.doors.push_back({to.column, to.row, door.doorId});
         }
 
-        for (const FixturePlacement& lever : room.levers)
+        for (auto list : FIXTURE_LISTS)
         {
-            Placement to = Move({lever.column, lever.row}, width, height, turns, isMirrored);
-            moved.levers.push_back({to.column, to.row, lever.id});
-        }
-
-        for (const FixturePlacement& hatch : room.hatches)
-        {
-            Placement to = Move({hatch.column, hatch.row}, width, height, turns, isMirrored);
-            moved.hatches.push_back({to.column, to.row, hatch.id});
-        }
-
-        for (const FixturePlacement& escape : room.escapes)
-        {
-            Placement to = Move({escape.column, escape.row}, width, height, turns, isMirrored);
-            moved.escapes.push_back({to.column, to.row, escape.id});
+            for (const FixturePlacement& fixture : room.*list)
+            {
+                Placement to = Move({fixture.column, fixture.row}, width, height, turns, isMirrored);
+                (moved.*list).push_back({to.column, to.row, fixture.id});
+            }
         }
 
         for (const ZonePlacement& zone : room.zones)

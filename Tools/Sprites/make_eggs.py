@@ -133,8 +133,86 @@ def Board():
     return tile
 
 
+ASH = (58, 54, 50)
+ASH_DARK = (32, 30, 28)
+CHAR = (26, 22, 20)
+LOG = (86, 62, 42)
+LOG_DARK = (52, 38, 26)
+STONE = (104, 102, 98)
+CLOTH_ROLL = (92, 86, 70)
+CLOTH_ROLL_DARK = (58, 54, 44)
+
+PAINT = (198, 74, 58)
+PAINT_DARK = (132, 44, 34)
+
+
+def Campfire():
+    """Остывшее кострище и лежанка: здесь кто-то держался и ушёл.
+
+    Угли чёрные, а не красные: огонь погас давно, и в этом вся мысль.
+    """
+    tile = Image.new('RGBA', (TILE, TILE), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(tile)
+    rng = random.Random(23)
+
+    for step in range(9):
+        angle = step * math.tau / 9.0
+        x = 26 + math.cos(angle) * 13
+        y = 30 + math.sin(angle) * 11
+        draw.ellipse([x - 4, y - 3, x + 4, y + 3], fill=STONE)
+        draw.ellipse([x - 3, y - 3, x + 2, y], fill=(126, 124, 120))
+
+    draw.ellipse([15, 22, 37, 38], fill=ASH_DARK)
+    draw.ellipse([17, 24, 35, 36], fill=ASH)
+
+    for _ in range(18):
+        x = rng.randint(18, 34)
+        y = rng.randint(25, 35)
+        draw.rectangle([x, y, x + rng.randint(1, 2), y + 1], fill=CHAR)
+
+    for start, end in (((19, 26), (33, 34)), ((21, 35), (34, 25))):
+        draw.line([start, end], fill=LOG_DARK, width=4)
+        draw.line([start, end], fill=LOG, width=2)
+
+    # Лежанка рядом: кострище без неё - просто мусор.
+    draw.rectangle([44, 20, 56, 46], fill=CLOTH_ROLL_DARK)
+    draw.rectangle([45, 21, 55, 45], fill=CLOTH_ROLL)
+    for y in range(24, 45, 5):
+        draw.line([45, y, 55, y], fill=CLOTH_ROLL_DARK)
+
+    return tile
+
+
+def Paint():
+    """Чей-то знак на асфальте: стрелка и три полосы.
+
+    Куда она ведёт и кто её ставил, не сказано: знак не для игрока.
+    """
+    tile = Image.new('RGBA', (TILE, TILE), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(tile)
+    rng = random.Random(29)
+
+    draw.line([14, 40, 34, 20], fill=PAINT_DARK, width=6)
+    draw.line([14, 40, 34, 20], fill=PAINT, width=4)
+    draw.polygon([(38, 16), (26, 22), (32, 28)], fill=PAINT_DARK)
+    draw.polygon([(37, 18), (28, 22), (31, 26)], fill=PAINT)
+
+    for step in range(3):
+        y = 44 + step * 5
+        draw.line([16 + step * 3, y, 38 - step * 2, y], fill=PAINT_DARK, width=3)
+        draw.line([16 + step * 3, y, 38 - step * 2, y], fill=PAINT, width=1)
+
+    # Краска брызнула: без брызг знак выглядит напечатанным.
+    for _ in range(22):
+        x = rng.randint(10, 44)
+        y = rng.randint(14, 56)
+        draw.point((x, y), fill=PAINT_DARK if rng.random() < 0.6 else PAINT)
+
+    return tile
+
+
 def Build():
-    frames = [Tally(), Hole(), Puppet(), Board()]
+    frames = [Tally(), Hole(), Puppet(), Board(), Campfire(), Paint()]
     sheet = Image.new('RGBA', (TILE * len(frames), TILE), (0, 0, 0, 0))
     for index, frame in enumerate(frames):
         sheet.alpha_composite(frame, dest=(index * TILE, 0))

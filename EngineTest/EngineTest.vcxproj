@@ -147,6 +147,7 @@
     <ClCompile Include="SoundSpace.tests.cpp" />
     <ClCompile Include="Footsteps.tests.cpp" />
     <ClCompile Include="SourceEncoding.tests.cpp" />
+    <ClCompile Include="TextWrap.tests.cpp" />
     <ClCompile Include="SoundPool.tests.cpp" />
     <ClCompile Include="WorldSound.tests.cpp" />
     <ClCompile Include="TurnSpeed.tests.cpp" />

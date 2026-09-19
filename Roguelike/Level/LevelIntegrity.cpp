@@ -145,6 +145,26 @@ namespace RoguelikeGame
             return reached;
         }
 
+        // Рычаг и плитка открывают дверь не хуже ключа - если до них можно дойти.
+        // Потайная дверь ключа не имеет вовсе, и без этого она читалась бы тупиком.
+        void AddSwitchedDoors(const LevelData& levelData, const std::vector<char>& reached,
+            std::set<std::string>& opened)
+        {
+            const std::vector<FixturePlacement> LevelData::*triggers[] = {&LevelData::levers, &LevelData::plates};
+
+            for (auto list : triggers)
+            {
+                for (const FixturePlacement& fixture : levelData.*list)
+                {
+                    std::size_t index = static_cast<std::size_t>(fixture.row) * levelData.width + fixture.column;
+                    if (index < reached.size() && reached[index] != 0)
+                    {
+                        opened.insert(fixture.id);
+                    }
+                }
+            }
+        }
+
         std::set<std::string> OpenedByReachedKeys(const LevelData& levelData, const ItemCatalog& items,
             const std::vector<char>& reached)
         {
@@ -439,6 +459,8 @@ namespace RoguelikeGame
         while (true)
         {
             std::set<std::string> next = OpenedByReachedKeys(levelData, items, reached);
+            AddSwitchedDoors(levelData, reached, next);
+
             if (next.size() == opened.size())
             {
                 break;

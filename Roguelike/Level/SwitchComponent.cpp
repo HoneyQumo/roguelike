@@ -1,5 +1,6 @@
 #include "SwitchComponent.h"
 #include "Fixtures.h"
+#include "Fx.h"
 #include "GameSettings.h"
 #include "Noise.h"
 #include <AudioComponent.h>
@@ -59,12 +60,35 @@ namespace RoguelikeGame
         }
 
         sinceNoise = 0.f;
+        holdTicks++;
 
         Noise noise;
         noise.position = gameObject->GetTransform()->GetWorldPosition();
         noise.radius = HOLD_NOISE_RADIUS;
         noise.loudness = HOLD_NOISE_LOUDNESS;
         RaiseNoise(noise);
+
+        // Искры на том же такте: видно, что механизм ходит туго, даже если
+        // смотришь на дверь, а не на полоску.
+        Fx::SpawnImpact(gameObject->GetTransform()->GetWorldPosition(), {0.f, 1.f});
+
+        // Шум слышит охрана, звук - игрок. Без него действие идёт молча,
+        // и единственный признак, что оно идёт, - полоска внизу экрана.
+        if (audio != nullptr)
+        {
+            const sf::SoundBuffer* sound = XYZEngine::ResourceSystem::Instance()->GetSound(LEVER_SOUND);
+            if (sound != nullptr)
+            {
+                audio->SetSound(sound);
+                audio->SetVolume(HOLD_VOLUME);
+                audio->Play();
+            }
+        }
+    }
+
+    int SwitchComponent::GetHoldTicks() const
+    {
+        return holdTicks;
     }
 
     void SwitchComponent::OnHoldBroken()

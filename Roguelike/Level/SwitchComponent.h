@@ -33,6 +33,9 @@ namespace RoguelikeGame
         void SetReachCollider(XYZEngine::ColliderComponent* reach);
 
         bool IsPulled() const;
+
+        // Сколько раз рубильник громыхнул, пока его держали.
+        int GetHoldTicks() const;
         void Pull();
 
         std::string GetPrompt(XYZEngine::GameObject* actor) const override;
@@ -58,6 +61,7 @@ namespace RoguelikeGame
         std::string switchId;
         float holdTime = 0.f;
         float sinceNoise = 0.f;
+        int holdTicks = 0;
         bool isPulled = false;
 
         XYZEngine::EventList<> pulledEvent;

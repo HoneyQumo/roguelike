@@ -462,6 +462,11 @@ namespace RoguelikeGame
     // Лужа крови начинается с 3го кадра анимации смерти
     constexpr float BLOOD_POOL_DELAY = 3.f * DEATH_ANIMATION.secondsPerFrame;
 
+    // Внутри этого радиуса звук не тише, чем был: что в кадре, то слышно
+    // в полную силу. Сторону задаёт направление, поэтому панорама работает и внутри.
+    constexpr float SOUND_FULL_DISTANCE = 0.5f * SCREEN_WIDTH;
+    constexpr float SOUND_ATTENUATION = 1.f;
+
     constexpr float MUSIC_VOLUME = 15.f;
     constexpr float SHOT_VOLUME = 20.f;
     constexpr float RELOAD_VOLUME = 45.f;

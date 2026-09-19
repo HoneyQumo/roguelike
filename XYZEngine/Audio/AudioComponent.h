@@ -11,6 +11,7 @@ namespace XYZEngine
 		AudioComponent(GameObject* gameObject);
 
 		void SetSound(const sf::SoundBuffer* newSound);
+		void Update(float deltaTime) override;
 		void Play() override;
 
 	protected:

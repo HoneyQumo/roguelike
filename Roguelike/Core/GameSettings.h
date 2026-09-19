@@ -418,12 +418,26 @@ namespace RoguelikeGame
     constexpr auto TRAP_ALARM_SOUND = "trap_wire";
     constexpr float DOOR_VOLUME = 45.f;
     constexpr float LEVER_VOLUME = 55.f;
+
+    // Насколько можно сместиться, не сорвав счёт: полшага, а не ширина комнаты.
+    constexpr float HOLD_SLIP = 12.f;
+
+    // Рубильник гремит, пока его держат. Шум идёт не сплошь, а толчками -
+    // сплошной поток шума поднял бы этаж мгновенно.
+    constexpr float HOLD_NOISE_INTERVAL = 0.45f;
+    constexpr float HOLD_NOISE_RADIUS = 360.f;
+    constexpr float HOLD_NOISE_LOUDNESS = 0.6f;
     constexpr float TRAP_VOLUME = 70.f;
     constexpr float HATCH_VOLUME = 70.f;
     constexpr auto DOOR_LOCKED_PREFIX = u8"Дверь заперта: нужен ";
     constexpr auto DOOR_UNKNOWN_KEY_NAME = u8"ключ";
     constexpr int HUD_PROMPT_FONT_SIZE = 24;
     constexpr float HUD_PROMPT_MARGIN_Y = 170.f;
+
+    // Шкала долгого действия - прямо под подсказкой: взгляд уже там.
+    constexpr float HUD_HOLD_WIDTH = 220.f;
+    constexpr float HUD_HOLD_HEIGHT = 8.f;
+    constexpr float HUD_HOLD_GAP = 8.f;
     constexpr sf::Keyboard::Key RESTART_KEY = sf::Keyboard::R;
     constexpr float LEVEL_FADE_OUT_TIME = 0.35f;
     constexpr float LEVEL_FADE_IN_TIME = 0.45f;

@@ -118,6 +118,14 @@ namespace RoguelikeGame
         promptLabel->SetColor(AMMO_HUD_COLOR);
         promptLabel->SetOutline(AMMO_HUD_OUTLINE, AMMO_HUD_OUTLINE_COLOR);
         promptLabel->SetFont(font);
+
+        holdBar = GetRoot().AddChild<XYZEngine::UiProgressBar>();
+        holdBar->SetAnchor(XYZEngine::UiAnchor::Bottom);
+        holdBar->SetPivot(XYZEngine::UiAnchor::Bottom);
+        holdBar->SetOffset({0.f, -HUD_PROMPT_MARGIN_Y + HUD_HOLD_GAP + HUD_HOLD_HEIGHT});
+        holdBar->SetSize({HUD_HOLD_WIDTH, HUD_HOLD_HEIGHT});
+        holdBar->SetColors(WAVE_HUD_BAR_COLOR, VITALS_HUD_BACK_COLOR);
+        holdBar->SetVisible(false);
         promptLabel->SetVisible(false);
     }
 
@@ -131,6 +139,14 @@ namespace RoguelikeGame
 
         promptLabel->SetText(XYZEngine::FromUtf8(text.c_str()));
         promptLabel->SetVisible(true);
+    }
+
+    // Шкалы не видно, пока действие не начато: пустая полоска под каждой
+    // подсказкой читалась бы как «тут что-то сломано».
+    void HudScreen::SetHold(float part)
+    {
+        holdBar->SetVisible(part > 0.f);
+        holdBar->SetValue(part);
     }
 
     const XYZEngine::UiLabel& HudScreen::GetPromptLabel() const

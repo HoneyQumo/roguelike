@@ -72,6 +72,7 @@ namespace RoguelikeGame
 
         void ShowNotice(const std::string& text);
         void SetPrompt(const std::string& text);
+        void SetHold(float part);
         const XYZEngine::UiLabel& GetPromptLabel() const;
         void Update(float deltaTime) override;
         bool IsNoticeShown() const;
@@ -116,6 +117,7 @@ namespace RoguelikeGame
         XYZEngine::UiProgressBar* armorBar = nullptr;
         XYZEngine::UiLabel* noticeLabel = nullptr;
         XYZEngine::UiLabel* promptLabel = nullptr;
+        XYZEngine::UiProgressBar* holdBar = nullptr;
         XYZEngine::UiWidget* wavePanel = nullptr;
         XYZEngine::UiWidget* chasePanel = nullptr;
         XYZEngine::UiLabel* chaseLabel = nullptr;

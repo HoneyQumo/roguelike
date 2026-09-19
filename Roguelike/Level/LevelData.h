@@ -75,6 +75,9 @@ namespace RoguelikeGame
         int column = 0;
         int row = 0;
         std::string id;
+
+        // Сколько держать клавишу: Switch:power@2.5. Ноль - дёрнул и пошёл.
+        float holdTime = 0.f;
     };
 
     struct WaveEntry

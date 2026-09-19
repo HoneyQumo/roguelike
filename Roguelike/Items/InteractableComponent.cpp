@@ -19,6 +19,19 @@ namespace RoguelikeGame
         return {};
     }
 
+    float InteractableComponent::GetHoldTime() const
+    {
+        return 0.f;
+    }
+
+    void InteractableComponent::OnHold(float part, float deltaTime)
+    {
+    }
+
+    void InteractableComponent::OnHoldBroken()
+    {
+    }
+
     void InteractableComponent::BindReach(XYZEngine::ColliderComponent* reach)
     {
         if (reach == nullptr)

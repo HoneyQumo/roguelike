@@ -76,6 +76,7 @@
     <ClCompile Include="PropAngle.tests.cpp" />
     <ClCompile Include="Ambush.tests.cpp" />
     <ClCompile Include="HoldToAct.tests.cpp" />
+    <ClCompile Include="PrisonRoutes.tests.cpp" />
     <ClCompile Include="Plate.tests.cpp" />
     <ClCompile Include="ProjectTree.tests.cpp" />
     <ClCompile Include="Trap.tests.cpp" />

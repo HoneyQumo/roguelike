@@ -342,6 +342,12 @@ namespace RoguelikeGame
     constexpr float OVERLAY_LINE_WIDTH = 720.f;
     constexpr int HUD_NOTICE_FONT_SIZE = 22;
     constexpr float HUD_NOTICE_MARGIN_Y = 120.f;
+
+    // Субтитры стоят выше плашки HUD, чтобы не спорить с ней за место.
+    constexpr int SUBTITLE_FONT_SIZE = 20;
+    constexpr float SUBTITLE_WIDTH = 760.f;
+    constexpr float SUBTITLE_MARGIN_Y = 180.f;
+    constexpr float SUBTITLE_LINE_GAP = 4.f;
     constexpr float HUD_NOTICE_TIME = 2.f;
     // Панель волн: заголовок, полоса по всей осаде и счётчик тех, кто ещё на хвосте.
     constexpr float WAVE_HUD_MARGIN_Y = 18.f;

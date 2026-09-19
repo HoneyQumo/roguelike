@@ -17,7 +17,8 @@ namespace RoguelikeGame
         GiveControl,
         LookAtTarget,
         LookAtPoint,
-        LookAtHero
+        LookAtHero,
+        Say
     };
 
     struct CutsceneBeat
@@ -29,6 +30,10 @@ namespace RoguelikeGame
         std::string target;
         XYZEngine::Vector2Df point = {0.f, 0.f};
         float travel = 0.f;
+
+        // Бит несёт ровно одну команду, поэтому говорящий ставится рядом
+        // с камерным, а не вместо него: сцена собирается парами битов.
+        std::string line;
     };
 
     /**

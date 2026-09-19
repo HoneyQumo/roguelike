@@ -596,6 +596,12 @@ namespace RoguelikeGame
         auto scene = cutscene->AddComponent<CutscenePlayerComponent>();
         scene->SetBeats(std::move(beats));
         scene->SetControlLock([this](bool isTaken) { SetControlTaken(isTaken); });
+        scene->SetSpeaker([](const std::string& line, XYZEngine::GameObject* source)
+        {
+            SpeechDirector::Current().Say(line, source,
+                source != nullptr ? SoundPlace::InWorld : SoundPlace::AtListener);
+        });
+        scene->SetHush([]() { SpeechDirector::Current().Silence(); });
         scene->SetTargetFinder([](const std::string& name)
         {
             return XYZEngine::GameWorld::Instance()->FindGameObject(name);

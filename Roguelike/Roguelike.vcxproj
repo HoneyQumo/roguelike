@@ -154,6 +154,7 @@
         <ClCompile Include="Characters\FootstepComponent.cpp"/>
         <ClCompile Include="Speech\SpeechCatalog.cpp"/>
         <ClCompile Include="Speech\SubtitleQueue.cpp"/>
+        <ClCompile Include="Speech\SpeechDirector.cpp"/>
         <ClCompile Include="Ui\SubtitleScreen.cpp"/>
         <ClCompile Include="Speech\SpeechCatalogLoader.cpp"/>
         <ClCompile Include="Characters\SettleComponent.cpp"/>
@@ -338,6 +339,7 @@
         <ClInclude Include="Characters\Footsteps.h"/>
         <ClInclude Include="Speech\SpeechCatalog.h"/>
         <ClInclude Include="Speech\SubtitleQueue.h"/>
+        <ClInclude Include="Speech\SpeechDirector.h"/>
         <ClInclude Include="Ui\SubtitleScreen.h"/>
         <ClInclude Include="Speech\SpeechCatalogLoader.h"/>
         <ClInclude Include="Fx\WorldSound.h"/>

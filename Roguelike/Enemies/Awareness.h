@@ -106,6 +106,12 @@ namespace RoguelikeGame
         return now == AwarenessState::Provoked && before != AwarenessState::Provoked;
     }
 
+    // Насторожился - это ещё не «увидел»: оклик короче и тише, чем тревога.
+    constexpr bool IsAlertedNow(AwarenessState before, AwarenessState now)
+    {
+        return now == AwarenessState::Alerted && before == AwarenessState::Calm;
+    }
+
     constexpr float AwarenessPart(float level)
     {
         return std::min(std::max(level / AWARENESS_PROVOKE_AT, 0.f), 1.f);

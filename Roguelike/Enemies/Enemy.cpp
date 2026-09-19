@@ -71,6 +71,7 @@ namespace RoguelikeGame
 
             auto voice = object->AddComponent<EnemyVoiceComponent>();
             voice->SetSpeech(config.spottedSpeech);
+            voice->SetNoticeSpeech(config.noticedSpeech);
 
             if (definition != nullptr)
             {

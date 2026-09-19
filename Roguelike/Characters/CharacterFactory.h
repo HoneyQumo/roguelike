@@ -19,6 +19,7 @@
 
 namespace RoguelikeGame
 {
+    class FootstepComponent;
     struct CharacterSpec
     {
         std::string objectName;
@@ -47,6 +48,7 @@ namespace RoguelikeGame
         HealthComponent* health = nullptr;
         HitFlashComponent* hitFlash = nullptr;
         WeaponLayerComponent* weapon = nullptr;
+        FootstepComponent* footsteps = nullptr;
     };
 
     using AddControls = std::function<void(XYZEngine::GameObject*)>;

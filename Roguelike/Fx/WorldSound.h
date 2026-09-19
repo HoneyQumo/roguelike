@@ -13,7 +13,8 @@ namespace RoguelikeGame
 		Shot = 1,
 		Hit = 2,
 		Voice = 3,
-		Hurt = 4
+		Hurt = 4,
+		Step = 5
 	};
 
 	// Звуки самого игрока слышны на слушателе, а он стоит на камере: та отстаёт

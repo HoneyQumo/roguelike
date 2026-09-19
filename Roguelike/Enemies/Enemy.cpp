@@ -6,6 +6,7 @@
 #include "BossSpriteAtlas.h"
 #include "ParticleCatalog.h"
 #include "CharacterFactory.h"
+#include "FootstepComponent.h"
 #include "GameSettings.h"
 #include "GameResources.h"
 #include "WeaponSetup.h"
@@ -93,6 +94,9 @@ namespace RoguelikeGame
         auto animation = parts.animation;
         auto health = parts.health;
         auto hitFlash = parts.hitFlash;
+
+        parts.footsteps->SetPlace(SoundPlace::InWorld);
+        parts.footsteps->SetSide(GetFactionOf(gameObject));
 
         aim->SetMaxDistance(0.f);
         aim->SetTurnSpeed(config.turnSpeed);

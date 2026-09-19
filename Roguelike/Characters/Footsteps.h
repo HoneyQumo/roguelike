@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include "GameSettings.h"
 
 namespace RoguelikeGame
 {
@@ -11,11 +12,52 @@ namespace RoguelikeGame
 	// Несколько вариантов подряд, чтобы шаг три раза в секунду не читался петлёй.
 	constexpr int STEP_VARIANTS = 4;
 
+	// След оставляет только бег: ходьба - это тишина, и на ней держится
+	// заход со спины, которому учит вся первая локация.
+	constexpr float RUN_NOISE_RADIUS = 5.f * TILE_SIZE;
+	constexpr float RUN_NOISE_LOUDNESS = 0.5f;
+
 	inline std::string StepKey(int variant)
 	{
 		return variant < 1 || variant > STEP_VARIANTS
 			? std::string()
 			: STEP_KEY_PREFIX + std::to_string(variant);
+	}
+
+	// Касание земли приходится на первый кадр каждой половины цикла: восемь
+	// кадров - это два шага, а не восемь.
+	inline bool IsStepFrame(int frame, int framesInClip)
+	{
+		if (framesInClip < 2 || frame < 0 || frame >= framesInClip)
+		{
+			return false;
+		}
+
+		return frame % (framesInClip / 2) == 0;
+	}
+
+	// Кадр держится несколько тиков подряд, поэтому одного «это кадр касания»
+	// мало - иначе один шаг звучал бы очередью.
+	struct StepBeat
+	{
+		int lastFrame = -1;
+	};
+
+	inline bool TakeStep(StepBeat& beat, int frame, int framesInClip)
+	{
+		if (frame == beat.lastFrame)
+		{
+			return false;
+		}
+
+		beat.lastFrame = frame;
+
+		return IsStepFrame(frame, framesInClip);
+	}
+
+	inline void LoseStep(StepBeat& beat)
+	{
+		beat.lastFrame = -1;
 	}
 
 	inline std::string StepFilePath(int variant)

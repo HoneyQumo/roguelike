@@ -57,10 +57,23 @@ namespace RoguelikeGame
                 continue;
             }
 
+            // Две дешёвые отсечки до подсчёта стен: шаги бегущего поднимают шум
+            // несколько раз в секунду, и обход всей карты на каждый шаг дорог.
+            Faction side = GetFactionOf(owner);
+            if (!ReachesSide(noise, side))
+            {
+                continue;
+            }
+
             XYZEngine::Vector2Df place = owner->GetTransform()->GetWorldPosition();
+            if ((place - noise.position).GetLengthSquared() > noise.radius * noise.radius)
+            {
+                continue;
+            }
+
             int walls = LevelGrid::Current().CountWallsBetween(noise.position, place);
 
-            float loudness = LoudnessAt(noise, place, GetFactionOf(owner), walls);
+            float loudness = LoudnessAt(noise, place, side, walls);
             if (loudness <= NOISE_HEARD_AT)
             {
                 continue;

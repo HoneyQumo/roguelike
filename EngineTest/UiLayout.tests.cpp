@@ -172,3 +172,49 @@ TEST(UiLayoutTests, ProgressBarFillScalesWithValue)
 	EXPECT_FLOAT_EQ(bar->GetValue(), 1.f);
 	EXPECT_FLOAT_EQ(bar->GetFillBounds().width, 200.f);
 }
+
+// Сдвинутый после раскладки элемент обязан переехать. Пока отметки не было,
+// bounds оставались от Push, и все субтитры ложились в одну строку внизу.
+TEST(UiLayoutTests, MovingAWidgetAfterLayoutMarksTheTreeDirty)
+{
+	UiWidget root;
+	UiWidget* block = root.AddChild<UiWidget>();
+	block->SetAnchor(UiAnchor::Bottom);
+	block->SetPivot(UiAnchor::Bottom);
+	block->SetSize({200.f, 40.f});
+
+	root.Layout(Screen(1280.f, 720.f));
+	ASSERT_FALSE(root.IsLayoutDirty());
+
+	block->SetOffset({0.f, -100.f});
+
+	EXPECT_TRUE(root.IsLayoutDirty());
+
+	root.Layout(Screen(1280.f, 720.f));
+	EXPECT_FLOAT_EQ(block->GetBounds().top, 720.f - 100.f - 40.f);
+}
+
+TEST(UiLayoutTests, SettingTheSameOffsetTwiceCostsNothing)
+{
+	UiWidget root;
+	UiWidget* block = root.AddChild<UiWidget>();
+	block->SetOffset({10.f, 10.f});
+
+	root.Layout(Screen(1280.f, 720.f));
+	ASSERT_FALSE(root.IsLayoutDirty());
+
+	block->SetOffset({10.f, 10.f});
+
+	EXPECT_FALSE(root.IsLayoutDirty());
+}
+
+TEST(UiLayoutTests, ANewChildAsksForALayout)
+{
+	UiWidget root;
+	root.Layout(Screen(1280.f, 720.f));
+	ASSERT_FALSE(root.IsLayoutDirty());
+
+	root.AddChild<UiWidget>();
+
+	EXPECT_TRUE(root.IsLayoutDirty());
+}

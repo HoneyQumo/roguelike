@@ -5,24 +5,54 @@ namespace XYZEngine
 {
 	void UiWidget::SetAnchor(UiAnchor newAnchor)
 	{
+		if (anchor == newAnchor)
+		{
+			return;
+		}
+
 		anchor = newAnchor;
+		MarkLayoutDirty();
 	}
 	void UiWidget::SetPivot(UiAnchor newPivot)
 	{
+		if (pivot == newPivot)
+		{
+			return;
+		}
+
 		pivot = newPivot;
+		MarkLayoutDirty();
 	}
 	void UiWidget::SetOffset(const sf::Vector2f& newOffset)
 	{
+		if (offset == newOffset)
+		{
+			return;
+		}
+
 		offset = newOffset;
+		MarkLayoutDirty();
 	}
 	void UiWidget::SetSize(const sf::Vector2f& newSize)
 	{
+		if (size == newSize)
+		{
+			return;
+		}
+
 		size = newSize;
+		MarkLayoutDirty();
 	}
 	void UiWidget::SetStretch(bool newStretchX, bool newStretchY)
 	{
+		if (stretchX == newStretchX && stretchY == newStretchY)
+		{
+			return;
+		}
+
 		stretchX = newStretchX;
 		stretchY = newStretchY;
+		MarkLayoutDirty();
 	}
 	void UiWidget::SetVisible(bool newIsVisible)
 	{
@@ -40,6 +70,24 @@ namespace XYZEngine
 	std::size_t UiWidget::GetChildrenCount() const
 	{
 		return children.size();
+	}
+
+	const UiWidget& UiWidget::GetChild(std::size_t index) const
+	{
+		return *children[index];
+	}
+
+	bool UiWidget::IsLayoutDirty() const
+	{
+		return isLayoutDirty;
+	}
+
+	void UiWidget::MarkLayoutDirty()
+	{
+		for (UiWidget* node = this; node != nullptr; node = node->parent)
+		{
+			node->isLayoutDirty = true;
+		}
 	}
 
 	bool UiWidget::HitTest(const sf::Vector2f& point) const
@@ -67,6 +115,8 @@ namespace XYZEngine
 
 	void UiWidget::Layout(const sf::FloatRect& parentBounds)
 	{
+		isLayoutDirty = false;
+
 		if (parent == nullptr)
 		{
 			bounds = parentBounds;

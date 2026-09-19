@@ -18,7 +18,7 @@ namespace RoguelikeGame
         static const sf::SoundBuffer* GetWeaponSound(const char* key);
         static const sf::SoundBuffer* GetMeleeHitSound(const MeleeDefinition& melee);
         static const sf::SoundBuffer* GetVoiceLine(const char* voice, int line);
-        static const sf::SoundBuffer* GetStep(int variant);
+        static const sf::SoundBuffer* GetStep(const char* set, int variant);
         static void LoadFixtures();
         static const ItemCatalog& GetItems();
         static const LevelCatalog& GetLevels();

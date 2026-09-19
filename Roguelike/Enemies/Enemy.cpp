@@ -97,6 +97,7 @@ namespace RoguelikeGame
 
         parts.footsteps->SetPlace(SoundPlace::InWorld);
         parts.footsteps->SetSide(GetFactionOf(gameObject));
+        parts.footsteps->SetSteps(FOE_STEPS);
 
         aim->SetMaxDistance(0.f);
         aim->SetTurnSpeed(config.turnSpeed);

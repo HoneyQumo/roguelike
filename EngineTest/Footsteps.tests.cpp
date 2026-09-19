@@ -3,6 +3,8 @@
 #include "ProjectFiles.h"
 #include <filesystem>
 
+using RoguelikeGame::FOE_STEPS;
+using RoguelikeGame::HERO_STEPS;
 using RoguelikeGame::STEP_VARIANTS;
 using RoguelikeGame::StepFilePath;
 using RoguelikeGame::StepKey;
@@ -13,21 +15,31 @@ using RoguelikeGame::TakeStep;
 
 TEST(FootstepsTest, EveryVariantHasItsOwnKey)
 {
-	EXPECT_EQ(StepKey(1), "step_1");
-	EXPECT_EQ(StepKey(STEP_VARIANTS), "step_" + std::to_string(STEP_VARIANTS));
-	EXPECT_NE(StepKey(1), StepKey(2));
+	EXPECT_EQ(StepKey(HERO_STEPS, 1), "step_hero_1");
+	EXPECT_EQ(StepKey(FOE_STEPS, STEP_VARIANTS), "step_boot_" + std::to_string(STEP_VARIANTS));
+	EXPECT_NE(StepKey(HERO_STEPS, 1), StepKey(HERO_STEPS, 2));
+}
+
+// Свои шаги и чужие - разные файлы, иначе на слух их не разделить.
+TEST(FootstepsTest, TheHeroAndTheFoeStepOnDifferentFiles)
+{
+	for (int variant = 1; variant <= STEP_VARIANTS; variant++)
+	{
+		EXPECT_NE(StepFilePath(HERO_STEPS, variant), StepFilePath(FOE_STEPS, variant));
+	}
 }
 
 TEST(FootstepsTest, ThereIsNoVariantOutsideTheSet)
 {
-	EXPECT_TRUE(StepKey(0).empty());
-	EXPECT_TRUE(StepKey(STEP_VARIANTS + 1).empty());
-	EXPECT_TRUE(StepFilePath(-1).empty());
+	EXPECT_TRUE(StepKey(HERO_STEPS, 0).empty());
+	EXPECT_TRUE(StepKey(HERO_STEPS, STEP_VARIANTS + 1).empty());
+	EXPECT_TRUE(StepFilePath(HERO_STEPS, -1).empty());
+	EXPECT_TRUE(StepFilePath(nullptr, 1).empty());
 }
 
 TEST(FootstepsTest, TheKeyGoesIntoTheFileName)
 {
-	EXPECT_EQ(StepFilePath(2), "Resources/Audio/Steps/step_2.wav");
+	EXPECT_EQ(StepFilePath(FOE_STEPS, 2), "Resources/Audio/Steps/step_boot_2.wav");
 }
 
 // Восемь кадров ходьбы - это два шага, а не восемь: нога касается земли
@@ -100,9 +112,12 @@ TEST_F(ShippedStepsTest, EveryVariantLiesOnDisk)
 {
 	ASSERT_TRUE(isFound) << previous.string();
 
-	for (int variant = 1; variant <= STEP_VARIANTS; variant++)
+	for (const char* set : {HERO_STEPS, FOE_STEPS})
 	{
-		EXPECT_TRUE(std::filesystem::exists(StepFilePath(variant))) << StepFilePath(variant);
+		for (int variant = 1; variant <= STEP_VARIANTS; variant++)
+		{
+			EXPECT_TRUE(std::filesystem::exists(StepFilePath(set, variant))) << StepFilePath(set, variant);
+		}
 	}
 }
 
@@ -116,14 +131,17 @@ TEST_F(ShippedStepsTest, NothingElseLiesAmongTheSteps)
 		std::string path = RoguelikeGame::STEP_AUDIO_PATH + entry.path().filename().string();
 
 		bool isKnown = false;
-		for (int variant = 1; variant <= STEP_VARIANTS && !isKnown; variant++)
+		for (const char* set : {HERO_STEPS, FOE_STEPS})
 		{
-			isKnown = path == StepFilePath(variant);
+			for (int variant = 1; variant <= STEP_VARIANTS && !isKnown; variant++)
+			{
+				isKnown = path == StepFilePath(set, variant);
+			}
 		}
 
 		EXPECT_TRUE(isKnown) << path << " не упоминается в коде - подключить или удалить";
 		found++;
 	}
 
-	EXPECT_EQ(found, STEP_VARIANTS);
+	EXPECT_EQ(found, 2 * STEP_VARIANTS);
 }

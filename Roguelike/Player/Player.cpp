@@ -102,6 +102,7 @@ namespace RoguelikeGame
         // Свои шаги слышны на слушателе, как и остальные звуки игрока.
         parts.footsteps->SetPlace(SoundPlace::AtListener);
         parts.footsteps->SetSide(Faction::Player);
+        parts.footsteps->SetSteps(HERO_STEPS);
 
         movement->SetRunSpeedMultiplier(PLAYER_RUN_SPEED_MULTIPLIER);
         aim->AimAtCursor();

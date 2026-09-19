@@ -8,6 +8,7 @@
 #include "BossSpriteAtlas.h"
 #include "EnemyCatalog.h"
 #include "EnemyVoice.h"
+#include "Footsteps.h"
 #include "Fixtures.h"
 #include "TileAtlas.h"
 #include <PixelBounds.h>
@@ -135,6 +136,7 @@ namespace RoguelikeGame
         XYZEngine::ResourceSystem::Instance()->LoadSound(CAR_SKID_SOUND, CAR_SKID_SOUND_FILE);
         LoadFixtures();
         LoadVoiceLines();
+        LoadSteps();
 
         LoadWeaponSounds();
 
@@ -165,6 +167,21 @@ namespace RoguelikeGame
         std::string key = VoiceKey(voice, line);
 
         return key.empty() ? nullptr : XYZEngine::ResourceSystem::Instance()->GetSound(key);
+    }
+
+    const sf::SoundBuffer* GameResources::GetStep(int variant)
+    {
+        std::string key = StepKey(variant);
+
+        return key.empty() ? nullptr : XYZEngine::ResourceSystem::Instance()->GetSound(key);
+    }
+
+    void GameResources::LoadSteps()
+    {
+        for (int variant = 1; variant <= STEP_VARIANTS; variant++)
+        {
+            XYZEngine::ResourceSystem::Instance()->LoadSound(StepKey(variant), StepFilePath(variant));
+        }
     }
 
     void GameResources::LoadVoiceLines()

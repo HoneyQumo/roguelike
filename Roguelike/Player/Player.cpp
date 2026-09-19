@@ -1,5 +1,6 @@
 ﻿#include "Player.h"
 #include "CharacterFactory.h"
+#include "FootstepComponent.h"
 #include "GameSettings.h"
 #include "PlayerAttackComponent.h"
 #include "PlayerLoadoutComponent.h"
@@ -97,6 +98,10 @@ namespace RoguelikeGame
         auto animation = parts.animation;
         auto health = parts.health;
         auto hitFlash = parts.hitFlash;
+
+        // Свои шаги слышны на слушателе, как и остальные звуки игрока.
+        parts.footsteps->SetPlace(SoundPlace::AtListener);
+        parts.footsteps->SetSide(Faction::Player);
 
         movement->SetRunSpeedMultiplier(PLAYER_RUN_SPEED_MULTIPLIER);
         aim->AimAtCursor();

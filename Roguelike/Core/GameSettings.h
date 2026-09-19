@@ -472,6 +472,7 @@ namespace RoguelikeGame
     constexpr float RELOAD_VOLUME = 45.f;
     constexpr float HURT_VOLUME = 35.f;
     constexpr float VOICE_VOLUME = 70.f;
+    constexpr float STEP_VOLUME = 60.f;
     // Враг волны не появляется ближе полутора клеток к игроку.
     // Вода перебирает кадры медленно: рябь, а не мельтешение.
     constexpr float WATER_FRAME_TIME = 0.28f;

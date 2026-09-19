@@ -1,4 +1,5 @@
 #include "CharacterFactory.h"
+#include "FootstepComponent.h"
 #include "GameSettings.h"
 #include <GameWorld.h>
 #include <ResourceSystem.h>
@@ -68,6 +69,8 @@ namespace RoguelikeGame
         healthBar->SetSize(HEALTH_BAR_WIDTH, HEALTH_BAR_HEIGHT);
         healthBar->SetOffset(0.f, HEALTH_BAR_OFFSET_Y);
         healthBar->SetColors(spec.healthBarColor, {20, 20, 20, 200});
+
+        parts.footsteps = parts.gameObject->AddComponent<FootstepComponent>();
 
         parts.hitFlash = parts.gameObject->AddComponent<HitFlashComponent>();
         parts.hitFlash->AddRenderer(parts.renderer);

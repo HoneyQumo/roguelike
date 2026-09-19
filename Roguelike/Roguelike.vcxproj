@@ -151,6 +151,7 @@
         <ClCompile Include="Weapons\WeaponSetup.cpp"/>
         <ClCompile Include="Level\DeveloperLevel.cpp"/>
         <ClCompile Include="Characters\CharacterFactory.cpp"/>
+        <ClCompile Include="Characters\FootstepComponent.cpp"/>
         <ClCompile Include="Characters\SettleComponent.cpp"/>
         <ClCompile Include="Enemies\Enemy.cpp"/>
         <ClCompile Include="Enemies\EnemyAttackComponent.cpp"/>
@@ -329,6 +330,7 @@
         <ClInclude Include="Weapons\ReloadIndicatorComponent.h"/>
         <ClInclude Include="Ui\Crosshair.h"/>
         <ClInclude Include="Fx\EffectObject.h"/>
+        <ClInclude Include="Characters\FootstepComponent.h"/>
         <ClInclude Include="Characters\Footsteps.h"/>
         <ClInclude Include="Fx\WorldSound.h"/>
         <ClInclude Include="Fx\Fx.h"/>

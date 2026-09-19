@@ -6,6 +6,10 @@
 using RoguelikeGame::STEP_VARIANTS;
 using RoguelikeGame::StepFilePath;
 using RoguelikeGame::StepKey;
+using RoguelikeGame::IsStepFrame;
+using RoguelikeGame::LoseStep;
+using RoguelikeGame::StepBeat;
+using RoguelikeGame::TakeStep;
 
 TEST(FootstepsTest, EveryVariantHasItsOwnKey)
 {
@@ -24,6 +28,66 @@ TEST(FootstepsTest, ThereIsNoVariantOutsideTheSet)
 TEST(FootstepsTest, TheKeyGoesIntoTheFileName)
 {
 	EXPECT_EQ(StepFilePath(2), "Resources/Audio/Steps/step_2.wav");
+}
+
+// Восемь кадров ходьбы - это два шага, а не восемь: нога касается земли
+// в начале каждой половины цикла.
+TEST(FootstepsTest, TheFootTouchesTheGroundTwicePerCycle)
+{
+	int touches = 0;
+	for (int frame = 0; frame < 8; frame++)
+	{
+		touches += IsStepFrame(frame, 8) ? 1 : 0;
+	}
+
+	EXPECT_EQ(touches, 2);
+	EXPECT_TRUE(IsStepFrame(0, 8));
+	EXPECT_TRUE(IsStepFrame(4, 8));
+}
+
+TEST(FootstepsTest, AFrameOutsideTheClipIsNoStep)
+{
+	EXPECT_FALSE(IsStepFrame(-1, 8));
+	EXPECT_FALSE(IsStepFrame(8, 8));
+	EXPECT_FALSE(IsStepFrame(0, 1));
+}
+
+// Кадр держится несколько тиков подряд: без памяти о прошлом кадре один шаг
+// звучал бы очередью.
+TEST(FootstepsTest, TheSameFrameStepsOnlyOnce)
+{
+	StepBeat beat;
+
+	EXPECT_TRUE(TakeStep(beat, 0, 8));
+	EXPECT_FALSE(TakeStep(beat, 0, 8));
+	EXPECT_FALSE(TakeStep(beat, 0, 8));
+}
+
+TEST(FootstepsTest, TheWholeCycleGivesTwoSteps)
+{
+	StepBeat beat;
+
+	int steps = 0;
+	for (int round = 0; round < 2; round++)
+	{
+		for (int frame = 0; frame < 8; frame++)
+		{
+			steps += TakeStep(beat, frame, 8) ? 1 : 0;
+		}
+	}
+
+	EXPECT_EQ(steps, 4);
+}
+
+// Остановился и пошёл заново - шаг обязан прозвучать, даже если кадр тот же.
+TEST(FootstepsTest, AfterAStopTheFirstFrameStepsAgain)
+{
+	StepBeat beat;
+
+	ASSERT_TRUE(TakeStep(beat, 0, 8));
+	LoseStep(beat);
+
+	EXPECT_TRUE(TakeStep(beat, 0, 8));
 }
 
 class ShippedStepsTest : public ProjectFiles::Test

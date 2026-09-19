@@ -18,6 +18,7 @@ namespace RoguelikeGame
         static const sf::SoundBuffer* GetWeaponSound(const char* key);
         static const sf::SoundBuffer* GetMeleeHitSound(const MeleeDefinition& melee);
         static const sf::SoundBuffer* GetVoiceLine(const char* voice, int line);
+        static const sf::SoundBuffer* GetStep(int variant);
         static void LoadFixtures();
         static const ItemCatalog& GetItems();
         static const LevelCatalog& GetLevels();
@@ -28,6 +29,7 @@ namespace RoguelikeGame
         static void LoadCharacterAtlas(const std::string& name, int framesCount, int frameSize = CHARACTER_FRAME_SIZE);
         static void LoadBossFxStrip(const std::string& name, const FxStrip& strip);
         static void LoadWeaponSound(const std::string& key);
+        static void LoadSteps();
         static void LoadWeaponSounds();
         static void LoadVoiceLines();
         static void LoadFxStrip(const std::string& name, const FxStrip& strip);

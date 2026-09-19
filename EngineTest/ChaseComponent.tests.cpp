@@ -4,6 +4,7 @@
 #include "Noise.h"
 #include "AwarenessGaugeComponent.h"
 #include "ChaseComponent.h"
+#include "Footsteps.h"
 #include "GameSettings.h"
 #include "LevelGrid.h"
 #include "LevelLoader.h"
@@ -1442,4 +1443,38 @@ TEST_F(ChaseComponentTest, EvenAFaintNoiseStillSendsTheEnemyToLook)
 	Run(1.5f);
 
 	EXPECT_GT(chase->GetGameObject()->GetTransform()->GetWorldPosition().x, stood.x + 1.f);
+}
+
+// Бег оставляет след, но недалеко: числа шага должны иметь смысл в клетках,
+// а не только в тестах на чистую функцию.
+TEST_F(ChaseComponentTest, ARunningStepIsHeardCloseByAndNotAcrossTheRoom)
+{
+	CreateHero(11, 1);
+	ChaseComponent* close = CreateEnemy(3, 1);
+	ChaseComponent* far = CreateEnemy(11, 3);
+	Run(0.1f);
+
+	RoguelikeGame::Noise step;
+	step.position = At(1, 1);
+	step.radius = RoguelikeGame::RUN_NOISE_RADIUS;
+	step.loudness = RoguelikeGame::RUN_NOISE_LOUDNESS;
+	step.from = RoguelikeGame::Faction::Player;
+	RaiseNoise(step);
+	Run(0.1f);
+
+	EXPECT_TRUE(close->IsEngaged()) << "бегущего не слышно в двух клетках";
+	EXPECT_FALSE(far->IsEngaged()) << "бегущего слышно через всю комнату";
+}
+
+// Шаг не поднимает шума вовсе: на этом держится заход со спины.
+TEST_F(ChaseComponentTest, AWalkingStepLeavesNoTrailAtAll)
+{
+	CreateHero(11, 1);
+	ChaseComponent* chase = CreateEnemy(2, 1);
+	Run(0.1f);
+
+	float before = chase->GetAwareness();
+	Run(1.f);
+
+	EXPECT_EQ(chase->GetAwareness(), before) << "герой прошёл мимо, а враг что-то услышал";
 }

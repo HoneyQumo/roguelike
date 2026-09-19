@@ -25,6 +25,25 @@ namespace
 {
 	const std::string PRISON = "Resources/Acts/act1_prison.config";
 
+	constexpr int ROOM_WIDTH = 16;
+	constexpr int ROOM_HEIGHT = 12;
+
+	// Зона после сборки зовётся room@столбец;строка[:имя] - угол комнаты в самом имени.
+	bool RoomOriginOf(const std::string& id, int& column, int& row)
+	{
+		std::size_t at = id.find('@');
+		std::size_t semicolon = id.find(';', at);
+		if (at == std::string::npos || semicolon == std::string::npos)
+		{
+			return false;
+		}
+
+		column = std::stoi(id.substr(at + 1, semicolon - at - 1));
+		row = std::stoi(id.substr(semicolon + 1));
+
+		return true;
+	}
+
 	// Линия ворот: ряд стен между средним и нижним этажом тюрьмы. Через него
 	// и идут три пути вниз, а больше вниз идти неоткуда.
 	constexpr int GATE_LINE = 22;
@@ -291,6 +310,29 @@ TEST_F(PrisonRoutesTest, EveryGuardBelongsToSomeRoom)
 			EXPECT_NE(RoguelikeGame::FindZoneAt(zones, column, row), nullptr)
 				<< "охранник в " << column << ";" << row << " ни в какой зоне и потому не спит";
 		}
+	}
+}
+
+// Края комнат акта - общие коридорные полосы. Зона, дотянувшаяся до края, будит
+// свою комнату и соседние от прохода мимо - и босса в том числе.
+TEST_F(PrisonRoutesTest, NoZoneReachesTheCorridorsBetweenRooms)
+{
+	ASSERT_TRUE(isFound) << previous.string();
+
+	std::vector<RoguelikeGame::LevelZone> zones = RoguelikeGame::BuildZones(prison);
+	ASSERT_FALSE(zones.empty());
+
+	for (const RoguelikeGame::LevelZone& zone : zones)
+	{
+		int column = 0;
+		int row = 0;
+		ASSERT_TRUE(RoomOriginOf(zone.id, column, row)) << zone.id;
+
+		// Имя зоны несёт угол своей комнаты: room@столбец;строка[:зона].
+		EXPECT_GT(zone.minColumn, column) << zone.id << " достаёт до левого края комнаты";
+		EXPECT_LT(zone.maxColumn, column + ROOM_WIDTH - 1) << zone.id << " достаёт до правого края";
+		EXPECT_GT(zone.minRow, row) << zone.id << " достаёт до верхнего края";
+		EXPECT_LT(zone.maxRow, row + ROOM_HEIGHT - 1) << zone.id << " достаёт до нижнего края";
 	}
 }
 

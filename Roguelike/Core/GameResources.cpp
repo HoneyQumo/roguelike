@@ -169,18 +169,21 @@ namespace RoguelikeGame
         return key.empty() ? nullptr : XYZEngine::ResourceSystem::Instance()->GetSound(key);
     }
 
-    const sf::SoundBuffer* GameResources::GetStep(int variant)
+    const sf::SoundBuffer* GameResources::GetStep(const char* set, int variant)
     {
-        std::string key = StepKey(variant);
+        std::string key = StepKey(set, variant);
 
         return key.empty() ? nullptr : XYZEngine::ResourceSystem::Instance()->GetSound(key);
     }
 
     void GameResources::LoadSteps()
     {
-        for (int variant = 1; variant <= STEP_VARIANTS; variant++)
+        for (const char* set : {HERO_STEPS, FOE_STEPS})
         {
-            XYZEngine::ResourceSystem::Instance()->LoadSound(StepKey(variant), StepFilePath(variant));
+            for (int variant = 1; variant <= STEP_VARIANTS; variant++)
+            {
+                XYZEngine::ResourceSystem::Instance()->LoadSound(StepKey(set, variant), StepFilePath(set, variant));
+            }
         }
     }
 

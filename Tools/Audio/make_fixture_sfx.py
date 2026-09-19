@@ -76,22 +76,32 @@ def Write(name, samples, loudness):
         name, len(frames) / float(RATE), np.sqrt((ready ** 2).mean()), np.abs(ready).max()))
 
 
-def Step(seed, bodyHz, length=0.16, snap=0.012, decay=0.045):
-    """Шаг по твёрдому полу: короткий щелчок каблука и глухое тело удара.
+def Step(seed, bodyHz, length=0.16, snap=0.012, decay=0.045, heel=0.35, cloth=0.0):
+    """Шаг по твёрдому полу: щелчок подошвы, глухое тело удара и шорох снаряжения.
 
     Записи не берём - шаг звучит три раза в секунду, и любая характерная
     запись за минуту игры превращается в стук дятла. Синтез даёт ровно
     столько, сколько нужно: слышно, что кто-то идёт, и ничего сверх того.
+
+    Свои шаги от чужих отличают весом и слоем ткани: ниже и полнее - ближе
+    и тяжелее, выше и суше - «ботинки там». Шорох снаряжения есть только
+    у героя, и это второй признак «это я», кроме позиции.
     """
     rng = np.random.default_rng(seed)
     count = int(RATE * length)
     noise = rng.normal(0.0, 1.0, count)
     time = np.arange(count) / float(RATE)
 
-    heel = noise * np.exp(-time / snap)
+    snapped = noise * np.exp(-time / snap)
     body = Resonate(noise, bodyHz, bodyHz * 0.85, 90.0) * np.exp(-time / decay)
 
-    return Fade(heel * 0.35 + body, 0.001, 0.05)
+    track = snapped * heel + body
+    if cloth > 0.0:
+        # Шорох ткани живёт выше удара и тянется дольше него.
+        rustle = Resonate(rng.normal(0.0, 1.0, count), 3200.0, 2400.0, 900.0)
+        track += rustle * np.exp(-time / (decay * 2.5)) * cloth
+
+    return Fade(track, 0.001, 0.05)
 
 
 def Fold(name, source):
@@ -208,5 +218,11 @@ if __name__ == '__main__':
     Fold('hurt.wav', 'hurt_stereo.wav')
 
     # Разные варианты, чтобы подряд идущие шаги не читались петлёй.
+    # Герой: мягче и глуше чужого, без шороха снаряжения.
     for index, (seed, bodyHz) in enumerate([(11, 190.0), (23, 165.0), (37, 210.0), (51, 150.0)], start=1):
-        Write(os.path.join('Steps', 'step_%d.wav' % index), Step(seed, bodyHz), 0.035)
+        Write(os.path.join('Steps', 'step_hero_%d.wav' % index), Step(seed, bodyHz), 0.035)
+
+    # Чужой: выше, суше, резче - «ботинки там».
+    for index, (seed, bodyHz) in enumerate([(61, 240.0), (73, 265.0), (87, 225.0), (95, 285.0)], start=1):
+        Write(os.path.join('Steps', 'step_boot_%d.wav' % index),
+              Step(seed, bodyHz, length=0.13, snap=0.008, decay=0.030, heel=0.55), 0.035)

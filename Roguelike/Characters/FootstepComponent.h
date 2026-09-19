@@ -29,6 +29,7 @@ namespace RoguelikeGame
 
 		void SetPlace(SoundPlace newPlace);
 		void SetSide(Faction newSide);
+		void SetSteps(const char* newSteps);
 
 		int GetStepCount() const;
 
@@ -37,6 +38,7 @@ namespace RoguelikeGame
 
 		SoundPlace place = SoundPlace::InWorld;
 		Faction side = Faction::Neutral;
+		const char* steps = FOE_STEPS;
 
 		StepBeat beat;
 		int nextVariant = 1;

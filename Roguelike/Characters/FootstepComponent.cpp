@@ -54,6 +54,11 @@ namespace RoguelikeGame
 		side = newSide;
 	}
 
+	void FootstepComponent::SetSteps(const char* newSteps)
+	{
+		steps = newSteps;
+	}
+
 	int FootstepComponent::GetStepCount() const
 	{
 		return stepCount;
@@ -63,7 +68,7 @@ namespace RoguelikeGame
 	{
 		stepCount++;
 
-		PlayOneShot(GameResources::GetStep(nextVariant), STEP_VOLUME, SoundKind::Step, place, gameObject);
+		PlayOneShot(GameResources::GetStep(steps, nextVariant), STEP_VOLUME, SoundKind::Step, place, gameObject);
 		nextVariant = nextVariant % STEP_VARIANTS + 1;
 
 		// Шаг слышно ухом, но следа он не оставляет: иначе подойти со спины

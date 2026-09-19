@@ -6,6 +6,11 @@
 namespace RoguelikeGame
 {
 	constexpr auto STEP_KEY_PREFIX = "step_";
+
+	// Набор выбирается по имени: дальше у тяжёлого и у щитовика шаги будут
+	// свои, и добавиться они должны строкой в каталоге, а не правкой кода.
+	constexpr auto HERO_STEPS = "hero";
+	constexpr auto FOE_STEPS = "boot";
 	constexpr auto STEP_AUDIO_PATH = "Resources/Audio/Steps/";
 	constexpr auto STEP_AUDIO_SUFFIX = ".wav";
 
@@ -17,11 +22,11 @@ namespace RoguelikeGame
 	constexpr float RUN_NOISE_RADIUS = 5.f * TILE_SIZE;
 	constexpr float RUN_NOISE_LOUDNESS = 0.5f;
 
-	inline std::string StepKey(int variant)
+	inline std::string StepKey(const char* set, int variant)
 	{
-		return variant < 1 || variant > STEP_VARIANTS
+		return set == nullptr || variant < 1 || variant > STEP_VARIANTS
 			? std::string()
-			: STEP_KEY_PREFIX + std::to_string(variant);
+			: STEP_KEY_PREFIX + std::string(set) + "_" + std::to_string(variant);
 	}
 
 	// Касание земли приходится на первый кадр каждой половины цикла: восемь
@@ -60,9 +65,9 @@ namespace RoguelikeGame
 		beat.lastFrame = -1;
 	}
 
-	inline std::string StepFilePath(int variant)
+	inline std::string StepFilePath(const char* set, int variant)
 	{
-		std::string key = StepKey(variant);
+		std::string key = StepKey(set, variant);
 
 		return key.empty() ? key : STEP_AUDIO_PATH + key + STEP_AUDIO_SUFFIX;
 	}

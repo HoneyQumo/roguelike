@@ -25,6 +25,7 @@ namespace XYZEngine
 			T* rawChild = child.get();
 			rawChild->parent = this;
 			children.push_back(std::move(child));
+			rawChild->MarkLayoutDirty();
 
 			return rawChild;
 		}
@@ -39,6 +40,12 @@ namespace XYZEngine
 		bool IsVisible() const;
 		const sf::FloatRect& GetBounds() const;
 		std::size_t GetChildrenCount() const;
+		const UiWidget& GetChild(std::size_t index) const;
+
+		// Сдвинутый элемент сам по себе не встанет на место: bounds считаются
+		// в Layout, а он идёт от корня. Отметка доходит до корня, и тот знает,
+		// что пересчитать перед отрисовкой.
+		bool IsLayoutDirty() const;
 
 		bool HitTest(const sf::Vector2f& point) const;
 		virtual bool HandlePointer(const sf::Vector2f& point, bool isPressed, bool wasReleased);
@@ -61,7 +68,10 @@ namespace XYZEngine
 		bool stretchX = false;
 		bool stretchY = false;
 		bool isVisible = true;
+		bool isLayoutDirty = true;
 
 		sf::FloatRect bounds;
+
+		void MarkLayoutDirty();
 	};
 }

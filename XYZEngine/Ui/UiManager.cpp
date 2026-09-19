@@ -122,6 +122,12 @@ namespace XYZEngine
 			return;
 		}
 
+		sf::Vector2f screenSize = GetScreenSize();
+		for (UiScreen* screen : screens)
+		{
+			screen->Relayout(screenSize);
+		}
+
 		RenderSystem::Instance()->BeginUiPass();
 
 		for (UiScreen* screen : screens)

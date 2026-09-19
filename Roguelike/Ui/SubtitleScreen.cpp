@@ -3,6 +3,7 @@
 #include <ResourceSystem.h>
 #include <TextUtils.h>
 #include <TextWrap.h>
+#include <algorithm>
 
 namespace RoguelikeGame
 {
@@ -74,10 +75,14 @@ namespace RoguelikeGame
 		}
 
 		// Снизу вверх: последнее сказанное ближе к низу экрана, где взгляд.
+		// Если строк больше, чем мест, лишними оказываются самые старые.
+		std::size_t shown = std::min(screenLines.size(), labels.size());
+		std::size_t first = screenLines.size() - shown;
+
 		shownLineCount = 0;
 		for (std::size_t index = 0; index < labels.size(); index++)
 		{
-			bool isUsed = index < screenLines.size();
+			bool isUsed = index < shown;
 			labels[index]->SetVisible(isUsed);
 
 			if (!isUsed)
@@ -85,9 +90,9 @@ namespace RoguelikeGame
 				continue;
 			}
 
-			std::size_t fromBottom = screenLines.size() - 1 - index;
+			std::size_t fromBottom = shown - 1 - index;
 
-			labels[index]->SetText(screenLines[index]);
+			labels[index]->SetText(screenLines[first + index]);
 			labels[index]->SetOffset({0.f, -SUBTITLE_MARGIN_Y - LineHeight() * static_cast<float>(fromBottom)});
 			shownLineCount++;
 		}

@@ -18,6 +18,14 @@ namespace XYZEngine
 		root.Layout({0.f, 0.f, screenSize.x, screenSize.y});
 	}
 
+	void UiScreen::Relayout(const sf::Vector2f& screenSize)
+	{
+		if (root.IsLayoutDirty())
+		{
+			root.Layout({0.f, 0.f, screenSize.x, screenSize.y});
+		}
+	}
+
 	void UiScreen::Draw() const
 	{
 		root.Draw();

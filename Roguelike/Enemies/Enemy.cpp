@@ -9,6 +9,7 @@
 #include "GameSettings.h"
 #include "GameResources.h"
 #include "WeaponSetup.h"
+#include "WorldSound.h"
 #include "EnemyAttackComponent.h"
 #include "HealthBarComponent.h"
 #include "BloodPool.h"
@@ -67,6 +68,7 @@ namespace RoguelikeGame
             object->AddComponent<AwarenessGaugeComponent>();
 
             auto voiceAudio = object->AddComponent<XYZEngine::AudioComponent>();
+            PlaceInWorld(voiceAudio);
             auto voice = object->AddComponent<EnemyVoiceComponent>();
             voice->SetVoice(config.voice, config.voiceLines);
             voice->SetAudio(voiceAudio);
@@ -93,6 +95,7 @@ namespace RoguelikeGame
         auto animation = parts.animation;
         auto health = parts.health;
         auto hurtAudio = parts.hurtAudio;
+        PlaceInWorld(hurtAudio);
         auto hitFlash = parts.hitFlash;
 
         aim->SetMaxDistance(0.f);
@@ -108,6 +111,7 @@ namespace RoguelikeGame
 
             auto meleeAudio = gameObject->AddComponent<XYZEngine::AudioComponent>();
             meleeAudio->SetVolume(MELEE_HIT_VOLUME);
+            PlaceInWorld(meleeAudio);
 
             auto meleeWeapon = gameObject->AddComponent<MeleeWeaponComponent>();
             meleeWeapon->SetQuickAttack(MakeQuickAttack(melee->quick, config.attackDamage, config.attackCooldown));
@@ -126,10 +130,12 @@ namespace RoguelikeGame
             auto shotAudio = gameObject->AddComponent<XYZEngine::AudioComponent>();
             shotAudio->SetSound(GameResources::GetWeaponSound(weaponDefinition.shotSound));
             shotAudio->SetVolume(SHOT_VOLUME);
+            PlaceInWorld(shotAudio);
 
             auto reloadAudio = gameObject->AddComponent<XYZEngine::AudioComponent>();
             reloadAudio->SetSound(GameResources::GetWeaponSound(weaponDefinition.reloadSound));
             reloadAudio->SetVolume(RELOAD_VOLUME);
+            PlaceInWorld(reloadAudio);
 
             ShotProfile shot = MakeShotProfile(config.weapon, config.attackDamage, config.projectileSpeed, config.attackCooldown);
 

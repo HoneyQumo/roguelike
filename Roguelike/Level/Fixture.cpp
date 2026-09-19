@@ -5,6 +5,7 @@
 #include "EscapeCarComponent.h"
 #include "HatchComponent.h"
 #include "SwitchComponent.h"
+#include "WorldSound.h"
 #include <AudioComponent.h>
 #include <BoxColliderComponent.h>
 #include <GameObject.h>
@@ -48,6 +49,7 @@ namespace RoguelikeGame
 
         auto sprite = AddSprite(gameObject);
         auto audio = gameObject->AddComponent<XYZEngine::AudioComponent>();
+        PlaceInWorld(audio);
         auto reach = AddReach(gameObject);
 
         auto lever = gameObject->AddComponent<SwitchComponent>();
@@ -68,6 +70,7 @@ namespace RoguelikeGame
 
         auto sprite = AddSprite(gameObject);
         auto audio = gameObject->AddComponent<XYZEngine::AudioComponent>();
+        PlaceInWorld(audio);
         auto reach = AddReach(gameObject);
 
         auto hatch = gameObject->AddComponent<HatchComponent>();
@@ -109,8 +112,13 @@ namespace RoguelikeGame
 
         // Звук живёт на машине, а не на сцене: сцена умирает сразу и оборвала бы его.
         // Мотор и визг звучат вместе, поэтому компонентов два: в одном помещается один звук.
-        car->SetEngineAudio(gameObject->AddComponent<XYZEngine::AudioComponent>());
-        car->SetSkidAudio(gameObject->AddComponent<XYZEngine::AudioComponent>());
+        auto engineAudio = gameObject->AddComponent<XYZEngine::AudioComponent>();
+        auto skidAudio = gameObject->AddComponent<XYZEngine::AudioComponent>();
+        PlaceInWorld(engineAudio);
+        PlaceInWorld(skidAudio);
+
+        car->SetEngineAudio(engineAudio);
+        car->SetSkidAudio(skidAudio);
 
         return gameObject;
     }

@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "AudioComponent.h"
+#include "GameObject.h"
 #include "LoggerRegistry.h"
+#include "TransformComponent.h"
 
 namespace XYZEngine
 {
@@ -20,6 +22,24 @@ namespace XYZEngine
 		}
 
 		sound.setBuffer(*newSound);
+	}
+
+	// Звук на карте едет за своим объектом: машина побега приезжает издалека и
+	// меняет место каждый кадр, а разовой установки в момент запуска ей мало.
+	void AudioComponent::Update(float deltaTime)
+	{
+		if (IsRelativeToListener())
+		{
+			return;
+		}
+
+		TransformComponent* transform = GetGameObject()->GetTransform();
+		if (transform == nullptr || transform->GetWorldPosition() == GetWorldPosition())
+		{
+			return;
+		}
+
+		SetWorldPosition(transform->GetWorldPosition());
 	}
 
 	void AudioComponent::Play()

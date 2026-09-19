@@ -145,6 +145,7 @@
     <ClCompile Include="RunState.tests.cpp" />
     <ClCompile Include="ShippedResources.tests.cpp" />
     <ClCompile Include="SoundSpace.tests.cpp" />
+    <ClCompile Include="WorldSound.tests.cpp" />
     <ClCompile Include="TurnSpeed.tests.cpp" />
     <ClCompile Include="CameraFollow.tests.cpp" />
     <ClCompile Include="Version.tests.cpp" />

@@ -7,6 +7,7 @@
 #include "GameSettings.h"
 #include "LevelGrid.h"
 #include "PropVisualComponent.h"
+#include "WorldSound.h"
 #include <BoxColliderComponent.h>
 #include <GameWorld.h>
 #include <LoggerRegistry.h>
@@ -70,6 +71,7 @@ namespace RoguelikeGame
         collider->SetSize(TILE_SIZE, TILE_SIZE);
 
         auto doorAudio = gameObject->AddComponent<XYZEngine::AudioComponent>();
+        PlaceInWorld(doorAudio);
         auto door = gameObject->AddComponent<DoorComponent>();
         door->SetAudio(doorAudio);
         door->SetDoorId(doorId);

@@ -1,4 +1,4 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "ActAssembler.h"
 #include "ActRoutes.h"
 #include "ItemCatalogLoader.h"
@@ -222,6 +222,35 @@ TEST_F(StreetRoutesTest, TheBarricadeAmbushWaitsForTheHoldToStart)
 	}
 
 	EXPECT_GE(latest, lever->holdTime) << "засада выходит раньше, чем игрок дойдёт до рычага";
+}
+
+/**
+*	Улица - сетка, и полосы между комнатами шли насквозь через весь акт: от
+*	входа до выхода можно было пробежать по ним, не заглянув ни в одну комнату
+*	и ни разу не выстрелив. Завалы режут полосы: вниз - только через двор или
+*	площадь, к воротам - через сквер либо насквозь через склад.
+*/
+TEST_F(StreetRoutesTest, TheCorridorsDoNotRunPastEveryRoom)
+{
+	ASSERT_TRUE(isFound) << previous.string();
+
+	// Не найдись концы пути - проверка молча сказала бы «хода нет».
+	ASSERT_GE(ActRoutes::StartOf(street).row, 0) << "у улицы не нашёлся вход";
+	ASSERT_GE(ActRoutes::ExitOf(street).row, 0) << "у улицы не нашёлся выход";
+
+	EXPECT_FALSE(ActRoutes::CanSlipPastTheRooms(street, props)) << "улица проходится мимо комнат";
+}
+
+// Без этого тест выше держался бы сам по себе, ничего не проверяя. Бетонные
+// блоки стоят не только в завалах, поэтому убираем оба вида разом.
+TEST_F(StreetRoutesTest, TakeTheWrecksAwayAndTheRunIsBack)
+{
+	ASSERT_TRUE(isFound) << previous.string();
+
+	Closer().DropProps("car_wreck");
+	Closer().DropProps("concrete_block");
+
+	EXPECT_TRUE(ActRoutes::CanSlipPastTheRooms(street, props)) << "завалы ничего не перекрывают";
 }
 
 TEST_F(StreetRoutesTest, TheStreetIsSoundAsItShips)

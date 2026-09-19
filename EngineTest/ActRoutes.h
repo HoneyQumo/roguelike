@@ -1,6 +1,8 @@
-#pragma once
+﻿#pragma once
 
 #include "LevelData.h"
+#include "LevelZones.h"
+#include "PropCatalog.h"
 #include <algorithm>
 #include <string>
 #include <vector>
@@ -97,6 +99,167 @@ namespace ActRoutes
 			[&id](const RoguelikeGame::FixturePlacement& fixture) { return fixture.id == id; });
 
 		return found == list.end() ? nullptr : &*found;
+	}
+
+	struct Cell
+	{
+		int column = -1;
+		int row = -1;
+	};
+
+	inline Cell FindTile(const RoguelikeGame::LevelData& level, RoguelikeGame::TileType type)
+	{
+		for (int row = 0; row < static_cast<int>(level.tiles.size()); row++)
+		{
+			for (int column = 0; column < level.width; column++)
+			{
+				if (TileAt(level, column, row) == type)
+				{
+					return {column, row};
+				}
+			}
+		}
+
+		return {};
+	}
+
+	// Ломаемое не преграда: до него дошли и его разнесли. Преграда - то, что стоит всегда.
+	inline bool IsWalkable(const RoguelikeGame::LevelData& level,
+		const RoguelikeGame::PropCatalog& props, int column, int row)
+	{
+		RoguelikeGame::TileType tile = TileAt(level, column, row);
+		if (tile == RoguelikeGame::TileType::Wall || tile == RoguelikeGame::TileType::Empty)
+		{
+			return false;
+		}
+
+		for (const RoguelikeGame::PropPlacement& placement : level.props)
+		{
+			if (placement.column != column || placement.row != row)
+			{
+				continue;
+			}
+
+			const RoguelikeGame::PropDefinition* prop = props.Find(placement.propId);
+			if (prop != nullptr && prop->isSolid && !prop->IsDestructible())
+			{
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	// Вход рисуют по-разному: в акте это Entrance, в одиночной карте - PlayerSpawn.
+	inline Cell StartOf(const RoguelikeGame::LevelData& level)
+	{
+		Cell cell = FindTile(level, RoguelikeGame::TileType::Entrance);
+
+		return cell.row < 0 ? FindTile(level, RoguelikeGame::TileType::PlayerSpawn) : cell;
+	}
+
+	// Выход - тайл, люк или машина: уводит с локации любой из трёх.
+	inline Cell ExitOf(const RoguelikeGame::LevelData& level)
+	{
+		Cell cell = FindTile(level, RoguelikeGame::TileType::Exit);
+		if (cell.row >= 0)
+		{
+			return cell;
+		}
+
+		if (!level.hatches.empty())
+		{
+			return {level.hatches.front().column, level.hatches.front().row};
+		}
+
+		if (!level.escapes.empty())
+		{
+			return {level.escapes.front().column, level.escapes.front().row};
+		}
+
+		return {};
+	}
+
+	/**
+	*	Зона входа и зона выхода не в счёт, но вход стоит в дверях - на клетке,
+	*	которая сама в зону не попала. Поэтому берём и соседнюю через клетку.
+	*/
+	inline const RoguelikeGame::LevelZone* ZoneNear(
+		const std::vector<RoguelikeGame::LevelZone>& zones, Cell cell)
+	{
+		for (const RoguelikeGame::LevelZone& zone : zones)
+		{
+			if (cell.column >= zone.minColumn - 1 && cell.column <= zone.maxColumn + 1
+				&& cell.row >= zone.minRow - 1 && cell.row <= zone.maxRow + 1)
+			{
+				return &zone;
+			}
+		}
+
+		return nullptr;
+	}
+
+	/**
+	*	Пробежка мимо комнат: путь от входа к выходу, не задевший ни одной зоны.
+	*	Комнаты старта и выхода не в счёт - их не обойти по построению.
+	*
+	*	Двери и ломаемые пропы считаются открытыми: проверяется планировка акта,
+	*	а не то, чем её заперли. Если и так пути нет - комнаты обойти нельзя.
+	*/
+	inline bool CanSlipPastTheRooms(const RoguelikeGame::LevelData& level,
+		const RoguelikeGame::PropCatalog& props)
+	{
+		Cell start = StartOf(level);
+		Cell finish = ExitOf(level);
+		if (start.row < 0 || finish.row < 0)
+		{
+			return false;
+		}
+
+		std::vector<RoguelikeGame::LevelZone> zones = RoguelikeGame::BuildZones(level);
+		const RoguelikeGame::LevelZone* home = ZoneNear(zones, start);
+		const RoguelikeGame::LevelZone* last = ZoneNear(zones, finish);
+
+		int height = static_cast<int>(level.tiles.size());
+		std::vector<char> seen(static_cast<std::size_t>(height) * level.width, 0);
+		std::vector<Cell> queue = {start};
+		seen[static_cast<std::size_t>(start.row) * level.width + start.column] = 1;
+
+		const int STEPS[4][2] = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+		for (std::size_t head = 0; head < queue.size(); head++)
+		{
+			Cell cell = queue[head];
+			if (cell.column == finish.column && cell.row == finish.row)
+			{
+				return true;
+			}
+
+			for (const int* step : STEPS)
+			{
+				Cell next = {cell.column + step[0], cell.row + step[1]};
+				if (next.column < 0 || next.column >= level.width || next.row < 0 || next.row >= height)
+				{
+					continue;
+				}
+
+				std::size_t index = static_cast<std::size_t>(next.row) * level.width + next.column;
+				if (seen[index] != 0 || !IsWalkable(level, props, next.column, next.row))
+				{
+					continue;
+				}
+
+				const RoguelikeGame::LevelZone* zone = FindZoneAt(zones, next.column, next.row);
+				if (zone != nullptr && zone != home && zone != last)
+				{
+					continue;
+				}
+
+				seen[index] = 1;
+				queue.push_back(next);
+			}
+		}
+
+		return false;
 	}
 
 	inline bool HasDoor(const RoguelikeGame::LevelData& level, const std::string& doorId)

@@ -152,6 +152,21 @@ TEST_F(StreetRoutesTest, WithAllThreeShutTheExitIsGone)
 	EXPECT_FALSE(Check().IsClean()) << "закладки ничего не закрывают";
 }
 
+TEST_F(StreetRoutesTest, EveryRouteHasItsOwnTrouble)
+{
+	ASSERT_TRUE(isFound) << previous.string();
+
+	int traps = 0;
+	for (const auto& prop : street.props)
+	{
+		const RoguelikeGame::PropDefinition* definition = props.Find(prop.propId);
+		traps += definition != nullptr && definition->IsTrap() ? 1 : 0;
+	}
+
+	EXPECT_GE(traps, 3) << "по ловушке на путь - минимум";
+	EXPECT_GE(street.ambushes.size(), 3u) << "по засаде на путь - минимум";
+}
+
 TEST_F(StreetRoutesTest, TheStreetIsSoundAsItShips)
 {
 	ASSERT_TRUE(isFound) << previous.string();

@@ -30,7 +30,7 @@ namespace RoguelikeGame
 
         void SetWeapon(WeaponLayerComponent* newWeapon);
         void SetStowedWeapon(StowedWeaponComponent* newStowedWeapon);
-        void SetAudio(XYZEngine::AudioComponent* newShotAudio, XYZEngine::AudioComponent* newReloadAudio);
+        void SetAudio(XYZEngine::AudioComponent* newReloadAudio);
         void SetSlots(const StartingSlot* newSlots, int newSlotsCount, int startSlot);
 
         bool TrySelectSlot(int slot);
@@ -58,7 +58,6 @@ namespace RoguelikeGame
         XYZEngine::MovementComponent* movement = nullptr;
         HealthComponent* health = nullptr;
 
-        XYZEngine::AudioComponent* shotAudio = nullptr;
         XYZEngine::AudioComponent* reloadAudio = nullptr;
 
         LoadoutState state;

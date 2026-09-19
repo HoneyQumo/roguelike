@@ -69,10 +69,6 @@ namespace RoguelikeGame
         healthBar->SetOffset(0.f, HEALTH_BAR_OFFSET_Y);
         healthBar->SetColors(spec.healthBarColor, {20, 20, 20, 200});
 
-        parts.hurtAudio = parts.gameObject->AddComponent<XYZEngine::AudioComponent>();
-        parts.hurtAudio->SetSound(XYZEngine::ResourceSystem::Instance()->GetSound(HURT_SOUND));
-        parts.hurtAudio->SetVolume(HURT_VOLUME);
-
         parts.hitFlash = parts.gameObject->AddComponent<HitFlashComponent>();
         parts.hitFlash->AddRenderer(parts.renderer);
 

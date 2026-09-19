@@ -46,15 +46,15 @@ namespace RoguelikeGame
         });
     }
 
-    void PlayEffectsOnShot(WeaponComponent* weapon, XYZEngine::AudioComponent* shotAudio,
+    void PlayEffectsOnShot(WeaponComponent* weapon, SoundPlace place,
                           XYZEngine::SpriteMovementAnimationComponent* animation, WeaponLayerComponent* weaponLayer)
     {
-        weapon->SubscribeShotStart([shotAudio, animation, weaponLayer]()
+        weapon->SubscribeShotStart([weapon, place, animation, weaponLayer]()
         {
-            if (shotAudio != nullptr)
-            {
-                shotAudio->Play();
-            }
+            // Ствол берём в момент выстрела: иначе звук пришлось бы менять при
+            // каждой смене оружия и следить, чтобы он не отстал.
+            PlayOneShot(GameResources::GetWeaponSound(GetWeapon(weapon->GetWeaponId()).shotSound),
+                SHOT_VOLUME, SoundKind::Shot, place, weapon->GetGameObject());
 
             if (animation != nullptr)
             {
@@ -85,18 +85,18 @@ namespace RoguelikeGame
         });
     }
 
-    void PlayEffectsOnMeleeHit(MeleeWeaponComponent* melee, XYZEngine::AudioComponent* meleeAudio)
+    void PlayEffectsOnMeleeHit(MeleeWeaponComponent* melee, SoundPlace place)
     {
-        melee->SubscribeStrike([melee, meleeAudio](MeleeAttackKind kind, int hits, bool isCritical)
+        melee->SubscribeStrike([melee, place](MeleeAttackKind kind, int hits, bool isCritical)
         {
             const MeleeDefinition* definition = melee->GetDefinition();
-            if (hits <= 0 || meleeAudio == nullptr || definition == nullptr)
+            if (hits <= 0 || definition == nullptr)
             {
                 return;
             }
 
-            meleeAudio->SetSound(GameResources::GetMeleeHitSound(*definition));
-            meleeAudio->Play();
+            PlayOneShot(GameResources::GetMeleeHitSound(*definition), MELEE_HIT_VOLUME, SoundKind::Hit, place,
+                melee->GetGameObject());
         });
 
 

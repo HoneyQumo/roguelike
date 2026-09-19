@@ -10,6 +10,7 @@
 #include "GameResources.h"
 #include "WeaponSetup.h"
 #include "WorldSound.h"
+#include <ResourceSystem.h>
 #include "EnemyAttackComponent.h"
 #include "HealthBarComponent.h"
 #include "BloodPool.h"
@@ -67,11 +68,8 @@ namespace RoguelikeGame
 
             object->AddComponent<AwarenessGaugeComponent>();
 
-            auto voiceAudio = object->AddComponent<XYZEngine::AudioComponent>();
-            PlaceInWorld(voiceAudio);
             auto voice = object->AddComponent<EnemyVoiceComponent>();
             voice->SetVoice(config.voice, config.voiceLines);
-            voice->SetAudio(voiceAudio);
 
             if (definition != nullptr)
             {
@@ -94,8 +92,6 @@ namespace RoguelikeGame
         auto aim = parts.aim;
         auto animation = parts.animation;
         auto health = parts.health;
-        auto hurtAudio = parts.hurtAudio;
-        PlaceInWorld(hurtAudio);
         auto hitFlash = parts.hitFlash;
 
         aim->SetMaxDistance(0.f);
@@ -109,14 +105,10 @@ namespace RoguelikeGame
         {
             const MeleeDefinition* melee = FindMelee(config.weapon);
 
-            auto meleeAudio = gameObject->AddComponent<XYZEngine::AudioComponent>();
-            meleeAudio->SetVolume(MELEE_HIT_VOLUME);
-            PlaceInWorld(meleeAudio);
-
             auto meleeWeapon = gameObject->AddComponent<MeleeWeaponComponent>();
             meleeWeapon->SetQuickAttack(MakeQuickAttack(melee->quick, config.attackDamage, config.attackCooldown));
             meleeWeapon->SetDefinition(melee);
-            PlayEffectsOnMeleeHit(meleeWeapon, meleeAudio);
+            PlayEffectsOnMeleeHit(meleeWeapon, SoundPlace::InWorld);
 
             auto attack = gameObject->AddComponent<EnemyAttackComponent>();
             attack->SetTargetName(PLAYER_OBJECT_NAME);
@@ -126,11 +118,6 @@ namespace RoguelikeGame
         else
         {
             const WeaponDefinition& weaponDefinition = GetWeapon(config.weapon);
-
-            auto shotAudio = gameObject->AddComponent<XYZEngine::AudioComponent>();
-            shotAudio->SetSound(GameResources::GetWeaponSound(weaponDefinition.shotSound));
-            shotAudio->SetVolume(SHOT_VOLUME);
-            PlaceInWorld(shotAudio);
 
             auto reloadAudio = gameObject->AddComponent<XYZEngine::AudioComponent>();
             reloadAudio->SetSound(GameResources::GetWeaponSound(weaponDefinition.reloadSound));
@@ -142,7 +129,7 @@ namespace RoguelikeGame
             auto weaponComponent = gameObject->AddComponent<WeaponComponent>();
             ApplyWeaponDefinition(weaponComponent, config.weapon, shot);
             PlayEffectsOnReload(weaponComponent, animation, reloadAudio);
-            PlayEffectsOnShot(weaponComponent, shotAudio, animation, weaponLayer);
+            PlayEffectsOnShot(weaponComponent, SoundPlace::InWorld, animation, weaponLayer);
             SpawnProjectilesOnShot(weaponComponent);
             RaiseNoiseOnShot(weaponComponent);
 
@@ -153,7 +140,7 @@ namespace RoguelikeGame
         }
 
         auto meleeComponent = gameObject->GetComponent<MeleeWeaponComponent>();
-        health->SubscribeDamage([animation, hurtAudio, hitFlash, meleeComponent](const DamageInfo& damage)
+        health->SubscribeDamage([animation, gameObject, hitFlash, meleeComponent](const DamageInfo& damage)
         {
             Fx::SpawnHitBurst(damage.source.position, damage.source.direction);
             Fx::SpawnBloodHit(damage.source.position, damage.source.direction);
@@ -164,7 +151,8 @@ namespace RoguelikeGame
             }
 
             animation->PlayHurt();
-            hurtAudio->Play();
+            PlayOneShot(XYZEngine::ResourceSystem::Instance()->GetSound(HURT_SOUND), HURT_VOLUME,
+                SoundKind::Hurt, SoundPlace::InWorld, gameObject);
             hitFlash->Flash();
         });
 

@@ -19,6 +19,7 @@ namespace XYZEngine
 
 		deltaTime = newDeltaTime * timeScale;
 		elapsedSeconds += deltaTime;
+		unscaledElapsedSeconds += newDeltaTime;
 	}
 
 	void FrameClock::Reset()
@@ -27,6 +28,7 @@ namespace XYZEngine
 		deltaTime = 0.f;
 		unscaledDeltaTime = 0.f;
 		elapsedSeconds = 0.0;
+		unscaledElapsedSeconds = 0.0;
 
 		StopTimeEffects();
 	}
@@ -134,5 +136,10 @@ namespace XYZEngine
 	float FrameClock::GetElapsedSeconds() const
 	{
 		return static_cast<float>(elapsedSeconds);
+	}
+
+	float FrameClock::GetUnscaledElapsedSeconds() const
+	{
+		return static_cast<float>(unscaledElapsedSeconds);
 	}
 }

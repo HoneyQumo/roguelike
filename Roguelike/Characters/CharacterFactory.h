@@ -45,7 +45,6 @@ namespace RoguelikeGame
         XYZEngine::AimRotationComponent* aim = nullptr;
         XYZEngine::SpriteMovementAnimationComponent* animation = nullptr;
         HealthComponent* health = nullptr;
-        XYZEngine::AudioComponent* hurtAudio = nullptr;
         HitFlashComponent* hitFlash = nullptr;
         WeaponLayerComponent* weapon = nullptr;
     };

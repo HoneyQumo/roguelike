@@ -3,11 +3,6 @@
 #include <Component.h>
 #include "Awareness.h"
 
-namespace XYZEngine
-{
-    class AudioComponent;
-}
-
 namespace RoguelikeGame
 {
     class ChaseComponent;
@@ -22,13 +17,11 @@ namespace RoguelikeGame
         void Render() override;
 
         void SetVoice(const char* newVoice, int newLines);
-        void SetAudio(XYZEngine::AudioComponent* newAudio);
 
         int GetSpokenCount() const;
         void Speak();
 
     private:
-        XYZEngine::AudioComponent* audio = nullptr;
         ChaseComponent* chase = nullptr;
 
         const char* voice = nullptr;

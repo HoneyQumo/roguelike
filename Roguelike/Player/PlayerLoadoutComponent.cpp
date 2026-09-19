@@ -74,9 +74,8 @@ namespace RoguelikeGame
         stowedWeapon = newStowedWeapon;
     }
 
-    void PlayerLoadoutComponent::SetAudio(XYZEngine::AudioComponent* newShotAudio, XYZEngine::AudioComponent* newReloadAudio)
+    void PlayerLoadoutComponent::SetAudio(XYZEngine::AudioComponent* newReloadAudio)
     {
-        shotAudio = newShotAudio;
         reloadAudio = newReloadAudio;
     }
 
@@ -294,12 +293,6 @@ namespace RoguelikeGame
         rangedWeapon->CancelReload();
         ApplyWeaponDefinition(rangedWeapon, id, shot);
         rangedWeapon->SetAmmoInMagazine(ammoInMagazine);
-
-        if (shotAudio != nullptr)
-        {
-            shotAudio->Stop();
-            shotAudio->SetSound(GameResources::GetWeaponSound(definition.shotSound));
-        }
 
         if (reloadAudio != nullptr)
         {

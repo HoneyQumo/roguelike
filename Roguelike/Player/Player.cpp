@@ -96,7 +96,6 @@ namespace RoguelikeGame
         auto aim = parts.aim;
         auto animation = parts.animation;
         auto health = parts.health;
-        auto hurtAudio = parts.hurtAudio;
         auto hitFlash = parts.hitFlash;
 
         movement->SetRunSpeedMultiplier(PLAYER_RUN_SPEED_MULTIPLIER);
@@ -133,25 +132,19 @@ namespace RoguelikeGame
             ammoPouch->SetAmmo(AmmoKindKey(reserve.kind), reserve.count);
         }
 
-        auto shotAudio = gameObject->AddComponent<XYZEngine::AudioComponent>();
-        shotAudio->SetVolume(SHOT_VOLUME);
-
         auto reloadAudio = gameObject->AddComponent<XYZEngine::AudioComponent>();
         reloadAudio->SetVolume(RELOAD_VOLUME);
-
-        auto meleeAudio = gameObject->AddComponent<XYZEngine::AudioComponent>();
-        meleeAudio->SetVolume(MELEE_HIT_VOLUME);
 
         StowedWeaponComponent* stowedWeapon = CreateStowedWeapon(gameObject, startWeapon, animation);
 
         auto weaponComponent = gameObject->AddComponent<WeaponComponent>();
         PlayEffectsOnReload(weaponComponent, animation, reloadAudio);
-        PlayEffectsOnShot(weaponComponent, shotAudio, animation, parts.weapon);
+        PlayEffectsOnShot(weaponComponent, SoundPlace::AtListener, animation, parts.weapon);
         SpawnProjectilesOnShot(weaponComponent);
         RaiseNoiseOnShot(weaponComponent);
 
         auto meleeWeapon = gameObject->AddComponent<MeleeWeaponComponent>();
-        PlayEffectsOnMeleeHit(meleeWeapon, meleeAudio);
+        PlayEffectsOnMeleeHit(meleeWeapon, SoundPlace::AtListener);
         meleeWeapon->SubscribeStrike([](MeleeAttackKind kind, int hits, bool isCritical)
         {
             if (hits <= 0)
@@ -168,7 +161,7 @@ namespace RoguelikeGame
         auto loadout = gameObject->AddComponent<PlayerLoadoutComponent>();
         loadout->SetWeapon(parts.weapon);
         loadout->SetStowedWeapon(stowedWeapon);
-        loadout->SetAudio(shotAudio, reloadAudio);
+        loadout->SetAudio(reloadAudio);
         loadout->SetSlots(PLAYER_LOADOUT, PLAYER_WEAPON_SLOTS, PLAYER_START_WEAPON_SLOT);
 
         auto bag = gameObject->AddComponent<InventoryComponent>();
@@ -246,13 +239,14 @@ namespace RoguelikeGame
             Fx::SpawnHealBurst(gameObject->GetTransform()->GetWorldPosition());
         });
 
-        health->SubscribeDamage([animation, hurtAudio, hitFlash, meleeWeapon](const DamageInfo& damage)
+        health->SubscribeDamage([animation, hitFlash, meleeWeapon](const DamageInfo& damage)
         {
             Fx::ShakeCamera(CAMERA_SHAKE_HEAVY);
             Fx::SpawnBloodHit(damage.source.position, damage.source.direction);
             meleeWeapon->CancelAttack();
             animation->PlayHurt();
-            hurtAudio->Play();
+            PlayOneShot(XYZEngine::ResourceSystem::Instance()->GetSound(HURT_SOUND), HURT_VOLUME,
+                SoundKind::Hurt, SoundPlace::AtListener, nullptr);
             hitFlash->Flash();
         });
 

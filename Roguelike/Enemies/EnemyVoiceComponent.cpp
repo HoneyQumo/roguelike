@@ -3,7 +3,7 @@
 #include "EnemyVoice.h"
 #include "GameResources.h"
 #include "GameSettings.h"
-#include <AudioComponent.h>
+#include "WorldSound.h"
 #include <GameObject.h>
 #include <randomizer.h>
 
@@ -42,11 +42,6 @@ namespace RoguelikeGame
         lines = newLines;
     }
 
-    void EnemyVoiceComponent::SetAudio(XYZEngine::AudioComponent* newAudio)
-    {
-        audio = newAudio;
-    }
-
     int EnemyVoiceComponent::GetSpokenCount() const
     {
         return spokenCount;
@@ -56,7 +51,7 @@ namespace RoguelikeGame
     {
         spokenCount++;
 
-        if (audio == nullptr || voice == nullptr || lines <= 0)
+        if (voice == nullptr || lines <= 0)
         {
             return;
         }
@@ -67,8 +62,6 @@ namespace RoguelikeGame
             return;
         }
 
-        audio->SetSound(line);
-        audio->SetVolume(VOICE_VOLUME);
-        audio->Play();
+        PlayOneShot(line, VOICE_VOLUME, SoundKind::Voice, SoundPlace::InWorld, gameObject);
     }
 }

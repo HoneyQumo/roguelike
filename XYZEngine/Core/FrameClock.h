@@ -15,6 +15,9 @@ namespace XYZEngine
 		float GetUnscaledDeltaTime() const;
 		float GetElapsedSeconds() const;
 
+		// Время без замедления и хит-стопа: звук от них не замедляется.
+		float GetUnscaledElapsedSeconds() const;
+
 		void SetTimeScale(float newTimeScale);
 		float GetTimeScale() const;
 
@@ -27,6 +30,7 @@ namespace XYZEngine
 		float deltaTime = 0.f;
 		float unscaledDeltaTime = 0.f;
 		double elapsedSeconds = 0.0;
+		double unscaledElapsedSeconds = 0.0;
 
 		float timeScale = 1.f;
 		float baseTimeScale = 1.f;

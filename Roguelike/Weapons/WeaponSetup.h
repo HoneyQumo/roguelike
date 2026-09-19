@@ -6,6 +6,7 @@
 #include "WeaponComponent.h"
 #include "MeleeWeaponComponent.h"
 #include <AudioComponent.h>
+#include "WorldSound.h"
 #include <SpriteMovementAnimationComponent.h>
 
 namespace RoguelikeGame
@@ -44,9 +45,9 @@ namespace RoguelikeGame
 
     void SpawnProjectilesOnShot(WeaponComponent* weapon);
     void RaiseNoiseOnShot(WeaponComponent* weapon);
-    void PlayEffectsOnShot(WeaponComponent* weapon, XYZEngine::AudioComponent* shotAudio,
+    void PlayEffectsOnShot(WeaponComponent* weapon, SoundPlace place,
                           XYZEngine::SpriteMovementAnimationComponent* animation, WeaponLayerComponent* weaponLayer);
     void PlayEffectsOnReload(WeaponComponent* weapon, XYZEngine::SpriteMovementAnimationComponent* animation,
                             XYZEngine::AudioComponent* reloadAudio);
-    void PlayEffectsOnMeleeHit(MeleeWeaponComponent* melee, XYZEngine::AudioComponent* meleeAudio);
+    void PlayEffectsOnMeleeHit(MeleeWeaponComponent* melee, SoundPlace place);
 }

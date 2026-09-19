@@ -30,6 +30,7 @@
 #include "Fixture.h"
 #include "EscapeCarComponent.h"
 #include "HatchComponent.h"
+#include "Openable.h"
 #include "SwitchComponent.h"
 #include "LevelExitComponent.h"
 #include "DoorComponent.h"
@@ -182,8 +183,8 @@ namespace RoguelikeGame
 
         int itemsCount = BuildItems(levelData, items, level);
         int propsCount = BuildProps(levelData, props, items, level);
-        int doorsCount = BuildDoors(levelData, items, level);
-        int fixturesCount = BuildFixtures(levelData, level);
+        std::vector<DoorComponent*> doors = BuildDoors(levelData, items, level);
+        int fixturesCount = BuildFixtures(levelData, level, doors);
         int wavesCount = BuildWaves(levelData, level);
         int pursuitCount = BuildPursuit(levelData, level);
 
@@ -197,7 +198,7 @@ namespace RoguelikeGame
             + ", enemies " + std::to_string(enemiesCount)
             + ", items " + std::to_string(itemsCount)
             + ", props " + std::to_string(propsCount)
-            + ", doors " + std::to_string(doorsCount)
+            + ", doors " + std::to_string(doors.size())
             + ", fixtures " + std::to_string(fixturesCount)
             + ", waves " + std::to_string(wavesCount)
             + ", pursuit " + std::to_string(pursuitCount)
@@ -340,7 +341,7 @@ namespace RoguelikeGame
         }
     }
 
-    int LevelBuilder::BuildDoors(const LevelData& levelData, const ItemCatalog& items, Level& level)
+    std::vector<DoorComponent*> LevelBuilder::BuildDoors(const LevelData& levelData, const ItemCatalog& items, Level& level)
     {
         std::vector<DoorComponent*> doors;
 
@@ -357,7 +358,7 @@ namespace RoguelikeGame
 
         LinkDoors(doors);
 
-        return static_cast<int>(doors.size());
+        return doors;
     }
 
     std::vector<XYZEngine::Vector2Df> LevelBuilder::CollectSpawnPoints(const LevelData& levelData)
@@ -461,7 +462,7 @@ namespace RoguelikeGame
         return static_cast<int>(levelData.waves.size());
     }
 
-    int LevelBuilder::BuildFixtures(const LevelData& levelData, Level& level)
+    int LevelBuilder::BuildFixtures(const LevelData& levelData, Level& level, const std::vector<DoorComponent*>& doors)
     {
         std::vector<SwitchComponent*> levers;
         std::vector<HatchComponent*> hatches;
@@ -506,7 +507,11 @@ namespace RoguelikeGame
             }
         }
 
-        LinkSwitches(levers, hatches);
+        // Рычаг открывает всё, у чего тот же id: и люк, и дверь за фальшивой стеной.
+        std::vector<Openable> openables;
+        AddOpenables(openables, hatches);
+        AddOpenables(openables, doors);
+        LinkSwitches(levers, openables);
 
         if (!hatches.empty() && level.GetExit() == nullptr)
         {

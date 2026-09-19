@@ -151,6 +151,10 @@
     <ClCompile Include="SpeechCatalog.tests.cpp" />
     <ClCompile Include="SubtitleQueue.tests.cpp" />
     <ClCompile Include="SubtitleScreen.tests.cpp" />
+    <ClCompile Include="SpeechDirector.tests.cpp" />
+    <ClCompile Include="..\Roguelike\Speech\SpeechDirector.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\Roguelike\Ui\SubtitleScreen.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>

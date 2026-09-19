@@ -155,6 +155,11 @@ namespace RoguelikeGame
         return playerSpawn;
     }
 
+    const std::vector<XYZEngine::GameObject*>& Level::GetObjects() const
+    {
+        return objects;
+    }
+
     std::size_t Level::GetObjectsCount() const
     {
         return objects.size();

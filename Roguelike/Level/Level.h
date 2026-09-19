@@ -60,6 +60,10 @@ namespace RoguelikeGame
         XYZEngine::GameObject* GetEscapeCar() const;
         std::size_t GetObjectsCount() const;
 
+        // Ролей на всех не напасёшься: засад на уровне много, и найти их можно
+        // только перебором. Список отдаётся только на чтение.
+        const std::vector<XYZEngine::GameObject*>& GetObjects() const;
+
         void Clear();
 
     private:

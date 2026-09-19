@@ -31,6 +31,7 @@
 #include "EscapeCarComponent.h"
 #include "HatchComponent.h"
 #include "Openable.h"
+#include "PlateComponent.h"
 #include "SwitchComponent.h"
 #include "LevelExitComponent.h"
 #include "DoorComponent.h"
@@ -504,6 +505,18 @@ namespace RoguelikeGame
             if (level.Add(gameObject))
             {
                 levers.push_back(gameObject->GetComponent<SwitchComponent>());
+            }
+        }
+
+        // Плитка - тот же выключатель, поэтому едет в том же списке и связывается так же.
+        for (const FixturePlacement& placement : levelData.plates)
+        {
+            auto position = TileToWorldPosition(placement.column, placement.row, levelData.height);
+
+            XYZEngine::GameObject* gameObject = CreatePlate(placement.id, position);
+            if (level.Add(gameObject))
+            {
+                levers.push_back(gameObject->GetComponent<PlateComponent>());
             }
         }
 

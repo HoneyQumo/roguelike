@@ -4,6 +4,7 @@
 #include "GameSettings.h"
 #include "EscapeCarComponent.h"
 #include "HatchComponent.h"
+#include "PlateComponent.h"
 #include "SwitchComponent.h"
 #include "WorldSound.h"
 #include <AudioComponent.h>
@@ -57,6 +58,32 @@ namespace RoguelikeGame
         lever->SetSprite(sprite);
         lever->SetAudio(audio);
         lever->SetReachCollider(reach);
+        HideInFog(gameObject);
+
+        return gameObject;
+    }
+
+    // Плитка лежит в полу, поэтому и слой у неё земляной: по ней ходят, а не мимо неё.
+    XYZEngine::GameObject* CreatePlate(const std::string& plateId, const XYZEngine::Vector2Df& position)
+    {
+        auto gameObject = XYZEngine::GameWorld::Instance()->CreateGameObject("Plate_" + plateId);
+        gameObject->SetRenderLayer(GROUND_RENDER_LAYER);
+        gameObject->GetTransform()->SetWorldPosition(position);
+
+        auto sprite = AddSprite(gameObject);
+        auto audio = gameObject->AddComponent<XYZEngine::AudioComponent>();
+        PlaceInWorld(audio);
+
+        auto pad = gameObject->AddComponent<XYZEngine::BoxColliderComponent>();
+        pad->SetSize(FIXTURE_SIZE, FIXTURE_SIZE);
+        pad->SetTrigger(true);
+        pad->SetCollisionLayer(ITEM_COLLISION_LAYER);
+
+        auto plate = gameObject->AddComponent<PlateComponent>();
+        plate->SetSwitchId(plateId);
+        plate->SetSprite(sprite);
+        plate->SetAudio(audio);
+        plate->SetPad(pad);
         HideInFog(gameObject);
 
         return gameObject;

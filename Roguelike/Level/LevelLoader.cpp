@@ -24,6 +24,7 @@ namespace RoguelikeGame
     const std::string DOOR_PREFIX = "Door:";
     const std::string ZONE_PREFIX = "Zone:";
     const std::string SWITCH_PREFIX = "Switch:";
+    const std::string PLATE_PREFIX = "Plate:";
     const std::string HATCH_PREFIX = "Hatch:";
     const std::string ESCAPE_PREFIX = "Escape:";
     constexpr char COMMENT_SYMBOL = ';';
@@ -434,12 +435,23 @@ namespace RoguelikeGame
             return;
         }
 
-        bool isHatch = name.compare(0, HATCH_PREFIX.size(), HATCH_PREFIX) == 0;
-        bool isEscape = name.compare(0, ESCAPE_PREFIX.size(), ESCAPE_PREFIX) == 0;
-        if (isHatch || isEscape || name.compare(0, SWITCH_PREFIX.size(), SWITCH_PREFIX) == 0)
+        // Фикстуры разбираются одинаково и отличаются только тем, в какое поле лягут.
+        const std::pair<const std::string*, std::string LegendEntry::*> fixtures[] = {
+            {&HATCH_PREFIX, &LegendEntry::hatchId},
+            {&ESCAPE_PREFIX, &LegendEntry::escapeId},
+            {&SWITCH_PREFIX, &LegendEntry::leverId},
+            {&PLATE_PREFIX, &LegendEntry::plateId},
+        };
+
+        for (const auto& kind : fixtures)
         {
-            std::size_t prefix = isHatch ? HATCH_PREFIX.size() : (isEscape ? ESCAPE_PREFIX.size() : SWITCH_PREFIX.size());
-            std::string fixtureId = Trim(name.substr(prefix));
+            const std::string& prefix = *kind.first;
+            if (name.compare(0, prefix.size(), prefix) != 0)
+            {
+                continue;
+            }
+
+            std::string fixtureId = Trim(name.substr(prefix.size()));
             if (fixtureId.empty())
             {
                 LOG_ERROR("Level legend line " + std::to_string(lineNumber) + " has no fixture id");
@@ -448,18 +460,7 @@ namespace RoguelikeGame
 
             LegendEntry entry;
             entry.tile = TileType::Floor;
-            if (isHatch)
-            {
-                entry.hatchId = fixtureId;
-            }
-            else if (isEscape)
-            {
-                entry.escapeId = fixtureId;
-            }
-            else
-            {
-                entry.leverId = fixtureId;
-            }
+            entry.*kind.second = fixtureId;
 
             legend[symbol] = entry;
             return;
@@ -567,6 +568,11 @@ namespace RoguelikeGame
                 if (!tile->second.leverId.empty())
                 {
                     levelData.levers.push_back({column, row, tile->second.leverId});
+                }
+
+                if (!tile->second.plateId.empty())
+                {
+                    levelData.plates.push_back({column, row, tile->second.plateId});
                 }
 
                 if (!tile->second.escapeId.empty())

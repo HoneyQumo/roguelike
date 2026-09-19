@@ -25,6 +25,7 @@ namespace RoguelikeGame
             std::string doorId;
             std::string zoneId;
             std::string leverId;
+            std::string plateId;
             std::string hatchId;
             std::string escapeId;
             float propAngle = 0.f;

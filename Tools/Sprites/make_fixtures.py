@@ -10,6 +10,7 @@ TARGET = os.path.join(TEXTURES, 'fixtures.png')
 TILE = 64
 HATCH_FRAMES = 5
 LEVER_FRAMES = 2
+PLATE_FRAMES = 2
 
 RIM = (92, 96, 104)
 RIM_DARK = (54, 58, 64)
@@ -24,6 +25,12 @@ PANEL_DARK = (58, 62, 70)
 PANEL_LIGHT = (140, 146, 158)
 HANDLE = (206, 88, 62)
 HANDLE_DOWN = (96, 150, 98)
+
+PLATE = (108, 112, 120)
+PLATE_DARK = (52, 55, 62)
+PLATE_LIGHT = (152, 158, 168)
+PLATE_SEAM = (34, 36, 42)
+PLATE_MARK = (188, 148, 62)
 
 
 def Circle(draw, centre, radius, fill, outline=None):
@@ -92,8 +99,44 @@ def Lever(frame):
     return tile
 
 
+def Plate(frame):
+    """Плитка вровень с полом: её выдаёт только шов по краю и жёлтая кромка.
+
+    Нажатая теряет блик и темнеет: видно, что утоплена, а не просто другого цвета.
+    """
+    tile = Image.new('RGBA', (TILE, TILE), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(tile)
+
+    down = frame != 0
+    inset = 1 if down else 0
+    shade = 0.78 if down else 1.0
+
+    def Shade(colour):
+        return tuple(int(part * shade) for part in colour)
+
+    draw.rectangle([4, 4, 59, 59], fill=PLATE_SEAM)
+    draw.rectangle([6 + inset, 6 + inset, 57 - inset, 57 - inset], fill=Shade(PLATE_DARK))
+    draw.rectangle([8 + inset, 8 + inset, 55 - inset, 55 - inset], fill=Shade(PLATE))
+
+    if not down:
+        draw.rectangle([8, 8, 55, 11], fill=PLATE_LIGHT)
+        draw.rectangle([8, 8, 11, 55], fill=PLATE_LIGHT)
+
+    # Жёлтые уголки - единственное, что выдаёт плитку на бегу.
+    for x, y in ((14, 14), (44, 14), (14, 44), (44, 44)):
+        draw.rectangle([x, y, x + 6, y + 6], fill=Shade(PLATE_MARK))
+
+    for step in range(4):
+        y = 24 + step * 5
+        draw.line([20, y, 43, y], fill=Shade(PLATE_DARK), width=1)
+
+    return tile
+
+
 def Build():
-    frames = [Hatch(index) for index in range(HATCH_FRAMES)] + [Lever(index) for index in range(LEVER_FRAMES)]
+    frames = ([Hatch(index) for index in range(HATCH_FRAMES)]
+        + [Lever(index) for index in range(LEVER_FRAMES)]
+        + [Plate(index) for index in range(PLATE_FRAMES)])
     sheet = Image.new('RGBA', (TILE * len(frames), TILE), (0, 0, 0, 0))
     for index, frame in enumerate(frames):
         sheet.alpha_composite(frame, dest=(index * TILE, 0))

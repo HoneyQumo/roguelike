@@ -212,6 +212,7 @@ namespace RoguelikeGame
         FightStyle wavesStyle;
         PursuitSpec pursuit;
         std::vector<FixturePlacement> levers;
+        std::vector<FixturePlacement> plates;
         std::vector<FixturePlacement> hatches;
         std::vector<FixturePlacement> escapes;
         LevelInfo info;

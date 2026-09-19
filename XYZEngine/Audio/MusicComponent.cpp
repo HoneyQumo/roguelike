@@ -24,6 +24,7 @@ namespace XYZEngine
 
 		Stop();
 		music = newMusic;
+		SetRelativeToListener(true);
 	}
 
 	void MusicComponent::Play()

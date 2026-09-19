@@ -4,8 +4,11 @@
 
 namespace XYZEngine
 {
+	// Пока источник не поставили на карту, он звучит на слушателе - как и звучал,
+	// когда пространства не было вовсе.
 	AudioComponent::AudioComponent(GameObject* gameObject) : SoundSourceComponent(gameObject)
 	{
+		SetRelativeToListener(true);
 	}
 
 	void AudioComponent::SetSound(const sf::SoundBuffer* newSound)

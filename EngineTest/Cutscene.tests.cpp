@@ -280,3 +280,64 @@ TEST_F(ShippedEscapeTest, TheCarIsTheFinishOfAChaseAndNotAReward)
 	EXPECT_TRUE(bridge.waves.empty()) << "waves would make the player stop and clear";
 	EXPECT_FALSE(bridge.pursuit.IsEmpty()) << "nobody chases the player across the bridge";
 }
+
+// Бит несёт одну команду, поэтому реплика ставится рядом с камерным битом.
+// Сказать надо один раз на входе, а не каждый кадр, пока бит держится.
+TEST_F(CutscenePlayerTest, ASayingBeatSpeaksOnceOnEntry)
+{
+	int said = 0;
+	std::string heard;
+
+	scene->SetSpeaker([&said, &heard](const std::string& line, XYZEngine::GameObject*)
+	{
+		said++;
+		heard = line;
+	});
+
+	RoguelikeGame::CutsceneBeat beat;
+	beat.action = "talk";
+	beat.seconds = 1.f;
+	beat.command = RoguelikeGame::CutsceneCommand::Say;
+	beat.line = "guard_spotted_1";
+
+	scene->SetBeats({beat});
+	scene->Play();
+	Run(0.5f);
+
+	EXPECT_EQ(said, 1);
+	EXPECT_EQ(heard, "guard_spotted_1");
+}
+
+// Оборванная сцена не должна оставлять свой субтитр поверх игры.
+TEST_F(CutscenePlayerTest, StoppingTheSceneHushesWhatWasSaid)
+{
+	int hushed = 0;
+	scene->SetHush([&hushed]() { hushed++; });
+
+	RoguelikeGame::CutsceneBeat beat;
+	beat.action = "talk";
+	beat.seconds = 5.f;
+
+	scene->SetBeats({beat});
+	scene->Play();
+	Run(0.1f);
+
+	scene->Stop();
+
+	EXPECT_EQ(hushed, 1);
+}
+
+TEST_F(CutscenePlayerTest, ASceneWithoutASpeakerDoesNotFall)
+{
+	RoguelikeGame::CutsceneBeat beat;
+	beat.action = "talk";
+	beat.seconds = 1.f;
+	beat.command = RoguelikeGame::CutsceneCommand::Say;
+	beat.line = "nobody";
+
+	scene->SetBeats({beat});
+	scene->Play();
+	Run(0.1f);
+
+	EXPECT_TRUE(scene->IsPlaying());
+}

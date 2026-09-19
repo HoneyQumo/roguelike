@@ -20,6 +20,11 @@ namespace RoguelikeGame
         // Забрать у игрока управление и вернуть обратно. Как именно - решает уровень.
         using ControlLock = std::function<void(bool)>;
 
+        // Проигрыватель не знает про речь напрямую: иначе он потянет за
+        // собой каталог и звук и перестанет проверяться без них.
+        using Speaker = std::function<void(const std::string&, XYZEngine::GameObject*)>;
+        using Hush = std::function<void()>;
+
         CutscenePlayerComponent(XYZEngine::GameObject* gameObject);
 
         void Update(float deltaTime) override;
@@ -29,6 +34,8 @@ namespace RoguelikeGame
         void SetHandler(const std::string& action, BeatHandler handler);
         void SetCamera(CameraDirectorComponent* newCamera);
         void SetControlLock(ControlLock newLock);
+        void SetSpeaker(Speaker newSpeaker);
+        void SetHush(Hush newHush);
         void SetTargetFinder(std::function<XYZEngine::GameObject*(const std::string&)> newFinder);
 
         void Play();
@@ -45,6 +52,8 @@ namespace RoguelikeGame
         std::map<std::string, BeatHandler> handlers;
         CameraDirectorComponent* camera = nullptr;
         ControlLock controlLock;
+        Speaker speaker;
+        Hush hush;
         std::function<XYZEngine::GameObject*(const std::string&)> findTarget;
         bool isPlaying = false;
         bool hasTakenControl = false;

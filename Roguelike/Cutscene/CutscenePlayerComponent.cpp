@@ -72,6 +72,13 @@ namespace RoguelikeGame
     {
         isPlaying = false;
 
+        // Начатая реплика не должна пережить сцену: на экране она осталась бы
+        // висеть поверх игры, а звук из пула не остановить вовсе.
+        if (hush != nullptr)
+        {
+            hush();
+        }
+
         if (camera != nullptr)
         {
             camera->Release();
@@ -88,6 +95,16 @@ namespace RoguelikeGame
     void CutscenePlayerComponent::SetControlLock(ControlLock newLock)
     {
         controlLock = std::move(newLock);
+    }
+
+    void CutscenePlayerComponent::SetSpeaker(Speaker newSpeaker)
+    {
+        speaker = std::move(newSpeaker);
+    }
+
+    void CutscenePlayerComponent::SetHush(Hush newHush)
+    {
+        hush = std::move(newHush);
     }
 
     void CutscenePlayerComponent::SetTargetFinder(std::function<XYZEngine::GameObject*(const std::string&)> newFinder)
@@ -140,6 +157,16 @@ namespace RoguelikeGame
             if (camera != nullptr && findTarget != nullptr)
             {
                 camera->LookAt(findTarget(beat.target), beat.travel);
+            }
+            break;
+
+        case CutsceneCommand::Say:
+            if (speaker != nullptr)
+            {
+                // Говорящего ищем тем же способом, что и цель камеры: реплику
+                // может подать и герой, и любой объект на карте.
+                speaker(beat.line, findTarget != nullptr && !beat.target.empty()
+                    ? findTarget(beat.target) : nullptr);
             }
             break;
 

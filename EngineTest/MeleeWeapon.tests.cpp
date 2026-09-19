@@ -1,11 +1,15 @@
 #include "pch.h"
 #include "BoxColliderComponent.h"
 #include "CritRules.h"
+#include "FactionComponent.h"
 #include "HealthComponent.h"
 #include "MeleeWeaponComponent.h"
 #include "WeaponSetup.h"
 #include <GameWorld.h>
 #include <MovementComponent.h>
+#include <MathUtils.h>
+#include <TransformComponent.h>
+#include <cmath>
 
 using RoguelikeGame::MeleeAttack;
 using RoguelikeGame::MeleeWeaponComponent;
@@ -52,6 +56,42 @@ namespace
 		}
 
 		void TearDown() override { GameWorld::Instance()->Clear(); }
+
+		// Ящик без стороны, но с поворотом: бьём с заданного направления и смотрим урон.
+		float StrikeCrate(const XYZEngine::Vector2Df& crateForward)
+		{
+			GameObject* crate = GameWorld::Instance()->CreateGameObject("Crate");
+			crate->GetTransform()->SetWorldPosition({40.f, 0.f});
+			crate->GetTransform()->SetWorldRotation(XYZEngine::ToDegrees(std::atan2(crateForward.y, crateForward.x)));
+			crate->AddComponent<XYZEngine::BoxColliderComponent>()->SetSize(40.f, 40.f);
+
+			auto health = crate->AddComponent<RoguelikeGame::HealthComponent>();
+			health->SetMaxHealth(500.f);
+
+			owner->GetTransform()->SetWorldPosition({0.f, 0.f});
+			owner->GetTransform()->SetWorldRotation(0.f);
+			GameWorld::Instance()->Update(0.f);
+			GameWorld::Instance()->UpdatePhysics();
+
+			// Между ударами оружие отходит: без этого второй удар просто не выйдет.
+			for (int frame = 0; frame < 40 && !melee->IsReady(); frame++)
+			{
+				GameWorld::Instance()->Update(0.05f);
+			}
+
+			melee->TryQuickAttack();
+			for (int frame = 0; frame < 20 && health->GetHealth() >= 500.f; frame++)
+			{
+				GameWorld::Instance()->Update(0.05f);
+			}
+
+			float taken = 500.f - health->GetHealth();
+
+			GameWorld::Instance()->DestroyGameObject(crate);
+			GameWorld::Instance()->LateUpdate();
+
+			return taken;
+		}
 
 		GameObject* owner = nullptr;
 		MovementComponent* movement = nullptr;
@@ -109,6 +149,17 @@ TEST_F(MeleeWeaponTest, TheChargeGrowsWhileTheSwingIsHeld)
 
 
 // Чистая геометрия: куда смотрит цель и с какой стороны пришёл удар.
+// Крит в спину - про того, у кого есть спина. У ящика её нет, а поворот есть,
+// и без проверки стороны урон по нему зависел от того, с какой диагонали подошли.
+TEST_F(MeleeWeaponTest, ACrateTakesTheSameDamageFromAnySide)
+{
+	float fromBehind = StrikeCrate({1.f, 0.f});
+	float fromTheFace = StrikeCrate({-1.f, 0.f});
+
+	EXPECT_GT(fromBehind, 0.f);
+	EXPECT_FLOAT_EQ(fromBehind, fromTheFace) << "у ящика нашлась спина";
+}
+
 TEST(BackstabTest, AHitFromBehindIsACrit)
 {
 	// Цель смотрит вправо, удар пришёл слева и летит вправо - бьют в спину.
@@ -165,6 +216,9 @@ namespace
 			victim->GetTransform()->SetWorldPosition({40.f, 0.f});
 			victim->GetTransform()->SetWorldRotation(victimFacingDegrees);
 			victim->AddComponent<XYZEngine::BoxColliderComponent>()->SetSize(30.f, 30.f);
+
+			// У жертвы есть сторона: крит в спину - про живых, а не про ящики.
+			victim->AddComponent<RoguelikeGame::FactionComponent>()->SetFaction(RoguelikeGame::Faction::Enemy);
 
 			auto health = victim->AddComponent<RoguelikeGame::HealthComponent>();
 			health->SetMaxHealth(1000.f);

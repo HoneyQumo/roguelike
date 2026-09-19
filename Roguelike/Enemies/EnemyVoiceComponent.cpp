@@ -28,6 +28,10 @@ namespace RoguelikeGame
         {
             Speak();
         }
+        else if (IsAlertedNow(seenBefore, now))
+        {
+            Notice();
+        }
 
         seenBefore = now;
     }
@@ -39,6 +43,23 @@ namespace RoguelikeGame
     void EnemyVoiceComponent::SetSpeech(const char* newSpeech)
     {
         speech = newSpeech;
+    }
+
+    void EnemyVoiceComponent::SetNoticeSpeech(const char* newNotice)
+    {
+        notice = newNotice;
+    }
+
+    // Оклик - на переходе «спокоен - насторожился». Он занял место знака «?»
+    // над головой: экран больше не рассказывает того, чего персонаж не видел.
+    void EnemyVoiceComponent::Notice()
+    {
+        if (notice == nullptr)
+        {
+            return;
+        }
+
+        SpeechDirector::Current().SayFromSet(notice, gameObject, SoundPlace::InWorld);
     }
 
     int EnemyVoiceComponent::GetSpokenCount() const

@@ -173,7 +173,6 @@
     <ClCompile Include="CameraFollow.tests.cpp" />
     <ClCompile Include="Version.tests.cpp" />
     <ClCompile Include="MeleeWeapon.tests.cpp" />
-    <ClCompile Include="Threat.tests.cpp" />
     <ClCompile Include="Tileset.tests.cpp" />
     <ClCompile Include="Awareness.tests.cpp" />
     <ClCompile Include="EnemyVoice.tests.cpp" />
@@ -375,12 +374,6 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\Roguelike\Items\ItemDropComponent.cpp">
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="..\Roguelike\Player\ThreatWatchComponent.cpp">
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="..\Roguelike\Ui\ThreatMarkComponent.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\Roguelike\Items\ItemEffectComponent.cpp">

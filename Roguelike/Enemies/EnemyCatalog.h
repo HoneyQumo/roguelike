@@ -32,43 +32,43 @@ namespace RoguelikeGame
             TileType::GruntSpawn, 'g', "GruntSpawn",
             {"Grunt", "enemy_grunt", WeaponId::Knife,
              150.f, SIGHT_ORDINARY, 40.f, 50.f, 0.f,
-             50.f, 30.f, 0.9f, 0.f, "grunt", 5.f, 45.f, 70.f, 3.0f, 2.2f, 40.f, 8, 1, 2, 2.0f, 1.30f, 0.9f, 0.7f, "heavy_spotted", 90.f, SHOUT_RADIUS, 1.0f, 250.f, 220.f}
+             50.f, 30.f, 0.9f, 0.f, "grunt", 5.f, 45.f, 70.f, 3.0f, 2.2f, 40.f, 8, 1, 2, 2.0f, 1.30f, 0.9f, 0.7f, "heavy_spotted", "heavy_notice", 90.f, SHOUT_RADIUS, 1.0f, 250.f, 220.f}
         },
         {
             TileType::MarauderSpawn, 'm', "MarauderSpawn",
             {"Marauder", "enemy_assault", WeaponId::Glock,
              120.f, SIGHT_POOR, 140.f, 45.f, 0.f,
-             240.f, 7.5f, 0.40f, 620.f, "marauder", 5.f, 50.f, 75.f, 3.5f, 2.4f, 45.f, 8, 1, 2, 2.2f, 1.30f, 1.0f, 0.8f, "guard_spotted", 95.f, SHOUT_RADIUS, 2.5f, 240.f, 200.f}
+             240.f, 7.5f, 0.40f, 620.f, "marauder", 5.f, 50.f, 75.f, 3.5f, 2.4f, 45.f, 8, 1, 2, 2.2f, 1.30f, 1.0f, 0.8f, "guard_spotted", "guard_notice", 95.f, SHOUT_RADIUS, 2.5f, 240.f, 200.f}
         },
         {
             TileType::AssaultSpawn, 'a', "AssaultSpawn",
             {"Assault", "enemy_assault", WeaponId::Ak47,
              110.f, SIGHT_TRAINED, 220.f, 70.f, 40.f,
-             360.f, 9.f, 0.70f, 700.f, "assault", 5.f, 60.f, 85.f, 4.5f, 2.8f, 55.f, 10, 2, 3, 2.6f, 1.40f, 1.2f, 0.9f, "guard_spotted", 105.f, SHOUT_RADIUS, 2.5f, 267.f, 240.f}
+             360.f, 9.f, 0.70f, 700.f, "assault", 5.f, 60.f, 85.f, 4.5f, 2.8f, 55.f, 10, 2, 3, 2.6f, 1.40f, 1.2f, 0.9f, "guard_spotted", "guard_notice", 105.f, SHOUT_RADIUS, 2.5f, 267.f, 240.f}
         },
         {
             TileType::ShieldSpawn, 's', "ShieldSpawn",
             {"Shield", "enemy_shield", WeaponId::Glock,
              95.f, SIGHT_ORDINARY, 150.f, 120.f, 120.f,
-             300.f, 6.f, 0.55f, 650.f, "shield", 5.f, 55.f, 80.f, 4.0f, 2.6f, 50.f, 10, 1, 3, 2.4f, 1.40f, 1.1f, 0.8f, "heavy_spotted", 100.f, SHOUT_RADIUS, 2.5f, 210.f, 170.f}
+             300.f, 6.f, 0.55f, 650.f, "shield", 5.f, 55.f, 80.f, 4.0f, 2.6f, 50.f, 10, 1, 3, 2.4f, 1.40f, 1.1f, 0.8f, "heavy_spotted", "heavy_notice", 100.f, SHOUT_RADIUS, 2.5f, 210.f, 170.f}
         },
         {
             TileType::HeavySpawn, 'h', "HeavySpawn",
             {"Heavy", "enemy_heavy", WeaponId::M16,
              80.f, SIGHT_TRAINED, 200.f, 150.f, 90.f,
-             340.f, 4.5f, 0.15f, 720.f, "heavy", 5.f, 65.f, 90.f, 5.0f, 3.0f, 60.f, 10, 2, 3, 2.8f, 1.45f, 1.0f, 0.7f, "heavy_spotted", 110.f, SHOUT_RADIUS, 2.5f, 207.f, 150.f}
+             340.f, 4.5f, 0.15f, 720.f, "heavy", 5.f, 65.f, 90.f, 5.0f, 3.0f, 60.f, 10, 2, 3, 2.8f, 1.45f, 1.0f, 0.7f, "heavy_spotted", "heavy_notice", 110.f, SHOUT_RADIUS, 2.5f, 207.f, 150.f}
         },
         {
             TileType::RadioSpawn, 'r', "RadioSpawn",
             {"Radio", "enemy_radio", WeaponId::SmgSuppressed,
              165.f, SIGHT_WATCHFUL, 260.f, 55.f, 20.f,
-             300.f, 3.7f, 0.22f, 680.f, "radio", 5.f, 75.f, 100.f, 5.5f, 4.0f, 80.f, 12, 2, 4, 3.2f, 1.60f, 1.8f, 1.2f, "radio_spotted", 120.f, RADIO_SHOUT_RADIUS, 2.5f, 268.f, 260.f}
+             300.f, 3.7f, 0.22f, 680.f, "radio", 5.f, 75.f, 100.f, 5.5f, 4.0f, 80.f, 12, 2, 4, 3.2f, 1.60f, 1.8f, 1.2f, "radio_spotted", "radio_notice", 120.f, RADIO_SHOUT_RADIUS, 2.5f, 268.f, 260.f}
         },
         {
             TileType::BossSpawn, 'b', "BossSpawn",
             {"Boss", "enemy_boss", WeaponId::ShotgunPump,
              90.f, SIGHT_CLOSE, 170.f, 260.f, 150.f,
-             260.f, 12.f, 0.70f, 900.f, "boss", 5.f, 90.f, 120.f, 8.0f, 4.5f, 90.f, 12, 2, 4, 3.5f, 1.60f, 1.6f, 1.1f, "radio_spotted", 135.f, SHOUT_RADIUS, 2.0f, 0.f, 200.f}
+             260.f, 12.f, 0.70f, 900.f, "boss", 5.f, 90.f, 120.f, 8.0f, 4.5f, 90.f, 12, 2, 4, 3.5f, 1.60f, 1.6f, 1.1f, "radio_spotted", "radio_notice", 135.f, SHOUT_RADIUS, 2.0f, 0.f, 200.f}
         }
     };
 

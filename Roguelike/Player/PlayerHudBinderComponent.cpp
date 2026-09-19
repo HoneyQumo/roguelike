@@ -43,11 +43,6 @@ namespace RoguelikeGame
         }
     }
 
-    void PlayerHudBinderComponent::SetThreatMarks(ThreatMarkComponent* newThreatMarks)
-    {
-        threatMarks = newThreatMarks;
-    }
-
     void PlayerHudBinderComponent::SetInventoryScreen(InventoryScreen* newInventoryScreen)
     {
         inventoryScreen = newInventoryScreen;
@@ -73,13 +68,6 @@ namespace RoguelikeGame
         if (belt != nullptr)
         {
             PushBeltSlots();
-        }
-
-        if (threats != nullptr && threatMarks != nullptr && threats->GetGameObject() != nullptr)
-        {
-            threatMarks->SetMarks(BuildThreatMarks(threats->GetSources(),
-                threats->GetGameObject()->GetTransform()->GetWorldPosition(),
-                XYZEngine::RenderSystem::Instance()->GetViewArea()));
         }
 
         if (health != nullptr || stamina != nullptr)
@@ -228,7 +216,6 @@ namespace RoguelikeGame
         pouch = target->GetComponent<AmmoPouchComponent>();
         belt = target->GetComponent<QuickBeltComponent>();
         drop = target->GetComponent<ItemDropComponent>();
-        threats = target->GetComponent<ThreatWatchComponent>();
         inventory = target->GetComponent<InventoryComponent>();
         if (inventory != nullptr && inventoryScreen != nullptr)
         {

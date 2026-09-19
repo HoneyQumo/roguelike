@@ -66,7 +66,7 @@ def ReadLines(path):
 
 
 def VoiceOf(sound):
-    match = re.match(r'voice_([a-z]+)_\d+$', sound)
+    match = re.match(r'voice_([a-z]+)_(?:notice_)?\d+$', sound)
     if not match or match.group(1) not in VOICES:
         raise ValueError('не знаю, каким голосом говорить: ' + sound)
 

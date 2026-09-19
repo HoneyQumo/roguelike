@@ -180,14 +180,16 @@ namespace RoguelikeGame
             LOG_ERROR("Level declares boss " + levelData.info.boss.bossId + " but has no boss spawn tile");
         }
 
-        LockExit(level);
-
         int itemsCount = BuildItems(levelData, items, level);
         int propsCount = BuildProps(levelData, props, items, level);
         int doorsCount = BuildDoors(levelData, items, level);
         int fixturesCount = BuildFixtures(levelData, level);
         int wavesCount = BuildWaves(levelData, level);
         int pursuitCount = BuildPursuit(levelData, level);
+
+        // Только теперь известно, кто сторожит выход: и босс, и волны, и люк
+        // появляются в разных местах сборки, а запереть надо один раз и в конце.
+        LockExit(level);
 
         LOG_INFO("Level built: tiles " + std::to_string(tilesCount)
             + ", overlay " + std::to_string(overlayCount)
@@ -270,7 +272,8 @@ namespace RoguelikeGame
             renderer->SetColor(LEVEL_EXIT_LOCKED_COLOR);
         }
 
-        LOG_INFO("Level exit is locked until the boss is defeated");
+        LOG_INFO(std::string("Level exit is locked until ")
+            + (level.GetBoss() != nullptr ? "the boss is defeated" : "the waves are over"));
     }
 
     int LevelBuilder::BuildItems(const LevelData& levelData, const ItemCatalog& items, Level& level)

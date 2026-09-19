@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "ActAssembler.h"
+#include "ActRoutes.h"
 #include "ItemCatalogLoader.h"
 #include "LevelIntegrity.h"
 #include "LevelLoader.h"
@@ -64,90 +65,24 @@ namespace
 			prison = LoadAct(PRISON);
 		}
 
-		bool HasDoor(const std::string& id) const
-		{
-			return std::any_of(prison.doors.begin(), prison.doors.end(),
-				[&id](const RoguelikeGame::DoorPlacement& door) { return door.doorId == id; });
-		}
-
-		bool HasFixture(const std::vector<RoguelikeGame::FixturePlacement>& list, const std::string& id) const
-		{
-			return std::any_of(list.begin(), list.end(),
-				[&id](const RoguelikeGame::FixturePlacement& fixture) { return fixture.id == id; });
-		}
-
-		const RoguelikeGame::PropPlacement* FindProp(const std::string& id) const
-		{
-			auto found = std::find_if(prison.props.begin(), prison.props.end(),
-				[&id](const RoguelikeGame::PropPlacement& prop) { return prop.propId == id; });
-
-			return found == prison.props.end() ? nullptr : &*found;
-		}
-
-		void DropItem(const std::string& id)
-		{
-			prison.items.erase(std::remove_if(prison.items.begin(), prison.items.end(),
-				[&id](const RoguelikeGame::ItemPlacement& placement) { return placement.itemId == id; }),
-				prison.items.end());
-		}
-
-		void Wall(int column, int row)
-	{
-		prison.tiles[row][column] = TileType::Wall;
-	}
-
-	void DropDoors(const std::string& id)
-	{
-		prison.doors.erase(std::remove_if(prison.doors.begin(), prison.doors.end(),
-			[&id](const RoguelikeGame::DoorPlacement& door) { return door.doorId == id; }),
-			prison.doors.end());
-	}
-
-	void DropFixtures(std::vector<RoguelikeGame::FixturePlacement>& list, const std::string& id)
-	{
-		list.erase(std::remove_if(list.begin(), list.end(),
-			[&id](const RoguelikeGame::FixturePlacement& fixture) { return fixture.id == id; }),
-			list.end());
-	}
-
-	// Заложить путь наглухо: и проход, и то, чем он открывается.
-	void CloseDoorWay(const std::string& id)
-	{
-		for (const auto& door : prison.doors)
-		{
-			if (door.doorId == id)
-			{
-				Wall(door.column, door.row);
-			}
-		}
-
-		DropDoors(id);
-	}
+		ActRoutes::Closer Closer() { return ActRoutes::Closer(prison); }
 
 	void CloseQuietWay()
 	{
-		CloseDoorWay("door_drain");
-		DropFixtures(prison.plates, "door_drain");
+		Closer().CloseDoor("door_drain");
+		Closer().DropPlate("door_drain");
 	}
 
 	void CloseKeyWay()
 	{
-		CloseDoorWay("door_gate");
-		DropFixtures(prison.levers, "door_gate");
-		DropItem("key_gate");
+		Closer().CloseDoor("door_gate");
+		Closer().DropLever("door_gate");
+		Closer().DropItem("key_gate");
 	}
 
 	void CloseLoudWay()
 	{
-		const RoguelikeGame::PropPlacement* wall = FindProp("wall_cracked");
-		if (wall != nullptr)
-		{
-			Wall(wall->column, wall->row);
-		}
-
-		prison.props.erase(std::remove_if(prison.props.begin(), prison.props.end(),
-			[](const RoguelikeGame::PropPlacement& prop) { return prop.propId == "wall_cracked"; }),
-			prison.props.end());
+		Closer().CloseProps("wall_cracked");
 	}
 
 	ItemCatalog items;
@@ -160,8 +95,8 @@ TEST_F(PrisonRoutesTest, TheQuietWayIsAGrateBehindAHiddenPlate)
 {
 	ASSERT_TRUE(isFound) << previous.string();
 
-	EXPECT_TRUE(HasDoor("door_drain")) << "в прачечной нет решётки вниз";
-	EXPECT_TRUE(HasFixture(prison.plates, "door_drain")) << "решётку нечем открыть";
+	EXPECT_TRUE(ActRoutes::HasDoor(prison, "door_drain")) << "в прачечной нет решётки вниз";
+	EXPECT_TRUE(ActRoutes::FindFixture(prison.plates, "door_drain") != nullptr) << "решётку нечем открыть";
 
 	// Ключа у решётки нет и быть не должно: её находят, а не отпирают.
 	for (const auto& placement : prison.items)
@@ -176,7 +111,7 @@ TEST_F(PrisonRoutesTest, TheGateOpensByKeyOrByHoldingTheSwitch)
 {
 	ASSERT_TRUE(isFound) << previous.string();
 
-	ASSERT_TRUE(HasDoor("door_gate"));
+	ASSERT_TRUE(ActRoutes::HasDoor(prison, "door_gate"));
 
 	auto lever = std::find_if(prison.levers.begin(), prison.levers.end(),
 		[](const RoguelikeGame::FixturePlacement& fixture) { return fixture.id == "door_gate"; });
@@ -189,7 +124,7 @@ TEST_F(PrisonRoutesTest, TheLoudWayIsAWallToBreakWithABarrelBesideIt)
 {
 	ASSERT_TRUE(isFound) << previous.string();
 
-	const RoguelikeGame::PropPlacement* wall = FindProp("wall_cracked");
+	const RoguelikeGame::PropPlacement* wall = ActRoutes::FindProp(prison, "wall_cracked");
 	ASSERT_NE(wall, nullptr) << "ломать нечего";
 	EXPECT_EQ(wall->row, GATE_LINE) << "пролом должен резать линию ворот, а не стоять где попало";
 
@@ -199,7 +134,7 @@ TEST_F(PrisonRoutesTest, TheLoudWayIsAWallToBreakWithABarrelBesideIt)
 	EXPECT_TRUE(definition->isSolid) << "целая стена обязана держать клетку закрытой";
 	EXPECT_FALSE(definition->leavesWreck) << "остов не даст пройти там, где сломали";
 
-	const RoguelikeGame::PropPlacement* barrel = FindProp("fuel_barrel");
+	const RoguelikeGame::PropPlacement* barrel = ActRoutes::FindProp(prison, "fuel_barrel");
 	ASSERT_NE(barrel, nullptr) << "бочки рядом нет, ломать нечем";
 	EXPECT_LE(std::abs(barrel->column - wall->column), 1);
 	EXPECT_LE(std::abs(barrel->row - wall->row), 1);
@@ -214,7 +149,7 @@ TEST_F(PrisonRoutesTest, BehindTheBreachThereIsFloor)
 {
 	ASSERT_TRUE(isFound) << previous.string();
 
-	const RoguelikeGame::PropPlacement* wall = FindProp("wall_cracked");
+	const RoguelikeGame::PropPlacement* wall = ActRoutes::FindProp(prison, "wall_cracked");
 	ASSERT_NE(wall, nullptr);
 
 	EXPECT_EQ(TileAt(prison, wall->column, wall->row + 1), TileType::Floor);

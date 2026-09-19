@@ -122,8 +122,80 @@ def Broken():
     return tile
 
 
+BRICK = (120, 70, 54)
+BRICK_DARK = (42, 26, 22)
+BRICK_LIGHT = (154, 100, 78)
+BRICK_SEAM = (68, 42, 34)
+PLANK = (132, 104, 68)
+PLANK_DARK = (78, 60, 38)
+PLANK_LIGHT = (168, 138, 96)
+NAIL = (176, 178, 184)
+GLASS = (96, 122, 128)
+INSIDE = (20, 18, 20)
+
+
+def Brickwork(draw, rng):
+    """Тёплая кирпичная кладка улицы - не холодный серый бетон тюрьмы."""
+    rows = 6
+    height = TILE // rows
+
+    for row in range(rows):
+        top = row * height
+        offset = (row % 2) * (TILE // 6)
+
+        draw.rectangle([0, top, TILE - 1, top + height - 1], fill=BRICK)
+        draw.line([0, top, TILE - 1, top], fill=BRICK_SEAM)
+        draw.line([0, top + 1, TILE - 1, top + 1], fill=BRICK_LIGHT)
+
+        for step in range(-1, 4):
+            x = offset + step * (TILE // 3)
+            draw.line([x, top, x, top + height - 1], fill=BRICK_SEAM)
+
+        for _ in range(3):
+            draw.point((rng.randint(0, TILE - 1), rng.randint(top + 2, top + height - 1)), fill=BRICK_DARK)
+
+
+def Window(boarded):
+    """Заколоченное окно: проём в кладке крест-накрест забит досками.
+
+    Сломанное - тот же проём без досок: сквозь него видно темноту, и по ней
+    читается, что там проход, а не ещё одна стена.
+    """
+    tile = Image.new('RGBA', (TILE, TILE), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(tile)
+    rng = random.Random(13 if boarded else 17)
+
+    Brickwork(draw, rng)
+
+    draw.rectangle([8, 12, 55, 51], fill=BRICK_DARK)
+    draw.rectangle([10, 14, 53, 49], fill=INSIDE)
+
+    if not boarded:
+        # Осколки по краю и обломки досок внизу - было забито, стало открыто.
+        for step in range(9):
+            x = 11 + step * 5
+            draw.polygon([(x, 14), (x + 3, 14), (x + 1, 14 + rng.randint(2, 6))], fill=GLASS)
+            draw.polygon([(x, 49), (x + 3, 49), (x + 1, 49 - rng.randint(2, 6))], fill=GLASS)
+
+        for x, y in ((12, 44), (44, 46), (28, 47)):
+            draw.rectangle([x, y, x + rng.randint(6, 11), y + 3], fill=PLANK_DARK)
+            draw.line([x, y, x + 6, y], fill=PLANK)
+
+        return tile
+
+    for top in (18, 30, 42):
+        draw.rectangle([4, top, 59, top + 8], fill=PLANK_DARK)
+        draw.rectangle([5, top + 1, 58, top + 7], fill=PLANK)
+        draw.line([5, top + 1, 58, top + 1], fill=PLANK_LIGHT)
+
+        for x in (10, 32, 53):
+            draw.point((x, top + 4), fill=NAIL)
+
+    return tile
+
+
 def Build():
-    frames = [Whole(), Broken()]
+    frames = [Whole(), Broken(), Window(True), Window(False)]
     sheet = Image.new('RGBA', (TILE * len(frames), TILE), (0, 0, 0, 0))
     for index, frame in enumerate(frames):
         sheet.alpha_composite(frame, dest=(index * TILE, 0))

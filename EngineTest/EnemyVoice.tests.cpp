@@ -1,4 +1,7 @@
 #include "pch.h"
+#include "SpeechCatalogLoader.h"
+#include "SpeechDirector.h"
+#include <sstream>
 #include "EnemyCatalog.h"
 #include "EnemyVoice.h"
 
@@ -49,11 +52,53 @@ TEST(EnemyVoiceTest, LosingAndSpottingAgainSpeaksAgain)
 	EXPECT_TRUE(IsSpottedNow(AwarenessState::Alerted, AwarenessState::Provoked));
 }
 
+// Набор врага обязан существовать в каталоге реплик: опечатка в имени даёт
+// немого врага, и заметить это можно только на слух.
+TEST(EnemyVoiceTest, EverySetNamedByAnEnemyIsInTheCatalog)
+{
+	std::istringstream file(
+		"[line a]\nspeaker Кто\ntext Раз\n"
+		"[set guard_spotted]\nline a\n"
+		"[set heavy_spotted]\nline a\n"
+		"[set radio_spotted]\nline a\n");
+	RoguelikeGame::SpeechCatalog catalog = RoguelikeGame::SpeechCatalogLoader::Parse(file, "test");
+
+	for (const RoguelikeGame::EnemyDefinition& enemy : ENEMIES)
+	{
+		ASSERT_NE(enemy.config.spottedSpeech, nullptr) << enemy.config.objectName;
+		EXPECT_NE(catalog.FindSet(enemy.config.spottedSpeech), nullptr)
+			<< enemy.config.objectName << " говорит набором " << enemy.config.spottedSpeech;
+	}
+}
+
+// Враг говорит через общее ядро речи, а не своим путём: иначе субтитр
+// появится у одних и не появится у других.
+TEST(EnemyVoiceTest, WhatTheEnemySaysReachesTheSubtitles)
+{
+	std::istringstream file(
+		"[line guard_1]\nspeaker Охранник\ntext Вот ты где!\n"
+		"[set guard_spotted]\nline guard_1\n");
+	RoguelikeGame::SpeechCatalog catalog = RoguelikeGame::SpeechCatalogLoader::Parse(file, "test");
+	RoguelikeGame::SubtitleQueue queue;
+
+	RoguelikeGame::SpeechDirector::Current().SetCatalog(&catalog);
+	RoguelikeGame::SpeechDirector::Current().SetQueue(&queue);
+
+	RoguelikeGame::SpeechDirector::Current().SayFromSet("guard_spotted", nullptr,
+		RoguelikeGame::SoundPlace::InWorld);
+
+	ASSERT_EQ(queue.GetLines().size(), 1u);
+	EXPECT_EQ(queue.GetLines()[0].speaker, "Охранник");
+
+	RoguelikeGame::SpeechDirector::Current().Silence();
+	RoguelikeGame::SpeechDirector::Current().SetCatalog(nullptr);
+	RoguelikeGame::SpeechDirector::Current().SetQueue(nullptr);
+}
+
 TEST(EnemyVoiceTest, EveryEnemyInTheCatalogHasAVoice)
 {
 	for (const RoguelikeGame::EnemyDefinition& enemy : ENEMIES)
 	{
-		EXPECT_NE(enemy.config.voice, nullptr) << enemy.config.objectName;
-		EXPECT_GT(enemy.config.voiceLines, 0) << enemy.config.objectName;
+		EXPECT_NE(enemy.config.spottedSpeech, nullptr) << enemy.config.objectName;
 	}
 }

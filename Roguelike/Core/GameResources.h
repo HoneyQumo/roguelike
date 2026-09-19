@@ -5,6 +5,7 @@
 #include "ItemCatalog.h"
 #include "LevelCatalog.h"
 #include "LootCatalog.h"
+#include "SpeechCatalog.h"
 #include "PropCatalog.h"
 #include "SpriteAtlas.h"
 #include "WeaponCatalog.h"
@@ -17,12 +18,12 @@ namespace RoguelikeGame
         static void Load();
         static const sf::SoundBuffer* GetWeaponSound(const char* key);
         static const sf::SoundBuffer* GetMeleeHitSound(const MeleeDefinition& melee);
-        static const sf::SoundBuffer* GetVoiceLine(const char* voice, int line);
         static const sf::SoundBuffer* GetStep(const char* set, int variant);
         static void LoadFixtures();
         static const ItemCatalog& GetItems();
         static const LevelCatalog& GetLevels();
         static const LootCatalog& GetLoot();
+        static const SpeechCatalog& GetSpeech();
         static const PropCatalog& GetProps();
 
     private:

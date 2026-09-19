@@ -37,8 +37,8 @@ namespace RoguelikeGame
         float alertRadiusScale = 1.f;
         float awarenessGain = 1.f;
         float awarenessDecay = 0.7f;
-        const char* voice = nullptr;
-        int voiceLines = 0;
+        // Ключ набора реплик в каталоге: сколько их там, знает сам набор.
+        const char* spottedSpeech = nullptr;
         float peripheryHalfAngle = 0.f;
         float shoutRadius = SHOUT_RADIUS;
         float provokedRangeScale = 1.f;

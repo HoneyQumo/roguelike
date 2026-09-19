@@ -11,6 +11,8 @@
 #include "InventoryScreen.h"
 #include "FadeScreen.h"
 #include "MessageScreen.h"
+#include "SubtitleQueue.h"
+#include "SubtitleScreen.h"
 #include <memory>
 #include <GameObject.h>
 #include <Cooldown.h>
@@ -48,6 +50,8 @@ namespace RoguelikeGame
         std::unique_ptr<HudScreen> hudScreen;
         std::unique_ptr<InventoryScreen> inventoryScreen;
         std::unique_ptr<MessageScreen> messageScreen;
+        std::unique_ptr<SubtitleScreen> subtitleScreen;
+        SubtitleQueue subtitles;
         std::unique_ptr<FadeScreen> fadeScreen;
         XYZEngine::GameObject* music = nullptr;
         XYZEngine::GameObject* crosshair = nullptr;

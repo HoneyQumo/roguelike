@@ -28,6 +28,9 @@ namespace RoguelikeGame
 		// nullptr, если набора нет: у звонящего может не быть реплик вовсе.
 		const std::vector<std::string>* FindSet(const std::string& id) const;
 
+		// Всё, что надо загрузить: пустых и повторов тут нет.
+		std::vector<std::string> GetSounds() const;
+
 		std::size_t GetLineCount() const;
 		std::size_t GetSetCount() const;
 

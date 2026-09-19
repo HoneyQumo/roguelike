@@ -8,6 +8,7 @@
 #include "BossSpriteAtlas.h"
 #include "EnemyCatalog.h"
 #include "EnemyVoice.h"
+#include "SpeechCatalogLoader.h"
 #include "Footsteps.h"
 #include "Fixtures.h"
 #include "TileAtlas.h"
@@ -27,6 +28,7 @@ namespace RoguelikeGame
         LevelCatalog levels;
         LootCatalog loot;
         PropCatalog props;
+        SpeechCatalog speech;
     }
 
     namespace
@@ -162,13 +164,6 @@ namespace RoguelikeGame
         return key == nullptr ? nullptr : XYZEngine::ResourceSystem::Instance()->GetSound(key);
     }
 
-    const sf::SoundBuffer* GameResources::GetVoiceLine(const char* voice, int line)
-    {
-        std::string key = VoiceKey(voice, line);
-
-        return key.empty() ? nullptr : XYZEngine::ResourceSystem::Instance()->GetSound(key);
-    }
-
     const sf::SoundBuffer* GameResources::GetStep(const char* set, int variant)
     {
         std::string key = StepKey(set, variant);
@@ -187,19 +182,34 @@ namespace RoguelikeGame
         }
     }
 
+    // Что грузить, говорит каталог реплик, а не список врагов: реплики
+    // бывают и не вражеские - в катсценах говорят по сценарию.
     void GameResources::LoadVoiceLines()
     {
-        for (const EnemyDefinition& enemy : ENEMIES)
+        try
         {
-            for (int line = 1; line <= enemy.config.voiceLines; line++)
+            speech = SpeechCatalogLoader::Load(SPEECH_CATALOG_FILE);
+        }
+        catch (const std::exception& exception)
+        {
+            LOG_ERROR(std::string("Speech catalog is not loaded: ") + exception.what());
+            return;
+        }
+
+        for (const std::string& sound : speech.GetSounds())
+        {
+            if (!XYZEngine::ResourceSystem::Instance()->HasSound(sound))
             {
-                std::string key = VoiceKey(enemy.config.voice, line);
-                if (!key.empty() && !XYZEngine::ResourceSystem::Instance()->HasSound(key))
-                {
-                    XYZEngine::ResourceSystem::Instance()->LoadSound(key, VoiceFilePath(enemy.config.voice, line));
-                }
+                XYZEngine::ResourceSystem::Instance()->LoadSound(sound, VOICE_AUDIO_PATH + sound + VOICE_AUDIO_SUFFIX);
             }
         }
+
+        LOG_INFO("Speech loaded: lines " + std::to_string(speech.GetLineCount()));
+    }
+
+    const SpeechCatalog& GameResources::GetSpeech()
+    {
+        return speech;
     }
 
     const sf::SoundBuffer* GameResources::GetMeleeHitSound(const MeleeDefinition& melee)

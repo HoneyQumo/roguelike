@@ -5,7 +5,11 @@
 #include "LevelIntegrity.h"
 #include "LevelLoader.h"
 #include "ProjectFiles.h"
+#include "EnemyCatalog.h"
+#include "LevelZones.h"
 #include "PropCatalog.h"
+#include <algorithm>
+#include <vector>
 
 using RoguelikeGame::CheckLevel;
 using RoguelikeGame::ItemCatalog;
@@ -165,6 +169,59 @@ TEST_F(StreetRoutesTest, EveryRouteHasItsOwnTrouble)
 
 	EXPECT_GE(traps, 3) << "по ловушке на путь - минимум";
 	EXPECT_GE(street.ambushes.size(), 3u) << "по засаде на путь - минимум";
+}
+
+// Стоящее окно обязано глушить обзор и звук как стена. Без cover клетка
+// становится Blocked, а его нет ни в списке для обзора, ни в списке для звука.
+TEST_F(StreetRoutesTest, TheBoardedWindowIsAsOpaqueAsTheWallAroundIt)
+{
+	ASSERT_TRUE(isFound) << previous.string();
+
+	const RoguelikeGame::PropDefinition* definition = props.Find("window_boarded");
+	ASSERT_NE(definition, nullptr);
+
+	EXPECT_TRUE(definition->isCover) << "сквозь заколоченные доски видно и слышно";
+}
+
+// Цена любого пути не должна кончаться на пороге: за дверью кто-то стоит.
+TEST_F(StreetRoutesTest, SomeoneGuardsTheWayOut)
+{
+	ASSERT_TRUE(isFound) << previous.string();
+
+	std::vector<RoguelikeGame::LevelZone> zones = RoguelikeGame::BuildZones(street);
+	auto gate = std::find_if(zones.begin(), zones.end(),
+		[](const RoguelikeGame::LevelZone& zone) { return zone.id.rfind("gate@", 0) == 0; });
+
+	ASSERT_NE(gate, zones.end()) << "у комнаты ворот нет зоны";
+
+	int guards = 0;
+	for (int row = gate->minRow; row <= gate->maxRow; row++)
+	{
+		for (int column = gate->minColumn; column <= gate->maxColumn; column++)
+		{
+			guards += RoguelikeGame::FindEnemyConfig(TileAt(street, column, row)) != nullptr ? 1 : 0;
+		}
+	}
+
+	EXPECT_GT(guards, 0) << "в комнате с выходом никого нет";
+}
+
+// Засада не должна выйти раньше, чем игрок успеет встать к рубильнику,
+// иначе вместо «держать под огнём» получается «сначала зачисти, потом держи».
+TEST_F(StreetRoutesTest, TheBarricadeAmbushWaitsForTheHoldToStart)
+{
+	ASSERT_TRUE(isFound) << previous.string();
+
+	const RoguelikeGame::FixturePlacement* lever = ActRoutes::FindFixture(street.levers, "door_service");
+	ASSERT_NE(lever, nullptr);
+
+	float latest = 0.f;
+	for (const RoguelikeGame::AmbushSpec& ambush : street.ambushes)
+	{
+		latest = std::max(latest, ambush.delay);
+	}
+
+	EXPECT_GE(latest, lever->holdTime) << "засада выходит раньше, чем игрок дойдёт до рычага";
 }
 
 TEST_F(StreetRoutesTest, TheStreetIsSoundAsItShips)

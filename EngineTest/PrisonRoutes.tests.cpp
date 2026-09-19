@@ -133,6 +133,7 @@ TEST_F(PrisonRoutesTest, TheLoudWayIsAWallToBreakWithABarrelBesideIt)
 	EXPECT_TRUE(definition->IsDestructible());
 	EXPECT_TRUE(definition->isSolid) << "целая стена обязана держать клетку закрытой";
 	EXPECT_FALSE(definition->leavesWreck) << "остов не даст пройти там, где сломали";
+	EXPECT_TRUE(definition->isCover) << "сквозь целую стену видно и слышно";
 
 	const RoguelikeGame::PropPlacement* barrel = ActRoutes::FindProp(prison, "fuel_barrel");
 	ASSERT_NE(barrel, nullptr) << "бочки рядом нет, ломать нечем";

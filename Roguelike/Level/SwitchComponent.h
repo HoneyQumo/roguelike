@@ -26,6 +26,7 @@ namespace RoguelikeGame
         void Render() override;
 
         void SetSwitchId(const std::string& newSwitchId);
+        void SetHoldTime(float newHoldTime);
         const std::string& GetSwitchId() const;
         void SetAudio(XYZEngine::AudioComponent* newAudio);
         void SetSprite(XYZEngine::SpriteRendererComponent* newSprite);
@@ -37,6 +38,10 @@ namespace RoguelikeGame
         std::string GetPrompt(XYZEngine::GameObject* actor) const override;
         bool IsAvailable() const override;
         bool Interact(XYZEngine::GameObject* actor) override;
+
+        float GetHoldTime() const override;
+        void OnHold(float part, float deltaTime) override;
+        void OnHoldBroken() override;
 
         XYZEngine::SubscriptionId SubscribePulled(std::function<void()> onPulled);
 
@@ -51,6 +56,8 @@ namespace RoguelikeGame
         XYZEngine::SpriteRendererComponent* sprite = nullptr;
 
         std::string switchId;
+        float holdTime = 0.f;
+        float sinceNoise = 0.f;
         bool isPulled = false;
 
         XYZEngine::EventList<> pulledEvent;

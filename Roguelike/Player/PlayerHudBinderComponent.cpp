@@ -204,6 +204,14 @@ namespace RoguelikeGame
                 }
             });
 
+            interaction->SubscribeHoldChanged([this](float part)
+            {
+                if (screen != nullptr)
+                {
+                    screen->SetHold(part);
+                }
+            });
+
             interaction->SubscribeRefused([this](const std::string& reason)
             {
                 if (screen != nullptr && !reason.empty())

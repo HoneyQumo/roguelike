@@ -109,7 +109,11 @@ namespace RoguelikeGame
             for (const FixturePlacement& fixture : room.*list)
             {
                 Placement to = Move({fixture.column, fixture.row}, width, height, turns, isMirrored);
-                (moved.*list).push_back({to.column, to.row, fixture.id});
+
+                FixturePlacement turned = fixture;
+                turned.column = to.column;
+                turned.row = to.row;
+                (moved.*list).push_back(std::move(turned));
             }
         }
 

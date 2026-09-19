@@ -452,6 +452,16 @@ namespace RoguelikeGame
             }
 
             std::string fixtureId = Trim(name.substr(prefix.size()));
+            float holdTime = 0.f;
+
+            // Как у пропа с углом: после @ идёт число. У рубильника это секунды.
+            std::size_t hold = fixtureId.find('@');
+            if (hold != std::string::npos)
+            {
+                holdTime = std::strtof(fixtureId.substr(hold + 1).c_str(), nullptr);
+                fixtureId = Trim(fixtureId.substr(0, hold));
+            }
+
             if (fixtureId.empty())
             {
                 LOG_ERROR("Level legend line " + std::to_string(lineNumber) + " has no fixture id");
@@ -460,6 +470,7 @@ namespace RoguelikeGame
 
             LegendEntry entry;
             entry.tile = TileType::Floor;
+            entry.holdTime = holdTime;
             entry.*kind.second = fixtureId;
 
             legend[symbol] = entry;
@@ -567,7 +578,7 @@ namespace RoguelikeGame
 
                 if (!tile->second.leverId.empty())
                 {
-                    levelData.levers.push_back({column, row, tile->second.leverId});
+                    levelData.levers.push_back({column, row, tile->second.leverId, tile->second.holdTime});
                 }
 
                 if (!tile->second.plateId.empty())

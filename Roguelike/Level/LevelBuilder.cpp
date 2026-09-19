@@ -561,7 +561,7 @@ namespace RoguelikeGame
         {
             auto position = TileToWorldPosition(placement.column, placement.row, levelData.height);
 
-            XYZEngine::GameObject* gameObject = CreateLever(placement.id, position);
+            XYZEngine::GameObject* gameObject = CreateLever(placement.id, position, placement.holdTime);
             if (level.Add(gameObject))
             {
                 levers.push_back(gameObject->GetComponent<SwitchComponent>());

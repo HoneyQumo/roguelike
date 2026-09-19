@@ -25,6 +25,7 @@ namespace RoguelikeGame
             std::string doorId;
             std::string zoneId;
             std::string leverId;
+            float holdTime = 0.f;
             std::string plateId;
             std::string hatchId;
             std::string escapeId;

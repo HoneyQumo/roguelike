@@ -24,6 +24,14 @@ namespace RoguelikeGame
         virtual bool IsAvailable() const = 0;
         virtual bool Interact(XYZEngine::GameObject* actor) = 0;
 
+        // Сколько держать клавишу. Ноль - действие мгновенное, как было всегда.
+        // Считает время InteractionComponent: он один знает, отпустили её или нет.
+        virtual float GetHoldTime() const;
+
+        // Пока счёт идёт - доля выполненного, 0..1. Сорвалось - OnHoldBroken.
+        virtual void OnHold(float part, float deltaTime);
+        virtual void OnHoldBroken();
+
     protected:
         void BindReach(XYZEngine::ColliderComponent* reach);
 

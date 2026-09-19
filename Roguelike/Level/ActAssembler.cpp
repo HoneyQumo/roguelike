@@ -181,7 +181,10 @@ namespace RoguelikeGame
             {
                 for (const FixturePlacement& fixture : room.layout.*list)
                 {
-                    (act.*list).push_back({room.column + fixture.column, room.row + fixture.row, fixture.id});
+                    FixturePlacement moved = fixture;
+                    moved.column = room.column + fixture.column;
+                    moved.row = room.row + fixture.row;
+                    (act.*list).push_back(std::move(moved));
                 }
             }
 

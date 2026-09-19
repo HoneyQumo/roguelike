@@ -1,11 +1,13 @@
 #include "SwitchComponent.h"
 #include "Fixtures.h"
 #include "GameSettings.h"
+#include "Noise.h"
 #include <AudioComponent.h>
 #include <GameObject.h>
 #include <LoggerRegistry.h>
 #include <ResourceSystem.h>
 #include <SpriteRendererComponent.h>
+#include <TransformComponent.h>
 
 namespace RoguelikeGame
 {
@@ -35,6 +37,39 @@ namespace RoguelikeGame
     const std::string& SwitchComponent::GetSwitchId() const
     {
         return switchId;
+    }
+
+    void SwitchComponent::SetHoldTime(float newHoldTime)
+    {
+        holdTime = newHoldTime;
+    }
+
+    float SwitchComponent::GetHoldTime() const
+    {
+        return holdTime;
+    }
+
+    // Пока держат - гремит, и охрана идёт смотреть. В этом и цена.
+    void SwitchComponent::OnHold(float part, float deltaTime)
+    {
+        sinceNoise += deltaTime;
+        if (sinceNoise < HOLD_NOISE_INTERVAL)
+        {
+            return;
+        }
+
+        sinceNoise = 0.f;
+
+        Noise noise;
+        noise.position = gameObject->GetTransform()->GetWorldPosition();
+        noise.radius = HOLD_NOISE_RADIUS;
+        noise.loudness = HOLD_NOISE_LOUDNESS;
+        RaiseNoise(noise);
+    }
+
+    void SwitchComponent::OnHoldBroken()
+    {
+        sinceNoise = 0.f;
     }
 
     void SwitchComponent::SetAudio(XYZEngine::AudioComponent* newAudio)

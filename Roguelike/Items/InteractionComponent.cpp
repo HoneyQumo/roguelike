@@ -34,6 +34,11 @@ namespace RoguelikeGame
     {
         candidates.erase(std::remove(candidates.begin(), candidates.end(), candidate), candidates.end());
 
+        if (held == candidate)
+        {
+            BreakHold();
+        }
+
         if (target == candidate)
         {
             SetTarget(nullptr);
@@ -44,15 +49,112 @@ namespace RoguelikeGame
     {
         UpdateTarget();
 
+        if (held != nullptr)
+        {
+            KeepHolding(deltaTime);
+            return;
+        }
+
         if (input == nullptr || target == nullptr)
         {
             return;
         }
 
-        if (input->WasActionPressed(target->GetAction()))
+        if (!input->WasActionPressed(target->GetAction()))
         {
-            Interact();
+            return;
         }
+
+        if (target->GetHoldTime() > 0.f)
+        {
+            StartHold(target);
+            return;
+        }
+
+        Interact();
+    }
+
+    bool InteractionComponent::IsHolding() const
+    {
+        return held != nullptr;
+    }
+
+    float InteractionComponent::GetHoldPart() const
+    {
+        return heldPart;
+    }
+
+    void InteractionComponent::StartHold(InteractableComponent* wanted)
+    {
+        held = wanted;
+        heldTime = 0.f;
+        heldFrom = transform->GetWorldPosition();
+        SetHoldPart(0.f);
+    }
+
+    /**
+    *	Счёт идёт, пока клавишу держат и пока стоят на месте. Сдвинулся -
+    *	сорвалось: в этом вся цена действия, иначе рубильник дёргали бы на бегу.
+    */
+    void InteractionComponent::KeepHolding(float deltaTime)
+    {
+        if (input == nullptr || !held->IsAvailable()
+            || !input->IsActionHeld(held->GetAction())
+            || (transform->GetWorldPosition() - heldFrom).GetLengthSquared() > HOLD_SLIP * HOLD_SLIP)
+        {
+            BreakHold();
+            return;
+        }
+
+        float holdTime = held->GetHoldTime();
+        heldTime += deltaTime;
+        SetHoldPart(holdTime > 0.f ? heldTime / holdTime : 1.f);
+        held->OnHold(heldPart, deltaTime);
+
+        if (heldTime < holdTime)
+        {
+            return;
+        }
+
+        InteractableComponent* done = held;
+        held = nullptr;
+        SetHoldPart(0.f);
+
+        if (!done->Interact(gameObject))
+        {
+            refusedEvent.Invoke(done->GetRefusal(gameObject));
+        }
+
+        UpdateTarget();
+    }
+
+    void InteractionComponent::BreakHold()
+    {
+        InteractableComponent* broken = held;
+        held = nullptr;
+        SetHoldPart(0.f);
+
+        if (broken != nullptr)
+        {
+            broken->OnHoldBroken();
+        }
+    }
+
+    void InteractionComponent::SetHoldPart(float part)
+    {
+        float wanted = part < 0.f ? 0.f : (part > 1.f ? 1.f : part);
+        if (wanted == heldPart)
+        {
+            return;
+        }
+
+        heldPart = wanted;
+        holdChangedEvent.Invoke(heldPart);
+    }
+
+    XYZEngine::SubscriptionId InteractionComponent::SubscribeHoldChanged(std::function<void(float)> onHoldChanged)
+    {
+        return holdChangedEvent.Subscribe(std::move(onHoldChanged));
     }
 
     void InteractionComponent::Render()

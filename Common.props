@@ -9,6 +9,9 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <!-- Без этого исходник без BOM читается в системной кодировке,
+           и кириллица в литералах приходит не та, что набрана. -->
+      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <ConformanceMode>true</ConformanceMode>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>SFML_STATIC;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>

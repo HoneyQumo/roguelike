@@ -238,6 +238,8 @@ Top-down шутер про побег: герой начинает в тюрем
 - [x] У комнат улицы не было зон ([#424](https://github.com/HoneyQumo/roguelike/issues/424))
 - [x] Три пути к воротам улицы ([#428](https://github.com/HoneyQumo/roguelike/issues/428))
 - [x] Ловушки, засады и пасхалки на улице ([#431](https://github.com/HoneyQumo/roguelike/issues/431))
+- [x] Цена громкого пути на улице не бралась с игрока ([#436](https://github.com/HoneyQumo/roguelike/issues/436))
+- [x] Завалы на коридорах улицы: мимо комнат не пробежать ([#438](https://github.com/HoneyQumo/roguelike/issues/438))
 - [ ] Реестр событий уровня: «волны кончились» и «босс убит» описываются данными, а не сшиваются руками ([#209](https://github.com/HoneyQumo/roguelike/issues/209))
 - [ ] Цель локации и журнал заданий
 

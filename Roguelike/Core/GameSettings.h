@@ -693,6 +693,7 @@ namespace RoguelikeGame
     constexpr auto FIXTURES_TEXTURE_FILE = "Resources/Textures/fixtures.png";
     constexpr auto HATCH_TEXTURE_PREFIX = "hatch_";
     constexpr auto LEVER_TEXTURE_PREFIX = "lever_";
+    constexpr auto PLATE_TEXTURE_PREFIX = "plate_";
     constexpr auto HURT_SOUND_FILE = "Resources/Audio/hurt.wav";
     constexpr auto MAIN_THEME_FILE = "Resources/Audio/main_music_1.ogg";
     constexpr auto TEST_LEVEL_FILE = "Resources/Levels/test_level.config";

@@ -5,6 +5,7 @@ namespace RoguelikeGame
     constexpr int HATCH_FRAMES = 5;
     constexpr float HATCH_OPEN_TIME = 0.9f;
     constexpr int LEVER_FRAMES = 2;
+    constexpr int PLATE_FRAMES = 2;
 
     enum class HatchState
     {

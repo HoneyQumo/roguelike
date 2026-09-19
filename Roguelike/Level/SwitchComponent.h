@@ -40,6 +40,12 @@ namespace RoguelikeGame
 
         XYZEngine::SubscriptionId SubscribePulled(std::function<void()> onPulled);
 
+    protected:
+        // Наследник меняет только вид: механика у рычага и плитки одна.
+        std::string texturePrefix;
+
+        void ShowFrame();
+
     private:
         XYZEngine::AudioComponent* audio = nullptr;
         XYZEngine::SpriteRendererComponent* sprite = nullptr;
@@ -48,8 +54,6 @@ namespace RoguelikeGame
         bool isPulled = false;
 
         XYZEngine::EventList<> pulledEvent;
-
-        void ShowFrame();
     };
 
     void LinkSwitches(const std::vector<SwitchComponent*>& switches, const std::vector<Openable>& targets);

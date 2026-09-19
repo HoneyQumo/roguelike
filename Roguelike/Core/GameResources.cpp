@@ -335,6 +335,13 @@ namespace RoguelikeGame
                 std::string(LEVER_TEXTURE_PREFIX) + std::to_string(frame), FIXTURES_TEXTURE_FILE,
                 sf::IntRect((HATCH_FRAMES + frame) * TILE_FRAME_SIZE, 0, TILE_FRAME_SIZE, TILE_FRAME_SIZE), false);
         }
+
+        for (int frame = 0; frame < PLATE_FRAMES; frame++)
+        {
+            XYZEngine::ResourceSystem::Instance()->LoadTexturePart(
+                std::string(PLATE_TEXTURE_PREFIX) + std::to_string(frame), FIXTURES_TEXTURE_FILE,
+                sf::IntRect((HATCH_FRAMES + LEVER_FRAMES + frame) * TILE_FRAME_SIZE, 0, TILE_FRAME_SIZE, TILE_FRAME_SIZE), false);
+        }
     }
 
     void GameResources::LoadProps()

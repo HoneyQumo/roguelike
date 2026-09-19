@@ -9,7 +9,10 @@
 
 namespace RoguelikeGame
 {
-    SwitchComponent::SwitchComponent(XYZEngine::GameObject* gameObject) : InteractableComponent(gameObject) {}
+    SwitchComponent::SwitchComponent(XYZEngine::GameObject* gameObject)
+        : InteractableComponent(gameObject), texturePrefix(LEVER_TEXTURE_PREFIX)
+    {
+    }
 
     void SwitchComponent::Start()
     {
@@ -75,7 +78,7 @@ namespace RoguelikeGame
             }
         }
 
-        LOG_INFO("Lever " + switchId + " is pulled");
+        LOG_INFO("Switch " + switchId + " is pulled");
         pulledEvent.Invoke();
     }
 
@@ -113,7 +116,7 @@ namespace RoguelikeGame
             return;
         }
 
-        std::string name = std::string(LEVER_TEXTURE_PREFIX) + std::to_string(LeverFrame(isPulled));
+        std::string name = texturePrefix + std::to_string(LeverFrame(isPulled));
         const sf::Texture* texture = XYZEngine::ResourceSystem::Instance()->GetTextureShared(name);
         if (texture != nullptr)
         {

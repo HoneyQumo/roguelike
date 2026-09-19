@@ -65,6 +65,7 @@ def Write(name, samples, loudness):
     ready = np.clip(Level(samples, loudness), -1.0, 1.0)
     frames = (ready * 32000.0).astype(np.int16)
     path = os.path.join(AUDIO, name)
+    os.makedirs(os.path.dirname(path), exist_ok=True)
     with wave.open(path, 'wb') as out:
         out.setnchannels(1)
         out.setsampwidth(2)
@@ -73,6 +74,24 @@ def Write(name, samples, loudness):
 
     print('built %s  %.2f sec  rms %.4f  peak %.3f' % (
         name, len(frames) / float(RATE), np.sqrt((ready ** 2).mean()), np.abs(ready).max()))
+
+
+def Step(seed, bodyHz, length=0.16, snap=0.012, decay=0.045):
+    """Шаг по твёрдому полу: короткий щелчок каблука и глухое тело удара.
+
+    Записи не берём - шаг звучит три раза в секунду, и любая характерная
+    запись за минуту игры превращается в стук дятла. Синтез даёт ровно
+    столько, сколько нужно: слышно, что кто-то идёт, и ничего сверх того.
+    """
+    rng = np.random.default_rng(seed)
+    count = int(RATE * length)
+    noise = rng.normal(0.0, 1.0, count)
+    time = np.arange(count) / float(RATE)
+
+    heel = noise * np.exp(-time / snap)
+    body = Resonate(noise, bodyHz, bodyHz * 0.85, 90.0) * np.exp(-time / decay)
+
+    return Fade(heel * 0.35 + body, 0.001, 0.05)
 
 
 def Fold(name, source):
@@ -187,3 +206,7 @@ if __name__ == '__main__':
     Write('car_engine.wav', Engine(), 0.075)
     Write('car_skid.wav', Skid(), 0.085)
     Fold('hurt.wav', 'hurt_stereo.wav')
+
+    # Разные варианты, чтобы подряд идущие шаги не читались петлёй.
+    for index, (seed, bodyHz) in enumerate([(11, 190.0), (23, 165.0), (37, 210.0), (51, 150.0)], start=1):
+        Write(os.path.join('Steps', 'step_%d.wav' % index), Step(seed, bodyHz), 0.035)

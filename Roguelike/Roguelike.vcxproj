@@ -152,6 +152,8 @@
         <ClCompile Include="Level\DeveloperLevel.cpp"/>
         <ClCompile Include="Characters\CharacterFactory.cpp"/>
         <ClCompile Include="Characters\FootstepComponent.cpp"/>
+        <ClCompile Include="Speech\SpeechCatalog.cpp"/>
+        <ClCompile Include="Speech\SpeechCatalogLoader.cpp"/>
         <ClCompile Include="Characters\SettleComponent.cpp"/>
         <ClCompile Include="Enemies\Enemy.cpp"/>
         <ClCompile Include="Enemies\EnemyAttackComponent.cpp"/>
@@ -332,6 +334,8 @@
         <ClInclude Include="Fx\EffectObject.h"/>
         <ClInclude Include="Characters\FootstepComponent.h"/>
         <ClInclude Include="Characters\Footsteps.h"/>
+        <ClInclude Include="Speech\SpeechCatalog.h"/>
+        <ClInclude Include="Speech\SpeechCatalogLoader.h"/>
         <ClInclude Include="Fx\WorldSound.h"/>
         <ClInclude Include="Fx\Fx.h"/>
         <ClInclude Include="Fx\Shake.h"/>

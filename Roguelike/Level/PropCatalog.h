@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Traps.h"
+
 #include <istream>
 #include <string>
 #include <SFML/Graphics/Rect.hpp>
@@ -32,6 +34,8 @@ namespace RoguelikeGame
         bool isCover = false;
         bool isPanel = false;
         bool leavesWreck = false;
+        TrapKind trapKind = TrapKind::None;
+        float trapAmount = 0.f;
         float jitterDegrees = 0.f;
         float burnTime = 0.f;
         float burnSpread = 0.f;
@@ -41,6 +45,7 @@ namespace RoguelikeGame
         bool IsDestructible() const;
         bool IsExplosive() const;
         bool IsOpenable() const;
+        bool IsTrap() const;
         bool HasFrame() const;
         bool HasSpentFrame() const;
 

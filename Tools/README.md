@@ -25,7 +25,8 @@ pip install numpy pillow soundfile
 | `Sprites/make_props_bridge.py` | `props_bridge.png` - машины и дорожное | `Sprites/vendor/kenney_racing.zip` |
 | `Sprites/make_fire.py` | `fire.png` - 8 больших кадров пламени и 8 мелких | ничего, рисуется кодом |
 | `Sprites/make_smoke.py` | `smoke.png` - лента из 6 кадров | ничего, рисуется кодом |
-| `Sprites/make_fixtures.py` | `fixtures.png` - 5 кадров люка и 2 рычага | ничего, рисуется кодом |
+| `Sprites/make_fixtures.py` | `fixtures.png` - 5 кадров люка, 2 рычага и 2 плитки | ничего, рисуется кодом |
+| `Sprites/make_traps.py` | `traps.png` - шипы и растяжка, по два кадра | ничего, рисуется кодом |
 
 ```bash
 python Tools/Sprites/make_tileset.py street
@@ -44,6 +45,12 @@ python Tools/Audio/make_fixture_sfx.py
 ```
 
 Собирает `door_open.wav`, `lever.wav`, `hatch_open.wav`, `car_engine.wav` и `car_skid.wav` из записей в `Audio/Source`. Каждый файл приводится к заданной громкости с потолком по пику, чтобы механизмы не перекрикивали остальной звук.
+
+```bash
+python Tools/Audio/make_trap_sfx.py
+```
+
+Делает `trap_spikes.wav` и `trap_wire.wav` из ничего: затухающие тоны с подмесью шума в атаке. Исходники ему не нужны - хватает numpy.
 
 Он же собирает шаги - `Steps/step_1.wav` и далее. Вариантов несколько, потому что шаг звучит по три раза в секунду и один-единственный файл за минуту игры превращается в стук дятла. Записей не берём: синтез даёт ровно столько, сколько нужно - слышно, что кто-то идёт, и ничего сверх того.
 

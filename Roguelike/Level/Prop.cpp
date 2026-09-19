@@ -12,6 +12,10 @@
 #include "LootDrop.h"
 #include "Noise.h"
 #include "PropVisualComponent.h"
+#include "TrapComponent.h"
+#include "TreadComponent.h"
+#include "WorldSound.h"
+#include <AudioComponent.h>
 #include <BoxColliderComponent.h>
 #include "LevelGrid.h"
 #include "PathService.h"
@@ -82,6 +86,27 @@ namespace RoguelikeGame
                 visual->ShowSpent();
                 DropLoot(lootTable, gameObject, place);
             });
+        }
+
+        // Ловушка не разбирает, кто наступил: охранника можно вывести на шипы.
+        void AddTrap(XYZEngine::GameObject* gameObject, const PropDefinition& definition, PropVisualComponent* visual)
+        {
+            auto pad = gameObject->AddComponent<XYZEngine::BoxColliderComponent>();
+            pad->SetSize(definition.size, definition.Height());
+            pad->SetTrigger(true);
+
+            auto tread = gameObject->AddComponent<TreadComponent>();
+            tread->SetPad(pad);
+
+            auto audio = gameObject->AddComponent<XYZEngine::AudioComponent>();
+            PlaceInWorld(audio);
+
+            auto trap = gameObject->AddComponent<TrapComponent>();
+            trap->SetKind(definition.trapKind);
+            trap->SetAmount(definition.trapAmount);
+            trap->SetVisual(visual);
+            trap->SetAudio(audio);
+            trap->SetTread(tread);
         }
 
         void AddDestructible(XYZEngine::GameObject* gameObject, const PropDefinition& definition, PropVisualComponent* visual)
@@ -195,6 +220,11 @@ namespace RoguelikeGame
         {
             visual->SetSpentColor(definition.openedColor);
             AddContainer(gameObject, definition, items, visual);
+        }
+
+        if (definition.IsTrap())
+        {
+            AddTrap(gameObject, definition, visual);
         }
 
         if (definition.IsDestructible())

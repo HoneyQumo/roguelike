@@ -3,6 +3,7 @@
 #include "FactionComponent.h"
 #include "Openable.h"
 #include "PlateComponent.h"
+#include "TreadComponent.h"
 #include <BoxColliderComponent.h>
 #include <GameWorld.h>
 #include <RigidbodyComponent.h>
@@ -35,9 +36,12 @@ namespace
 			pad->SetSize(TILE, TILE);
 			pad->SetTrigger(true);
 
+			auto tread = object->AddComponent<RoguelikeGame::TreadComponent>();
+			tread->SetPad(pad);
+
 			plate = object->AddComponent<PlateComponent>();
 			plate->SetSwitchId("vault");
-			plate->SetPad(pad);
+			plate->SetTread(tread);
 		}
 
 		void TearDown() override { GameWorld::Instance()->Clear(); }

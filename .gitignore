@@ -8,6 +8,7 @@ x86
 **/log.txt
 **/logger_benchmark.txt
 *.stackdump
+__pycache__/
 
 # NuGet packages restored on build
 packages/

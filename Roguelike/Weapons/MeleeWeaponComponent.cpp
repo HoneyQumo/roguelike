@@ -305,7 +305,9 @@ namespace RoguelikeGame
                 ? target.gameObject->GetTransform()->GetForward()
                 : Vector2Df{0.f, 0.f};
 
-            bool isCritical = IsBackstab(targetForward, hitDirection);
+            // Крит в спину - про того, у кого есть спина. У ящика её нет, а поворот
+            // есть, и без этой проверки урон по нему зависел от того, с какой диагонали подошли.
+            bool isCritical = target.faction != Faction::Neutral && IsBackstab(targetForward, hitDirection);
 
             source.position = target.position;
             source.direction = hitDirection;

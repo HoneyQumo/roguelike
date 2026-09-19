@@ -113,6 +113,9 @@ namespace RoguelikeGame
             }
         }
 
+        // У засады нет координат, только имя зоны: поворот её не касается.
+        moved.ambushes = room.ambushes;
+
         for (const ZonePlacement& zone : room.zones)
         {
             Placement to = Move({zone.column, zone.row}, width, height, turns, isMirrored);

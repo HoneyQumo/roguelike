@@ -14,6 +14,7 @@ namespace RoguelikeGame
     const std::string WAVES_SECTION = "waves";
     const std::string PURSUIT_SECTION = "pursuit";
     const std::string OVERLAY_SECTION = "overlay";
+    const std::string AMBUSH_SECTION = "ambush";
     const std::string WAVE_KEYWORD = "wave";
     const std::string STYLE_KEYWORD = "style";
     const std::string LEVEL_SECTION = "level";
@@ -48,11 +49,7 @@ namespace RoguelikeGame
     {
         LevelData levelData;
         Legend legend = GetDefaultLegend();
-        bool isLegendSection = false;
-        bool isLevelSection = false;
-        bool isWavesSection = false;
-        bool isPursuitSection = false;
-        bool isOverlaySection = false;
+        Section section = Section::Map;
 
         std::string line;
         int lineNumber = 0;
@@ -75,87 +72,59 @@ namespace RoguelikeGame
                 continue;
             }
 
-            if (IsSection(line, LEVEL_SECTION))
+            // Своя легенда дополняет стандартную, а не затирает: забытый символ
+            // проваливался в Gap, который даже обзор не закрывает.
+            // Объявленный символ по-прежнему перекрывает стандартный - запись идёт позже.
+            const std::pair<const std::string*, Section> sections[] = {
+                {&LEVEL_SECTION, Section::Level},
+                {&LEGEND_SECTION, Section::Legend},
+                {&WAVES_SECTION, Section::Waves},
+                {&AMBUSH_SECTION, Section::Ambush},
+                {&PURSUIT_SECTION, Section::Pursuit},
+                {&OVERLAY_SECTION, Section::Overlay},
+                {&MAP_SECTION, Section::Map},
+            };
+
+            bool isHeader = false;
+            for (const auto& known : sections)
             {
-                isLevelSection = true;
-                isLegendSection = false;
-                continue;
+                if (IsSection(line, *known.first))
+                {
+                    section = known.second;
+                    isHeader = true;
+                    break;
+                }
             }
-            if (IsSection(line, LEGEND_SECTION))
+
+            if (isHeader)
             {
-                // Своя легенда дополняет стандартную, а не затирает: забытый символ
-                // проваливался в Gap, который даже обзор не закрывает.
-                // Объявленный символ по-прежнему перекрывает стандартный - запись идёт позже.
-                isLegendSection = true;
-                isLevelSection = false;
-                continue;
-            }
-            if (IsSection(line, WAVES_SECTION))
-            {
-                isWavesSection = true;
-                isPursuitSection = false;
-                isLegendSection = false;
-                isLevelSection = false;
-                continue;
-            }
-            if (IsSection(line, PURSUIT_SECTION))
-            {
-                isPursuitSection = true;
-                isWavesSection = false;
-                isLegendSection = false;
-                isLevelSection = false;
-                continue;
-            }
-            if (IsSection(line, MAP_SECTION))
-            {
-                isLegendSection = false;
-                isLevelSection = false;
-                isWavesSection = false;
-                isPursuitSection = false;
-                isOverlaySection = false;
-                continue;
-            }
-            if (IsSection(line, OVERLAY_SECTION))
-            {
-                isOverlaySection = true;
-                isLegendSection = false;
-                isLevelSection = false;
-                isWavesSection = false;
-                isPursuitSection = false;
                 continue;
             }
 
-            if (isLevelSection)
+            switch (section)
             {
+            case Section::Level:
                 ReadInfoLine(line, lineNumber, levelData.info);
-                continue;
-            }
-
-            if (isLegendSection)
-            {
+                break;
+            case Section::Legend:
                 ReadLegendLine(line, lineNumber, legend);
-                continue;
-            }
-
-            if (isWavesSection)
-            {
+                break;
+            case Section::Waves:
                 ReadWaveLine(line, lineNumber, legend, levelData);
-                continue;
-            }
-
-            if (isPursuitSection)
-            {
+                break;
+            case Section::Ambush:
+                ReadAmbushLine(line, lineNumber, legend, levelData);
+                break;
+            case Section::Pursuit:
                 ReadPursuitLine(line, lineNumber, levelData.pursuit);
-                continue;
-            }
-
-            if (isOverlaySection)
-            {
+                break;
+            case Section::Overlay:
                 ReadOverlayLine(line, legend, levelData);
-                continue;
+                break;
+            case Section::Map:
+                ReadMapLine(line, legend, levelData);
+                break;
             }
-
-            ReadMapLine(line, legend, levelData);
         }
 
         levelData.height = static_cast<int>(levelData.tiles.size());
@@ -285,32 +254,12 @@ namespace RoguelikeGame
     *	Строка волны: wave <пауза> <символ><сколько> ...
     *	Символы берутся из легенды уровня и обязаны быть вражьими.
     */
-    void LevelLoader::ReadWaveLine(const std::string& line, int lineNumber, const Legend& legend, LevelData& levelData)
+    // Группы «символ и сколько» одинаковы у волны и у засады: разбор общий.
+    std::vector<WaveEntry> LevelLoader::ReadWaveGroups(std::istringstream& stream, int lineNumber, const Legend& legend)
     {
-        std::istringstream stream(Trim(line));
-        std::string keyword;
-        stream >> keyword;
-
-        if (keyword == STYLE_KEYWORD)
-        {
-            ReadFightStyle(stream, lineNumber, levelData.wavesStyle);
-            return;
-        }
-
-        if (keyword != WAVE_KEYWORD)
-        {
-            LOG_ERROR("Wave line " + std::to_string(lineNumber) + " does not start with " + WAVE_KEYWORD);
-            throw std::runtime_error("Unknown wave line");
-        }
-
-        WaveSpec wave;
-        if (!(stream >> wave.delay) || wave.delay < 0.f)
-        {
-            LOG_ERROR("Wave line " + std::to_string(lineNumber) + " has no delay");
-            throw std::runtime_error("Wave line has no delay");
-        }
-
+        std::vector<WaveEntry> entries;
         std::string group;
+
         while (stream >> group)
         {
             if (group.size() < 2)
@@ -348,14 +297,65 @@ namespace RoguelikeGame
                 throw std::runtime_error("Wave group count must be positive");
             }
 
-            wave.entries.push_back({found->second.tile, count});
+            entries.push_back({found->second.tile, count});
         }
 
-        if (wave.entries.empty())
+        if (entries.empty())
         {
             LOG_ERROR("Wave line " + std::to_string(lineNumber) + " is empty");
             throw std::runtime_error("Wave has no enemies");
         }
+
+        return entries;
+    }
+
+    void LevelLoader::ReadAmbushLine(const std::string& line, int lineNumber, const Legend& legend, LevelData& levelData)
+    {
+        std::istringstream stream(Trim(line));
+
+        AmbushSpec ambush;
+        if (!(stream >> ambush.zoneId))
+        {
+            LOG_ERROR("Ambush line " + std::to_string(lineNumber) + " has no zone");
+            throw std::runtime_error("Ambush line has no zone");
+        }
+
+        if (!(stream >> ambush.delay) || ambush.delay < 0.f)
+        {
+            LOG_ERROR("Ambush line " + std::to_string(lineNumber) + " has no delay");
+            throw std::runtime_error("Ambush line has no delay");
+        }
+
+        ambush.entries = ReadWaveGroups(stream, lineNumber, legend);
+        levelData.ambushes.push_back(std::move(ambush));
+    }
+
+    void LevelLoader::ReadWaveLine(const std::string& line, int lineNumber, const Legend& legend, LevelData& levelData)
+    {
+        std::istringstream stream(Trim(line));
+        std::string keyword;
+        stream >> keyword;
+
+        if (keyword == STYLE_KEYWORD)
+        {
+            ReadFightStyle(stream, lineNumber, levelData.wavesStyle);
+            return;
+        }
+
+        if (keyword != WAVE_KEYWORD)
+        {
+            LOG_ERROR("Wave line " + std::to_string(lineNumber) + " does not start with " + WAVE_KEYWORD);
+            throw std::runtime_error("Unknown wave line");
+        }
+
+        WaveSpec wave;
+        if (!(stream >> wave.delay) || wave.delay < 0.f)
+        {
+            LOG_ERROR("Wave line " + std::to_string(lineNumber) + " has no delay");
+            throw std::runtime_error("Wave line has no delay");
+        }
+
+        wave.entries = ReadWaveGroups(stream, lineNumber, legend);
 
         levelData.waves.push_back(std::move(wave));
     }

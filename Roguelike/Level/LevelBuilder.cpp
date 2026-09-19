@@ -22,6 +22,7 @@
 #include "FogOfWar.h"
 #include "FogRevealComponent.h"
 #include "PursuitComponent.h"
+#include "AmbushComponent.h"
 #include "WaveDirectorComponent.h"
 #include "LevelExit.h"
 #include "LevelExitComponent.h"
@@ -187,6 +188,7 @@ namespace RoguelikeGame
         std::vector<DoorComponent*> doors = BuildDoors(levelData, items, level);
         int fixturesCount = BuildFixtures(levelData, level, doors);
         int wavesCount = BuildWaves(levelData, level);
+        int ambushCount = BuildAmbushes(levelData, zones, level);
         int pursuitCount = BuildPursuit(levelData, level);
 
         // Только теперь известно, кто сторожит выход: и босс, и волны, и люк
@@ -202,6 +204,7 @@ namespace RoguelikeGame
             + ", doors " + std::to_string(doors.size())
             + ", fixtures " + std::to_string(fixturesCount)
             + ", waves " + std::to_string(wavesCount)
+            + ", ambushes " + std::to_string(ambushCount)
             + ", pursuit " + std::to_string(pursuitCount)
             + ", asleep " + std::to_string(rooms != nullptr ? rooms->GetSleepingCount() : 0));
 
@@ -461,6 +464,63 @@ namespace RoguelikeGame
             + std::to_string(points.size()) + " points");
 
         return static_cast<int>(levelData.waves.size());
+    }
+
+    /**
+    *	Засада берёт те точки появления, что лежат внутри её зоны: иначе
+    *	враги вышли бы с другого конца карты и засадой бы не были.
+    */
+    int LevelBuilder::BuildAmbushes(const LevelData& levelData, const std::vector<LevelZone>& zones, Level& level)
+    {
+        int ready = 0;
+
+        for (const AmbushSpec& spec : levelData.ambushes)
+        {
+            auto zone = std::find_if(zones.begin(), zones.end(),
+                [&spec](const LevelZone& known) { return known.id == spec.zoneId; });
+
+            if (zone == zones.end())
+            {
+                LOG_ERROR("Ambush points at a zone that is not on the level: " + spec.zoneId);
+                continue;
+            }
+
+            std::vector<XYZEngine::Vector2Df> points;
+            for (int row = zone->minRow; row <= zone->maxRow; row++)
+            {
+                for (int column = zone->minColumn; column <= zone->maxColumn; column++)
+                {
+                    if (TileAt(levelData, column, row) == TileType::WaveSpawn)
+                    {
+                        points.push_back(TileToWorldPosition(column, row, levelData.height));
+                    }
+                }
+            }
+
+            if (points.empty())
+            {
+                LOG_ERROR("Ambush in zone " + spec.zoneId + " has no spawn points inside it");
+                continue;
+            }
+
+            auto gameObject = XYZEngine::GameWorld::Instance()->CreateGameObject(AMBUSH_OBJECT_PREFIX + spec.zoneId);
+            auto ambush = gameObject->AddComponent<AmbushComponent>();
+            ambush->SetTargetName(PLAYER_OBJECT_NAME);
+            ambush->SetZone(*zone);
+            ambush->SetSpec(spec);
+            ambush->SetPoints(std::move(points));
+
+            FightStyle style = levelData.wavesStyle;
+            ambush->SetSpawner([style](TileType enemy, const XYZEngine::Vector2Df& place)
+            {
+                return SpawnHunter(enemy, place, style);
+            });
+
+            level.Add(gameObject);
+            ready++;
+        }
+
+        return ready;
     }
 
     int LevelBuilder::BuildFixtures(const LevelData& levelData, Level& level, const std::vector<DoorComponent*>& doors)

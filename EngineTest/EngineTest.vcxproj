@@ -74,6 +74,7 @@
     <ClCompile Include="Separation.tests.cpp" />
     <ClCompile Include="PropAlign.tests.cpp" />
     <ClCompile Include="PropAngle.tests.cpp" />
+    <ClCompile Include="Ambush.tests.cpp" />
     <ClCompile Include="Plate.tests.cpp" />
     <ClCompile Include="Trap.tests.cpp" />
     <ClCompile Include="Overlay.tests.cpp" />
@@ -317,6 +318,9 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\Roguelike\Level\TreadComponent.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Roguelike\Level\AmbushComponent.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\Roguelike\Level\SwitchComponent.cpp">

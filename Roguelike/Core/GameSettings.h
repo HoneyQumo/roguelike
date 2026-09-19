@@ -645,6 +645,7 @@ namespace RoguelikeGame
     constexpr auto PLAYER_OBJECT_NAME = "Player";
     constexpr auto CAMERA_OBJECT_NAME = "Camera";
     constexpr auto DOOR_OBJECT_PREFIX = "Door_";
+    constexpr auto AMBUSH_OBJECT_PREFIX = "Ambush_";
     constexpr auto ROOMS_OBJECT_NAME = "Rooms";
     constexpr int ROOM_WAKE_AHEAD = 1;
     constexpr int ROOM_NEIGHBOUR_GAP = 1;

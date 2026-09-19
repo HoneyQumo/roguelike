@@ -1,6 +1,7 @@
 #include "LevelIntegrity.h"
 #include "ItemCatalog.h"
 #include "PropCatalog.h"
+#include "LevelZones.h"
 #include <algorithm>
 #include <map>
 #include <set>
@@ -318,6 +319,36 @@ namespace RoguelikeGame
                 }
             }
         }
+
+    // Засада без точек внутри своей зоны молчит на карте, и заметить это можно
+    // только в бою, которого не случилось.
+    void CheckAmbushes(const LevelData& levelData, LevelReport& report)
+    {
+        std::vector<LevelZone> zones = BuildZones(levelData);
+
+        for (const AmbushSpec& ambush : levelData.ambushes)
+        {
+            auto zone = std::find_if(zones.begin(), zones.end(),
+                [&ambush](const LevelZone& known) { return known.id == ambush.zoneId; });
+
+            bool hasSpot = false;
+            if (zone != zones.end())
+            {
+                for (int row = zone->minRow; row <= zone->maxRow && !hasSpot; row++)
+                {
+                    for (int column = zone->minColumn; column <= zone->maxColumn && !hasSpot; column++)
+                    {
+                        hasSpot = TileAt(levelData, column, row) == TileType::WaveSpawn;
+                    }
+                }
+            }
+
+            if (!hasSpot)
+            {
+                report.issues.push_back({LevelFault::AmbushWithoutSpot, 0, 0, ambush.zoneId});
+            }
+        }
+    }
     }
 
     const char* NameOf(LevelFault fault)
@@ -417,6 +448,7 @@ namespace RoguelikeGame
             reached = Walk(levelData, start, doors, opened, sealed);
         }
 
+        CheckAmbushes(levelData, report);
         CheckDoors(levelData, opened, reached, report);
         CheckReached(levelData, reached, sealed, report);
         CheckExit(levelData, reached, report);

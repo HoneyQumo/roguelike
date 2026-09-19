@@ -193,6 +193,15 @@ namespace RoguelikeGame
 
             std::string place = room.id + "@" + std::to_string(room.column) + ";" + std::to_string(room.row);
 
+            // Засада ссылается на зону своей комнаты, а зоны при сборке
+            // переименовываются - значит, и ссылка переименовывается с ними.
+            for (const AmbushSpec& ambush : room.layout.ambushes)
+            {
+                AmbushSpec moved = ambush;
+                moved.zoneId = ambush.zoneId == WHOLE_ROOM ? place : place + ":" + ambush.zoneId;
+                act.ambushes.push_back(std::move(moved));
+            }
+
             if (room.layout.zones.empty())
             {
                 act.zones.push_back({room.column, room.row, place});

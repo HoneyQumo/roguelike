@@ -72,6 +72,7 @@ namespace RoguelikeGame
         void SubscribeExit();
         void SubscribeBoss();
         void SubscribeWaves();
+        void SubscribeAmbushes();
         void SubscribePursuit();
         void SubscribeEscape();
         void SubscribeLevers();

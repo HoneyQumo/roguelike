@@ -8,6 +8,7 @@
 #include "LevelZones.h"
 #include <GameWorld.h>
 #include <map>
+#include <vector>
 #include <sstream>
 
 using RoguelikeGame::AmbushComponent;
@@ -157,6 +158,24 @@ TEST_F(AmbushTest, LeavingTheRoomDoesNotCallItOff)
 	Run(1.5f);
 
 	EXPECT_TRUE(ambush->IsSprung());
+}
+
+// Рождённого врага засада отдаёт наружу, иначе его некому положить в уровень
+// и он переживёт смену локации.
+TEST_F(AmbushTest, EveryoneWhoCameOutIsHandedOver)
+{
+	std::vector<GameObject*> handed;
+	ambush->SubscribeEnemySpawned([&handed](GameObject* enemy) { handed.push_back(enemy); });
+
+	StandAt(6, 1);
+	Run(1.5f);
+
+	ASSERT_TRUE(ambush->IsSprung());
+	EXPECT_EQ(static_cast<int>(handed.size()), ambush->GetSpawnedCount());
+	for (GameObject* enemy : handed)
+	{
+		EXPECT_NE(enemy, nullptr);
+	}
 }
 
 TEST(AmbushFormatTest, TheAmbushLineReadsZoneDelayAndEnemies)

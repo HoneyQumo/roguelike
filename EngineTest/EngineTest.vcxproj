@@ -149,6 +149,14 @@
     <ClCompile Include="SourceEncoding.tests.cpp" />
     <ClCompile Include="TextWrap.tests.cpp" />
     <ClCompile Include="SpeechCatalog.tests.cpp" />
+    <ClCompile Include="SubtitleQueue.tests.cpp" />
+    <ClCompile Include="SubtitleScreen.tests.cpp" />
+    <ClCompile Include="..\Roguelike\Ui\SubtitleScreen.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Roguelike\Speech\SubtitleQueue.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\Roguelike\Speech\SpeechCatalog.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>

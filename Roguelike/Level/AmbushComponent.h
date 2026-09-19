@@ -43,6 +43,9 @@ namespace RoguelikeGame
         void Arm();
         void Spring();
 
+        // Рождённого врага надо отдать наружу, а не только посчитать: иначе его
+        // некому положить в уровень, и он переживёт смену локации.
+        XYZEngine::SubscriptionId SubscribeEnemySpawned(std::function<void(XYZEngine::GameObject*)> onEnemySpawned);
         XYZEngine::SubscriptionId SubscribeSprung(std::function<void(int)> onSprung);
 
     private:
@@ -58,6 +61,7 @@ namespace RoguelikeGame
         int spawnedCount = 0;
         std::size_t nextPoint = 0;
 
+        XYZEngine::EventList<XYZEngine::GameObject*> enemySpawnedEvent;
         XYZEngine::EventList<int> sprungEvent;
 
         bool IsTargetInside() const;

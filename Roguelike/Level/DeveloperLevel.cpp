@@ -25,6 +25,7 @@
 #include "PlayerHudBinderComponent.h"
 #include "EscapeCarComponent.h"
 #include "PursuitComponent.h"
+#include "AmbushComponent.h"
 #include "WaveDirectorComponent.h"
 #include "Fx.h"
 #include "LevelExitComponent.h"
@@ -109,6 +110,7 @@ namespace RoguelikeGame
         SubscribeExit();
         SubscribeBoss();
         SubscribeWaves();
+        SubscribeAmbushes();
         SubscribePursuit();
         SubscribeEscape();
         SubscribeLevers();
@@ -206,6 +208,21 @@ namespace RoguelikeGame
         if (brain != nullptr)
         {
             brain->SubscribeMinionSpawned([this](XYZEngine::GameObject* minion) { level.Add(minion); });
+        }
+    }
+
+    void DeveloperLevel::SubscribeAmbushes()
+    {
+        for (XYZEngine::GameObject* object : level.GetObjects())
+        {
+            auto ambush = object->GetComponent<AmbushComponent>();
+            if (ambush == nullptr)
+            {
+                continue;
+            }
+
+            // Врагов засады кладём в уровень, иначе они переживут смену локации.
+            ambush->SubscribeEnemySpawned([this](XYZEngine::GameObject* enemy) { level.Add(enemy); });
         }
     }
 
@@ -913,6 +930,7 @@ namespace RoguelikeGame
         SubscribeExit();
         SubscribeBoss();
         SubscribeWaves();
+        SubscribeAmbushes();
         SubscribePursuit();
         SubscribeEscape();
         SubscribeLevers();

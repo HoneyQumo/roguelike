@@ -114,17 +114,27 @@ namespace RoguelikeGame
 
         for (const WaveEntry& entry : spec.entries)
         {
-            for (int born = 0; born < entry.count; born++)
+            for (int step = 0; step < entry.count; step++)
             {
-                if (spawner(entry.enemy, PickPoint()) != nullptr)
+                XYZEngine::GameObject* born = spawner(entry.enemy, PickPoint());
+                if (born == nullptr)
                 {
-                    spawnedCount++;
+                    continue;
                 }
+
+                spawnedCount++;
+                enemySpawnedEvent.Invoke(born);
             }
         }
 
         LOG_INFO("Ambush in zone " + spec.zoneId + " sprung: " + std::to_string(spawnedCount) + " came out");
         sprungEvent.Invoke(spawnedCount);
+    }
+
+    XYZEngine::SubscriptionId AmbushComponent::SubscribeEnemySpawned(
+        std::function<void(XYZEngine::GameObject*)> onEnemySpawned)
+    {
+        return enemySpawnedEvent.Subscribe(std::move(onEnemySpawned));
     }
 
     XYZEngine::SubscriptionId AmbushComponent::SubscribeSprung(std::function<void(int)> onSprung)

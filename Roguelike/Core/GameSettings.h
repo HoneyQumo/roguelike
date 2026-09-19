@@ -427,6 +427,10 @@ namespace RoguelikeGame
     constexpr float HOLD_NOISE_INTERVAL = 0.45f;
     constexpr float HOLD_NOISE_RADIUS = 360.f;
     constexpr float HOLD_NOISE_LOUDNESS = 0.6f;
+
+    // Тот же щелчок, что и у дёрнутого рычага, но тише: на повторе он
+    // читается трещоткой лебёдки, а в полную громкость забивал бы всё.
+    constexpr float HOLD_VOLUME = 0.45f * LEVER_VOLUME;
     constexpr float TRAP_VOLUME = 70.f;
     constexpr float HATCH_VOLUME = 70.f;
     constexpr auto DOOR_LOCKED_PREFIX = u8"Дверь заперта: нужен ";

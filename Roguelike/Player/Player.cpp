@@ -171,7 +171,21 @@ namespace RoguelikeGame
 
         auto bag = gameObject->AddComponent<InventoryComponent>();
         bag->SetCapacity(INVENTORY_CAPACITY);
-        gameObject->AddComponent<InteractionComponent>();
+        auto interaction = gameObject->AddComponent<InteractionComponent>();
+
+        // Руки у героя заняты, пока он держит механизм. Своей анимации для
+        // этого нет, а кадры перезарядки - это ровно «возится руками», и они
+        // уже в том же стиле. Нарисовать отдельный ряд можно, но пока незачем.
+        interaction->SubscribeHoldChanged([animation](float part)
+        {
+            if (part > 0.f)
+            {
+                animation->PlayReload();
+                return;
+            }
+
+            animation->StopReload();
+        });
 
         auto effects = gameObject->AddComponent<ItemEffectComponent>();
         effects->SetHandler(ItemEffectKind::Heal, [health](const ItemEffect& effect) -> ItemUseResult

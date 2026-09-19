@@ -101,6 +101,30 @@ namespace
 	};
 }
 
+// Пока держат - гремит толчками, а не сплошным потоком: сплошной
+// шум поднял бы этаж мгновенно.
+TEST_F(HoldToActTest, TheSwitchRattlesWhileItIsHeld)
+{
+	PressHold();
+	KeepHolding(0.9f);
+
+	EXPECT_GT(lever->GetHoldTicks(), 0);
+	EXPECT_LE(lever->GetHoldTicks(), 3) << "гремит слишком часто";
+}
+
+TEST_F(HoldToActTest, ABrokenHoldStopsTheRattle)
+{
+	PressHold();
+	KeepHolding(0.9f);
+	int rattles = lever->GetHoldTicks();
+	ASSERT_GT(rattles, 0);
+
+	Release();
+	KeepHolding(1.f);
+
+	EXPECT_EQ(lever->GetHoldTicks(), rattles);
+}
+
 // Мгновенный рычаг работает как работал: цена есть только там, где её задали.
 TEST_F(HoldToActTest, AnInstantLeverStillPullsOnOnePress)
 {

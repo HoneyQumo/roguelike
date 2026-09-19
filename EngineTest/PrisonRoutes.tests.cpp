@@ -67,25 +67,25 @@ namespace
 
 		ActRoutes::Closer Closer() { return ActRoutes::Closer(prison); }
 
-	void CloseQuietWay()
-	{
-		Closer().CloseDoor("door_drain");
-		Closer().DropPlate("door_drain");
-	}
+		void CloseQuietWay()
+		{
+			Closer().CloseDoor("door_drain");
+			Closer().DropPlate("door_drain");
+		}
 
-	void CloseKeyWay()
-	{
-		Closer().CloseDoor("door_gate");
-		Closer().DropLever("door_gate");
-		Closer().DropItem("key_gate");
-	}
+		void CloseKeyWay()
+		{
+			Closer().CloseDoor("door_gate");
+			Closer().DropLever("door_gate");
+			Closer().DropItem("key_gate");
+		}
 
-	void CloseLoudWay()
-	{
-		Closer().CloseProps("wall_cracked");
-	}
+		void CloseLoudWay()
+		{
+			Closer().CloseProps("wall_cracked");
+		}
 
-	ItemCatalog items;
+		ItemCatalog items;
 		PropCatalog props;
 		LevelData prison;
 	};
@@ -142,6 +142,34 @@ TEST_F(PrisonRoutesTest, TheLoudWayIsAWallToBreakWithABarrelBesideIt)
 	const RoguelikeGame::PropDefinition* fuel = props.Find("fuel_barrel");
 	ASSERT_NE(fuel, nullptr);
 	EXPECT_GT(fuel->blastDamage, definition->health) << "одной бочки должно хватать на стену";
+}
+
+// Бочка не единственный способ: хотя бы к одной створке пролома нужна
+// свободная клетка сверху, иначе здоровье стены ничего не значит - до неё не достать.
+TEST_F(PrisonRoutesTest, TheBreachCanBeShotAndNotOnlyBlownUp)
+{
+	ASSERT_TRUE(isFound) << previous.string();
+
+	bool reachable = false;
+	for (const auto& prop : prison.props)
+	{
+		if (prop.propId != "wall_cracked")
+		{
+			continue;
+		}
+
+		// Клетка над стеной свободна, если это пол и на нём ничего не стоит.
+		bool isFloor = TileAt(prison, prop.column, prop.row - 1) == TileType::Floor;
+		bool isClear = std::none_of(prison.props.begin(), prison.props.end(),
+			[&prop](const RoguelikeGame::PropPlacement& other)
+			{
+				return other.column == prop.column && other.row == prop.row - 1;
+			});
+
+		reachable = reachable || (isFloor && isClear);
+	}
+
+	EXPECT_TRUE(reachable) << "до пролома не достать ничем, кроме бочки";
 }
 
 // За проломом обязан быть пол, иначе сломанная стена ведёт в стену.

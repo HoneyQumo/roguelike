@@ -17,7 +17,8 @@ namespace RoguelikeGame
         Unreachable,
         NoExit,
         ExitUnreachable,
-        LockedOut
+        LockedOut,
+        AmbushWithoutSpot
     };
 
     struct FaultName
@@ -33,7 +34,8 @@ namespace RoguelikeGame
         {"Unreachable", LevelFault::Unreachable},
         {"NoExit", LevelFault::NoExit},
         {"ExitUnreachable", LevelFault::ExitUnreachable},
-        {"LockedOut", LevelFault::LockedOut}
+        {"LockedOut", LevelFault::LockedOut},
+        {"AmbushWithoutSpot", LevelFault::AmbushWithoutSpot}
     };
 
     const char* NameOf(LevelFault fault);

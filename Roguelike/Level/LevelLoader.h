@@ -33,11 +33,26 @@ namespace RoguelikeGame
 
         using Legend = std::map<char, LegendEntry>;
 
+        // Секция одна на строку: пока их было пять, каждая гасила остальные
+        // вручную, и шестая утонула бы в этом сама.
+        enum class Section
+        {
+            Map,
+            Level,
+            Legend,
+            Waves,
+            Ambush,
+            Pursuit,
+            Overlay
+        };
+
         static bool IsSection(const std::string& line, const std::string& sectionName);
         static void ReadInfoLine(const std::string& line, int lineNumber, LevelInfo& info);
         static void Validate(const LevelData& levelData, const std::string& sourceName);
         static void ReadLegendLine(const std::string& line, int lineNumber, Legend& legend);
         static void ReadWaveLine(const std::string& line, int lineNumber, const Legend& legend, LevelData& levelData);
+        static void ReadAmbushLine(const std::string& line, int lineNumber, const Legend& legend, LevelData& levelData);
+        static std::vector<WaveEntry> ReadWaveGroups(std::istringstream& stream, int lineNumber, const Legend& legend);
         static void ReadMapLine(const std::string& line, const Legend& legend, LevelData& levelData);
         static void ReadOverlayLine(const std::string& line, const Legend& legend, LevelData& levelData);
         static bool TryGetTileType(const std::string& name, TileType& tileType);

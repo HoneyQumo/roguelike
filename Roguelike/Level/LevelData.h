@@ -83,6 +83,21 @@ namespace RoguelikeGame
         int count = 0;
     };
 
+    /**
+    *	Засада: та же волна, но приходит не по расписанию, а когда игрок
+    *	вошёл в свою зону. Выход она не запирает - это неприятность, а не ворота.
+    *
+    *	Зона WHOLE_ROOM означает всю комнату целиком.
+    */
+    struct AmbushSpec
+    {
+        std::string zoneId;
+        float delay = 0.f;
+        std::vector<WaveEntry> entries;
+    };
+
+    inline const std::string WHOLE_ROOM = "*";
+
     struct WaveSpec
     {
         float delay = 0.f;
@@ -210,6 +225,7 @@ namespace RoguelikeGame
         std::vector<DoorPlacement> doors;
         std::vector<ZonePlacement> zones;
         std::vector<WaveSpec> waves;
+        std::vector<AmbushSpec> ambushes;
         FightStyle wavesStyle;
         PursuitSpec pursuit;
         std::vector<FixturePlacement> levers;

@@ -36,6 +36,7 @@ namespace RoguelikeGame
         static std::vector<DoorComponent*> BuildDoors(const LevelData& levelData, const ItemCatalog& items, Level& level);
         static int BuildFixtures(const LevelData& levelData, Level& level, const std::vector<DoorComponent*>& doors);
         static int BuildWaves(const LevelData& levelData, Level& level);
+        static int BuildAmbushes(const LevelData& levelData, const std::vector<LevelZone>& zones, Level& level);
         static int BuildPursuit(const LevelData& levelData, Level& level);
 
         // Точки и способ рождения общие: волна и погоня отличаются тем, когда звать, а не кого.

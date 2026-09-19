@@ -354,6 +354,10 @@ def Build(name):
     # Непрозрачны только нижние слои: накладке прозрачность и нужна.
     out[0:OVERLAY_ROW * TILE, ..., 3] = 255
 
+    # Верхние строки гасятся до прозрачности: иначе кадр, который никто
+    # не рисовал, остаётся чёрным квадратом и ждёт первого, кто его запросит.
+    out[OVERLAY_ROW * TILE:, ..., 3] = 0
+
     for frame in range(FLOOR_FRAMES):
         out[OVERLAY_ROW * TILE:(OVERLAY_ROW + 1) * TILE, frame * TILE:(frame + 1) * TILE] = \
             OverlayMarking(ramp['line'], frame % 2 == 1, frame >= 2)

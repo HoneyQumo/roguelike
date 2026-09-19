@@ -27,6 +27,7 @@ pip install numpy pillow soundfile
 | `Sprites/make_smoke.py` | `smoke.png` - лента из 6 кадров | ничего, рисуется кодом |
 | `Sprites/make_fixtures.py` | `fixtures.png` - 5 кадров люка, 2 рычага и 2 плитки | ничего, рисуется кодом |
 | `Sprites/make_traps.py` | `traps.png` - шипы и растяжка, по два кадра | ничего, рисуется кодом |
+| `Sprites/make_walls.py` | `walls.png` - треснувшая кладка и щебень на её месте | ничего, рисуется кодом |
 
 ```bash
 python Tools/Sprites/make_tileset.py street

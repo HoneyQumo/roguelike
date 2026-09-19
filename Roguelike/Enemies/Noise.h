@@ -1,5 +1,6 @@
 #pragma once
 
+#include <algorithm>
 #include <functional>
 #include <EventList.h>
 #include <Vector.h>
@@ -13,6 +14,12 @@ namespace XYZEngine
 namespace RoguelikeGame
 {
     constexpr float WALL_MUFFLE = 0.45f;
+    // Ниже этого звук уже не различить среди прочего: иначе шаг за тремя
+    // стенами формально слышно, хотя он не значит ничего.
+    constexpr float NOISE_HEARD_AT = 0.05f;
+    // На краю радиуса звук ещё слышен, но еле-еле: радиус обязан остаться
+    // тем, чем был, - границей слышимости, а не границей внимания.
+    constexpr float NOISE_EDGE_LOUDNESS = 0.1f;
     constexpr float SHOUT_RADIUS = 420.f;
     constexpr float RADIO_SHOUT_RADIUS = 1100.f;
 
@@ -25,7 +32,10 @@ namespace RoguelikeGame
     struct Noise
     {
         XYZEngine::Vector2Df position = {0.f, 0.f};
+        // Радиус - докуда дотягивается, сила - насколько громко у источника.
+        // Слить в одно нельзя: у глушителя радиус мал, но это не шёпот.
         float radius = 0.f;
+        float loudness = 1.f;
         Faction from = Faction::Neutral;
         NoiseKind kind = NoiseKind::Disturbance;
     };
@@ -51,21 +61,36 @@ namespace RoguelikeGame
         return left;
     }
 
-    inline bool IsHeard(const Noise& noise, const XYZEngine::Vector2Df& listener, Faction listenerSide, int wallsBetween = 0)
+    // 0 - не слышно вовсе, 1 - вплотную к источнику полной силы.
+    inline float LoudnessAt(const Noise& noise, const XYZEngine::Vector2Df& listener, Faction listenerSide,
+        int wallsBetween = 0)
     {
-        if (noise.radius <= 0.f)
+        if (noise.radius <= 0.f || noise.loudness <= 0.f || !ReachesSide(noise, listenerSide))
         {
-            return false;
-        }
-
-        if (!ReachesSide(noise, listenerSide))
-        {
-            return false;
+            return 0.f;
         }
 
         float reach = MuffledRadius(noise.radius, wallsBetween);
+        if (reach <= 0.f)
+        {
+            return 0.f;
+        }
 
-        return (listener - noise.position).GetLengthSquared() <= reach * reach;
+        float distance = (listener - noise.position).GetLength();
+        if (distance > reach)
+        {
+            return 0.f;
+        }
+
+        float muffle = reach / noise.radius;
+        float fade = 1.f - (1.f - NOISE_EDGE_LOUDNESS) * (distance / reach);
+
+        return std::min(noise.loudness * muffle * fade, 1.f);
+    }
+
+    inline bool IsHeard(const Noise& noise, const XYZEngine::Vector2Df& listener, Faction listenerSide, int wallsBetween = 0)
+    {
+        return LoudnessAt(noise, listener, listenerSide, wallsBetween) > NOISE_HEARD_AT;
     }
 
     void RaiseNoise(const Noise& noise, const XYZEngine::GameObject* except = nullptr);

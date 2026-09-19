@@ -193,7 +193,7 @@ namespace
 
 TEST_F(ThreatWatchTest, AHeardNoiseBecomesASourceAndFadesByItself)
 {
-	watch->Hear({0.f, 300.f});
+	watch->Hear({0.f, 300.f}, 1.f);
 	watch->Update(0.f);
 
 	ASSERT_EQ(watch->GetSources().size(), 1u);
@@ -211,7 +211,7 @@ TEST_F(ThreatWatchTest, ANoiseKeepsTheDirectionItCameFrom)
 {
 	Vector2Df stand = player->GetTransform()->GetWorldPosition();
 
-	watch->Hear({stand.x + 500.f, stand.y});
+	watch->Hear({stand.x + 500.f, stand.y}, 1.f);
 	watch->Update(0.f);
 
 	ASSERT_EQ(watch->GetSources().size(), 1u);
@@ -291,7 +291,7 @@ TEST_F(ThreatWatchTest, WithoutFogNothingIsMarkedAtAll)
 	RoguelikeGame::ChaseComponent* chase = CreateEnemy(400.f, 0.f);
 	chase->Provoke(player->GetTransform()->GetWorldPosition());
 
-	watch->Hear({player->GetTransform()->GetWorldPosition().x + 300.f, 0.f});
+	watch->Hear({player->GetTransform()->GetWorldPosition().x + 300.f, 0.f}, 1.f);
 	watch->Update(0.f);
 	ASSERT_FALSE(watch->GetSources().empty()) << "с туманом источников нет, проверять нечего";
 
@@ -307,7 +307,7 @@ TEST_F(ThreatWatchTest, NoiseHeardWithoutFogDoesNotComeBackWithIt)
 	Vector2Df stand = player->GetTransform()->GetWorldPosition();
 
 	FogOfWar::Reset(0, 0, 0);
-	watch->Hear({stand.x + 300.f, stand.y});
+	watch->Hear({stand.x + 300.f, stand.y}, 1.f);
 	watch->Update(0.f);
 	ASSERT_TRUE(watch->GetSources().empty());
 

@@ -5,6 +5,7 @@
 
 using RoguelikeGame::Faction;
 using RoguelikeGame::IsHeard;
+using RoguelikeGame::LoudnessAt;
 using RoguelikeGame::MuffledRadius;
 using RoguelikeGame::Noise;
 using RoguelikeGame::NoiseKind;
@@ -126,4 +127,62 @@ TEST(NoiseTest, EveryEnemyShoutsAndTheRadioShoutsFurther)
 	ASSERT_NE(radio, nullptr);
 	ASSERT_NE(grunt, nullptr);
 	EXPECT_GT(radio->shoutRadius, grunt->shoutRadius);
+}
+
+// Раньше шум на краю радиуса бил ровно так же, как в упор: слышно или нет,
+// середины не было.
+TEST(NoiseLoudnessTest, TheFartherTheQuieter)
+{
+	Noise shot = Shot(200.f);
+
+	float here = LoudnessAt(shot, {100.f, 100.f}, Faction::Enemy);
+	float halfway = LoudnessAt(shot, {100.f, 200.f}, Faction::Enemy);
+	float edge = LoudnessAt(shot, {100.f, 300.f}, Faction::Enemy);
+
+	EXPECT_FLOAT_EQ(here, 1.f);
+	EXPECT_GT(halfway, edge);
+	EXPECT_LT(halfway, here);
+	EXPECT_GT(edge, RoguelikeGame::NOISE_HEARD_AT);
+}
+
+TEST(NoiseLoudnessTest, BehindTheRadiusThereIsNothingToHear)
+{
+	EXPECT_FLOAT_EQ(LoudnessAt(Shot(200.f), {100.f, 301.f}, Faction::Enemy), 0.f);
+}
+
+// Сила отдельно от радиуса: шаг слышно недалеко и он тихий, у глушителя
+// радиус мал, но это не шёпот.
+TEST(NoiseLoudnessTest, AQuietSourceIsQuieterEverywhere)
+{
+	Noise loud = Shot(200.f);
+	Noise quiet = Shot(200.f);
+	quiet.loudness = 0.25f;
+
+	EXPECT_LT(LoudnessAt(quiet, {100.f, 100.f}, Faction::Enemy), LoudnessAt(loud, {100.f, 100.f}, Faction::Enemy));
+	EXPECT_LT(LoudnessAt(quiet, {100.f, 200.f}, Faction::Enemy), LoudnessAt(loud, {100.f, 200.f}, Faction::Enemy));
+}
+
+TEST(NoiseLoudnessTest, AWallTakesLoudnessAwayAndNotOnlyReach)
+{
+	Noise shot = Shot(400.f);
+
+	float open = LoudnessAt(shot, {100.f, 200.f}, Faction::Enemy, 0);
+	float behindWall = LoudnessAt(shot, {100.f, 200.f}, Faction::Enemy, 1);
+
+	EXPECT_GT(open, behindWall);
+	EXPECT_GT(behindWall, 0.f);
+}
+
+TEST(NoiseLoudnessTest, SilenceIsNotHeardAtAll)
+{
+	Noise mute = Shot(200.f);
+	mute.loudness = 0.f;
+
+	EXPECT_FLOAT_EQ(LoudnessAt(mute, {100.f, 100.f}, Faction::Enemy), 0.f);
+	EXPECT_FALSE(IsHeard(mute, {100.f, 100.f}, Faction::Enemy));
+}
+
+TEST(NoiseLoudnessTest, TheOwnSideStaysDeafToItsOwnNoise)
+{
+	EXPECT_FLOAT_EQ(LoudnessAt(Shot(200.f), {100.f, 100.f}, Faction::Player), 0.f);
 }

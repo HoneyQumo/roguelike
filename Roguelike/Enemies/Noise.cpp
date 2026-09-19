@@ -60,12 +60,13 @@ namespace RoguelikeGame
             XYZEngine::Vector2Df place = owner->GetTransform()->GetWorldPosition();
             int walls = LevelGrid::Current().CountWallsBetween(noise.position, place);
 
-            if (!IsHeard(noise, place, GetFactionOf(owner), walls))
+            float loudness = LoudnessAt(noise, place, GetFactionOf(owner), walls);
+            if (loudness <= NOISE_HEARD_AT)
             {
                 continue;
             }
 
-            listener->Hear(noise.position);
+            listener->Hear(noise.position, loudness);
             heard++;
         }
 

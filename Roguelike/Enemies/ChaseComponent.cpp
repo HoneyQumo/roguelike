@@ -44,15 +44,20 @@ namespace RoguelikeGame
 		}
 	}
 
-	void ChaseComponent::Hear(const Vector2Df& place)
+	void ChaseComponent::Hear(const Vector2Df& place, float loudness)
 	{
-		if (detectionRadius <= 0.f || alertTime <= 0.f || (health != nullptr && !health->IsAlive()))
+		if (detectionRadius <= 0.f || alertTime <= 0.f || loudness <= 0.f
+			|| (health != nullptr && !health->IsAlive()))
 		{
 			return;
 		}
 
-		TakePoint(place, alertTime);
-		awareness = std::max(awareness, AWARENESS_ALERT_AT);
+		// Прибавка поверх тревоги, а не присвоение: иначе очередь в упор
+		// равна одному далёкому выстрелу и до погони не доводит никогда.
+		float alerted = std::max(awareness, AWARENESS_ALERT_AT);
+
+		TakePoint(place, alertTime * loudness);
+		awareness = std::min(alerted + AWARENESS_NOISE_GAIN * loudness, AWARENESS_PROVOKE_AT);
 	}
 
 	void ChaseComponent::Provoke(const Vector2Df& place)

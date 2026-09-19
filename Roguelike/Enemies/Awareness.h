@@ -12,6 +12,9 @@ namespace RoguelikeGame
     constexpr float AWARENESS_MOVING_SPEED = 40.f;
     constexpr float AWARENESS_SIDE_GAIN = 1.f;
     constexpr float AWARENESS_BACK_GAIN = 0.7f;
+    // Услышанный шум поднимает до тревоги, как и раньше, а громкость
+    // добавляет сверху: в упор - до провокации, издалека - едва заметно.
+    constexpr float AWARENESS_NOISE_GAIN = 1.f;
 
     enum class AwarenessState
     {

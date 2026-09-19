@@ -711,7 +711,7 @@ TEST_F(ChaseComponentTest, HeardNoiseSendsTheEnemyToLook)
 	Run(0.1f);
 	ASSERT_FALSE(chase->IsEngaged());
 
-	chase->Hear(At(3, 1));
+	chase->Hear(At(3, 1), 1.f);
 	Run(0.3f);
 
 	EXPECT_TRUE(chase->IsEngaged());
@@ -1025,7 +1025,7 @@ TEST_F(ChaseComponentTest, ALongDetourIsWalkedToTheEnd)
 	ChaseComponent* chase = CreateEnemy(1, 1);
 	GameObject* enemy = chase->GetGameObject();
 
-	chase->Hear(At(1, 3));
+	chase->Hear(At(1, 3), 1.f);
 	Run(9.f);
 
 	float left = (enemy->GetTransform()->GetWorldPosition() - At(1, 3)).GetLength();
@@ -1042,7 +1042,7 @@ TEST_F(ChaseComponentTest, TheEnemyWalkingToANoiseLooksAlongTheRoad)
 	ChaseComponent* chase = CreateEnemy(1, 1);
 	GameObject* enemy = chase->GetGameObject();
 
-	chase->Hear(At(1, 3));
+	chase->Hear(At(1, 3), 1.f);
 	Run(0.5f);
 
 	Vector2Df before = enemy->GetTransform()->GetWorldPosition();
@@ -1069,7 +1069,7 @@ TEST_F(ChaseComponentTest, AnAlarmOutlivesTheWalkToIt)
 
 	ChaseComponent* chase = CreateEnemy(1, 1);
 
-	chase->Hear(At(1, 3));
+	chase->Hear(At(1, 3), 1.f);
 	Run(7.f);
 
 	EXPECT_TRUE(chase->IsAlerted()) << "the alarm ran out while the enemy was still on its way";
@@ -1083,7 +1083,7 @@ TEST_F(ChaseComponentTest, APointBehindASolidWallIsNotEvenTakenUp)
 	GameObject* enemy = chase->GetGameObject();
 	Vector2Df before = enemy->GetTransform()->GetWorldPosition();
 
-	chase->Hear(At(4, 1));
+	chase->Hear(At(4, 1), 1.f);
 	Run(3.f);
 
 	EXPECT_TRUE(chase->IsAlerted()) << "the enemy heard the shot and ignored it";
@@ -1383,4 +1383,63 @@ TEST_F(FiringRateTest, ALongWalkToCoverCostsMore)
 	EXPECT_GE(tactical.shots * 100 / relentless, 80)
 		<< "the shooter spends the fight walking: " << tactical.walked << " px, "
 		<< relentless - tactical.shots << " shots a minute lost";
+}
+
+// Раньше уровень присваивался, и очередь из десяти выстрелов равнялась одному.
+TEST_F(ChaseComponentTest, QuietNoisesAddUpToALoudOne)
+{
+	CreateHero(11, 1);
+	ChaseComponent* chase = CreateEnemy(1, 1);
+	Run(0.1f);
+
+	chase->Hear(At(3, 1), 0.2f);
+	float once = chase->GetAwareness();
+
+	chase->Hear(At(3, 1), 0.2f);
+	float twice = chase->GetAwareness();
+
+	EXPECT_GT(once, 0.f);
+	EXPECT_GT(twice, once);
+}
+
+TEST_F(ChaseComponentTest, ANoiseRightUnderTheNoseRaisesMoreThanADistantOne)
+{
+	CreateHero(11, 1);
+	ChaseComponent* loud = CreateEnemy(1, 1);
+	ChaseComponent* faint = CreateEnemy(1, 3);
+	Run(0.1f);
+
+	loud->Hear(At(3, 1), 1.f);
+	faint->Hear(At(3, 3), 0.15f);
+
+	EXPECT_GT(loud->GetAwareness(), faint->GetAwareness());
+}
+
+// Выстрел в упор доводит до погони сразу, далёкий - только настораживает.
+TEST_F(ChaseComponentTest, ANoiseRightUnderTheNoseProvokesAndADistantOneOnlyAlerts)
+{
+	CreateHero(11, 1);
+	ChaseComponent* close = CreateEnemy(1, 1);
+	ChaseComponent* far = CreateEnemy(1, 3);
+	Run(0.1f);
+
+	close->Hear(At(2, 1), 1.f);
+	far->Hear(At(6, 3), 0.15f);
+
+	EXPECT_EQ(close->GetAwarenessState(), RoguelikeGame::AwarenessState::Provoked);
+	EXPECT_EQ(far->GetAwarenessState(), RoguelikeGame::AwarenessState::Alerted);
+}
+
+// Любой услышанный шум по-прежнему зовёт посмотреть: радиус для того и задан.
+TEST_F(ChaseComponentTest, EvenAFaintNoiseStillSendsTheEnemyToLook)
+{
+	CreateHero(11, 1);
+	ChaseComponent* chase = CreateEnemy(1, 1);
+	Vector2Df stood = chase->GetGameObject()->GetTransform()->GetWorldPosition();
+	Run(0.1f);
+
+	chase->Hear(At(5, 1), 0.15f);
+	Run(1.5f);
+
+	EXPECT_GT(chase->GetGameObject()->GetTransform()->GetWorldPosition().x, stood.x + 1.f);
 }

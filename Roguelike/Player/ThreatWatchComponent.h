@@ -27,7 +27,7 @@ namespace RoguelikeGame
         const std::vector<ThreatSource>& GetSources() const;
 
         // Шум приходит событием, а не опросом: он мгновенный и гаснет сам.
-        void Hear(const XYZEngine::Vector2Df& place);
+        void Hear(const XYZEngine::Vector2Df& place, float loudness);
 
     private:
         struct Ping

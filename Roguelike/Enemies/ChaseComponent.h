@@ -59,7 +59,7 @@ namespace RoguelikeGame
 		void SetFightStyle(const FightStyle& newStyle);
 		const FightStyle& GetFightStyle() const;
 		void SetChaseSpeed(float newChaseSpeed);
-		void Hear(const XYZEngine::Vector2Df& place);
+		void Hear(const XYZEngine::Vector2Df& place, float loudness);
 		void Provoke(const XYZEngine::Vector2Df& place);
 
 		bool IsChasing() const;

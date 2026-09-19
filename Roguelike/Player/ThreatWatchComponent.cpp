@@ -32,9 +32,10 @@ namespace RoguelikeGame
             XYZEngine::Vector2Df place = gameObject->GetTransform()->GetWorldPosition();
             int walls = LevelGrid::Current().CountWallsBetween(noise.position, place);
 
-            if (IsHeard(noise, place, GetFactionOf(gameObject), walls))
+            float loudness = LoudnessAt(noise, place, GetFactionOf(gameObject), walls);
+            if (loudness > NOISE_HEARD_AT)
             {
-                Hear(noise.position);
+                Hear(noise.position, loudness);
             }
         });
     }
@@ -61,15 +62,16 @@ namespace RoguelikeGame
         }
     }
 
-    void ThreatWatchComponent::Hear(const XYZEngine::Vector2Df& place)
+    // Тихий звук и светит короче: метка живёт долю от полного времени.
+    void ThreatWatchComponent::Hear(const XYZEngine::Vector2Df& place, float loudness)
     {
-        if (gameObject == nullptr)
+        if (gameObject == nullptr || loudness <= 0.f)
         {
             return;
         }
 
         XYZEngine::Vector2Df from = gameObject->GetTransform()->GetWorldPosition();
-        pings.push_back({place - from, THREAT_NOISE_TIME});
+        pings.push_back({place - from, THREAT_NOISE_TIME * std::min(loudness, 1.f)});
     }
 
     const std::vector<ThreatSource>& ThreatWatchComponent::GetSources() const
